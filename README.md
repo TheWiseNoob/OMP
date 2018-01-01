@@ -14,9 +14,8 @@
   ./MAKEFILE_COMPILE is a script of the command above. You may change it
   at your conveinence.
 
-  You'll have to have everything used by the program before compiling. The
-  version numbers listed below are what have been tested on Arch and are known
-  to work.
+  You'll have to have everything used by the program before compiling. I've
+  only tested this with the packages from the latest version of Arch Linux.
 
   ### Dependencies Include:
 
