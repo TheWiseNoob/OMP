@@ -87,7 +87,7 @@ Base::Base(int argc, char *argv[])
 
     string mkdir_str = "mkdir " + directory_str;
 
-    system(mkdir_str . c_str());
+    mkdir(mkdir_str . c_str(), S_IWUSR);
 
   }
 
