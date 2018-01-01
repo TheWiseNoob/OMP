@@ -789,7 +789,7 @@ GUI::GUI(Base& base_ref)
 
 
 
-  cover_file_ = directory_str + "/No_Cover.svg"; 
+  cover_file_ = "/usr/share/pixmaps/no_cover.png"; 
 
   default_cover_file_ = cover_file_;
 
@@ -1221,7 +1221,7 @@ void GUI::Load_Cover_Art(string& filename_ref)
   {
 
     // Sets the iterator's current Artwork image filename to the default.
-    (*artwork_it) -> set_image_filename("Images/No_Cover.svg");
+    (*artwork_it) -> set_image_filename("/usr/share/pixmaps/no_cover.png");
  
     // Increments the iterator.
     artwork_it++;

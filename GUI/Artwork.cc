@@ -108,7 +108,7 @@ Artwork::Artwork(Base& base_ref)
 
 
 
-  cover_file = directory_str_ + "/No_Cover.svg"; 
+  cover_file = "/usr/share/pixmaps/no_cover.png"; 
 
              
   saved_cover_file = cover_file; 
@@ -358,7 +358,7 @@ void Artwork::resize_image()
 
 */
 
-    if(cover_file == "Images/No_Cover.svg")
+    if(cover_file == "/usr/share/pixmaps/no_cover.png")
     {
 
 //      set(art_Pixbuf);
