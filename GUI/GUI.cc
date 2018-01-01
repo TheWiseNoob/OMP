@@ -279,8 +279,7 @@ GUI::GUI(Base& base_ref)
   top_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 
   // 
-  main_window() -> window() . set_icon_from_file("Images/Icon_Small.png");
-
+  main_window() -> window() . set_icon_from_file("/usr/share/pixmaps/omp.png");
   // Sets the name of the header bar. 
   main_window() -> window() . set_title("OMP");
 

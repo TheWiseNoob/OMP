@@ -1,6 +1,6 @@
 pkgname=openmusicplayer-git
 _pkgname=OpenMusicPlayer
-pkgver=0.0.1.r0.gbc57e41
+pkgver=0.0.1.r10.gc96479f
 pkgrel=1
 pkgdesc='gtk3 music player'
 url='https://openmusicplayer.com/'
@@ -22,7 +22,9 @@ pkgver() {
 
 build() {
   cd "${_pkgname}"
-  make
+  make -j10
+  mkdir -p ~/.omp
+  cp Images/No_Cover.svg ~/.omp/No_Cover.svg
 }
 
 package() {
@@ -31,17 +33,3 @@ package() {
   install -Dm0644 Images/Icon_Small.png "${pkgdir}/usr/share/pixmaps/omp.png"
   install -Dm0644 ../omp.desktop "${pkgdir}/usr/share/applications/omp.desktop"
 }
-
-[Desktop Entry]
-Comment=
-Exec=omp %U
-GenericName=Audio Player
-Icon=/usr/share/pixmaps/omp.png
-MimeType=application/ogg;audio/x-vorbis+ogg;application/x-ogg;audio/mp3;audio/x-mp3;audio/x-flac;audio/mpeg;audio/x-mpeg;audio;audio/mpeg3;audio/ogg;audio/flac;audio/wav;audio/x-oggflac;audio/x-tta
-Name=Open Music Player
-StartupNotify=false
-StartupWMClass=Open Music Player
-Terminal=false
-TerminalOptions=
-Type=Application
-Categories=AudioVideo;Player;Audio;
