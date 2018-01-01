@@ -1,0 +1,1 @@
+time make -j10 -f Makefile
