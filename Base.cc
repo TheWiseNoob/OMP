@@ -146,7 +146,7 @@ Base::Base(int argc, char *argv[])
   {
 
     // 
-    mkdir(mkdir_str . c_str(), S_IWUSR);
+    mkdir(directory_str . c_str(), S_IWUSR);
 
   }
 

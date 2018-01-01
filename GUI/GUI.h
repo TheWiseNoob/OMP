@@ -866,6 +866,8 @@ class GUI : public Parts
 
     std::string cover_file_;
 
+    std::string default_cover_file_;
+
     bool fullscreen_;
 
 

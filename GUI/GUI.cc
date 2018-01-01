@@ -100,6 +100,8 @@
 //                 //
 //                 //
 
+#include <pwd.h>
+
 #include <fstream>
 #include <functional>
 #include <gdkmm/rgba.h>
@@ -118,6 +120,12 @@
 #include <gtkmm/volumebutton.h>
 #include <gtkmm/separator.h>
 #include <iostream>
+#include <sys/stat.h>
+
+#include <sys/types.h>
+
+#include <unistd.h>
+
 
 
 
@@ -768,8 +776,24 @@ GUI::GUI(Base& base_ref)
   //                   //
   //                   //
 
-  // Sets cover_file_ to the location of the default album image.
-  cover_file_ = "Images/No_Cover.svg";
+  // 
+  struct passwd* pw = getpwuid(getuid());
+
+  // 
+  const char* homedir = pw -> pw_dir;
+
+  // 
+  string directory_str = homedir;
+
+  // 
+  directory_str += "/.omp";
+
+
+
+  cover_file_ = directory_str + "/No_Cover.svg"; 
+
+  default_cover_file_ = cover_file_;
+
 
   // Creates two temporary Artwork pointers.
   Artwork *artwork_1,
@@ -1205,8 +1229,11 @@ void GUI::Load_Cover_Art(string& filename_ref)
 
   }
 
+
+  
+
   // Sets cover_file_ to the default cover image.
-  cover_file_ = "Images/No_Cover.svg";
+  cover_file_ = default_cover_file_;
 
 }
 

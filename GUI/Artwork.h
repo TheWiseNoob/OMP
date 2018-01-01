@@ -114,6 +114,8 @@ class Artwork : public Gtk::DrawingArea, public Parts
     std::thread *art_thread;
 
 
+    std::string directory_str_;
+
     Gtk::AspectFrame art_AspectFrame;
 
 

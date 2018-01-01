@@ -52,6 +52,14 @@
 #include "../Base.h"
 
 #include <iostream>
+#include <pwd.h>
+
+#include <sys/stat.h>
+
+#include <sys/types.h>
+
+#include <unistd.h>
+
 
 
 
@@ -85,13 +93,25 @@ Artwork::Artwork(Base& base_ref)
   saved_Box_height = 420;  
 
 
-  cover_file = "Images/No_Cover.svg"; 
+
+  // 
+  struct passwd* pw = getpwuid(getuid());
+
+  // 
+  const char* homedir = pw -> pw_dir;
+
+  // 
+  directory_str_ = homedir;
+
+  // 
+  directory_str_ += "/.omp";
+
+
+
+  cover_file = directory_str_ + "/No_Cover.svg"; 
 
              
   saved_cover_file = cover_file; 
-/*
-  art_AspectFrame.add(*this);
-*/
 
   art_AspectFrame.add(inner_art_Box); 
 

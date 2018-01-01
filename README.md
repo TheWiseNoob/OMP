@@ -16,6 +16,8 @@
 
   You'll have to have everything used by the program before compiling. I've
   only tested this with the packages from the latest version of Arch Linux.
+  You will also need to move No_Cover.svg to /home/YOUR_HOME_DIRECTORY/.omp/
+  until I make an install script.
 
   ### Dependencies Include:
 
