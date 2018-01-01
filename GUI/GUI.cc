@@ -965,10 +965,6 @@ bool GUI::On_GUI_Window_Signal_Delete_Event(GdkEventAny* event)
   main_window() -> window().get_application() -> release();
 
 
-  // Ends the GStreamer session.
-  base() . Quit();
-
-
   // Ends the function.
   return true;
 

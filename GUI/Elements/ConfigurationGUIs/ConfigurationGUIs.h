@@ -86,6 +86,8 @@
 //                 //
 //                 //
 
+#include <atomic>
+
 #include <glibmm/refptr.h>
 
 #include <gtkmm/liststore.h>

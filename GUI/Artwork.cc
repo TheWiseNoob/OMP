@@ -279,13 +279,6 @@ void Artwork::resize_loop()
 
       resizing_image.store(true, memory_order_relaxed);
 
-      if((base().quitting()).load())
-      {
-
-        break;
-
-      }
-
       art_Box_Allocation = inner_art_Box.get_allocation();
 
       current_Box_width = art_Box_Allocation.get_width(); 

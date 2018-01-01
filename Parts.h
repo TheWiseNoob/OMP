@@ -13,15 +13,15 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  The developer(s) of the Moyσikh audio player hereby grant(s) permission
+//  The developer(s) of the OMP audio player hereby grant(s) permission
 //  for non-GPL compatible GStreamer plugins to be used and distributed
-//  together with GStreamer and Moyσikh. This permission is above and beyond
-//  the permissions granted by the GPL license by which Moyσikh is covered.
+//  together with GStreamer and OMP. This permission is above and beyond
+//  the permissions granted by the GPL license by which OMP is covered.
 //  If you modify this code, you may extend this exception to your version
 //  of the code, but you are not obligated to do so. If you do not wish to do
 //  so, delete this exception statement from your version.
 //
-//  Libraries used by Moyσikh:
+//  Libraries used by OMP:
 //
 //    - boost: http://www.boost.org/
 //
@@ -43,6 +43,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef PARTS_H
 #define PARTS_H
 
@@ -50,61 +58,151 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include <list>
 
 
 
+
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
+
 class Base;
+
 class Configuration;
-class Flags;
-class GUI;
-class Playback;
-class Metadata;
+
 class ConfigurationGUIs;
-class Playlists;
-class PlaylistComboBoxes;
+
 class FileChoosers;
+
+class GUI;
+
+class Metadata;
+
+class Playback;
+
+class PlaylistComboBoxes;
+
+class Playlists;
+
 class TimeConversion;
 
 
 
 
 
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
 class Parts
 {
+
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
 
   protected:
 
     Parts(Base& base, bool debug_value = false);
 
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
   public:
 
     virtual ~Parts() = 0;
 
-    virtual Base& base() final;
 
-    virtual Configuration& config() final;
 
-    virtual GUI& gui() final;
 
-    virtual Playback& playback() final;
 
-    virtual Metadata& metadata() final;
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public:
 
     virtual int debug(char* debug_message) final;
 
     virtual int debug(const char* debug_message) final;
 
+
+
+
+
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
+    virtual Base& base() final;
+
+    virtual Configuration& config() final;
+
     virtual ConfigurationGUIs& config_guis();
-
-    virtual Playlists& playlists();
-
-    virtual PlaylistComboBoxes& playlist_comboboxes();
 
     virtual FileChoosers& file_choosers();
 
+    virtual GUI& gui() final;
+
+    virtual Metadata& metadata() final;
+
+    virtual Playback& playback() final;
+
+    virtual PlaylistComboBoxes& playlist_comboboxes();
+
+    virtual Playlists& playlists();
+
     virtual TimeConversion& time_converter();
-    
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
   private:
 
     Base& base_;
@@ -112,11 +210,6 @@ class Parts
     bool debug_;
 
 };
-
-
-
-
-
 
 inline Parts::~Parts()
 {
@@ -126,5 +219,13 @@ inline Parts::~Parts()
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif
