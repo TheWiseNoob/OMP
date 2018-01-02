@@ -7,6 +7,7 @@
   To compile and install, run this command:   ./MAKEFILE_COMPILE
 
 
+
   That command just runs this script:
 
   time make -j10 -f Makefile
@@ -37,6 +38,9 @@
     - libconfig
     - taglib
     - libclastfm 
+
+
+  Once compiled and installed, you can run omp as a command to open it.
 
 
 ### KNOWN BUGS:
