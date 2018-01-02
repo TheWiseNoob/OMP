@@ -2,17 +2,20 @@
 # OpenMusicPlayer
 #### Version: 0.0.1
 
-## COMPILING:
+## COMPILING and Installing:
 
-  Run this from the main folder, which has Makefile: time make -j6 -f Makefile
+  To compile and install, run this command:   ./MAKEFILE_COMPILE
 
-  **NOTE:** Change -j6 to -j3 if you have a dual-core processor. Change it to 
-    -j9 for a 6-core processor and keep it at -j6 for a quad-core. Following a
-    pattern of an additonal 3 for every two cores(1.5 for every 1 core) is 
-    an acceptable practice.
 
-  ./MAKEFILE_COMPILE is a script of the command above. You may change it
-  at your conveinence.
+  That command just runs this script:
+
+  time make -j10 -f Makefile
+  sudo install -DCm0755 omp /usr/bin/omp"
+  sudo install -Dm0644 Images/No_Cover.svg /usr/share/pixmaps/no_cover.png"
+  sudo install -Dm0644 Images/Icon_Small.png "${pkgdir}/usr/share/pixmaps/omp.png"
+  sudo install -Dm0644 omp.desktop "${pkgdir}/usr/share/applications/omp.desktop"
+
+
 
   You'll have to have everything used by the program before compiling. I've
   only tested this with the packages from the latest version of Arch Linux.
@@ -46,7 +49,7 @@
   - Holding shifting while dragging breaks shit.
   - Dragging glitches sometimes on drug row.
   - Resizing artwork occassionally crashes program.
-  - Scrobbling might not be disablable.
+  - Scrobbling might not be disableable.
   
   
 ## Screenshots:
