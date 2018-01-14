@@ -7,6 +7,7 @@
   To compile and then install, run the following commands:
 
   make
+
   make install
 
 
