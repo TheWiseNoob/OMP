@@ -13,15 +13,15 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  The developer(s) of the Moyσikh audio player hereby grant(s) permission
+//  The developer(s) of the OMP audio player hereby grant(s) permission
 //  for non-GPL compatible GStreamer plugins to be used and distributed
-//  together with GStreamer and Moyσikh. This permission is above and beyond
-//  the permissions granted by the GPL license by which Moyσikh is covered.
+//  together with GStreamer and OMP. This permission is above and beyond
+//  the permissions granted by the GPL license by which OMP is covered.
 //  If you modify this code, you may extend this exception to your version
 //  of the code, but you are not obligated to do so. If you do not wish to do
 //  so, delete this exception statement from your version.
 //
-//  Libraries used by Moyσikh:
+//  Libraries used by OMP:
 //
 //    - boost: http://www.boost.org/
 //
@@ -70,24 +70,47 @@
 //                 //
 
 #include "../Base.h"
+
 #include "../Configuration/Configuration.h"
+
 #include "../Metadata/Metadata.h"
-#include "../Playback/Playback.h"
-#include "../TimeConversion.h"
+
 #include "../Metadata/Track.h"
+
+#include "../Playback/Playback.h"
+
 #include "../Scrobbling/Scrobbling.h"
+
+#include "../TimeConversion.h"
+
 #include "Artwork.h"
+
 #include "ChildWindow.h"
+
 #include "Elements/ConfigurationGUIs/ConfigurationGUIs.h"
-#include "Elements/Playlists/PlaylistTreeStore.h"
-#include "Elements/Playlists/PlaylistColumnRecord.h"
-#include "Elements/Playlists/Playlists.h"
-#include "Elements/Playlists/PlaylistsDatabase.h"
+
+#include "Elements/PlaybackControllers/PlaybackController.h"
+
+#include "Elements/PlaybackControllers/PlaybackControllers.h"
+
 #include "Elements/PlaylistComboBoxes/PlaylistComboBoxes.h"
-#include "Elements/FileChoosers/FileChoosers.h"
+
+#include "Elements/Playlists/PlaylistColumnRecord.h"
+
+#include "Elements/Playlists/Playlists.h"
+
+#include "Elements/Playlists/PlaylistsDatabase.h"
+
+#include "Elements/Playlists/PlaylistTreeStore.h"
+
 #include "Elements/FileChoosers/FileChooser.h"
+
+#include "Elements/FileChoosers/FileChoosers.h"
+
 #include "MenuBar.h"
+
 #include "Seekbar.h"
+
 #include "Tagview.h"
 
 
@@ -100,32 +123,54 @@
 //                 //
 //                 //
 
-#include <pwd.h>
 
 #include <fstream>
+
 #include <functional>
-#include <gdkmm/rgba.h>
-#include <gtkmm/main.h>
+
 #include <gtkmm/applicationwindow.h>
-#include <gtkmm/headerbar.h>
+
 #include <gtkmm/box.h>
-#include <gtkmm/notebook.h>
-#include <gtkmm/paned.h>
-#include <gtkmm/spinbutton.h>
-#include <gtkmm/stackswitcher.h>
+
 #include <gtkmm/button.h>
-#include <gtkmm/frame.h>
+
 #include <gtkmm/eventbox.h>
+
+#include <gtkmm/frame.h>
+
+#include <gtkmm/headerbar.h>
+
 #include <gtkmm/label.h>
-#include <gtkmm/volumebutton.h>
+
+#include <gtkmm/main.h>
+
+#include <gtkmm/notebook.h>
+
+#include <gtkmm/paned.h>
+
+#include <gdkmm/rectangle.h>
+
+#include <gdkmm/rgba.h>
+
 #include <gtkmm/separator.h>
+
+#include <gtkmm/spinbutton.h>
+
+#include <gtkmm/stackswitcher.h>
+
+#include <gtkmm/volumebutton.h>
+
 #include <iostream>
+
+#include <pwd.h>
+
 #include <sys/stat.h>
 
 #include <sys/types.h>
 
 #include <unistd.h>
 
+#include <vector>
 
 
 
@@ -176,8 +221,13 @@ GUI::GUI(Base& base_ref)
 // GUI Elements
 
 , config_guis_(new ConfigurationGUIs(base_ref))
+
 , playlists_(new Playlists(base_ref))
+
+, playback_controllers_(new PlaybackControllers(base_ref))
+
 , playlist_comboboxes_(new PlaylistComboBoxes(base_ref, *playlists_))
+
 , file_choosers_(new FileChoosers(base_ref))
 
 
@@ -185,11 +235,17 @@ GUI::GUI(Base& base_ref)
 // Unorganized GUI Parts
 
 , header_bar_(Gtk::manage(new Gtk::HeaderBar))
+
 , left_main_content_paned_box_(Gtk::manage(new Gtk::Box))
+
 , main_window_notebook_(Gtk::manage(new Gtk::Notebook))
+
 , main_content_page_box_(Gtk::manage(new Gtk::Box))
+
 , main_content_paned_(Gtk::manage(new Gtk::Paned))
+
 , seekbar_(new Seekbar(base_ref, 0, 10))
+
 , top_box_(Gtk::manage(new Gtk::Box))
 
 
@@ -199,41 +255,51 @@ GUI::GUI(Base& base_ref)
 , disable_menubar_functions_flag_(false)
 
 
+
 // Status Bar
 
 , status_bar_frame_(Gtk::manage(new Gtk::Frame))
+
 , status_bar_event_box_(Gtk::manage(new Gtk::EventBox))
+
 , status_bar_box_(Gtk::manage(new Gtk::Box))
+
 , time_label_box_(Gtk::manage(new Gtk::Box))
+
 , time_label_(Gtk::manage(new Gtk::Label("00:00.00 / 00:00.00", 
                                          0.5, 1.0, false)))
+
+, selected_rows_count_label_(Gtk::manage(new Gtk::Label("0")))
+
 , selected_time_label_(Gtk::manage(new Gtk::Label()))
+
 , playback_status_label_(Gtk::manage(new Gtk::Label("⏹ Stopped")))
-
-
-
-// Playback Buttons
-
-, playback_buttons_stack_switcher_(Gtk::manage(new Gtk::StackSwitcher))
-, next_button_(Gtk::manage(new Gtk::Button))
-, pause_button_(Gtk::manage(new Gtk::Button))
-, play_button_(Gtk::manage(new Gtk::Button))
-, previous_button_(Gtk::manage(new Gtk::Button))
-, stop_button_(Gtk::manage(new Gtk::Button))
 
 
 
 // Volume
 
 , main_volume_button_(Gtk::manage(new Gtk::VolumeButton))
+
 , main_volume_button_box_(Gtk::manage(new Gtk::Box))
 
-{
+
+
+// Double Playlist
+
+, double_playlist_paned_(Gtk::manage(new Gtk::Paned))
+
+
+
+
+// File Chooser Playlist
+
+, file_chooser_playlist_paned_(Gtk::manage(new Gtk::Paned))
+
+ {
 
   //                   //
-  //                   //
   // Quitting Function ////////////////////////////////////////////////////////
-  //                   //
   //                   //
 
   // Function run when the program closes.
@@ -241,10 +307,10 @@ GUI::GUI(Base& base_ref)
 
 
 
-  //                      //
+
+
   //                      //
   // Main Window Creation /////////////////////////////////////////////////////
-  //                      //
   //                      //
 
   // Sets main_window equal to a new shared_ptr<ChildWindow> object that will
@@ -252,25 +318,59 @@ GUI::GUI(Base& base_ref)
   main_window_
     = make_shared<ChildWindow>("OMP", base_ref, temp_func_ptr, true);
 
+
+
   // Adds the main window to the windows data structure. 
-  windows_.push_front(main_window_);
-
-  // Overrides the default event signal handler.
-  main_window() -> window().add_events(Gdk::KEY_PRESS_MASK);
-
-  // Overrides the function for keypresses to allow custom shortcuts.
-  main_window() -> window().signal_key_press_event()
-    .connect(sigc::mem_fun(*this, &GUI::On_Key_Press_Event));
-
-  // Event function for when the window irregularly closes.
-  main_window() -> window().signal_delete_event()
-    .connect(sigc::mem_fun(*this, &GUI::On_GUI_Window_Signal_Delete_Event));
+  windows_ . push_front(main_window_);
 
   // Sets the list location of the window for easy access.
-  main_window() -> set_location(windows_.begin());
+  main_window() -> set_location(windows_ . begin());
+
+
+
+  // Overrides the default event signal handler.
+  main_window() -> window() . add_events(Gdk::KEY_PRESS_MASK);
+
+
+
+  // 
+  int window_size_x_ = config() . get("gui.window_size_x");
+
+  // 
+  int window_size_y_ = config() . get("gui.window_size_y");
 
   // Sets default window size.
-  main_window() -> window().set_default_size(1200, 700);
+  main_window() -> window().set_default_size(window_size_x_, window_size_y_);
+
+
+
+  // 
+  bool maximized = config() . get("gui.window_maximized");
+
+  // 
+  if(maximized)
+  {
+
+    // 
+    main_window() -> window() . maximize();
+
+  }
+
+  // 
+  main_window_maximized_ = maximized;
+
+
+
+  // Sets the main window's orientation to vertical.
+  main_window() -> box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
+
+  // Overrides the function for keypresses to allow custom shortcuts.
+  main_window() -> window() . signal_key_press_event()
+    . connect(sigc::mem_fun(*this, &GUI::On_Key_Press_Event));
+
+  // Event function for when the window irregularly closes.
+  main_window() -> window() . signal_delete_event()
+    . connect(sigc::mem_fun(*this, &GUI::On_GUI_Window_Signal_Delete_Event));
 
   // Adds top_box_ to the start of the main window's box.
   main_window() -> box().pack_start(*top_box_, Gtk::PACK_SHRINK);
@@ -278,19 +378,87 @@ GUI::GUI(Base& base_ref)
   // Sets top_box's orientation to vertical.
   top_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 
+
+
   // 
-  main_window() -> window() . set_icon_from_file("/usr/share/pixmaps/omp.png");
+  vector<Glib::RefPtr<Gdk::Pixbuf>> icon_pixbufs;
+
+  // 
+  string icon_16p_filename = "/usr/share/pixmaps/OMP_Icon_16.png";
+
+  // 
+  Glib::RefPtr<Gdk::Pixbuf> icon_16p_pixbuf
+    = Gdk::Pixbuf::create_from_file(icon_16p_filename);
+
+  // 
+  icon_pixbufs . push_back(icon_16p_pixbuf);
+
+  // 
+  string icon_32p_filename = "/usr/share/pixmaps/OMP_Icon_32.png";
+
+  // 
+  Glib::RefPtr<Gdk::Pixbuf> icon_32p_pixbuf
+    = Gdk::Pixbuf::create_from_file(icon_32p_filename);
+
+  // 
+  icon_pixbufs . push_back(icon_32p_pixbuf);
+
+  // 
+  string icon_48p_filename = "/usr/share/pixmaps/OMP_Icon_48.png";
+
+  // 
+  Glib::RefPtr<Gdk::Pixbuf> icon_48p_pixbuf
+    = Gdk::Pixbuf::create_from_file(icon_48p_filename);
+
+  // 
+  icon_pixbufs . push_back(icon_48p_pixbuf);
+
+  // 
+  string icon_64p_filename = "/usr/share/pixmaps/OMP_Icon_64.png";
+
+  // 
+  Glib::RefPtr<Gdk::Pixbuf> icon_64p_pixbuf
+    = Gdk::Pixbuf::create_from_file(icon_64p_filename);
+
+  // 
+  icon_pixbufs . push_back(icon_64p_pixbuf);
+
+  // 
+  string icon_128p_filename = "/usr/share/pixmaps/OMP_Icon_128.png";
+
+  // 
+  Glib::RefPtr<Gdk::Pixbuf> icon_128p_pixbuf
+    = Gdk::Pixbuf::create_from_file(icon_128p_filename);
+
+  // 
+  icon_pixbufs . push_back(icon_128p_pixbuf);
+
+  
+
+  // 
+  main_window() -> window() . set_default_icon_list(icon_pixbufs);
+
+
+
   // Sets the name of the header bar. 
   main_window() -> window() . set_title("OMP");
 
 
 
+  // 
+  main_window() -> window() . add_events(Gdk::STRUCTURE_MASK);
+
+  // 
+  main_window() -> window() . signal_check_resize()
+    . connect(sigc::mem_fun(*this,
+                            &GUI::On_Main_Window_Check_Resize_Signal));
 
 
-  //                 //
+
+
+
   //                 //
   // Header Creation //////////////////////////////////////////////////////////
-  //                 //
   //                 //
 
   if(!(config() . get("gui.hide_header_bar")))
@@ -321,41 +489,69 @@ GUI::GUI(Base& base_ref)
 
 
 
+
+
   //                  //
+  // Top Box Creation /////////////////////////////////////////////////////////
   //                  //
+
   // Seekbar Creation /////////////////////////////////////////////////////////
-  //                  //
-  //                  //
 
   // Adds the seekbar to the top of the main window's box.
   top_box_ -> pack_end(seekbar());
 
   // Disables the displayed value of the seekbar.
-  seekbar().scale().set_draw_value(false);
+  seekbar() . scale() . set_draw_value(false);
 
   // Sets the range of values used by the seekbar.
-  seekbar().scale().set_range(0, 100);
+  seekbar() . scale() . set_range(0, 100);
 
   // Sets the seekbar to 0.
-  seekbar().scale().set_value(0);
+  seekbar() . scale() . set_value(0);
 
   // Makes the seekbar insensitive to grabbing. 
-  seekbar().scale().set_sensitive(false);
+  seekbar() . scale() . set_sensitive(false);
 
 
 
-  //                    //
-  //                    //
-  // Various Assembling ///////////////////////////////////////////////////////
-  //                    //
-  //                    //
+  // Header MenuBar Creation //////////////////////////////////////////////////
+
+  // Creates two MenuBar pointers.
+  MenuBar* header_bar_menubar = new MenuBar(base_ref);
+
+  // Puts the first menubars in the menubars_ list.
+  menubars_ . push_back(header_bar_menubar);
+
+  // Adds the menubar to the header.
+  header_bar_ -> pack_start(header_bar_menubar -> box());
+
+
+
+  // Adds a playlist combobox from the beginning of the playlist_comboboxes_.
+  header_bar_ -> pack_end((*(playlist_comboboxes()().begin())) -> box());
+
+
+
+  // Playback Buttons Creation ////////////////////////////////////////////////
+
+  // 
+  main_playback_controller_
+    = new PlaybackController(base(), *playback_controllers_);
+
+  // Adds the playback_buttons_stack_switcher to header_bar_.
+  top_box_ -> pack_start(main_playback_controller_ -> box(), Gtk::PACK_SHRINK);
+
+
+
+
+
+  //                     //
+  // Notebook Assembling //////////////////////////////////////////////////////
+  //                     //
 
   // Adds the notebook to main_window's box.
   main_window() -> box()
-    .pack_start(*main_window_notebook_, Gtk::PACK_EXPAND_WIDGET);
-
-  // Sets the main window's orientation to vertical.
-  main_window() -> box().set_orientation(Gtk::ORIENTATION_VERTICAL);
+    . pack_start(*main_window_notebook_, Gtk::PACK_EXPAND_WIDGET);
 
   // Sets the tab position of the notebook at the top.
   main_window_notebook_ -> set_tab_pos(Gtk::POS_TOP);
@@ -369,41 +565,42 @@ GUI::GUI(Base& base_ref)
   // Sets the notebook tabs to show the border.
   main_window_notebook_ -> set_show_border(true);
 
+
+
+
+
+  //                         //
+  // Main Content Assembling //////////////////////////////////////////////////
+  //                         //
+
+  // 
+  Gtk::Label main_content_page_label("Main Content");
+
+
+
   // Sets the orientation of the box containing the Main Content tab's 
   // contents to vertical.
   main_content_page_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+
+
 
   // Adds main_content_paned_ to main_content_page_box_.
   main_content_page_box_ 
     -> pack_start(*main_content_paned_, Gtk::PACK_EXPAND_WIDGET);
 
-  // Sets the current position of main_content_paned_.
-  main_content_paned_ -> set_position(420);
+  // 
+  int main_content_paned_position
+    = config() . get("gui.main_content_paned_position");
 
-  // Creates labels for the four pages in main_content_notebook_.
-  Gtk::Label artwork_page_label("Artwork"),
-             main_content_page_label("Main Content"),
-             playlist_page_label("Full Playlist");
+
+  // Sets the current position of main_content_paned_.
+  main_content_paned_ -> set_position(main_content_paned_position);
+
+
 
   // Adds the Main Content page to the notebook.
   main_window_notebook_ -> append_page(*main_content_page_box_,
                                        main_content_page_label);
-
-  // Sets the Main Content tab as reorderable.
-//  main_window_notebook_ -> set_tab_reorderable(*main_content_page_box_, true);
-
-  // Makes a shortcut to the box of the playlist for the Playlist tab.  
-  Gtk::Box* temp_box_ptr = &((*(playlists()().rbegin())) -> box());
-
-  // Adds the Playlist tab to the notebook.
-  main_window_notebook_ -> append_page(*temp_box_ptr,
-                                       playlist_page_label);
-
-  // Sets the Playlist tab as detachable.
-//  main_window_notebook_ -> set_tab_detachable(*temp_box_ptr, true);
-
-  // Sets the Playlist tab as reorderable.
-//  main_window_notebook_ -> set_tab_reorderable(*temp_box_ptr, true);
 
   // Sets the orientation of main_content_paned_.
   main_content_paned_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
@@ -411,28 +608,335 @@ GUI::GUI(Base& base_ref)
   // Adds the left box to the left paned side.
   main_content_paned_ -> pack1(*left_main_content_paned_box_, Gtk::EXPAND);
 
+
+
+  //
+  main_content_paned_ -> signal_button_release_event()
+    . connect(sigc::mem_fun
+        (*this, &GUI::On_Main_Content_Paned_Button_Release_Event));
+
+
+
+  // 
+  Playlist* main_content_playlist = new Playlist(base_ref, (*playlists_));
+
   // Adds the right box to the right paned side.
   main_content_paned_ 
-    -> pack2(((*(playlists()().begin())) -> box()), Gtk::EXPAND);
+    -> pack2(main_content_playlist -> box(), Gtk::EXPAND);
 
   // Sets the orientation of the left paned box.
   left_main_content_paned_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
  
   // Sets the left margin of the playlist in Main Content.
-  ((*(playlists()().begin())) -> box()).set_margin_left(3);
+  main_content_playlist -> box() . set_margin_left(3);
 
   // Sets the right margin of the playlist in Main Content.
-  ((*(playlists()().begin())) -> box()).set_margin_right(3);
+  main_content_playlist -> box() . set_margin_right(3);
 
   // Sets the upper margin of the playlist in Main Content.
-  ((*(playlists()().begin())) -> box()).set_margin_top(3);
+  main_content_playlist -> box() . set_margin_top(3);
+
+  // 
+  playlists_ -> set_selected_playlist(*main_content_playlist);
+
+
+
+  // Tagview Creation ////////////////////////////////////////////////////////////
+
+  // Creates a temporary pointer object for a new Tagview.
+  Tagview *temp_tagview;
+
+  // Creates a new Tagview and assigns it to the pointer.
+  temp_tagview = new Tagview(*this);
+
+  // Adds the Tagview to the Tagview list.
+  tagviews_.push_front(temp_tagview);
+
+  // Adds the new Tagview to the left pane's box.
+  left_main_content_paned_box_ -> pack_start(*temp_tagview, Gtk::PACK_SHRINK);
+
+
+
+  // Artworks Creation /////////////////////////////////////////////////////////
+
+  // 
+  struct passwd* pw = getpwuid(getuid());
+
+  // 
+  const char* homedir = pw -> pw_dir;
+
+  // 
+  string directory_str = homedir;
+
+  // 
+  directory_str += "/.omp";
+
+
+
+  // 
+  cover_file_ = "/usr/share/pixmaps/no_cover.png"; 
+
+  // 
+  default_cover_file_ = cover_file_;
+
+
+
+  // Creates two temporary Artwork pointers.
+  Artwork *artwork_1,
+          *artwork_2;
+
+  //Adds the first artwork to artworks_.
+  artworks_.push_back(artwork_1);
+
+  //Adds the second artwork to artworks_.
+  artworks_.push_back(artwork_2);
+
+  // Gets an iterator to the beginning of artworks_.
+  list<Artwork*>::iterator artwork_it = artworks_.begin();
+
+  // Creates an Artwork object for each pointer entry in the list.
+  while(artwork_it != artworks_.end())
+  {
+
+    // Creates a new Artwork class.
+    (*artwork_it) = Gtk::manage(new Artwork(base_ref));
+
+    // Increments the artworks_ iterator.
+    artwork_it++;
+
+  }
+
+  // Makes a reference to the first Artwork instance.
+  Gtk::Box* temp_box_ptr = &((*(artworks_.begin())) -> get_art_Box());
+
+  Gtk::Label artwork_page_label("Artwork");
+
+  // Adds the Artwork tab with the second Artwork instances.
+  main_window_notebook_ -> append_page(*temp_box_ptr, artwork_page_label);
+
+  // Adds the first Artwork instance to the left pain of the Main Content tab.
+  left_main_content_paned_box_ 
+    -> pack_start(((*(artworks_.rbegin())) -> get_art_Box()),
+                  Gtk::PACK_EXPAND_WIDGET);
+
+  // Sets the left margin of the Main Content's Artwork box.
+  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_left(5);
+
+  // Sets the right margin of the Main Content's Artwork box.
+  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_right(5);
+
+  // Sets the top margin of the Main Content's Artwork box.
+  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_top(5);
+
+  // Sets the bottom margin of the Main Content's Artwork box.
+  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_bottom(5);
+
+
+
+  // Main Content MenuBar Creation ////////////////////////////////////////////
+
+  // Creates two MenuBar pointers.
+  MenuBar* main_content_menubar = new MenuBar(base_ref);
+
+  // Puts the first menubars in the menubars_ list.
+  menubars_ . push_back(main_content_menubar);
+
+  // Adds a MenuBar to the left pane in Main Content.
+  left_main_content_paned_box_
+    -> pack_end(main_content_menubar -> box(), Gtk::PACK_SHRINK);
+
+
+
+  // Main Content Playlist ComboBox Creation //////////////////////////////////
+
+  // Adds a PlaylistCombobox to the the left pane in Main Content.
+  left_main_content_paned_box_ 
+    -> pack_end(((*(playlist_comboboxes()().rbegin())) -> box()), 
+                Gtk::PACK_SHRINK);
+
+
+
+
+
+  //               //
+  // Playlist Page ////////////////////////////////////////////////////////////
+  //               //
+
+  // Creates labels for the four pages in main_content_notebook_.
+  Gtk::Label playlist_page_label("Full Playlist");
+
+  // 
+  Playlist* full_playlist = new Playlist(base_ref, (*playlists_));
+
+  // Adds the Playlist tab to the notebook.
+  main_window_notebook_
+    -> append_page(full_playlist -> box(), playlist_page_label);
+
+
 
 
 
   //                 //
+  // Double Playlist //////////////////////////////////////////////////////////
+  //                 //
+
+  // Creates labels for the four pages in main_content_notebook_.
+  Gtk::Label double_playlist_page_label("Double Playlist");
+
+
+
+  // 
+  Playlist* left_double_playlist = new Playlist(base_ref, (*playlists_));
+
+  // 
+  Playlist* right_double_playlist = new Playlist(base_ref, (*playlists_));
+
+
+
+  // 
+  int double_playlist_paned_position
+    = config() . get("gui.double_playlist_paned_position");
+
+
+  // Sets the current position of main_content_paned_.
+  double_playlist_paned_ -> set_position(double_playlist_paned_position);
+
+
+
+  //
+  double_playlist_paned_ -> signal_button_release_event()
+    . connect(sigc::mem_fun
+        (*this, &GUI::On_Double_Playlist_Paned_Button_Release_Event));
+
+
+
+  // 
+  double_playlist_paned_
+    -> pack1(left_double_playlist -> box(), Gtk::EXPAND);
+
+  // 
+  double_playlist_paned_
+    -> pack2(right_double_playlist -> box(), Gtk::EXPAND);
+
+
+
+  // Adds the Playlist tab to the notebook.
+  main_window_notebook_
+    -> append_page(*double_playlist_paned_, double_playlist_page_label);
+
+
+
+
+
+  //                         //
+  // File Chooser & Playlist //////////////////////////////////////////////////
+  //                         //
+
+  // Creates labels for the four pages in main_content_notebook_.
+  Gtk::Label file_chooser_playlist_page_label("File Chooser & Playlist");
+
+
+
+  // 
+  Playlist* file_chooser_playlist = new Playlist(base_ref, (*playlists_));
+
+  // 
+  FileChooser* playlist_file_chooser
+    = new FileChooser(base_ref, (*file_choosers_));
+
+
+
+  // 
+  int file_chooser_playlist_paned_position
+    = config() . get("gui.file_chooser_playlist_paned_position");
+
+
+  // Sets the current position of main_content_paned_.
+  file_chooser_playlist_paned_
+    -> set_position(file_chooser_playlist_paned_position);
+
+
+
+  //
+  file_chooser_playlist_paned_ -> signal_button_release_event()
+    . connect(sigc::mem_fun
+        (*this, &GUI::On_File_Chooser_Playlist_Paned_Button_Release_Event));
+
+
+
+  // 
+  file_chooser_playlist_paned_
+    -> pack2(file_chooser_playlist -> box(), Gtk::EXPAND);
+
+  // 
+  file_chooser_playlist_paned_
+    -> pack1(playlist_file_chooser -> box(), Gtk::EXPAND);
+
+
+
+  // Adds the Playlist tab to the notebook.
+  main_window_notebook_
+    -> append_page(*file_chooser_playlist_paned_,
+                   file_chooser_playlist_page_label);
+
+
+
+
+
+  //                        //
+  // Configuration Creation ///////////////////////////////////////////////////
+  //                        //
+
+  // Creates the label for the configuration notebook page.
+  Gtk::Label configuration_page_label("Configuration");
+
+  // Creates a reference to the config_guis' box.
+  Gtk::Box& config_gui_box_ref = (config_guis()().front()) -> box();
+
+  // Appends the ConfigGUI page to the notebook.
+  main_window_notebook_ -> append_page(config_gui_box_ref,
+                                       configuration_page_label);
+
+
+
+
+
+  //                     //
+  //                     //
+  // Status Bar Creation //////////////////////////////////////////////////////
+  //                     //
+  //                     //
+
+  // Adds the Status Bar's event box to the status_bar_frame_.
+  status_bar_frame_ -> add(*status_bar_event_box_);
+
+  // Adds the status_bar_frame to the bottom of the main_window's box.
+  main_window() -> box() . pack_end(*status_bar_frame_, Gtk::PACK_SHRINK);
+
+  // Adds a box to the status_bar_event_box_.
+  status_bar_event_box_ -> add(*status_bar_box_);
+
+  // Sets the orientation of the inner status_bar_box_.
+  status_bar_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+
+
+
+  // Sets the upper margin of the status_bar_box_.
+  status_bar_box_ ->set_margin_top(0);
+
+  // Sets the lower margin of the status_bar_box_.
+  status_bar_box_ -> set_margin_bottom(0);
+
+  // Sets the end margin of the status_bar_box_.
+  status_bar_box_ -> set_margin_end(0);
+
+  // Sets the start margin of the status_bar_box_.
+  status_bar_box_ -> set_margin_start(0);
+
+
+
   //                 //
   // Volume Creation //////////////////////////////////////////////////////////
-  //                 //
   //                 //
 
   // Adds the volume box to the header bar.
@@ -464,232 +968,8 @@ GUI::GUI(Base& base_ref)
 
   // Attachs the function called when the value of the button changes.
   main_volume_button_ -> signal_value_changed()
-    .connect(sigc::mem_fun(*this, 
+    . connect(sigc::mem_fun(*this, 
                            &GUI::On_Signal_Value_Changed_Main_Volume_Button));
-
-
-
-  //                         //
-  //                         //
-  // Header MenuBar Creation //////////////////////////////////////////////////
-  //                         //
-  //                         //
-
-  // Creates two MenuBar pointers.
-  MenuBar *temp_menubar1,
-          *temp_menubar2;
-
-  // Puts the first menubars in the menubars_ list.
-  menubars_.push_back(temp_menubar1);
-
-  // Puts the second menubars in the menubars_ list.
-  menubars_.push_back(temp_menubar2);
-
-  // Creates an iterator to the start of the menubars_ list.
-  list<MenuBar*>::iterator menubars_it = menubars_.begin();
-
-  // Creates a MenuBar object for each MenuBar pointer in the menubars_ list.
-  while(menubars_it != menubars_.end())
-  {  
-
-    // Creates a menubar object and sets the current iterator location to it.
-    (*menubars_it) = new MenuBar(base_ref);
-
-    // Increments the iterator.
-    menubars_it++;
-
-  }
-
-  // Adds the menubar to the header.
-  header_bar_ -> pack_start((*(menubars_.begin())) -> box());
-
-
-
-  //                                   //
-  //                                   //
-  // Playlist ComboBox Header Creation ////////////////////////////////////////
-  //                                   //
-  //                                   //
-
-  // Adds a playlist combobox from the beginning of the playlist_comboboxes_.
-  header_bar_ -> pack_end((*(playlist_comboboxes()().begin())) -> box());
-
-
-
-  //                           //
-  //                           //
-  // Playback Buttons Creation ////////////////////////////////////////////////
-  //                           //
-  //                           //
-
-  // Creates the Gtk::Separator object.
-  separator = Gtk::manage(new Gtk::Separator);
-
-  // Sets the separator orientation to vertical.
-  separator -> set_orientation(Gtk::ORIENTATION_VERTICAL);
-
-  // Adds the playback_buttons_stack_switcher to header_bar_.
-  top_box_ -> pack_start(*playback_buttons_stack_switcher_, Gtk::PACK_SHRINK);
-
-
-  // Sets the margin on the end of the switcher to 10.
-  playback_buttons_stack_switcher_ -> set_margin_end(10);
-
-  // Sets the margin on the start of the switcher to 3.
-  playback_buttons_stack_switcher_ -> set_margin_start(3);
-
-  // Sets the margin on the top of the switcher to 3.
-  playback_buttons_stack_switcher_ -> set_margin_top(3);
-
-  // Sets the margin on the bottom of the switcher to 3.
-  playback_buttons_stack_switcher_ -> set_margin_bottom(3);
-
-
-
-  // Adds the previous button to the playback_button_stack_switcher_.
-  playback_buttons_stack_switcher_
-    -> pack_start(*previous_button_, Gtk::PACK_SHRINK, 0);
-
-  // Adds the stop button to the playback_button_stack_switcher_.
-  playback_buttons_stack_switcher_
-    -> pack_start(*stop_button_, Gtk::PACK_SHRINK, 0);
-
-  // Adds the pause button to the playback_button_stack_switcher_.
-  playback_buttons_stack_switcher_
-    -> pack_start(*pause_button_, Gtk::PACK_SHRINK, 0);
-
-  // Adds the play button to the playback_button_stack_switcher_.
-  playback_buttons_stack_switcher_
-    -> pack_start(*play_button_, Gtk::PACK_SHRINK, 0);
-
-  // Adds the play button to the playback_button_stack_switcher_.
-  playback_buttons_stack_switcher_
-    -> pack_start(*next_button_, Gtk::PACK_SHRINK, 0);
-
-
-
-  // Sets the icon of the play button.
-  previous_button_ 
-    -> set_image_from_icon_name("media-skip-backward-symbolic",
-                                Gtk::ICON_SIZE_DND);
-
-  // Sets the icon of the play button.
-  play_button_ -> set_image_from_icon_name("media-playback-start-symbolic",
-                                           Gtk::ICON_SIZE_DND);
-
-  // Sets the icon of the pause button
-  pause_button_ -> set_image_from_icon_name("media-playback-pause-symbolic",
-                                            Gtk::ICON_SIZE_DND);
-
-  // Sets the icon of the stop button.
-  stop_button_ -> set_image_from_icon_name("media-playback-stop-symbolic",
-                                           Gtk::ICON_SIZE_DND);
-
-  // Sets the icon of the next button.
-  next_button_ -> set_image_from_icon_name("media-skip-forward-symbolic",
-                                           Gtk::ICON_SIZE_DND);
-
-
-
-  // Connects the click of the pause button to its function.
-  next_button_ -> signal_clicked().connect(sigc::mem_fun(playback(),
-                                           &Playback::Next_Track));
-
-  // Connects the click of the pause button to its function.
-  pause_button_ -> signal_clicked().connect(sigc::mem_fun(playback(),
-                                            &Playback::Pause));
-
-  // Connects the click of the play button to its function.
-  play_button_ -> signal_clicked()
-    . connect(sigc::bind<Gtk::TreeRowReference, bool, long long>
-        (sigc::mem_fun(playback(), &Playback::Play), 
-         playlists() . selected_row_ref(), false, 0LL));
-
-  // Connects the click of the stop button to its function.
-  stop_button_ -> signal_clicked().connect(sigc::mem_fun(playback(),
-                                           &Playback::Stop));
-
-
-
-  // Makes the previous button unclickable.
-  previous_button_ -> set_sensitive(false);
-
-
-
-  //                  //
-  //                  //
-  // Tagview Creation ////////////////////////////////////////////////////////////
-  //                  //
-  //                  //
-
-  // Creates a temporary pointer object for a new Tagview.
-  Tagview *temp_tagview;
-
-  // Creates a new Tagview and assigns it to the pointer.
-  temp_tagview = new Tagview(*this);
-
-  // Adds the Tagview to the Tagview list.
-  tagviews_.push_front(temp_tagview);
-
-  // Adds the new Tagview to the left pane's box.
-  left_main_content_paned_box_ -> pack_start(*temp_tagview, Gtk::PACK_SHRINK);
-
-  
-
-  //                               //
-  //                               //
-  // Main Content MenuBar Creation ////////////////////////////////////////////
-  //                               //
-  //                               //
-
-  // Adds a MenuBar to the left pane in Main Content.
-  left_main_content_paned_box_ 
-    -> pack_end(((*(menubars_.rbegin())) -> box()),Gtk::PACK_SHRINK);
-
-  //                                         //
-  //                                         //
-  // Main Content Playlist ComboBox Creation //////////////////////////////////
-  //                                         //
-  //                                         //
-
-  // Adds a PlaylistCombobox to the the left pane in Main Content.
-  left_main_content_paned_box_ 
-    -> pack_end(((*(playlist_comboboxes()().rbegin())) -> box()), 
-                Gtk::PACK_SHRINK);
-
-
-
-  //                     //
-  //                     //
-  // Status Bar Creation //////////////////////////////////////////////////////
-  //                     //
-  //                     //
-
-  // Adds the Status Bar's event box to the status_bar_frame_.
-  status_bar_frame_ -> add(*status_bar_event_box_);
-
-  // Adds the status_bar_frame to the bottom of the main_window's box.
-  main_window() -> box().pack_end(*status_bar_frame_, Gtk::PACK_SHRINK);
-
-  // Adds a box to the status_bar_event_box_.
-  status_bar_event_box_ -> add(*status_bar_box_);
-
-  // Sets the orientation of the inner status_bar_box_.
-  status_bar_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
-
-
-
-  // Sets the upper margin of the status_bar_box_.
-  status_bar_box_ ->set_margin_top(0);
-
-  // Sets the lower margin of the status_bar_box_.
-  status_bar_box_ -> set_margin_bottom(0);
-
-  // Sets the end margin of the status_bar_box_.
-  status_bar_box_ -> set_margin_end(0);
-
-  // Sets the start margin of the status_bar_box_.
-  status_bar_box_ -> set_margin_start(0);
 
 
 
@@ -716,10 +996,20 @@ GUI::GUI(Base& base_ref)
   status_bar_box_ -> pack_end(*selected_time_label_, Gtk::PACK_SHRINK);
 
   // Sets the padding of the selected_time_label_. 
-  selected_time_label_ -> set_padding(5,5);
+  selected_time_label_ -> set_padding(10, 10);
 
   // Sets the default time of the selected_time_label_.
   selected_time_label_ -> set_label("0:00.00");
+
+  // Adds the selected tracks total time display label to status_bar_box_.
+  status_bar_box_ -> pack_end(*Gtk::manage(new Gtk::Separator()),
+                              Gtk::PACK_SHRINK);
+
+  // Adds the selected tracks total time display label to status_bar_box_.
+  status_bar_box_ -> pack_end(*selected_rows_count_label_, Gtk::PACK_SHRINK);
+
+  // Sets the padding of the selected_time_label_. 
+  selected_rows_count_label_ -> set_padding(10, 10);
 
 
 
@@ -764,109 +1054,6 @@ GUI::GUI(Base& base_ref)
   // Overrides the button release event for the status_bar_event_box_.
   status_bar_event_box_ -> signal_button_release_event()
     .connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Button_Release));
-
-
-
-
-
-  //                   //
-  //                   //
-  // Artworks Creation /////////////////////////////////////////////////////////
-  //                   //
-  //                   //
-
-  // 
-  struct passwd* pw = getpwuid(getuid());
-
-  // 
-  const char* homedir = pw -> pw_dir;
-
-  // 
-  string directory_str = homedir;
-
-  // 
-  directory_str += "/.omp";
-
-
-
-  cover_file_ = "/usr/share/pixmaps/no_cover.png"; 
-
-  default_cover_file_ = cover_file_;
-
-
-  // Creates two temporary Artwork pointers.
-  Artwork *artwork_1,
-          *artwork_2;
-
-  //Adds the first artwork to artworks_.
-  artworks_.push_back(artwork_1);
-
-  //Adds the second artwork to artworks_.
-  artworks_.push_back(artwork_2);
-
-  // Gets an iterator to the beginning of artworks_.
-  list<Artwork*>::iterator artwork_it = artworks_.begin();
-
-  // Creates an Artwork object for each pointer entry in the list.
-  while(artwork_it != artworks_.end())
-  {
-
-    // Creates a new Artwork class.
-    (*artwork_it) = Gtk::manage(new Artwork(base_ref));
-
-    // Increments the artworks_ iterator.
-    artwork_it++;
-
-  }
-
-  // Makes a reference to the first Artwork instance.
-  temp_box_ptr = &((*(artworks_.begin())) -> get_art_Box());
-
-  // Adds the Artwork tab with the second Artwork instances.
-  main_window_notebook_ -> append_page(*temp_box_ptr, artwork_page_label);
-
-  // Adds the first Artwork instance to the left pain of the Main Content tab.
-  left_main_content_paned_box_ 
-    -> pack_start(((*(artworks_.rbegin())) -> get_art_Box()),
-                  Gtk::PACK_EXPAND_WIDGET);
-
-  // Sets the left margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_left(5);
-
-  // Sets the right margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_right(5);
-
-  // Sets the top margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_top(5);
-
-  // Sets the bottom margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_bottom(5);
-
-
-
-
-
-  //                        //
-  //                        //
-  // Configuration Creation ///////////////////////////////////////////////////
-  //                        //
-  //                        //
-
-  // Creates the label for the configuration notebook page.
-  Gtk::Label configuration_page_label("Configuration");
-
-  // Creates a reference to the config_guis' box.
-  Gtk::Box& config_gui_box_ref = (config_guis()().front()) -> box();
-
-  // Appends the ConfigGUI page to the notebook.
-  main_window_notebook_ -> append_page(config_gui_box_ref,
-                                       configuration_page_label);
-
-  // Makes the ConfigGUI tab detachable.
-//  main_window_notebook_ -> set_tab_detachable(config_gui_box_ref, true);
-
-  // Makes the ConfigGUI tab reorderable.
-//  main_window_notebook_ -> set_tab_reorderable(config_gui_box_ref, true);
 
 
 
@@ -1090,15 +1277,178 @@ bool GUI::On_Key_Press_Event(GdkEventKey* event)
 
 }
 
+void GUI::On_Main_Window_Check_Resize_Signal()
+{
+
+  // 
+  int x = 0;
+
+  // 
+  int y = 0;
+
+
+
+  // 
+  main_window() -> window() . get_size(x, y);
+
+
+
+  // 
+  bool maximized = main_window() -> window() . is_maximized();
+
+
+
+  // 
+  if((x != window_size_x_) || (y != window_size_y_)
+       || (maximized != main_window_maximized_))
+  { 
+
+    // 
+    config() . set("gui.window_size_x", x);
+
+    // 
+    config() . set("gui.window_size_y", y);
+
+
+
+    // 
+    config() . set("gui.window_maximized", maximized);
+
+    // 
+    main_window_maximized_ = maximized;
+
+
+
+    // 
+    int main_content_paned_position = main_content_paned_ -> get_position();
+
+    // 
+    config() . set("gui.main_content_paned_position",
+                   main_content_paned_position);
+
+
+
+    // 
+    int double_playlist_paned_position
+      = double_playlist_paned_ -> get_position();
+
+    // 
+    config() . set("gui.double_playlist_paned_position",
+                   double_playlist_paned_position);
+
+
+
+    // 
+    int file_chooser_playlist_paned_position
+      = file_chooser_playlist_paned_ -> get_position();
+
+    // 
+    config() . set("gui.file_chooser_playlist_paned_position",
+                   file_chooser_playlist_paned_position);
+
+
+
+    // 
+    config() . write_file();
+
+  }
+
+
+
+  // 
+  window_size_x_ = x;
+
+  // 
+  window_size_y_ = y;
+
+}
+
+bool GUI::On_Double_Playlist_Paned_Button_Release_Event
+  (GdkEventButton* release_event)
+{
+
+  // 
+  int double_playlist_paned_position
+    = double_playlist_paned_ -> get_position();
+
+  // 
+  config() . set("gui.double_playlist_paned_position",
+                 double_playlist_paned_position);
+
+
+
+  // 
+  config() . write_file();
+
+
+
+  // 
+  return false;
+
+} 
+
+bool GUI::On_File_Chooser_Playlist_Paned_Button_Release_Event
+  (GdkEventButton* release_event)
+{
+
+  // 
+  int file_chooser_playlist_paned_position
+    = file_chooser_playlist_paned_ -> get_position();
+
+  // 
+  config() . set("gui.file_chooser_playlist_paned_position",
+                 file_chooser_playlist_paned_position);
+
+
+
+  // 
+  config() . write_file();
+
+
+
+  // 
+  return false;
+
+}
+
+bool GUI::On_Main_Content_Paned_Button_Release_Event
+  (GdkEventButton* release_event)
+{
+
+  // 
+  int main_content_paned_position = main_content_paned_ -> get_position();
+
+  // 
+  config() . set("gui.main_content_paned_position",
+                 main_content_paned_position);
+
+
+
+  // 
+  config() . write_file();
+
+
+
+  // 
+  return false;
+
+}
+
 void GUI::Quit()
 { 
 
   // Releases the application window.
   main_window() -> window().get_application() -> release();
 
-  playback().Stop();
 
-  playback().Quit();
+
+  // 
+  playback() . Stop();
+
+
+
+  // 
+  playback() . Quit();
 
 
 
@@ -1248,10 +1598,7 @@ void GUI::Add_File()
 {
 
   // Creates of new FileChooser pointer.
-  FileChooser* temp_file_chooser;
-
-  // Assigns a new FileChooser object to the pointer.
-  temp_file_chooser = Create_New_File_Chooser();
+  FileChooser* temp_file_chooser = new FileChooser(base(), file_choosers());
 
   // Creates and std function pointer to the destroy function of the new
   // FileChooser.
@@ -1270,26 +1617,6 @@ void GUI::Add_File()
 
   // Displays the new ChildWindow and its contents.
   temp_window -> show();
-
-}
-
-FileChooser* GUI::Create_New_File_Chooser()
-{
-
-  // Creates of new FileChooser pointer.
-  FileChooser* temp_file_chooser;
-
-  // Assigns a new FileChooser object to the pointer.
-  temp_file_chooser = new FileChooser(base(), file_choosers());
-
-  // Adds the new FileChooser object to the FileChoosers list.
-  file_choosers()().push_front(temp_file_chooser);
-
-  // Adds the new FileChooser's to the iterator to it's it storage variable.
-  temp_file_chooser -> set_gui_elements_it(file_choosers()().begin());
-
-  // Returns the new FileChooser.
-  return temp_file_chooser;
 
 }
 
@@ -1370,14 +1697,6 @@ bool GUI::Display_Time(int timeout_number)
   // Lets the timeout propagate.
   return true;
 
-
-}
-
-void GUI::Set_Selected_Time_Label(const char* new_time)
-{ 
-
-  // Sets the label used for displaying the summed time of the selected tracks.
-  selected_time_label_ -> set_label(new_time); 
 
 }
 
@@ -1792,5 +2111,21 @@ void GUI::set_playback_status_label(const char* new_label)
 
   // Sets the playback status label with the new status.
   playback_status_label_ -> set_label(new_label);
+
+}
+
+void GUI::set_selected_rows_count_label(int new_row_count)
+{ 
+
+  // Sets the label used for displaying the amount of selected rows.
+  selected_rows_count_label_ -> set_label(to_string(new_row_count));
+
+}
+
+void GUI::set_selected_time_label(const char* new_time)
+{ 
+
+  // Sets the label used for displaying the summed time of the selected tracks.
+  selected_time_label_ -> set_label(new_time); 
 
 }

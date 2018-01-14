@@ -2,11 +2,13 @@ OBJS = Main.o Base.o Parts.o GUI.o SpinButtonScale.o \
 	Seekbar.o PlaylistComboBox.o PlaylistComboBoxes.o MenuBar.o Tagview.o \
 	Artwork.o PlaylistsDatabase.o Playlists.o Playlist.o \
 	PlaylistCreateDialog.o PlaylistTreeStore.o PlaylistMenu.o \
-	FileChoosers.o FileChooser.o ConfigurationGUI.o ConfigurationGUIs.o \
-	ArtworkPanel.o GUIPanel.o KeyboardShortcutsPanel.o OutputPanel.o \
-	PlaybackPanel.o PlaylistPanel.o ReplayGainPanel.o ScrobblingPanel.o \
-	Panel.o ChildWindow.o Playback.o ParserAndDecoder.o TrackBin.o \
-	Metadata.o CueSheet.o Scrobbling.o TimeConversion.o Track.o \
+	FileChoosers.o FileChooser.o PlaybackController.o \
+	PlaybackControllers.o ConfigurationGUI.o \
+	ConfigurationGUIs.o ArtworkPanel.o GUIPanel.o \
+	KeyboardShortcutsPanel.o OutputPanel.o PlaybackPanel.o \
+	PlaylistPanel.o ReplayGainPanel.o ScrobblingPanel.o Panel.o \
+	ChildWindow.o Playback.o ParserAndDecoder.o TrackBin.o Metadata.o \
+	CueSheet.o Scrobbling.o TimeConversion.o Track.o \
 	Configuration.o DefaultValues.o DefaultValue.o
 
 CFLAGS = -std=c++14 -Wno-deprecated-declarations
@@ -188,6 +190,25 @@ Seekbar.o: GUI/Seekbar.cc GUI/Seekbar.h Playback/Playback.h TimeConversion.h \
 	Metadata/Track.h Configuration/Configuration.h \
 	GUI/Elements/Playlists/Playlists.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Seekbar.cc \
+	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4` \
+	-pthread
+
+PlaybackControllers.o: \
+	GUI/Elements/PlaybackControllers/PlaybackControllers.cc \
+	GUI/Elements/PlaybackControllers/PlaybackControllers.h \
+	GUI/GUIElementList.h
+	g++ -g -Wall -pipe $(CFLAGS) -c \
+	GUI/Elements/PlaybackControllers/PlaybackControllers.cc \
+	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4` \
+	-pthread
+
+PlaybackController.o: GUI/Elements/PlaybackControllers/PlaybackController.cc \
+	GUI/Elements/PlaybackControllers/PlaybackController.h \
+	GUI/Elements/PlaybackControllers/PlaybackControllers.h \
+	GUI/Elements/Playlists/Playlists.h \
+	GUI/GUIElement.h Playback/Playback.h
+	g++ -g -Wall -pipe $(CFLAGS) -c \
+	GUI/Elements/PlaybackControllers/PlaybackController.cc \
 	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4` \
 	-pthread
 
@@ -400,3 +421,14 @@ DefaultValue.o: Configuration/DefaultValue.cc Configuration/DefaultValue.h
 
 clean:
 	rm -rf *.o omp
+
+
+install:
+	sudo install -Dm0755 omp /usr/bin/omp
+	sudo install -Dm0644 Images/No_Cover.svg /usr/share/pixmaps/no_cover.png
+	sudo install -Dm0644 Images/OMP_Icon_16.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_16.png
+	sudo install -Dm0644 Images/OMP_Icon_32.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_32.png
+	sudo install -Dm0644 Images/OMP_Icon_48.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_48.png
+	sudo install -Dm0644 Images/OMP_Icon_64.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_64.png
+	sudo install -Dm0644 Images/OMP_Icon_128.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_128.png
+	sudo install -Dm0644 omp.desktop ${pkgdir}/usr/share/applications/omp.desktop

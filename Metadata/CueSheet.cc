@@ -70,6 +70,7 @@
 //                 //
 
 #include "../Metadata/Track.h"
+
 #include "../TimeConversion.h"
 
 
@@ -82,9 +83,9 @@
 //                 //
 //                 //
 
-#include <iostream>
 #include <glibmm/ustring.h>
-#include <iterator>
+
+#include <iostream>
 
 
 
@@ -99,6 +100,7 @@
 //            //
 
 using namespace std;
+
 using namespace Glib;
 
 
@@ -140,6 +142,17 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
   // A pointer to a new Track pointer queue object.
   std::vector<Track*> *cue_sheet_tracks = new std::vector<Track*>;
+
+
+
+  // 
+  if(!(cue_sheet -> size() > 1))
+  {
+
+    // 
+    return cue_sheet_tracks;
+
+  }
 
 
 
@@ -281,6 +294,25 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
         }
 
+        // 
+        else if(*it == '\n')
+        {
+
+          // 
+          continue;
+
+        }
+
+        // 
+        else if(*it == '\r')
+        {
+
+          // 
+          continue;
+
+        }
+
+        // 
         else
         {
 
@@ -322,6 +354,26 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
             //
             break;
+
+          }
+
+
+
+          // 
+          if(*it == '\n')
+          {
+
+            // 
+            continue;
+
+          }
+
+          // 
+          else if(*it == '\r')
+          {
+
+            // 
+            continue;
 
           }
 
@@ -736,25 +788,31 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
         }
 
         // 
-        else if(filename_count < 2)
+        else if(filename_count > 1)
         {
 
           // 
-          type = TrackType::SINGLE_FILE;
+          if(filename_count < track_count)
+          {
 
-        }
+            // 
+            type = TrackType::MULTIPLE_FILE_NONCOMPLIANT;
 
-        // 
-        else if(filename_count < track_count)
-        {
+
+
+            // 
+            type_locked = true;
+
+          }
 
           // 
-          type = TrackType::MULTIPLE_FILE_NONCOMPLIANT;
+          else
+          {
 
+            //
+            type = TrackType::MULTIPLE_FILE_GAP_PREPENDED;
 
-
-          // 
-          type_locked = true;
+          }
 
         }
 
@@ -763,7 +821,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
         {
 
           // 
-          type = TrackType::MULTIPLE_FILE_GAP_PREPENDED;
+          type = TrackType::SINGLE_FILE;
 
         }
 
@@ -1352,15 +1410,8 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
   cue_sheet_tracks -> push_back(new_track);
 
 
-  for(auto tracks_it : *cue_sheet_tracks)
-  {
 
-    tracks_it -> Print();
-
-  }
-
-
-
+  // 
   if(type == TrackType::SINGLE_FILE)
   {
 
@@ -1371,7 +1422,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
       // 
       track_it -> set_filename(new ustring(*filename));
 
-    }
+     }
 
 
     // 
@@ -1385,13 +1436,25 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
     // 
     int count = 0;
 
+    // 
+    int filenames_vector_size = filenames_vector . size();
 
-    cout << "\n\nfilenames size: " << filenames_vector . size() << "\n\n";
 
 
     // 
     for(auto track_it : *cue_sheet_tracks)
     {
+
+      // 
+      if(count == filenames_vector_size)
+      {
+
+        // 
+        break;
+
+      }
+
+
 
       // 
       track_it -> set_filename(*(filenames_vector[count]));

@@ -13,15 +13,15 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  The developer(s) of the Moyσikh audio player hereby grant(s) permission
+//  The developer(s) of the OMP audio player hereby grant(s) permission
 //  for non-GPL compatible GStreamer plugins to be used and distributed
-//  together with GStreamer and Moyσikh. This permission is above and beyond
-//  the permissions granted by the GPL license by which Moyσikh is covered.
+//  together with GStreamer and OMP. This permission is above and beyond
+//  the permissions granted by the GPL license by which OMP is covered.
 //  If you modify this code, you may extend this exception to your version
 //  of the code, but you are not obligated to do so. If you do not wish to do
 //  so, delete this exception statement from your version.
 //
-//  Libraries used by Moyσikh:
+//  Libraries used by OMP:
 //
 //    - boost: http://www.boost.org/
 //
@@ -333,35 +333,6 @@ Playlists::Playlists(Base& base)
   library_playlist_treestore_ = *playlist_treestores_it;
 
   selected_playlist_treestore_ = *playlist_treestores_it;
-
-
-
-
-
-  debug("Creating playlists!");
-
-
-
-  // Creates a new playlist and adds it to the GUIElementList.
-  gui_elements() . push_back(new Playlist(base, *this));
-
-  // Creates a new playlist and adds it to the GUIElementList.
-  gui_elements() . push_back(new Playlist(base, *this));
-
-
-
-  debug("After playlists creation!");
-
-
-
-
-
-  // Sets the selected Playlist to the one at the back.
-  selected_playlist_ = gui_elements() . back();
-
-
-
-  debug("End of Playlists construction!");
 
 }
 
@@ -864,6 +835,8 @@ void Playlists::Fill_Row
   new_tree_row[playlist_column_record().filename_col]
     = new_track_sptr -> filename();
 
+
+
   // 
   int bit_depth = new_track_sptr -> bit_depth();
   
@@ -1078,7 +1051,7 @@ void Playlists::Unselect_Row(Gtk::TreeRowReference desired_row_ref)
 
 //         //
 //         //
-// Setters ////////////////////////////////////////////////////////////////////
+// Getters ////////////////////////////////////////////////////////////////////
 //         //
 //         //
 

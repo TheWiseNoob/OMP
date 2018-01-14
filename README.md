@@ -1,29 +1,27 @@
-![Logo](/Images/Icon_Small.png?raw=true)
+![Logo](/Images/OMP_Icon_128.png?raw=true)
 # OpenMusicPlayer
-#### Version: 0.0.1
+#### Version: 0.0.2
 
 ## COMPILING and Installing:
 
-  To compile and install, run this command:   ./MAKEFILE_COMPILE
+  To compile and then install, run the following commands:
+
+  make
+  make install
 
 
 
-  That command just runs this script:
-
-  time make -j10 -f Makefile
-  sudo install -DCm0755 omp /usr/bin/omp"
-  sudo install -Dm0644 Images/No_Cover.svg /usr/share/pixmaps/no_cover.png"
-  sudo install -Dm0644 Images/Icon_Small.png "${pkgdir}/usr/share/pixmaps/omp.png"
-  sudo install -Dm0644 omp.desktop "${pkgdir}/usr/share/applications/omp.desktop"
+  You can also install OMP via the PKGBUILD provided or install it via omp-git
+  that is on AUR.
 
 
+  You'll have to have everything used by the program before compiling if you're
+  not using the PKGBUILD. Only the packages from the latest version of 
+  Arch Linux have been tested with OMP.
 
-  You'll have to have everything used by the program before compiling. I've
-  only tested this with the packages from the latest version of Arch Linux.
-  You will also need to move No_Cover.svg to /home/YOUR_HOME_DIRECTORY/.omp/
-  until I make an install script.
 
-  ### Dependencies Include:
+
+### Dependencies Include:
 
     - gtkmm3
     - GTK3+
@@ -38,9 +36,11 @@
     - libconfig
     - taglib
     - libclastfm 
+    - Boost
 
 
   Once compiled and installed, you can run omp as a command to open it.
+
 
 
 ### KNOWN BUGS:
@@ -48,13 +48,13 @@
   - File browser has no OK or Cancel buttons.
   - Damaged files crash the program when metadata is read.
   - Left-clicking a row, holding it, holding shift, and then dragging breaks
-    shit.
-  - Double clicking while paused just stop playback.
-  - Holding shifting while dragging breaks shit.
+    dragging.
+  - Holding shift while dragging breaks dragging.
   - Dragging glitches sometimes on drug row.
   - Resizing artwork occassionally crashes program.
   - Scrobbling might not be disableable.
-  
-  
-## Screenshots:
+
+
+
+## Screenshot:
 ![Screenshot1](Images/Screenshots/NRnilGB.png?raw=true)

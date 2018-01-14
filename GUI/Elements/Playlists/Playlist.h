@@ -1,4 +1,4 @@
-/* ////////////////////////////////////////////////////////////////////////////   
+/* ////////////////////////////////////////////////////////////////////////////
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -13,21 +13,21 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  The developer(s) of the Moyσikh audio player hereby grant(s) permission
+//  The developer(s) of the OMP audio player hereby grant(s) permission
 //  for non-GPL compatible GStreamer plugins to be used and distributed
-//  together with GStreamer and Moyσikh. This permission is above and beyond
-//  the permissions granted by the GPL license by which Moyσikh is covered.
+//  together with GStreamer and OMP. This permission is above and beyond
+//  the permissions granted by the GPL license by which OMP is covered.
 //  If you modify this code, you may extend this exception to your version
 //  of the code, but you are not obligated to do so. If you do not wish to do
 //  so, delete this exception statement from your version.
 //
-//  Libraries used by Moyσikh:
+//  Libraries used by OMP:
 //
 //    - boost: http://www.boost.org/
 //
-//    - clastfm: http://liblastfm.sourceforge.net/ 
+//    - clastfm: http://liblastfm.sourceforge.net/
 //
-//    - gstreamer: https://gstreamer.freedesktop.org/ 
+//    - gstreamer: https://gstreamer.freedesktop.org/
 //
 //    - gtkmm: https://www.gtkmm.org/en/
 //
@@ -122,7 +122,7 @@ namespace Gtk
 {
 
   class Box;
-  
+
   class Frame;
 
   class Label;
@@ -212,11 +212,11 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
       (const Glib::RefPtr<Gdk::DragContext>& context) override final;
 
     void on_drag_data_received_signal
-      (const Glib::RefPtr<Gdk::DragContext>& context, int x, int y, 
+      (const Glib::RefPtr<Gdk::DragContext>& context, int x, int y,
        const Gtk::SelectionData& selection_data, guint info, guint time);
 
     virtual bool on_drag_drop
-      (const Glib::RefPtr<Gdk::DragContext>& context, int x, int y, 
+      (const Glib::RefPtr<Gdk::DragContext>& context, int x, int y,
        guint time) override final;
 
     virtual void on_drag_end
@@ -281,13 +281,13 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   public:
 
-    void Copy_Selected_Tracks();                                                
+    void Copy_Selected_Rows();
 
-    void Cut_Selected_Tracks();                                                 
+    void Cut_Selected_Rows();
 
-    void Delete_Selected_Rows(); 
+    void Delete_Selected_Rows();
 
-    void Paste_Clipboard_Tracks(); 
+    void Paste_Clipboard_Rows();
 
     void Queue_Rows();
 
@@ -359,16 +359,16 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   private:
 
-    // 
+    //
     std::atomic<bool> clipboard_event_;
 
-    // 
+    //
     std::atomic<bool> constructed_;
 
-    // 
+    //
     std::atomic<bool> deleting_;
 
-    // 
+    //
     std::atomic<bool> selecting_flag_;
 
 
@@ -381,28 +381,28 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   private:
 
-    // 
+    //
     Gtk::Box* filename_box_;
 
-    // 
+    //
     Gtk::Frame* filename_frame_;
 
-    // 
-    Gtk::Label* filename_label_; 
+    //
+    Gtk::Label* filename_label_;
 
-    // 
+    //
     PlaylistMenu* menu_;
 
-    // 
+    //
     Gtk::Frame* playlist_frame_;
 
-    // 
+    //
     Gtk::ScrolledWindow* playlist_scrolled_window_;
 
-    // 
+    //
     Glib::RefPtr<Gtk::TreeSelection> playlist_treeselection_;
 
-    // 
+    //
     Glib::RefPtr<PlaylistTreeStore> playlist_treestore_;
 
 
@@ -415,28 +415,28 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   private:
 
-    // 
+    //
     bool cut_tracks_for_drag_;
 
-    // 
+    //
     unsigned int dest_row_drop_position_;
 
-    // 
+    //
     Gtk::TreeRowReference* dest_tree_row_ref_;
 
-    // 
+    //
     Gtk::TreeRowReference* drag_tree_row_ref_;
 
-    // 
+    //
     bool handle_multirow_drag_;
 
-    // 
+    //
     long int previous_button_press_event_time_;
-  
-    // 
+
+    //
     int x_click_;
 
-    // 
+    //
     int y_click_;
 
 };
@@ -453,4 +453,4 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 //                  //
 //                  //
 
-#endif 
+#endif

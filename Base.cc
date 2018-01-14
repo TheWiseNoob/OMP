@@ -155,6 +155,8 @@ Base::Base(int argc, char *argv[])
   // 
   string config_str = directory_str + "/configuration.conf";
 
+
+
   //
   config_  = new Configuration(argc, argv, config_str);
 
@@ -210,6 +212,15 @@ Base::Base(int argc, char *argv[])
   // 
   config() . add_default("last_folder", "");
 
+  // 
+  config() . add_default("gui.window_maximized", false);
+
+  // 
+  config() . add_default("gui.window_size_x", 1200);
+
+  // 
+  config() . add_default("gui.window_size_y", 700);
+
   //
   config() . add_default("gui.hide_duplicates", false);
 
@@ -218,6 +229,15 @@ Base::Base(int argc, char *argv[])
 
   //
   config() . add_default("gui.hide_status_bar", false);
+
+  // 
+  config() . add_default("gui.main_content_paned_position", 420);
+
+  // 
+  config() . add_default("gui.double_playlist_paned_position", 500);
+
+  // 
+  config() . add_default("gui.file_chooser_playlist_paned_position", 500);
 
   //
   config() . add_default("gui.playlist.empty_space_row_deselects", false);
@@ -247,7 +267,7 @@ Base::Base(int argc, char *argv[])
   config() . add_default("playback.buffer_time", 60);
 
   //
-  config() . add_default("playback.volume", 100.00);
+  config() . add_default("playback.volume", 1.000);
 
   //
   config() . add_default("playback.start_at_pregap", true);

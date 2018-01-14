@@ -13,15 +13,15 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  The developer(s) of the Moyσikh audio player hereby grant(s) permission
+//  The developer(s) of the OMP audio player hereby grant(s) permission
 //  for non-GPL compatible GStreamer plugins to be used and distributed
-//  together with GStreamer and Moyσikh. This permission is above and beyond
-//  the permissions granted by the GPL license by which Moyσikh is covered.
+//  together with GStreamer and OMP. This permission is above and beyond
+//  the permissions granted by the GPL license by which OMP is covered.
 //  If you modify this code, you may extend this exception to your version
 //  of the code, but you are not obligated to do so. If you do not wish to do
 //  so, delete this exception statement from your version.
 //
-//  Libraries used by Moyσikh:
+//  Libraries used by OMP:
 //
 //    - boost: http://www.boost.org/
 //
@@ -43,11 +43,33 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "Base.h"
-#include "GUI/GUI.h"
+
 #include "GUI/ChildWindow.h"
 
+#include "GUI/GUI.h"
 
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 #include <gtkmm/application.h>
 
@@ -57,26 +79,35 @@
 
 
 
+//      //
+//      //
+//      //
+// Main ///////////////////////////////////////////////////////////////////////
+//      //
+//      //
+//      //
+
 int main (int argc, char *argv[])
-{ 
+{  
 
-
-
+  // 
   Glib::RefPtr<Gtk::Application> application 
     = Gtk::Application::create("org.gtkmm.example", 
                                Gio::APPLICATION_NON_UNIQUE);
 
 
+
+  // 
   Base base(argc, argv);
 
 
-  //Prevents application from closing after hidden. use release() to close
+
+  // Prevents application from closing after hidden. use release() to close
   application -> hold();
 
 
-  //Shows the window and returns when it is closed.
-  return application -> run(base.gui().windows().front() -> window());
 
-
+  // Shows the window and returns when it is closed.
+  return application -> run(base . gui() . windows() . front() -> window());
 
 } 

@@ -13,15 +13,15 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  The developer(s) of the Moyσikh audio player hereby grant(s) permission
+//  The developer(s) of the OMP audio player hereby grant(s) permission
 //  for non-GPL compatible GStreamer plugins to be used and distributed
-//  together with GStreamer and Moyσikh. This permission is above and beyond
-//  the permissions granted by the GPL license by which Moyσikh is covered.
+//  together with GStreamer and OMP. This permission is above and beyond
+//  the permissions granted by the GPL license by which OMP is covered.
 //  If you modify this code, you may extend this exception to your version
 //  of the code, but you are not obligated to do so. If you do not wish to do
 //  so, delete this exception statement from your version.
 //
-//  Libraries used by Moyσikh:
+//  Libraries used by OMP:
 //
 //    - boost: http://www.boost.org/
 //
@@ -218,6 +218,11 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref)
 , y_click_(0)
 
 {
+
+  // 
+  playlists_ref() . push_back(this);
+
+
 
   // Sets the orientation of the GUIElement box() as vertical.
   box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
@@ -1256,7 +1261,7 @@ bool Playlist::on_key_press_event(GdkEventKey* event)
   {
 
     // Copies the selected tracks.
-    Copy_Selected_Tracks();
+    Copy_Selected_Rows();
 
 
 
@@ -1272,7 +1277,7 @@ bool Playlist::on_key_press_event(GdkEventKey* event)
   {
 
     // Cuts the selected tracks.
-    Cut_Selected_Tracks();
+    Cut_Selected_Rows();
 
 
 
@@ -1288,7 +1293,7 @@ bool Playlist::on_key_press_event(GdkEventKey* event)
   {
 
     // Pastes the tracks from the clipboard.
-    Paste_Clipboard_Tracks();
+    Paste_Clipboard_Rows();
 
 
 
@@ -1612,9 +1617,18 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
       // Will hold a pointer to the column of the row the mouse is over.
       Gtk::TreeView::Column* row_column;
 
+
+      // 
+      bool get_path_result;
+
       // True if there is no row at the position of the mouse. 
-      if(!(this -> get_path_at_pos(x,y, row_tree_path,
-                                   row_column, x_cell, y_cell)))
+      get_path_result = this -> get_path_at_pos(x,y, row_tree_path,
+                                                row_column, x_cell, y_cell);
+
+
+
+      // 
+      if(!get_path_result)
       {
 
         // True if there is nothing at the mouse coordinates.
@@ -1639,7 +1653,7 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
 
           // Sets the selected track time addition of the status bar to 0/
-          gui() . Set_Selected_Time_Label("0:00.00");
+          Add_Selected_Tracks_Times();
 
 
 
@@ -1669,6 +1683,14 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
       }
 
+      else
+      {
+
+        // 
+        set_search_column(row_column -> get_sort_column_id());
+
+      }
+
 
 
       // True if there is a row at this position, but no text.
@@ -1693,7 +1715,7 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
 
         // Sets the selected track time addition of the status bar to 0/
-        gui() . Set_Selected_Time_Label("0:00.00");
+        Add_Selected_Tracks_Times();
 
 
 
@@ -1880,20 +1902,89 @@ bool Playlist::on_button_release_event(GdkEventButton* event)
 bool Playlist::on_motion_notify_event(GdkEventMotion* motion_event)
 { 
 
+  // 
+  bool minimum_dist = false;
+
+
+
+  // 
+  int x = motion_event -> x;
+
+  // 
+  int y = motion_event -> y;
+
+
+
+  // 
+  if(x > x_click_)
+  {
+
+    // 
+    if(x >= (x_click_ + 5))
+    {
+
+      // 
+      minimum_dist = true;
+
+    }
+
+  }
+
+  // 
+  else if(x < x_click_)
+  {
+
+    // 
+    if(x <= (x_click_ - 5))
+    {
+
+      // 
+      minimum_dist = true;
+
+    }
+
+  }
+
+
+
+  // 
+  if(y > y_click_)
+  {
+
+    // 
+    if(y >= (y_click_ + 5))
+    {
+
+      // 
+      minimum_dist = true;
+
+    }
+
+  }
+
+  // 
+  else if(y < y_click_)
+  {
+
+    // 
+    if(y <= (y_click_ - 5))
+    {
+
+      // 
+      minimum_dist = true;
+
+    }
+
+  }
+
+
+
   // True if a drag has occurred.
-  if(handle_multirow_drag_)
+  if(handle_multirow_drag_ && minimum_dist)
   { 
 
     // Sets handle_multirow_drag_ to false.
     handle_multirow_drag_ = false;
-
-
-    // Will hold the TargetList for the playlist.
-    Glib::RefPtr<Gtk::TargetList> playlist_targetlist;
-
-    // Stores a RefPtr to the drag destiation TargetList.
-    playlist_targetlist = drag_dest_get_target_list();
-
 
 
     // True if a drag is already occurring.
@@ -1904,6 +1995,14 @@ bool Playlist::on_motion_notify_event(GdkEventMotion* motion_event)
       return Gtk::TreeView::on_motion_notify_event(motion_event);
 
     } 
+
+
+
+    // Will hold the TargetList for the playlist.
+    Glib::RefPtr<Gtk::TargetList> playlist_targetlist;
+
+    // Stores a RefPtr to the drag destiation TargetList.
+    playlist_targetlist = drag_dest_get_target_list();
 
 
 
@@ -1949,6 +2048,11 @@ void Playlist::Add_Selected_Tracks_Times()
 
 
 
+  // 
+  int row_count = 0;
+
+
+
   // Iterates through all of the Playlists.
   for(auto playlists_it : playlists()())
   {
@@ -1959,7 +2063,7 @@ void Playlist::Add_Selected_Tracks_Times()
 
     // Iterates through all of the selection rows.
     for(auto selected_rows_it : selected_rows)
-    {
+    { 
 
       // Creates an iterator to the treemodel of the selected rows.
       Gtk::TreeModel::iterator selected_row_treemodel_it
@@ -1982,6 +2086,9 @@ void Playlist::Add_Selected_Tracks_Times()
       // Adds the current Track's duration to the total duration.
       total_duration_nanoseconds += temp_track_sptr -> duration();
 
+      // 
+      row_count++;
+
     }
 
   }
@@ -1989,14 +2096,18 @@ void Playlist::Add_Selected_Tracks_Times()
 
 
   // Converts the added time to a time format string.
-  std::string* time_string_ptr
-    = time_converter().Nanoseconds_To_Time_Format(total_duration_nanoseconds);
+  std::string* time_str_ptr
+    = time_converter()
+        . Nanoseconds_To_Time_Format(total_duration_nanoseconds);
 
   // Sets the StatusBars' label for the selected track times.
-  gui().Set_Selected_Time_Label(time_string_ptr -> c_str());
+  gui() . set_selected_time_label(time_str_ptr -> c_str());
+
+  // 
+  gui() . set_selected_rows_count_label(row_count);
 
   // Deletes the time time format string.
-  delete time_string_ptr;
+  delete time_str_ptr;
 
 }
 
@@ -2168,7 +2279,7 @@ void Playlist::On_Selection_Changed()
 
 
     // Sets the selected time label to 0.
-    gui() . Set_Selected_Time_Label("0:00.00");
+    Add_Selected_Tracks_Times();
 
 
 
@@ -2327,7 +2438,7 @@ void Playlist::On_Selection_Changed()
 // Row Manipulators ///////////////////////////////////////////////////////////
 //                  //
 
-void Playlist::Copy_Selected_Tracks()
+void Playlist::Copy_Selected_Rows()
 {
 
   // True if the playlist's treestore is empty.
@@ -2410,7 +2521,7 @@ void Playlist::Copy_Selected_Tracks()
 
 } 
 
-void Playlist::Cut_Selected_Tracks()
+void Playlist::Cut_Selected_Rows()
 {
 
   // True if the Playlist's treestore is empty.
@@ -2425,7 +2536,7 @@ void Playlist::Cut_Selected_Tracks()
 
 
   // Copies the selected rows.
-  Copy_Selected_Tracks();
+  Copy_Selected_Rows();
 
 
 
@@ -2578,11 +2689,6 @@ void Playlist::Delete_Selected_Rows()
 
 
 
-  // Sets the selected time label to 0.
-  gui() . Set_Selected_Time_Label("0:00.00");
-
-
-
   // Sets the filename label as empty.
   filename_label_ -> set_text("");
 
@@ -2621,6 +2727,11 @@ void Playlist::Delete_Selected_Rows()
 
 
 
+  // Sets the selected time label to 0.
+  Add_Selected_Tracks_Times();
+
+
+
   //
   clipboard_event_ = false;
 
@@ -2629,7 +2740,7 @@ void Playlist::Delete_Selected_Rows()
 
 }
 
-void Playlist::Paste_Clipboard_Tracks()
+void Playlist::Paste_Clipboard_Rows()
 {
 
   // 
@@ -2690,6 +2801,11 @@ void Playlist::Paste_Clipboard_Tracks()
 
   // 
   playlists() . database() . Add_Tracks(playlist_name, playlist_treestore_);
+
+
+
+  // 
+  Add_Selected_Tracks_Times();
 
 
 
@@ -2822,7 +2938,8 @@ Glib::RefPtr<PlaylistTreeStore> Playlist::playlist_treestore()
 //         //
 //         //
 
-void Playlist::set_playlist_treestore(Glib::RefPtr<PlaylistTreeStore> new_treestore)
+void Playlist::set_playlist_treestore
+  (Glib::RefPtr<PlaylistTreeStore> new_treestore)
 {
 
   this -> set_model(new_treestore);

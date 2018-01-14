@@ -13,15 +13,15 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  The developer(s) of the Moyσikh audio player hereby grant(s) permission
+//  The developer(s) of the OMP audio player hereby grant(s) permission
 //  for non-GPL compatible GStreamer plugins to be used and distributed
-//  together with GStreamer and Moyσikh. This permission is above and beyond
-//  the permissions granted by the GPL license by which Moyσikh is covered.
+//  together with GStreamer and OMP. This permission is above and beyond
+//  the permissions granted by the GPL license by which OMP is covered.
 //  If you modify this code, you may extend this exception to your version
 //  of the code, but you are not obligated to do so. If you do not wish to do
 //  so, delete this exception statement from your version.
 //
-//  Libraries used by Moyσikh:
+//  Libraries used by OMP:
 //
 //    - boost: http://www.boost.org/
 //
@@ -135,17 +135,29 @@ namespace Gtk
 {
 
   class Box;
+
   class Button;
+
   class EventBox;
+
   class Frame;
+
   class HeaderBar;
+
   class Label;
+
   class Notebook;
+
   class Paned;
+
   class SpinButton;
+
   class StackSwitcher;
+
   class TreeIter;
+
   class VolumeButton;
+
   class Window;
 
 }
@@ -155,6 +167,10 @@ class MenuBar;
 class Metadata;
 
 class Playback;
+
+class PlaybackController;
+
+class PlaybackControllers;
 
 class PlaylistComboBoxes;
 
@@ -179,6 +195,9 @@ class Track;
 //           //
 // GStreamer //////////////////////////////////////////////////////////////////
 //           //
+
+struct _GdkEventConfigure;
+typedef struct _GdkEventConfigure GdkEventConfigure;
 
 struct _GdkEventKey;
 typedef struct _GdkEventKey GdkEventKey;
@@ -321,6 +340,17 @@ class GUI : public Parts
     //////////////////////////////////////////////////////////////////////// */
     bool On_Key_Press_Event(GdkEventKey* event);
 
+    void On_Main_Window_Check_Resize_Signal();
+
+    bool On_Double_Playlist_Paned_Button_Release_Event
+      (GdkEventButton* release_event);
+
+    bool On_File_Chooser_Playlist_Paned_Button_Release_Event
+      (GdkEventButton* release_event);
+
+    bool On_Main_Content_Paned_Button_Release_Event
+      (GdkEventButton* release_event);
+
   public:
 
     /* ////////////////////////////////////////////////////////////////////////
@@ -380,7 +410,7 @@ class GUI : public Parts
     // Purpose: 
     //
     //   Opens a new FileChooser window for adding files to the current 
-    \\   playlist.
+    //   playlist.
     //
     // 
     //
@@ -390,21 +420,6 @@ class GUI : public Parts
     //
     //////////////////////////////////////////////////////////////////////// */
     void Add_File();
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Creates a new FileChooser object and returns it as a pointer.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   None.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    FileChooser* Create_New_File_Chooser();
 
 
 
@@ -431,21 +446,6 @@ class GUI : public Parts
     //
     //////////////////////////////////////////////////////////////////////// */
     bool Display_Time(int timeout_number);
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Used to set the label of the selected tracks time sum.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   new_time: String that is the time sum of the selected tracks.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    void Set_Selected_Time_Label(const char* new_time);
 
     /* ////////////////////////////////////////////////////////////////////////
     //
@@ -811,6 +811,37 @@ class GUI : public Parts
     //////////////////////////////////////////////////////////////////////// */
     void set_playback_status_label(const char* new_label); 
 
+    /* ////////////////////////////////////////////////////////////////////////
+    //
+    // Purpose: 
+    //
+    //   Used to set the label of the selected rows count.
+    //
+    //
+    //
+    // Arguments: 
+    //
+    //   new_rows_count: Amount of rows selected.
+    //
+    //////////////////////////////////////////////////////////////////////// */
+    void set_selected_rows_count_label(int new_rows_count);
+
+    /* ////////////////////////////////////////////////////////////////////////
+    //
+    // Purpose: 
+    //
+    //   Used to set the label of the selected tracks time sum.
+    //
+    // 
+    //
+    // Arguments: 
+    //
+    //   new_time: String that is the time sum of the selected tracks.
+    //
+    //////////////////////////////////////////////////////////////////////// */
+    void set_selected_time_label(const char* new_time);
+
+
 
 
 
@@ -831,6 +862,8 @@ class GUI : public Parts
     FileChoosers* file_choosers_;
 
     Playlists* playlists_;
+
+    PlaybackControllers* playback_controllers_;
 
     PlaylistComboBoxes* playlist_comboboxes_;
 
@@ -910,28 +943,6 @@ class GUI : public Parts
 
 
 
-  //                  //
-  // Playback Buttons /////////////////////////////////////////////////////////
-  //                  //
-
-  private:
-
-    Gtk::StackSwitcher* playback_buttons_stack_switcher_;
-
-    Gtk::Button* next_button_;
-
-    Gtk::Button* pause_button_;
-
-    Gtk::Button* play_button_;
-
-    Gtk::Button* previous_button_;
-
-    Gtk::Button* stop_button_;
-
-
-
-
-
   //            //
   // Status Bar ///////////////////////////////////////////////////////////////
   //            //
@@ -948,9 +959,15 @@ class GUI : public Parts
 
     Gtk::Label* time_label_;
 
+    Gtk::Label* playback_status_label_;
+
+    Gtk::Label* selected_rows_count_label_;
+
     Gtk::Label* selected_time_label_;
 
-    Gtk::Label* playback_status_label_;
+    Gtk::Box* main_volume_button_box_;
+
+    Gtk::VolumeButton* main_volume_button_;
 
 
 
@@ -964,15 +981,31 @@ class GUI : public Parts
 
     std::shared_ptr<ChildWindow> main_window_;
 
+    bool main_window_maximized_;
+
+    int window_size_x_;
+
+    int window_size_y_;
 
 
 
 
-  //               //
-  // Miscellaneous ////////////////////////////////////////////////////////////
-  //               //
 
-  // Boxes ////////////////////////////////////////////////////////////////////
+  //         //
+  // Top Bar //////////////////////////////////////////////////////////////////
+  //         //
+
+  private:
+
+    PlaybackController* main_playback_controller_;
+
+
+
+
+
+  //              //
+  // Main Content /////////////////////////////////////////////////////////////
+  //              //
 
   private:
 
@@ -982,29 +1015,34 @@ class GUI : public Parts
 
     Gtk::Box* left_main_content_paned_box_;
 
-
-
-
-
-  // Panes //////////////////////////////////////////////////////////////////
-
-  private:
-
     Gtk::Paned* main_content_paned_;
 
 
 
 
 
-  // Volumes ////////////////////////////////////////////////////////////////
+  //                 //
+  // Double Playlist //////////////////////////////////////////////////////////
+  //                 //
 
   private:
 
-    Gtk::Box* main_volume_button_box_;
+    Gtk::Paned* double_playlist_paned_;
 
-    Gtk::VolumeButton* main_volume_button_;
 
- };
+
+
+
+
+  //                       //
+  // File Chooser Playlist ////////////////////////////////////////////////////
+  //                       //
+
+  private:
+
+    Gtk::Paned* file_chooser_playlist_paned_;
+
+};
 
 
 

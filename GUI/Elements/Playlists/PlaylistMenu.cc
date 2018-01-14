@@ -13,15 +13,15 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  The developer(s) of the Moyσikh audio player hereby grant(s) permission
+//  The developer(s) of the OMP audio player hereby grant(s) permission
 //  for non-GPL compatible GStreamer plugins to be used and distributed
-//  together with GStreamer and Moyσikh. This permission is above and beyond
-//  the permissions granted by the GPL license by which Moyσikh is covered.
+//  together with GStreamer and OMP. This permission is above and beyond
+//  the permissions granted by the GPL license by which OMP is covered.
 //  If you modify this code, you may extend this exception to your version
 //  of the code, but you are not obligated to do so. If you do not wish to do
 //  so, delete this exception statement from your version.
 //
-//  Libraries used by Moyσikh:
+//  Libraries used by OMP:
 //
 //    - boost: http://www.boost.org/
 //
@@ -81,22 +81,48 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
 , lock_check_menu_item_(Gtk::manage(new Gtk::CheckMenuItem("_Lock Playlist", true)))
 {
 
-
-
+  // 
   append(*change_playlist_menu_item_);
+
+  // 
   append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
   append(*edit_menu_item_);
+
+  // 
   append(*delete_menu_item_);
+
+  // 
   append(*queue_menu_item_);
+
+  // 
   append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
   append(*cut_menu_item_);
+
+  // 
   append(*copy_menu_item_);
+
+  // 
   append(*paste_menu_item_);
+
+  // 
   append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
   append(*lock_check_menu_item_);
 
+
+
+  // 
   Gdk::RGBA change_playlist_menu_item_rgba;
-  change_playlist_menu_item_rgba.set_rgba(0.0,0.0,0.0,.5);
+
+  // 
+  change_playlist_menu_item_rgba . set_rgba(0.0,0.0,0.0,.5);
+
+
 
   Pango::FontDescription change_playlist_menu_item_font_description;
   change_playlist_menu_item_font_description.set_weight(Pango::WEIGHT_HEAVY);
@@ -109,9 +135,12 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
   change_playlist_menu_item_ -> set_submenu(*playlists_menu_);
 
 
-
+  // 
   int count = 0;
 
+
+
+  // 
   for(auto playlist_treestores_it : temp_playlists.playlist_treestores())
   {
 
@@ -120,7 +149,7 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
                           (playlists_menu_radio_button_group())); 
  
     playlists_menu_radio_menu_items_
-      .push_back(new_playlists_menu_radio_menu_item);
+      . push_back(new_playlists_menu_radio_menu_item);
  
     new_playlists_menu_radio_menu_item 
       -> set_label(playlist_treestores_it -> get_name()); 
@@ -137,22 +166,43 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
 
 
 
+    // 
     playlists_menu_ -> append(*new_playlists_menu_radio_menu_item); 
 
-    new_playlists_menu_radio_menu_item -> signal_activate().connect(
-      sigc::mem_fun(new_playlist, &Playlist::Change_Playlist));
-    
 
+
+    // 
+    new_playlists_menu_radio_menu_item -> signal_activate()
+      . connect(sigc::mem_fun(new_playlist, &Playlist::Change_Playlist));
+
+
+
+    // 
     count++;
 
-  } 
+   } 
+ 
 
 
+  // 
+  copy_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(new_playlist, &Playlist::Copy_Selected_Rows));
+
+  // 
+  cut_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(new_playlist, &Playlist::Cut_Selected_Rows));
+
+  // 
+  delete_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(new_playlist, &Playlist::Delete_Selected_Rows));
+
+  // 
+  paste_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(new_playlist, &Playlist::Paste_Clipboard_Rows));
 
   // 
   queue_menu_item_ -> signal_activate()
     . connect(sigc::mem_fun(new_playlist, &Playlist::Queue_Rows));
-
 
 
 
