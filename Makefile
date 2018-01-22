@@ -8,7 +8,7 @@ OBJS = Main.o About.o Abouts.o Base.o Parts.o GUI.o SpinButtonScale.o \
 	KeyboardShortcutsPanel.o OutputPanel.o PlaybackPanel.o \
 	PlaylistPanel.o ReplayGainPanel.o ScrobblingPanel.o Panel.o \
 	ChildWindow.o Playback.o ParserAndDecoder.o TrackBin.o Metadata.o \
-	CueSheet.o Scrobbling.o FailedScrobblesDatabase.o TimeConversion.o \
+	CueSheet.o Scrobbling.o TimeConversion.o \
 	Tag.o Track.o Configuration.o DefaultValues.o DefaultValue.o
 
 CFLAGS = -std=c++14 -Wno-deprecated-declarations
@@ -408,17 +408,9 @@ CueSheet.o: Metadata/CueSheet.cc Metadata/CueSheet.h Metadata/Track.h TimeConver
 Scrobbling.o: Scrobbling/Scrobbling.cc Scrobbling/Scrobbling.h \
 	Configuration/Configuration.h Base.h \
 	Playback/Playback.h Metadata/Track.h \
-	Scrobbling/FailedScrobblesDatabase.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Scrobbling/Scrobbling.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-lclastfm -pthread
-
-FailedScrobblesDatabase.o: Scrobbling/FailedScrobblesDatabase.cc \
-	Scrobbling/FailedScrobblesDatabase.h Parts.h \
-	Base.h Metadata/Track.h
-	g++ -g -Wall -pipe $(CFLAGS) -c -Wno-write-strings \
-	Scrobbling/FailedScrobblesDatabase.cc -l sqlite3 \
-	`pkg-config --cflags --libs gtkmm-3.0`
 
 Tag.o: Metadata/Tag.cc Metadata/Tag.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/Tag.cc \
