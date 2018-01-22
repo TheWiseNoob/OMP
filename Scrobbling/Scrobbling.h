@@ -43,6 +43,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef SCROBBLING_H
 #define SCROBBLING_H
 
@@ -50,47 +58,94 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
 #include "../Parts.h"
 
 
 
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include <atomic>
+
 #include <list>
+
 #include <memory>
+
 #include <thread>
 
 
 
-class Track;
+
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
+
 class Base;
-class Playback;
-class Signals;
+
 class Configuration;
 
+class FailedScrobblesDatabase;
+
+class Track;
+
+class Playback;
+
+class Signals;
 
 
 
+
+
+//                    //
+//                    //
+//                    //
+// Struct Declaration /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
 
 struct ScrobblingThread
 {
 
-
-
   ScrobblingThread()
-  {}
+  {
+
+  }
 
   ~ScrobblingThread()
   { 
 
-    //thread_ -> detach(); 
-
   }
 
-  std::shared_ptr<std::thread> thread_;
+
 
   std::list<ScrobblingThread>::iterator scrobbling_threads_it_;
 
-
+  std::shared_ptr<std::thread> thread_;
 
 };
 
@@ -98,8 +153,50 @@ struct ScrobblingThread
 
 
 
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
 class Scrobbling : public Parts
 {
+
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
+
+  public:
+
+    Scrobbling(Base& base_ref);
+
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
+
+    ~Scrobbling();
+
+
+
+
+
+  //       //
+  //       //
+  // Enums ////////////////////////////////////////////////////////////////////
+  //       //
+  //       //
 
   public:
 
@@ -107,38 +204,24 @@ class Scrobbling : public Parts
     {
 
       LOGIN = 0,
+
       UPDATE,
+
       SCROBBLE,
+
       LOVE
 
     };
 
 
 
-    Scrobbling(Base& base);
 
-    ~Scrobbling();
 
-    void Login_Lastfm();
-
-    void Update_Playing_Track_Lastfm();
-
-    void Scrobble_Playing_Track_Lastfm();
-
-    bool Timeout_Scrobbling(int timeout_number);
-
-    void Update_Track(Track& track_ref);
-
-    void Scrobble_Track(Track& track_ref);
-
-    void Track_Action(Scrobbling::Action action,
-                      std::shared_ptr<bool> thread_finished,
-                      std::shared_ptr<bool> successful);
-
-    void Track_Action(Scrobbling::Action action,
-                      Track& new_track,
-                      std::shared_ptr<bool> thread_finished,
-                      std::shared_ptr<bool> successful);
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   protected:
 
@@ -149,13 +232,11 @@ class Scrobbling : public Parts
                std::shared_ptr<bool> thread_finished,
                std::shared_ptr<bool> successful);
 
-    void Update(Track temp_track,
-               ScrobblingThread* scrobbling_thread,
-               std::string temp_username, 
-               std::string temp_password,
-               int song_duration_seconds,
-               std::shared_ptr<bool> thread_finished,
-               std::shared_ptr<bool> successful);
+  public:
+
+    void Login_Lastfm();
+
+  protected:
 
     void Scrobble(Track temp_track, 
                   ScrobblingThread *scrobbling_thread,
@@ -164,69 +245,104 @@ class Scrobbling : public Parts
                   std::shared_ptr<bool> thread_finished,
                   std::shared_ptr<bool> successful);
 
-    std::list<ScrobblingThread>& scrobbling_threads();
- 
-    std::atomic<bool>& scrobbling_threads_active()
-    {
+  public:
 
-      return scrobbling_threads_active_;  
+    void Scrobble_Playing_Track_Lastfm();
 
-     }
+    void Track_Action(Scrobbling::Action action,
+                      std::shared_ptr<bool> thread_finished,
+                      std::shared_ptr<bool> successful);
 
-    void set_scrobbling_threads_active(bool new_setting)
-    {
+    void Track_Action(Scrobbling::Action action, Track& new_track,
+                      std::shared_ptr<bool> thread_finished,
+                      std::shared_ptr<bool> successful);
 
-      scrobbling_threads_active_.store(new_setting, std::memory_order_relaxed);
+  protected:
 
-    }
+    void Update(Track temp_track,
+               ScrobblingThread* scrobbling_thread,
+               std::string temp_username, 
+               std::string temp_password,
+               int song_duration_seconds,
+               std::shared_ptr<bool> thread_finished,
+               std::shared_ptr<bool> successful);
 
   public:
 
-    void set_scrobbling_loop_paused(bool new_value)
-    {
+    void Update_Playing_Track_Lastfm();
 
-      scrobbling_loop_paused_ = new_value;
 
-    }
 
-    bool restart()
-    {
 
-      return restart_;
 
-    }
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-    void set_restart(bool new_value)
-    {
+  public:
 
-      restart_ = new_value;
+    bool restart();
 
-    }
+    std::list<ScrobblingThread>& scrobbling_threads();
  
+    std::atomic<bool>& scrobbling_threads_active();
+
+
+
+
+
+  //         //
+  //         //
+  // Setters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
+    void set_restart(bool new_value);
+
+    void set_scrobbling_loop_paused(bool new_value);
+
+    void set_scrobbling_threads_active(bool new_setting);
+
+
+
+
+ 
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+   
   private:
 
-    std::list<ScrobblingThread> scrobbling_threads_;
-
-    std::list<Track*> failed_scrobbles_;
-
-    std::atomic<bool> scrobbling_threads_active_;
- 
-    std::atomic<bool> failed_scrobbles_active_;
+    FailedScrobblesDatabase* database_;
 
     Track* playing_scrobble_track_;
 
-    bool scrobbling_loop_paused_;
-
     bool restart_;
 
-    Track* scrobbled_track_stage_;
+    bool scrobbling_loop_paused_;
 
+    std::list<ScrobblingThread> scrobbling_threads_;
 
-
+    std::atomic<bool> scrobbling_threads_active_;
+ 
 };
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif
