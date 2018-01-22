@@ -140,25 +140,17 @@ bool PlaylistTreeStore::row_drop_possible_vfunc
 //  std::cout << "\n\n" << path_string << "\n\n";
 
 
-/*
+
   if(!dest)
   {
 
     std::cout << "\n\nDestination does not exist!\n\n";
 
+
+    return false;
+
   }
-*/ 
-  for(int i = 0; i < int(path_string.length()); i++)
-  {
-
-     if(path_string[i] == ':')
-     {
-
-       return false;
-
-      }
-
-    }
+ 
  
 //  std::cout << "\n\nReturning true!\n\n"; 
 

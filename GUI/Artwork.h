@@ -43,6 +43,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef ARTWORK_H
 #define ARTWORK_H
 
@@ -50,78 +58,246 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Inherited Class ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../Parts.h"
 
-#include <gtkmm.h>
-#include <gdkmm/pixbuf.h>
+#include <gtkmm/drawingarea.h>
+
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include <atomic>
+
+#include <mutex>
+
 #include <string>
+
 #include <thread>
 
 
 
 
 
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
+
+namespace Gdk
+{
+
+  class Pixbuf;
+
+}
+
+namespace Gtk
+{
+
+  class AspectFrame;
+
+  class Box;
+
+}
+
+
+
+
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
 class Artwork : public Gtk::DrawingArea, public Parts
 {
+
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
 
   public:
 
     Artwork(Base& base_ref);
 
-    ~Artwork()
-    {
 
-      art_thread -> detach();
 
-    }
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
+
+    ~Artwork();
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  //                                 //
+  // Overloaded Base Class Functions //////////////////////////////////////////
+  //                                 //
+
+  public:
 
     virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
 
-    void set_image_filename(std::string new_image_filename);
 
-    void resize_loop();
 
-    void resize_image();    
 
-    Gtk::Box &get_art_Box()
-    { return art_Box; }
 
+  //        //
+  // Normal ///////////////////////////////////////////////////////////////////
+  //        //
+
+  public:
+
+    void Resize_Image();    
+
+    void Resize_Loop();
+
+    void Set_Image_Filename(std::string new_image_filename);
+
+
+
+
+
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
+    Gtk::Box& box();
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  //            //
+  // Dimensions ///////////////////////////////////////////////////////////////
+  //            //
 
   private:
 
-    int saved_Box_width,
-        current_Box_width,
-        saved_Box_height,
-        current_Box_height;
+    int current_box_height_;
+
+    int current_box_width_;
+
+    int saved_box_height_;
+
+    int saved_box_width_;
 
 
-    bool set_unscaled_image,
-         first_iteration,
-         finished_first_draw;
 
 
-    std::atomic<bool> resizing_image,
-                      setting_image_filename;
 
-    std::string cover_file,
-                saved_cover_file;
+  //       //
+  // Flags ////////////////////////////////////////////////////////////////////
+  //       //
 
-    Gtk::Box art_Box,
-             inner_art_Box;
+  public:
+
+    bool finished_first_draw_;
+
+    bool first_iteration_;
+
+    std::atomic<bool> resizing_image_;
+
+    bool set_unscaled_image_;
+
+    std::atomic<bool> setting_image_filename_;
 
 
-    std::thread *art_thread;
 
 
-    std::string directory_str_;
 
-    Gtk::AspectFrame art_AspectFrame;
+  //           //
+  // GUI Parts ////////////////////////////////////////////////////////////////
+  //           //
+
+  public:
+
+    Gtk::Box* art_box_;
+
+    Gtk::AspectFrame* art_aspect_frame_;
+
+    Glib::RefPtr<Gdk::Pixbuf> art_pixbuf_;
+
+    Gtk::Box* inner_art_box_;
 
 
-    Glib::RefPtr<Gdk::Pixbuf> art_Pixbuf;
 
-    Gtk::Allocation art_Box_Allocation;
+
+
+  //                 //
+  // Image Filenames //////////////////////////////////////////////////////////
+  //                 //
+
+  public:
+
+    std::string cover_file_;
+
+    std::string saved_cover_file_;
+
+
+
+
+
+  //              //
+  // Thread Parts /////////////////////////////////////////////////////////////
+  //              //
+
+  public:
+
+    std::thread* art_thread_;
+
+    std::mutex resize_mutex_;
 
 };
 
@@ -129,5 +305,12 @@ class Artwork : public Gtk::DrawingArea, public Parts
 
 
 
-#endif
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
+#endif

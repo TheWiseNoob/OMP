@@ -13,15 +13,15 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-//  The developer(s) of the OMP audio player hereby grant(s) permission
+//  The developer(s) of the Moyσikh audio player hereby grant(s) permission
 //  for non-GPL compatible GStreamer plugins to be used and distributed
-//  together with GStreamer and OMP. This permission is above and beyond
-//  the permissions granted by the GPL license by which OMP is covered.
+//  together with GStreamer and Moyσikh. This permission is above and beyond
+//  the permissions granted by the GPL license by which Moyσikh is covered.
 //  If you modify this code, you may extend this exception to your version
 //  of the code, but you are not obligated to do so. If you do not wish to do
 //  so, delete this exception statement from your version.
 //
-//  Libraries used by OMP:
+//  Libraries used by Moyσikh:
 //
 //    - boost: http://www.boost.org/
 //
@@ -51,8 +51,8 @@
 //                    //
 //                    //
 
-#ifndef PARTS_H
-#define PARTS_H
+#ifndef TAG_H
+#define TAG_H
 
 
 
@@ -72,7 +72,9 @@
 //                 //
 //                 //
 
-#include <list>
+#include <string>
+
+#include <vector>
 
 
 
@@ -86,27 +88,12 @@
 //                      //
 //                      //
 
-class Abouts;
+namespace Glib
+{
 
-class Base;
+  class ustring;
 
-class Configuration;
-
-class ConfigurationGUIs;
-
-class FileChoosers;
-
-class GUI;
-
-class Metadata;
-
-class Playback;
-
-class PlaylistComboBoxes;
-
-class Playlists;
-
-class TimeConversion;
+}
 
 
 
@@ -120,105 +107,49 @@ class TimeConversion;
 //                   //
 //                   //
 
-class Parts
+class Tag
 {
 
-  //             //
-  //             //
-  // Constructor //////////////////////////////////////////////////////////////
-  //             //
-  //             //
-
-  protected:
-
-    Parts(Base& base, bool debug_value = false);
-
-
-
-
-
-  //            //
-  //            //
-  // Destructor ///////////////////////////////////////////////////////////////
-  //            //
-  //            //
-
   public:
 
-    virtual ~Parts() = 0;
+    Tag(const char* new_name, const char* new_tag);
 
+    Tag(const char* new_name, const std::string &new_tag);
 
+    Tag(const char* new_name, const Glib::ustring &new_tag);
 
+    Tag(const char* new_name, std::vector<Glib::ustring*>* new_tags);
 
+    Glib::ustring &name() const
+    { 
+ 
+      return *name_;
 
-  //                  //
-  //                  //
-  // Member Functions /////////////////////////////////////////////////////////
-  //                  //
-  //                  //
+    }
 
-  public:
+    std::vector<Glib::ustring*> &values() const
+    {
 
-    virtual int debug(char* debug_message) final;
+      return *values_;
 
-    virtual int debug(const char* debug_message) final;
+    }
 
+    //Overladed assignment operator
+    void operator =(const Tag& copied_tag);
 
+    //Overladed not equal to operator
+    bool operator !=(const Tag& compared_tag) const;
 
+    //Overladed equal to operator
+    bool operator ==(const Tag& compared_track) const;
 
-
-  //         //
-  //         //
-  // Getters //////////////////////////////////////////////////////////////////
-  //         //
-  //         //
-
-  public:
-
-    virtual Abouts& abouts();
-
-    virtual Base& base() final;
-
-    virtual Configuration& config() final;
-
-    virtual ConfigurationGUIs& config_guis();
-
-    virtual FileChoosers& file_choosers();
-
-    virtual GUI& gui() final;
-
-    virtual Metadata& metadata() final;
-
-    virtual Playback& playback() final;
-
-    virtual PlaylistComboBoxes& playlist_comboboxes();
-
-    virtual Playlists& playlists();
-
-    virtual TimeConversion& time_converter();
-
-
-
-
-
-  //                  //
-  //                  //
-  // Member Variables /////////////////////////////////////////////////////////
-  //                  //
-  //                  //
-
+ 
   private:
 
-    Base& base_;
-
-    bool debug_;
+    Glib::ustring* name_;
+    std::vector<Glib::ustring*>* values_;
 
 };
-
-inline Parts::~Parts()
-{
-
-}
 
 
 

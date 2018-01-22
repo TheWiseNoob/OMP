@@ -206,6 +206,8 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
 
 
 
+
+
   // 
   show_all_children();
 

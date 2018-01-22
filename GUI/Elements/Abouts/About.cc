@@ -1,4 +1,4 @@
-/* ////////////////////////////////////////////////////////////////////////////   
+/* ////////////////////////////////////////////////////////////////////////////
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -25,9 +25,9 @@
 //
 //    - boost: http://www.boost.org/
 //
-//    - clastfm: http://liblastfm.sourceforge.net/ 
+//    - clastfm: http://liblastfm.sourceforge.net/
 //
-//    - gstreamer: https://gstreamer.freedesktop.org/ 
+//    - gstreamer: https://gstreamer.freedesktop.org/
 //
 //    - gtkmm: https://www.gtkmm.org/en/
 //
@@ -57,7 +57,7 @@
 //              //
 //              //
 
-#include "Parts.h"
+#include "About.h"
 
 
 
@@ -69,23 +69,25 @@
 //                 //
 //                 //
 
-#include "Base.h"
+#include "Abouts.h"
 
-#include "Configuration/Configuration.h"
 
-#include "GUI/Elements/Abouts/Abouts.h"
 
-#include "GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
-#include "GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h"
 
-#include "GUI/Elements/Playlists/Playlists.h"
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
-#include "GUI/GUI.h"
+#include <gtkmm/frame.h>
 
-#include "Metadata/Metadata.h"
+#include <gtkmm/image.h>
 
-#include "Playback/Playback.h"
+#include <gtkmm/label.h>
+
+#include <gtkmm/textview.h>
 
 
 
@@ -105,142 +107,95 @@
 //             //
 //             //
 
-Parts::Parts(Base& new_base, bool debug_value)
+About::About(Base& base_ref, Abouts& abouts_ref)
 
 // Inherited Class
 
-: base_(new_base)
-
-
-
-// Other
-
-, debug_(debug_value)
+: GUIElement(base_ref, abouts_ref())
 
 {
 
+  // 
+  abouts_ref() . push_front(this);
+
+
+
+  // 
+  box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
+
+
+
+  // 
+  auto omp_pixbuf 
+    = Gdk::Pixbuf::create_from_file("/usr/share/pixmaps/OMP_Icon_128.png", 
+                                    128, 128, true);
+
+  // 
+  Gtk::Image* omp_logo = Gtk::manage(new Gtk::Image(omp_pixbuf));
+
+  // 
+  box() . pack_start(*omp_logo, Gtk::PACK_EXPAND_WIDGET);
+
+
+
+  // 
+  Gtk::Label* version_label = Gtk::manage(new Gtk::Label);
+
+  // 
+  version_label -> set_markup("<b>OMP Version 0.0.3 (Pre-Alpha)</b>");
+
+  // 
+  box() . pack_start(*version_label, Gtk::PACK_EXPAND_PADDING);
+
+
+
+  // 
+  Gtk::Frame* contributors_text_view_frame = Gtk::manage(new Gtk::Frame);
+
+  // 
+  Gtk::TextView* contributors_text_view = Gtk::manage(new Gtk::TextView);
+
+  // 
+  contributors_text_view -> set_editable(false);
+
+  // 
+  box() . pack_start(*contributors_text_view_frame, Gtk::PACK_EXPAND_WIDGET);
+
+  // 
+  contributors_text_view_frame -> add(*contributors_text_view);
+
+
+
+  //
+  auto contributors_text_buffer = Gtk::TextBuffer::create();
+
+  // 
+  contributors_text_buffer
+    -> set_text("Contributors:\n\n" \
+                " Lead Developer: \n" \
+                "    DJ Griffin\n\n" \
+                " GIT Contributors: \n" \
+                "    AxelSilverdew\n" \
+                "    FabioLolix\n" \
+                "    mmetak");
+
+  // 
+  contributors_text_view -> set_buffer(contributors_text_buffer);
+
 }
 
 
 
 
 
-//                  //
-//                  //
-// Member Functions ///////////////////////////////////////////////////////////
-//                  //
-//                  //
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
 
-int Parts::debug(char* debug_message)
+
+About::~About()
 {
-
-  if(debug_)
-  {
-
-    cout << "\n\n" << debug_message << "\n\n";
-
-  }
-
-  else
-  {
-
-  }
-
-
-  return debug_;
-
-}
-
-int Parts::debug(const char* debug_message)
-{
-
-  return debug(const_cast<char*>(debug_message));
-
-}
-
-
-
-
-
-//         //
-//         //
-// Getters //////////////////////////////////////////////////////////////////
-//         //
-//         //
-
-Abouts& Parts::abouts()
-{
-
-  return base_ . gui() . abouts();
-
-}
-
-Base& Parts::base()
-{
-
-  return base_;
-
-}
-
-Configuration& Parts::config()
-{ 
-
-  return base_.config(); 
-
-}
-
-ConfigurationGUIs& Parts::config_guis()
-{
-
-  return base_.gui().config_guis();
-
-}
-
-FileChoosers& Parts::file_choosers()
-{
-
-  return base_.gui().file_choosers();
-
-}
-
-GUI& Parts::gui()
-{  
-
-  return base_.gui(); 
-
-}
-
-Metadata& Parts::metadata()
-{
-
-  return base_.metadata();
-
-}
-
-Playback& Parts::playback()
-{
-
-  return base_.playback();
-
-}
-
-PlaylistComboBoxes& Parts::playlist_comboboxes()
-{
-
-  return base_.gui().playlist_comboboxes();
-
-}
-
-Playlists& Parts::playlists()
-{
-
-  return base_.gui().playlists();
-
-}
-
-TimeConversion& Parts::time_converter()
-{
-
-  return base_.time_converter();
 
 }

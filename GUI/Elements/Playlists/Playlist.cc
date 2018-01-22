@@ -201,8 +201,6 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref)
 
 // Drag and Drop
 
-, cut_tracks_for_drag_(false)
-
 , dest_row_drop_position_(0)
 
 , dest_tree_row_ref_(new Gtk::TreeRowReference)
@@ -310,8 +308,12 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref)
                                    . playlist_column_record() . title_col);
 
   // Appends an artist column.
-  this -> append_column("Artist", playlists_ref
+  this -> append_column("Artist(s)", playlists_ref
                                     . playlist_column_record() . artist_col);
+
+  // Appends an artist column.
+  this -> append_column("Album Artist(s)", 
+                        playlists_ref . playlist_column_record() . album_artist_col);
 
   // Appends an album column.
   this -> append_column("Album", playlists_ref
@@ -324,6 +326,10 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref)
   // Appends a length column.
   this -> append_column("Length", playlists_ref
                                     . playlist_column_record() . length_col);
+
+  // Appends a length column.
+  this -> append_column("Date", playlists_ref
+                                  . playlist_column_record() . date_col);
 
   // Appends a track total column.
   this -> append_column("Track Total", playlists_ref . playlist_column_record()
@@ -360,153 +366,168 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref)
 
 
   // Iterates through the columns to modify settings.
-  for(guint i = 0; i < 13; i++)
-  { 
-
-    // Holds a pointer to the indexed column.
-    Gtk::TreeView::Column* column_ptr = this -> get_column(i);
-
-
+  for(auto columns_it : get_columns())
+  {
 
     // Makes the current column's headers reorderable.
-    column_ptr -> set_reorderable();
+    columns_it -> set_reorderable();
 
     // Makes the column header resizeable.
-    column_ptr -> set_resizable(true);
+    columns_it -> set_resizable(true);
 
 
 
     // Callback for when the header is clicked.
-    column_ptr -> signal_clicked()
+    columns_it -> signal_clicked()
                     . connect(sigc::mem_fun(*this, &Playlist::Header_Clicked));
 
 
 
     // True if the current column is track number.
-    if(column_ptr -> get_title() == "#")
+    if(columns_it -> get_title() == "#")
     { 
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . track_num_int_col);
     }
 
     // True if the current column is for the track number tag.
-    else if(column_ptr -> get_title() == "Title")
+    else if(columns_it -> get_title() == "Title")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . title_col);
 
     }
 
     // True if the current column is for the artist tag.
-    else if(column_ptr -> get_title() == "Artist")
+    else if(columns_it -> get_title() == "Artist(s)")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . artist_col);
+
+    }
+
+    // True if the current column is for the album artists tag.
+    else if(columns_it -> get_title() == "Album Artist(s)")
+    {
+
+      // Sets the sort column for the column.
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . artist_col);
 
     }
 
     // True if the current column is for the album tag.
-    else if(column_ptr -> get_title() == "Album")
+    else if(columns_it -> get_title() == "Album")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . album_col);
 
     }
 
     // True if the current column is for the genre tag.
-    else if(column_ptr -> get_title() == "Genre")
+    else if(columns_it -> get_title() == "Genre")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . genre_col);
 
     }
 
     // True if the current column is for the track length.
-    else if(column_ptr -> get_title() == "Length")
+    else if(columns_it -> get_title() == "Length")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . length_col);
 
     }
 
-    // True if the current column is for the track total tag.
-    else if(column_ptr -> get_title() == "Track Total")
+    // True if the current column is for the genre tag.
+    else if(columns_it -> get_title() == "Date")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . date_col);
+
+    }
+
+    // True if the current column is for the track total tag.
+    else if(columns_it -> get_title() == "Track Total")
+    {
+
+      // Sets the sort column for the column.
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . track_total_int_col);
 
     }
 
     // True if the current column is for the bit depth.
-    else if(column_ptr -> get_title() == "Bit Depth")
+    else if(columns_it -> get_title() == "Bit Depth")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . bit_depth_col);
 
     }
 
     // True if the current column is for the bitrate.
-    else if(column_ptr -> get_title() == "Bitrate")
+    else if(columns_it -> get_title() == "Bitrate")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . bit_rate_col);
 
     }
 
     // True if the current column is for the sample rate.
-    else if(column_ptr -> get_title() == "Sample Rate")
+    else if(columns_it -> get_title() == "Sample Rate")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . sample_rate_col);
 
     }
 
     // True if the current column is for the channel count.
-    else if(column_ptr -> get_title() == "Channels")
+    else if(columns_it -> get_title() == "Channels")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . channels_col);
 
     }
 
     // True if the current column is for the codec.
-    else if(column_ptr -> get_title() == "Codec")
+    else if(columns_it -> get_title() == "Codec")
     {
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . codec_col);
 
     }
 
     // True if the current column is mime type.
-    else if(column_ptr -> get_title() == "Mime")
+    else if(columns_it -> get_title() == "Mime")
     { 
 
       // Sets the sort column for the column.
-      column_ptr -> set_sort_column(playlists_ref . playlist_column_record()
+      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
                                                       . mime_col);
 
     }
@@ -664,8 +685,6 @@ void Playlist::on_drag_data_received_signal
 
 
 
-  // Flags the TreeView to cut the tracks upon the drag drop. 
-  cut_tracks_for_drag_ = true;
 
   // Sets the hovering playlist treestore.
   playlists() . set_hovering_playlist_treestore(playlist_treestore());
@@ -1207,23 +1226,45 @@ bool Playlist::on_drag_drop
 
 
 
+  // 
+  playlists() . drag_occurred_ = true;
+
+
+
   // Returns false, not perpetuating the drag drop. 
   return false;
 
-}
+} 
 
 void Playlist::on_drag_end(const Glib::RefPtr< Gdk::DragContext >& context)
-{
+{ 
 
   debug("In on_drag_end");
 
 
+/*
+  if(!(playlists() . drag_occurred_))
+  {
+
+    (*dest_tree_row_ref_) = *drag_tree_row_ref_;
+
+
+    on_drag_drop(context, 0, 0, 0);
+
+  }
+*/
+
+
+  playlists() . drag_occurred_ = false;
 
   // Sets the on_selection_changed flag to false.
   playlists() . set_disable_on_selection_changed(false);
 
   // Sets the drag_occurring flag to false.
   playlists() . set_drag_occurring(false);
+
+
+
 
 }
 
@@ -1236,7 +1277,7 @@ void Playlist::on_drag_end(const Glib::RefPtr< Gdk::DragContext >& context)
 //               //
 
 bool Playlist::on_key_press_event(GdkEventKey* event)
-{ 
+{
 
   // True if the delete key is pressed.
   if((event -> keyval == GDK_KEY_Delete))
@@ -2015,8 +2056,8 @@ bool Playlist::on_motion_notify_event(GdkEventMotion* motion_event)
 
 
     // Starts a drag event.
-    drag_begin(playlist_targetlist, Gdk::DragAction::ACTION_COPY, 1, 
-               (GdkEvent*)(motion_event), x_click_, y_click_); 
+    drag_begin(playlist_targetlist, Gdk::DragAction::ACTION_MOVE, 1, 
+               NULL, x_click_, y_click_); 
 
 
 

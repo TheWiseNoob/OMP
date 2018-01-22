@@ -1,4 +1,4 @@
-/* ////////////////////////////////////////////////////////////////////////////   
+/* ////////////////////////////////////////////////////////////////////////////
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -25,9 +25,9 @@
 //
 //    - boost: http://www.boost.org/
 //
-//    - clastfm: http://liblastfm.sourceforge.net/ 
+//    - clastfm: http://liblastfm.sourceforge.net/
 //
-//    - gstreamer: https://gstreamer.freedesktop.org/ 
+//    - gstreamer: https://gstreamer.freedesktop.org/
 //
 //    - gtkmm: https://www.gtkmm.org/en/
 //
@@ -43,27 +43,59 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//              //
+//              //
+// Class Header ///////////////////////////////////////////////////////////////
+//              //
+//              //
+
 #include "Artwork.h"
 
 
 
 
 
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../Base.h"
 
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include <gtkmm.h>
+
 #include <iostream>
-#include <pwd.h>
-
-#include <sys/stat.h>
-
-#include <sys/types.h>
-
-#include <unistd.h>
 
 
 
 
 
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
 
 using namespace std;
 
@@ -71,97 +103,154 @@ using namespace std;
 
 
 
+//                 //
+//                 //
+//                 //
+// Class Functions ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+//                 //
+
+//             //
+//             //
+// Constructor ////////////////////////////////////////////////////////////////
+//             //
+//             //
+
 Artwork::Artwork(Base& base_ref)
+
+// Inherited Class
+
 : Parts(base_ref)
+
+
+
+// Dimensions
+
+, current_box_height_(420)
+
+, current_box_width_(420)
+
+, saved_box_height_(420)
+
+, saved_box_width_(420)
+
+
+
+// Flags
+
+, finished_first_draw_(false)
+
+, first_iteration_(true)
+
+, resizing_image_(false)
+
+, set_unscaled_image_(true)
+
+, setting_image_filename_(false)
+
+
+
+// GUI Parts
+
+, art_box_(Gtk::manage(new Gtk::Box))
+
+, art_aspect_frame_(Gtk::manage(new Gtk::AspectFrame))
+
+, inner_art_box_(Gtk::manage(new Gtk::Box))
+
 {
 
-  set_unscaled_image = true;
+  // 
+  cover_file_ = "/usr/share/pixmaps/No_Cover.png";
 
-  first_iteration = true;
-
-  finished_first_draw = false;
-
-  resizing_image.store(false, memory_order_relaxed);
-  setting_image_filename.store(false, memory_order_relaxed);
-
-  current_Box_width = 420;
-
-  saved_Box_width = 420; 
-
-  current_Box_height = 420;
-
-  saved_Box_height = 420;  
+  // 
+  saved_cover_file_ = cover_file_;
 
 
 
   // 
-  struct passwd* pw = getpwuid(getuid());
+  art_aspect_frame_ -> add(*inner_art_box_);
 
   // 
-  const char* homedir = pw -> pw_dir;
+  inner_art_box_ -> pack_start(*this, Gtk::PACK_EXPAND_WIDGET);
+
+
 
   // 
-  directory_str_ = homedir;
+  art_box_ -> pack_start(*art_aspect_frame_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
-  directory_str_ += "/.omp";
+  art_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+
+  // 
+  art_box_ -> set_baseline_position(Gtk::BASELINE_POSITION_BOTTOM);
 
 
 
-  cover_file = "/usr/share/pixmaps/no_cover.png"; 
-
-             
-  saved_cover_file = cover_file; 
-
-  art_AspectFrame.add(inner_art_Box); 
-
-  inner_art_Box.pack_start(*this, Gtk::PACK_EXPAND_WIDGET);
+  // 
+  set_size_request(20, 20);
 
 
-  art_Box.pack_start(art_AspectFrame, Gtk::PACK_EXPAND_WIDGET);
-  art_Box.set_orientation(Gtk::ORIENTATION_HORIZONTAL);
-
-  art_Box.set_baseline_position(Gtk::BASELINE_POSITION_BOTTOM);
 
 
-  set_size_request(20, 
-                   20);
+  // 
+  art_aspect_frame_ -> set_margin_top(0);
+
+  // 
+  art_aspect_frame_ -> set_margin_start(0);
+
+  // 
+  art_aspect_frame_ -> unset_label();
 
 
-  art_AspectFrame.set_margin_top(0);
-  art_AspectFrame.set_margin_start(0);
- 
-  art_AspectFrame.unset_label();
 
-  inner_art_Box.set_vexpand(true);
-  inner_art_Box.set_hexpand(true);
+  // 
+  inner_art_box_ -> set_vexpand(true);
+
+  // 
+  inner_art_box_ -> set_hexpand(true);
 
 
-  art_Box_Allocation = inner_art_Box.get_allocation();                      
-                                                                                
-  current_Box_width = art_Box_Allocation.get_width();                       
-                                                                                
-  current_Box_height = art_Box_Allocation.get_height(); 
 
-  saved_Box_width = current_Box_width;                                        
-                                                                                
-  saved_Box_height = current_Box_height;                                      
-                                                                                
-                                                                                
-  art_Pixbuf = Gdk::Pixbuf::create_from_file(cover_file,                      
-                                             (saved_Box_width),               
-                                             (saved_Box_height),              
-                                             true);                           
-                                                          
+  // 
+  current_box_width_
+    = inner_art_box_ -> get_allocation() . get_width();
 
-  
+  // 
+  current_box_height_
+    = inner_art_box_ -> get_allocation() .  get_height();
+
+  // 
+  saved_box_width_ = current_box_width_;
+
+  // 
+  saved_box_height_ = current_box_height_;
+
+
+
+  // 
+  art_pixbuf_
+    = Gdk::Pixbuf::create_from_file(cover_file_, saved_box_width_,
+                                    saved_box_height_, true);
+
+
+
   debug("Before Artwork thread creation");
-  
-  
-  art_thread = new thread(&Artwork::resize_loop, this);
 
+
+
+  // 
+  art_thread_ = new thread(&Artwork::Resize_Loop, this);
+
+
+
+  // 
   queue_draw();
 
+
+
+  // 
   show();
 
 }
@@ -170,57 +259,95 @@ Artwork::Artwork(Base& base_ref)
 
 
 
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
+
+Artwork::~Artwork()
+{
+
+  art_thread_ -> detach();
+
+}
+
+
+
+
+
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+
+//                                 //
+// Overloaded Base Class Functions ////////////////////////////////////////////
+//                                 //
+
 bool Artwork::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
 
-  if(!art_Pixbuf)
-  {
+  // 
+  if(!art_pixbuf_)
+  { 
 
     return false;
 
   }
 
-  while((resizing_image.load()))                                                
-  {                                                                             
-                                                                                
-                                                                                
-                                                                                
-  }                                                                             
-                                                                                
-  setting_image_filename.store(true, memory_order_relaxed);                     
-
-  art_AspectFrame.set(Gtk::ALIGN_CENTER, Gtk::ALIGN_CENTER,
-                      (float(art_Pixbuf -> get_width())                             
-                        / float(art_Pixbuf -> get_height())),                       
-                      false);   
-                                                                                
- /* 
-  Gtk::Allocation allocation = get_allocation();
-  const int width = allocation.get_width();
-  const int height = allocation.get_height();
-*/
-  // Draw the image in the middle of the drawing area, or (if the image is
-  // larger than the drawing area) draw the middle part of the image.
-  Gdk::Cairo::set_source_pixbuf(cr, 
-                                art_Pixbuf,
-                                (0), 
-                                (0));
 
 
-  cr -> paint();
-   
-
-//  queue_resize();
-
-  setting_image_filename.store(false, memory_order_relaxed);
-
-  if(!finished_first_draw)
+  // 
+  while(resizing_image_)
   {
-
-    finished_first_draw = true;
 
   }
 
+
+
+  // 
+  setting_image_filename_ = true;
+
+
+
+  // 
+  art_aspect_frame_
+    -> set(Gtk::ALIGN_CENTER, Gtk::ALIGN_CENTER,
+           (float(art_pixbuf_ -> get_width())
+              / float(art_pixbuf_ -> get_height())), false);
+
+
+
+  // Draw the image in the middle of the drawing area, or (if the image is
+  // larger than the drawing area) draw the middle part of the image.
+  Gdk::Cairo::set_source_pixbuf(cr, art_pixbuf_, 0, 0);
+
+
+
+  // 
+  cr -> paint();
+
+
+
+  // 
+  setting_image_filename_ = false;
+
+
+
+  // 
+  if(!finished_first_draw_)
+  {
+
+    // 
+    finished_first_draw_ = true;
+
+  }
+
+
+
+  // 
   return true;
 
 }
@@ -229,206 +356,134 @@ bool Artwork::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
 
 
+//        //
+// Normal /////////////////////////////////////////////////////////////////////
+//        //
 
-void Artwork::set_image_filename(string new_image_filename)
+void Artwork::Resize_Image()
 {
 
-  debug("Beginning of set_image_filename");
-
-  while((resizing_image.load()))
+  // 
+  if(saved_cover_file_ != cover_file_)
   {
 
-    
+    set_unscaled_image_ = true;
 
   }
 
-  setting_image_filename.store(true, memory_order_relaxed);
-
-  cover_file = new_image_filename;
-
-  set_unscaled_image = true;  
-
-  setting_image_filename.store(false, memory_order_relaxed);
-
-
-
-  debug("End of set_image_filename");
-
-}
-
-
-
-
-
-void Artwork::resize_loop()
-{
-
-  for (int i = 0; ; ++i)
-  {
-
-    //Ensures fast as possible loading on first iteration.
-    if(first_iteration)
-    {
-
-      first_iteration = false;
-
-    }
-    else
-    {
-
-      Glib::usleep(20000);
-
-    }
-
-    if(setting_image_filename.load())
-    {
-
-    }
-    else if(!((*this).is_visible()))
-    {
-   
-    }
-    else if(!finished_first_draw)
-    {
-
-      
-
-    }
-    else
-    {
-
-      resizing_image.store(true, memory_order_relaxed);
-
-      art_Box_Allocation = inner_art_Box.get_allocation();
-
-      current_Box_width = art_Box_Allocation.get_width(); 
-
-      current_Box_height = art_Box_Allocation.get_height();
-
-      resize_image();
-
-      resizing_image.store(false, memory_order_relaxed);;
-
-    }
-
-  }
-
-}
-
-
-
-
-
-void Artwork::resize_image()
-{
-
-  if(saved_cover_file != cover_file)
-  {
-
-    set_unscaled_image = true; 
-
-  }
-  else if(
-          (saved_Box_width != current_Box_width)
+  // 
+  else if((saved_box_width_ != current_box_width_)
             ||
-          (saved_Box_height != current_Box_height)
-         )
+          (saved_box_height_ != current_box_height_))
   {
 
-    
-    saved_Box_width = current_Box_width;
+    // 
+    saved_box_width_ = current_box_width_;
 
-    saved_Box_height = current_Box_height;
-
-
-    art_Pixbuf = (art_Pixbuf -> scale_simple((saved_Box_width),
-                                             (saved_Box_height),
-                                             (Gdk::INTERP_HYPER)));
+    // 
+    saved_box_height_ = current_box_height_;
 
 
 
-    debug("scaled!");
+    // 
+    art_pixbuf_
+      = (art_pixbuf_ -> scale_simple(saved_box_width_, saved_box_height_,
+                                     Gdk::INTERP_HYPER));
 
+
+
+    debug("Image scaled!");
+
+
+
+    // 
     queue_draw();
-/*
-    art_AspectFrame.set(Gtk::ALIGN_START, Gtk::ALIGN_START,
-                        ((get_allocated_width())                                      
-                          /                                                     
-                        float(get_allocated_height())), true);
 
-*/
 
-    if(cover_file == "/usr/share/pixmaps/no_cover.png")
+
+    // 
+    if(!set_unscaled_image_)
     {
 
-//      set(art_Pixbuf);
-
-    }
-    else
-    {
-
-  //    set(art_Pixbuf);
+      // 
+      set_unscaled_image_ = true;
 
     }
 
-    if(!set_unscaled_image)
-    {
 
-      set_unscaled_image = true;
 
-    }
-
+    // 
     return;
 
   }
 
-  if(set_unscaled_image)
+
+
+  // 
+  if(set_unscaled_image_)
   {
 
-    saved_cover_file = cover_file;
+    // 
+    saved_cover_file_ = cover_file_;
 
-    debug("in settings unscaled image");
 
-    art_Box_Allocation = inner_art_Box.get_allocation();                    
-                                                                                
-    current_Box_width = art_Box_Allocation.get_width();                       
-                                                                                
-    current_Box_height = art_Box_Allocation.get_height(); 
 
-    saved_Box_width = current_Box_width;
+    debug("In setting unscaled image code!");
 
-    saved_Box_height = current_Box_height;
 
+
+    // 
+    current_box_width_
+      = inner_art_box_ -> get_allocation() . get_width();
+
+    // 
+    current_box_height_
+      = inner_art_box_ -> get_allocation() . get_height();
+
+    // 
+    saved_box_width_ = current_box_width_;
+
+    // 
+    saved_box_height_ = current_box_height_;
+
+
+
+    // 
     debug("Before setting unscaled image");
 
 
-    art_Pixbuf = Gdk::Pixbuf::create_from_file(cover_file,(saved_Box_width),
-                                               (saved_Box_height), true);
+
+    // 
+    art_pixbuf_ = Gdk::Pixbuf::create_from_file(cover_file_, saved_box_width_,
+                                               saved_box_height_, true);
 
 
 
     stringstream debug_ss;
 
-    debug_ss << "art Pixbuf width: " << art_Pixbuf -> get_width()              
-             << "\nart Pixbuf height: " << art_Pixbuf -> get_height(); 
+    debug_ss << "art_pixbuf_ width: " << art_pixbuf_ -> get_width()
+             << "\nart_pixbuf_ height: " << art_pixbuf_ -> get_height();
 
     debug(debug_ss . str() . c_str());
 
 
 
+    // 
     queue_draw();
 
 
 
-    debug_ss << "art Pixbuf width: " << art_Pixbuf -> get_width()               
-             << "\nart Pixbuf height: " << art_Pixbuf -> get_height();
+    debug_ss << "art_pixbuf_ width: " << art_pixbuf_ -> get_width()
+             << "\nart_pixbuf_ height: " << art_pixbuf_ -> get_height();
 
     debug(debug_ss . str() . c_str());
 
 
 
-    debug_ss << "art_AspectFrame width: " << art_AspectFrame.get_width()               
-             << "\nart_AspectFrame height: " << art_AspectFrame.get_height();
+    debug_ss << "art_aspect_frame_ width: " 
+             << art_aspect_frame_ -> get_width()
+             << "\nart_aspect_frame_ height: "
+             << art_aspect_frame_ -> get_height();
 
     debug(debug_ss . str() . c_str());
 
@@ -441,8 +496,10 @@ void Artwork::resize_image()
 
 
 
-    debug_ss << "inner_art_Box width: " << inner_art_Box.get_allocated_width()              
-             << "\ninner_art_Box height: " << inner_art_Box.get_allocated_height();
+    debug_ss << "inner_art_box_ width: "
+             << inner_art_box_ -> get_allocated_width()
+             << "\ninner_art_box_ height: "
+             << inner_art_box_ -> get_allocated_height();
 
     debug(debug_ss . str() . c_str());
 
@@ -452,12 +509,153 @@ void Artwork::resize_image()
 
 
 
-    set_unscaled_image = false;
+    set_unscaled_image_ = false;
 
 
 
     debug("End of settings unscaled");
 
-  }  
+  }
+
+}
+
+void Artwork::Resize_Loop()
+{
+
+  // 
+  while(true)
+  {
+
+    // Ensures fast as possible loading on first iteration.
+    if(first_iteration_)
+    {
+
+      // 
+      first_iteration_ = false;
+
+    }
+
+    // 
+    else
+    {
+
+      Glib::usleep(20000);
+
+    }
+
+
+
+    if(setting_image_filename_)
+    {
+
+    }
+
+    // 
+    else if(!((*this) . is_visible()))
+    {
+
+    }
+
+    // 
+    else if(!finished_first_draw_)
+    {
+
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      lock_guard<mutex> resize_mutex_lock_guard(resize_mutex_);
+
+
+
+      // 
+      resizing_image_ = true;
+
+
+
+      // 
+      current_box_width_
+        = inner_art_box_ -> get_allocation() . get_width();
+
+      // 
+      current_box_height_
+        = inner_art_box_ -> get_allocation() . get_height();
+
+
+
+      // 
+      Resize_Image();
+
+
+
+      // 
+      resizing_image_ = false;
+
+    }
+
+  }
+
+}
+
+void Artwork::Set_Image_Filename(string new_image_filename)
+{
+
+  debug("Beginning of Set_Image_Filename");
+
+
+
+  // 
+  while(resizing_image_)
+  {
+
+  }
+
+
+
+  // 
+  lock_guard<mutex> resize_mutex_lock_guard(resize_mutex_);
+
+
+
+  // 
+  setting_image_filename_ = true;
+
+
+
+  // 
+  cover_file_ = new_image_filename;
+
+  // 
+  set_unscaled_image_ = true;
+
+
+
+  // 
+  setting_image_filename_ = false;
+
+
+
+  debug("End of Set_Image_Filename");
+
+}
+
+
+
+
+
+//         //
+//         //
+// Getters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+Gtk::Box& Artwork::box()
+{
+
+  return *art_box_;
 
 }

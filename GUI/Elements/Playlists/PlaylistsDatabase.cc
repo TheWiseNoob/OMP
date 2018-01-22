@@ -258,6 +258,14 @@ bool PlaylistsDatabase::Add_Tracks
 
 
   // 
+  Add_Column(playlist_name, "ALBUM_ARTIST", "TEXT");
+
+  // 
+  Add_Column(playlist_name, "DATE", "INT");
+
+
+
+  // 
   for(auto it : playlist_treestore -> children())
   {
 
@@ -279,6 +287,9 @@ bool PlaylistsDatabase::Add_Tracks
     Glib::ustring* artists_str_ptr = track_sptr -> artists_string();
 
     // 
+    Glib::ustring* album_artists_str_ptr = track_sptr -> album_artists_string();
+
+    // 
     Glib::ustring* genres_str_ptr = track_sptr -> genres_string();
 
 
@@ -290,19 +301,21 @@ bool PlaylistsDatabase::Add_Tracks
     sql += Convert(playlist_name);
 
     // 
-    sql += "' (ID, ALBUM, ARTIST, BIT_DEPTH, BIT_RATE, CHANNELS, CODEC, " \
-           "DURATION, END, FILE_NAME, GENRE, LENGTH_CS, MIME, PREGAP_START," \
+    sql += "' (ID, ALBUM, ALBUM_ARTIST, ARTIST, BIT_DEPTH, BIT_RATE, CHANNELS, CODEC, " \
+           "DATE, DURATION, END, FILE_NAME, GENRE, LENGTH_CS, MIME, PREGAP_START," \
            "REPLAY_GAIN_ALBUM_GAIN, REPLAY_GAIN_ALBUM_PEAK, " \
            "REPLAY_GAIN_TRACK_GAIN, REPLAY_GAIN_TRACK_PEAK, " \
            "SAMPLE_RATE, START, TITLE, TRACK_NUMBER, TRACK_TOTAL, " \
            "TYPE) " \
            "VALUES (" + to_string(id) + ", '"
              + Convert(track_sptr -> album()) + "', '"
+             + Convert(album_artists_str_ptr -> raw()) + "', '"
              + Convert(artists_str_ptr -> raw()) + "', "
              + to_string(track_sptr -> bit_depth()) + ", "
              + to_string(track_sptr -> bit_rate()) + ", "
              + to_string(track_sptr -> channels()) + ", '"
              + Convert(track_sptr -> codec()) + "', "
+             + to_string(track_sptr -> date()) + ", "
              + to_string(track_sptr -> duration()) + ", "
              + to_string(track_sptr -> end()) + ", '"
              + Convert(track_sptr -> filename()) + "', '"
@@ -381,6 +394,81 @@ bool PlaylistsDatabase::Add_Tracks
 
 }
 
+bool PlaylistsDatabase::Add_Column
+  (const char* playlist_name, const char* column_name, const char* type)
+{
+
+  // 
+  char* error_message = 0;
+
+  // 
+  int result_code;
+
+  // 
+  string sql;  /* Create SQL statement */
+
+
+
+  // 
+  sql = "ALTER TABLE ";
+
+  // 
+  sql += Convert(playlist_name);
+
+  // 
+  sql += " ADD COLUMN ";
+
+  // 
+  sql += column_name;
+
+  // 
+  sql += " ";
+
+  // 
+  sql += type;
+
+  // 
+  sql += ";";
+
+
+
+  // 
+  result_code = sqlite3_exec(database_, sql . c_str(), 0,
+                             0, &error_message);
+
+
+
+  //    
+  if(result_code != SQLITE_OK )
+  {
+
+    stringstream debug_ss;
+
+    debug_ss << "SQL error: " << error_message;
+
+    debug(debug_ss . str() . c_str());
+
+
+
+    // 
+    sqlite3_free(error_message);
+
+    // 
+    return false;
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    return true;
+
+  }
+
+}     
+
 bool PlaylistsDatabase::Create_Playlist(const char* playlist_name)
 {
 
@@ -405,9 +493,11 @@ bool PlaylistsDatabase::Create_Playlist(const char* playlist_name)
   sql += "'("  \
          "ID                       INT PRIMARY KEY   NOT NULL," \
          "ALBUM                    TEXT," \
+         "ALBUM_ARTIST             TEXT," \
          "ARTIST                   TEXT," \
          "BIT_DEPTH                INT               NOT NULL," \
          "BIT_RATE                 INT               NOT NULL," \
+         "DATE                     INT               NOT NULL," \
          "DURATION                 INT               NOT NULL," \
          "CHANNELS                 INT               NOT NULL," \
          "CODEC                    TEXT              NOT NULL," \
@@ -819,7 +909,7 @@ bool PlaylistsDatabase::Extract_Tracks
 
 int PlaylistsDatabase::Extract_Tracks_Callback
   (void* tracks_and_ids_vptr, int argc, char **argv, char **column_name)
-{ 
+{
 
   // 
   auto tracks_and_ids_ptr
@@ -857,6 +947,15 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 
       // 
       new_track_ptr -> set_album(argv[i]);
+
+    }
+
+    // 
+    else if(strcmp(column_name[i], "ALBUM_ARTIST") == 0)
+    {
+
+      // 
+      new_track_ptr -> add_album_artist(argv[i]);
 
     }
 
@@ -900,6 +999,15 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 
       // 
       new_track_ptr -> set_codec(argv[i]);
+
+    }
+
+    // 
+    else if(strcmp(column_name[i], "DATE") == 0)
+    {
+
+      // 
+      new_track_ptr -> set_date(atoi(argv[i]));
 
     }
 

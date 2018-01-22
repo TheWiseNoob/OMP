@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## [0.0.1] - 2017-12-31
+
 ### Added
 - First public source and build release.
 - Plays mp3, FLAC, Ogg, Ogg FLAC, ALAC, APE, and AAC(m4a).
@@ -24,7 +25,8 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [0.0.2] - 2018-01-07
+## [0.0.2] - 2018-01-14
+
 ### Added
 - CHANGELOG.md added.
 - Search of columns using Ctrl+f
@@ -46,3 +48,29 @@ All notable changes to this project will be documented in this file.
 
 ### Removed
 - MAKEFILE_COMPILE removed.
+
+
+
+## [0.0.3] - 2018-01-21
+
+### Added
+- Detects if the currently loaded cover image has been deleted and continues
+  searching for a new one if it has been deleted.
+- Added underlines to the names of the metadata in the TagView.
+- Added support for the album artist tag and the date tag.
+- About window with version number and contributors.
+
+### Changed
+- "Base" changed to "OMP" in MenuBar for Quit MenuItem and About MenuItem.
+- Fixed crash after changing the output sink and then restarting playback fixed.
+- Fixed the cause of an occasional crash when artwork is resizing or first
+  rendering.
+- Fixed bug with Playback Follow Cursor. This bug caused playback to still 
+  follow the last selected row that isn't the playing track after
+  clicking the status bar to select the playing row.
+- TagView ellipsizes a line if it's too long to display in its allocated space.
+- General code clean-up, sylization, and code commenting.
+
+### Removed
+- No longer possible to open multiple instances of OMP.
+- Removed the & from the File Chooser & Playlist tab.

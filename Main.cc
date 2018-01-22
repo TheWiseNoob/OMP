@@ -92,8 +92,8 @@ int main (int argc, char *argv[])
 
   // 
   Glib::RefPtr<Gtk::Application> application 
-    = Gtk::Application::create("org.gtkmm.example", 
-                               Gio::APPLICATION_NON_UNIQUE);
+    = Gtk::Application::create("openmusicplayer.com",
+                               Gio::APPLICATION_FLAGS_NONE);
 
 
 

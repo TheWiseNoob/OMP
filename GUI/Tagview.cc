@@ -76,6 +76,7 @@ Tagview::Tagview(GUI &new_gui)
   tag_frame_label_fontdescription_ = new Pango::FontDescription;
 
 
+
   pack_start(*tag_frame_, Gtk::PACK_EXPAND_WIDGET);
   tag_frame_ -> set_label_widget(*tag_frame_label_);
 
@@ -100,6 +101,10 @@ Tagview::Tagview(GUI &new_gui)
   set_margin_top(5);
   set_margin_bottom(5);
 
+  tag_label_ -> set_ellipsize(Pango::ELLIPSIZE_END);
+
+//  tag_label_ -> set_line_wrap();
+
 }
 
 
@@ -108,9 +113,6 @@ Tagview::Tagview(GUI &new_gui)
 
 Tagview::~Tagview()
 {
-
-
-
 
 }
 
@@ -149,10 +151,10 @@ void Tagview::update_tags(const char *new_frame_label_name, Track& new_track)
     {
 
       (*tagviews_it) -> tag_label() 
-        . set_label("Title: " + new_track.title() + "\n" +
-                    "Track #: " + to_string(new_track.track_number()) + "\n" +
-                    "Artist: " + *artists + "\n" +
-                    "Album: " + new_track.album() + "\n"); 
+        . set_markup("<u>Title</u>: " + new_track.title() + "\n" +
+                     "<u>Track #</u>: " + to_string(new_track.track_number()) + "\n" +
+                     "<u>Artist</u>: " + *artists + "\n" +
+                     "<u>Album</u>: " + new_track.album() + "\n"); 
 
     }
 

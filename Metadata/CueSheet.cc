@@ -166,7 +166,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
   Glib::ustring* album = nullptr;
 
   // Holds the date the album was releasted.
-  Glib::ustring* date = nullptr;
+  int date = 0;
 
   // Holds the MusicBrainz disc id.
   Glib::ustring* disc_id = nullptr;
@@ -380,10 +380,14 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
           //
-          date = new Glib::ustring;
+          Glib::ustring temp_date;
 
           //
-          Extract_Characters_Until_Line_Break(it, date, cue_sheet);
+          Extract_Characters_Until_Line_Break(it, &temp_date, cue_sheet);
+
+
+
+          date = stoi(temp_date . raw());
 
         }
 
@@ -942,10 +946,10 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
             //
-            ustring* artist_ustr = new ustring;
+            ustring* album_artist_ustr = new ustring;
 
             // 
-            vector<ustring*>* artists_vector = new vector<ustring*>;
+            vector<ustring*>* album_artists_vector = new vector<ustring*>;
 
 
 
@@ -955,7 +959,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
             {
 
               //
-              artist_ustr -> push_back(char(*it));
+              album_artist_ustr -> push_back(char(*it));
 
 
 
@@ -967,10 +971,10 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
             // 
-            artists_vector -> push_back(artist_ustr);
+            album_artists_vector -> push_back(album_artist_ustr);
 
             // 
-            new_track -> set_artists(artists_vector);
+            new_track -> set_album_artists(album_artists_vector);
 
           }
 
@@ -1488,11 +1492,11 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
         artists_copy -> push_back(new Glib::ustring(*it));
 
-      }
+       }
 
       (*cue_sheet_tracks)[i] -> set_artists(artists_copy);
 
-    }
+    } 
 
     if(album != nullptr)
     {
@@ -1517,12 +1521,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
     }
 
-    if(date != nullptr)
-    {
-
-      (*cue_sheet_tracks)[i] -> set_date(*date);
-
-    }
+    (*cue_sheet_tracks)[i] -> set_date(date);
 
     if(disc_id != nullptr)
     {
@@ -1549,12 +1548,15 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
     if(type == TrackType::SINGLE_FILE)
     {
 
+      // 
       if(((*cue_sheet_tracks)[i+1] -> pregap_start()) == -1)
       {
 
         (*cue_sheet_tracks)[i] -> set_end((*cue_sheet_tracks)[i+1] -> start() - 1);
 
       }
+
+      // 
       else
       {
 
@@ -1563,6 +1565,9 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
       }
 
     }
+
+
+
 /*
     // 
     else if(type == TrackType::MULTIPLE_FILE_NONCOMPLIANT)
@@ -1579,8 +1584,11 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 */
 
 
+
+    // 
     (*cue_sheet_tracks)[i] -> set_replaygain_album_gain(replaygain_album_gain);
 
+    // 
     (*cue_sheet_tracks)[i] -> set_replaygain_album_peak(replaygain_album_peak);
 
   }
@@ -1601,7 +1609,6 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
   //
   cue_sheet_tracks -> back() -> set_end(-1);
-
 
 
 
@@ -1629,13 +1636,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
   }
 
-  //
-  if(date != nullptr)
-  {
-
-    cue_sheet_tracks -> back() -> set_date(date);
-
-  }
+  cue_sheet_tracks -> back() -> set_date(date);
 
   //
   if(disc_id != nullptr)

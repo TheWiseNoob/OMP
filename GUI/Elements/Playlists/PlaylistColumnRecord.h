@@ -114,6 +114,9 @@ class PlaylistColumnRecord : public Gtk::TreeModel::ColumnRecord
       add(album_col); 
 
       // 
+      add(album_artist_col); 
+
+      // 
       add(artist_col);
 
       // 
@@ -127,6 +130,12 @@ class PlaylistColumnRecord : public Gtk::TreeModel::ColumnRecord
 
       // 
       add(codec_col); 
+
+      // 
+      add(date_col);
+
+      // 
+      add(date_int_col);
 
       // 
       add(filename_col); 
@@ -182,6 +191,9 @@ class PlaylistColumnRecord : public Gtk::TreeModel::ColumnRecord
     Gtk::TreeModelColumn<Glib::ustring> album_col;
 
     // 
+    Gtk::TreeModelColumn<Glib::ustring> album_artist_col;
+
+    // 
     Gtk::TreeModelColumn<Glib::ustring> artist_col;
 
     //
@@ -195,6 +207,12 @@ class PlaylistColumnRecord : public Gtk::TreeModel::ColumnRecord
 
     // 
     Gtk::TreeModelColumn<Glib::ustring> codec_col;
+
+    //
+    Gtk::TreeModelColumn<Glib::ustring> date_col;
+
+    //
+    Gtk::TreeModelColumn<unsigned int> date_int_col;
 
     //
     Gtk::TreeModelColumn<std::string> filename_col;

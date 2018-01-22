@@ -1,4 +1,4 @@
-OBJS = Main.o Base.o Parts.o GUI.o SpinButtonScale.o \
+OBJS = Main.o About.o Abouts.o Base.o Parts.o GUI.o SpinButtonScale.o \
 	Seekbar.o PlaylistComboBox.o PlaylistComboBoxes.o MenuBar.o Tagview.o \
 	Artwork.o PlaylistsDatabase.o Playlists.o Playlist.o \
 	PlaylistCreateDialog.o PlaylistTreeStore.o PlaylistMenu.o \
@@ -8,7 +8,7 @@ OBJS = Main.o Base.o Parts.o GUI.o SpinButtonScale.o \
 	KeyboardShortcutsPanel.o OutputPanel.o PlaybackPanel.o \
 	PlaylistPanel.o ReplayGainPanel.o ScrobblingPanel.o Panel.o \
 	ChildWindow.o Playback.o ParserAndDecoder.o TrackBin.o Metadata.o \
-	CueSheet.o Scrobbling.o TimeConversion.o Track.o \
+	CueSheet.o Scrobbling.o TimeConversion.o Tag.o Track.o \
 	Configuration.o DefaultValues.o DefaultValue.o
 
 CFLAGS = -std=c++14 -Wno-deprecated-declarations
@@ -26,7 +26,21 @@ Main.o: Main.cc Base.h GUI/GUI.h GUI/ChildWindow.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Main.cc \
 	-pthread `pkg-config --cflags --libs gtkmm-3.0`
 
+About.o: GUI/Elements/Abouts/About.cc GUI/Elements/Abouts/About.h \
+	GUI/GUIElement.h GUI/Elements/Abouts/Abouts.h GUI/ChildWindow.h \
+	GUI/GUI.h
+	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Abouts/About.cc \
+	`pkg-config --cflags --libs gtkmm-3.0` \
+
+Abouts.o: GUI/Elements/Abouts/Abouts.cc GUI/Elements/Abouts/Abouts.h \
+	GUI/Elements/Abouts/About.h GUI/GUIElementList.h
+	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Abouts/Abouts.cc \
+	`pkg-config --cflags --libs gtkmm-3.0` \
+
 Base.o: Base.cc Base.h Configuration/Configuration.h \
+	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
+	GUI/Elements/Playlists/Playlists.h \
+	GUI/Elements/Playlists/PlaylistTreeStore.h \
 	GUI/GUI.h Playback/Playback.h Metadata/Metadata.h \
 	Scrobbling/Scrobbling.h TimeConversion.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Base.cc \
@@ -35,10 +49,7 @@ Base.o: Base.cc Base.h Configuration/Configuration.h \
 
 Parts.o: Parts.cc Parts.h Base.h Configuration/Configuration.h \
 	GUI/GUI.h Playback/Playback.h Metadata/Metadata.h \
-	GUI/Elements/Playlists/Playlists.h \
-	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h \
-	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
-	GUI/Elements/FileChoosers/FileChoosers.h TimeConversion.h
+	GUI/Elements/**/*.h TimeConversion.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Parts.cc \
 	`pkg-config --cflags --libs glibmm-2.4 gtkmm-3.0` \
 	-pthread
@@ -81,6 +92,7 @@ PlaylistComboBoxes.o: GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.cc \
 
 MenuBar.o: GUI/MenuBar.cc GUI/MenuBar.h Parts.h GUI/GUI.h Base.h \
 	Configuration/Configuration.h Playback/Playback.h \
+	GUI/ChildWindow.h GUI/Elements/Abouts/Abouts.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
 	GUI/Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.h \
@@ -272,7 +284,8 @@ PlaylistPanel.o: \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread
 
-KeyboardShortcutsPanel.o: GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanel.cc \
+KeyboardShortcutsPanel.o: \
+	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanel.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanel.h \
 	GUI/Elements/ConfigurationGUIs/Panel.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
@@ -397,7 +410,11 @@ Scrobbling.o: Scrobbling/Scrobbling.cc Scrobbling/Scrobbling.h \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-lclastfm -pthread
 
-Track.o: Metadata/Track.cc Metadata/Track.h
+Tag.o: Metadata/Tag.cc Metadata/Tag.h
+	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/Tag.cc \
+	-pthread `pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
+
+Track.o: Metadata/Track.cc Metadata/Track.h Metadata/Tag.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/Track.cc \
 	-pthread `pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
 
@@ -419,16 +436,19 @@ DefaultValue.o: Configuration/DefaultValue.cc Configuration/DefaultValue.h
 	g++ -g -Wall -pipe -pthread $(CFLAGS) -c \
 	Configuration/DefaultValue.cc
 
+
+
 clean:
 	rm -rf *.o omp
 
 
+
 install:
-	sudo install -Dm0755 omp /usr/bin/omp
-	sudo install -Dm0644 Images/No_Cover.svg /usr/share/pixmaps/no_cover.png
-	sudo install -Dm0644 Images/OMP_Icon_16.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_16.png
-	sudo install -Dm0644 Images/OMP_Icon_32.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_32.png
-	sudo install -Dm0644 Images/OMP_Icon_48.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_48.png
-	sudo install -Dm0644 Images/OMP_Icon_64.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_64.png
-	sudo install -Dm0644 Images/OMP_Icon_128.png ${pkgdir}/usr/share/pixmaps/OMP_Icon_128.png
-	sudo install -Dm0644 omp.desktop ${pkgdir}/usr/share/applications/omp.desktop
+	install -Dm0755 omp /usr/bin/omp
+	install -Dm0644 Images/No_Cover.svg /usr/share/pixmaps/No_Cover.png
+	install -Dm0644 Images/OMP_Icon_16.png /usr/share/pixmaps/OMP_Icon_16.png
+	install -Dm0644 Images/OMP_Icon_32.png /usr/share/pixmaps/OMP_Icon_32.png
+	install -Dm0644 Images/OMP_Icon_48.png /usr/share/pixmaps/OMP_Icon_48.png
+	install -Dm0644 Images/OMP_Icon_64.png /usr/share/pixmaps/OMP_Icon_64.png
+	install -Dm0644 Images/OMP_Icon_128.png /usr/share/pixmaps/OMP_Icon_128.png
+	install -Dm0644 omp.desktop /usr/share/applications/omp.desktop

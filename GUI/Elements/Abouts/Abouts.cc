@@ -1,4 +1,4 @@
-/* ////////////////////////////////////////////////////////////////////////////   
+/* ////////////////////////////////////////////////////////////////////////////
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -25,9 +25,9 @@
 //
 //    - boost: http://www.boost.org/
 //
-//    - clastfm: http://liblastfm.sourceforge.net/ 
+//    - clastfm: http://liblastfm.sourceforge.net/
 //
-//    - gstreamer: https://gstreamer.freedesktop.org/ 
+//    - gstreamer: https://gstreamer.freedesktop.org/
 //
 //    - gtkmm: https://www.gtkmm.org/en/
 //
@@ -57,7 +57,11 @@
 //              //
 //              //
 
-#include "Parts.h"
+#include "../../ChildWindow.h"
+
+#include "../../GUI.h"
+
+#include "Abouts.h"
 
 
 
@@ -69,23 +73,31 @@
 //                 //
 //                 //
 
-#include "Base.h"
 
-#include "Configuration/Configuration.h"
 
-#include "GUI/Elements/Abouts/Abouts.h"
 
-#include "GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
-#include "GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h"
 
-#include "GUI/Elements/Playlists/Playlists.h"
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
-#include "GUI/GUI.h"
 
-#include "Metadata/Metadata.h"
 
-#include "Playback/Playback.h"
+
+
+
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
+
+using namespace std;
 
 
 
@@ -105,18 +117,27 @@
 //             //
 //             //
 
-Parts::Parts(Base& new_base, bool debug_value)
+Abouts::Abouts(Base& base_ref)
 
 // Inherited Class
 
-: base_(new_base)
+: GUIElementList(base_ref)
+
+{
+
+}
 
 
 
-// Other
 
-, debug_(debug_value)
 
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
+
+Abouts::~Abouts()
 {
 
 }
@@ -131,116 +152,41 @@ Parts::Parts(Base& new_base, bool debug_value)
 //                  //
 //                  //
 
-int Parts::debug(char* debug_message)
+void Abouts::Open_About()
 {
 
-  if(debug_)
-  {
+  // Creates a temporary ConfigGUI pointer.
+  About* new_about;
 
-    cout << "\n\n" << debug_message << "\n\n";
+  // Assigns a new ConfigGUI object to the pointer.
+  new_about = new About(base(), (*this));
 
-  }
-
-  else
-  {
-
-  }
-
-
-  return debug_;
-
-}
-
-int Parts::debug(const char* debug_message)
-{
-
-  return debug(const_cast<char*>(debug_message));
-
-}
+  // Sets the new ConfigGUI's location in ConfigGUIs.
+  new_about -> set_gui_elements_it((*this)() . begin());
 
 
 
+  // Binds the ConfigGUI's Destroy function a std::function pointer.
+  std::function<void(void)> new_destroy_func_ptr
+    = std::bind(&About::Destroy, new_about);
+
+  // Creates of new window using the Create_New_Window function.
+  shared_ptr<ChildWindow> new_child_window
+    = gui() . Create_New_Window("About OMP", new_destroy_func_ptr);
 
 
-//         //
-//         //
-// Getters //////////////////////////////////////////////////////////////////
-//         //
-//         //
 
-Abouts& Parts::abouts()
-{
+  // Adds the ConfigGUI to the new window. 
+  new_child_window -> box() . pack_start(new_about -> box(),
+                                         Gtk::PACK_EXPAND_WIDGET);
 
-  return base_ . gui() . abouts();
+  // 
+  new_child_window -> window() . set_default_size(300, 400);
 
-}
+  // 
+  new_child_window -> window() . set_resizable(false);
 
-Base& Parts::base()
-{
-
-  return base_;
-
-}
-
-Configuration& Parts::config()
-{ 
-
-  return base_.config(); 
-
-}
-
-ConfigurationGUIs& Parts::config_guis()
-{
-
-  return base_.gui().config_guis();
-
-}
-
-FileChoosers& Parts::file_choosers()
-{
-
-  return base_.gui().file_choosers();
-
-}
-
-GUI& Parts::gui()
-{  
-
-  return base_.gui(); 
-
-}
-
-Metadata& Parts::metadata()
-{
-
-  return base_.metadata();
-
-}
-
-Playback& Parts::playback()
-{
-
-  return base_.playback();
-
-}
-
-PlaylistComboBoxes& Parts::playlist_comboboxes()
-{
-
-  return base_.gui().playlist_comboboxes();
-
-}
-
-Playlists& Parts::playlists()
-{
-
-  return base_.gui().playlists();
-
-}
-
-TimeConversion& Parts::time_converter()
-{
-
-  return base_.time_converter();
+  // Displays the new window.
+  new_child_window -> show();
 
 }

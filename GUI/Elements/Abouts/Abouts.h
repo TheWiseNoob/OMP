@@ -51,8 +51,8 @@
 //                    //
 //                    //
 
-#ifndef PLAYLISTS_DATABASE_H
-#define PLAYLISTS_DATABASE_H
+#ifndef ABOUTS_H
+#define ABOUTS_H
 
 
 
@@ -66,64 +66,60 @@
 //         //
 //         //
 
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
+#include "../../GUIElementList.h"
+
+#include "About.h"
+
+
+
+
+
 //                 //
 //                 //
 // Outside Headers ////////////////////////////////////////////////////////////
 //                 //
 //                 //
 
-#include "../../../Parts.h"
 
 
 
 
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
 
-//                 //
-//                 //
-// Outside Headers ////////////////////////////////////////////////////////////
-//                 //
-//                 //
-
-#include <glibmm/refptr.h>
-
-#include <string>
-
-#include <vector>
-
-
-
-
-
-//                   //
-//                   //
-//                   //
-// Class Declaration //////////////////////////////////////////////////////////
-//                   //
-//                   //
-//                   //
-
-class Base;
-
-class PlaylistTreeStore;
-
-class sqlite3;
-
-class Track;
-
-
-
-
-
-//                   //
-//                   //
-//                   //
-// Class Declaration //////////////////////////////////////////////////////////
-//                   //
-//                   //
-//                   //
-
-class PlaylistsDatabase : public Parts
+namespace Gtk
 {
+
+  class TreeRowReference;
+
+}
+
+
+
+
+
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
+class Abouts : public GUIElementList<About>
+{ 
 
   //             //
   //             //
@@ -133,20 +129,7 @@ class PlaylistsDatabase : public Parts
 
   public:
 
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose:
-    //
-    //   Creates the PlaylistsDatabase class.
-    //
-    //
-    //
-    // Arguments: 
-    //
-    //   None.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    PlaylistsDatabase(Base& base_ref);
+    Abouts(Base& base_ref);
 
 
 
@@ -160,20 +143,7 @@ class PlaylistsDatabase : public Parts
 
   public:
 
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose:
-    //
-    //   Used to destroy any data that needs it when PlaylistsDatabase ends.
-    //
-    //
-    //
-    // Arguments: 
-    //
-    //   None.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    ~PlaylistsDatabase();
+    virtual ~Abouts();
 
 
 
@@ -185,50 +155,9 @@ class PlaylistsDatabase : public Parts
   //                  //
   //                  //
 
-  bool Add_Tracks(const char* playlist_name, 
-                  Glib::RefPtr<PlaylistTreeStore> playlist_treestore);
+  public:
 
-  bool Add_Column
-    (const char* playlist_name, const char* column_name, const char* type);
-
-  bool Cleanup_Database();
-
-  bool Clear_Playlist(const char* playlist_name);
-
-  std::string Convert(std::string raw_str);
-
-  bool Create_Playlist(const char* playlist_name);
-
-  bool Delete_Playlist(const char* playlist_name);
-
-  bool Delete_Rows(const char* playlist_name, std::vector<int> ids);
-
-  bool Drop_Table(const char* playlist_name);
-
-  bool Extract_Tracks(const char* playlist_name, std::vector<Track*>* tracks,
-                      std::vector<int>* ids);
-
-  static int Extract_Tracks_Callback
-    (void* tracks_and_ids_vptr, int argc, char **argv, char **column_name);
-
-  bool Playlist_Names(std::vector<std::string>& playlist_names);
-
-  static int Playlist_Names_Callback
-    (void* names, int argc, char **argv, char **azColName);
-
-  bool Rename_Playlist
-    (const char* playlist_name, const char* new_playlist_name);
-
-
-
-
-
-  //         //
-  //         //
-  // Getters //////////////////////////////////////////////////////////////////
-  //         //
-  //         //
-
+    void Open_About();
 
 
 
@@ -238,8 +167,6 @@ class PlaylistsDatabase : public Parts
   // Member Variables /////////////////////////////////////////////////////////
   //                  //
   //                  //
-
-  sqlite3* database_;
 
 };
 
@@ -255,4 +182,5 @@ class PlaylistsDatabase : public Parts
 //                  //
 //                  //
 
-#endif
+#endif 
+

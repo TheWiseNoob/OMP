@@ -2945,17 +2945,13 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
       // Removes the sink from the playback pipeline.
       gst_bin_remove((GstBin*)(pipeline_), sink_);
 
-      // Deletes the old sink.
-      gst_object_unref(sink_);
-      
-
  
 
       // Acquires the choosen sink from the configuration.
-      string sink_str = (config().get("output.sink"));
+      string sink_str = (config() . get("output.sink"));
 
       // Converts the sink string to a const char*.
-      const char* const_sink_c_str = sink_str.c_str();
+      const char* const_sink_c_str = sink_str . c_str();
 
       // Converts the sink const char* to just a char*.
       char* sink_c_str = const_cast<char*>(const_sink_c_str);

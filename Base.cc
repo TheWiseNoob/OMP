@@ -73,6 +73,10 @@
 
 #include "GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
+#include "GUI/Elements/Playlists/Playlists.h"
+
+#include "GUI/Elements/Playlists/PlaylistTreeStore.h"
+
 #include "GUI/GUI.h"
 
 #include "Metadata/Metadata.h"
@@ -325,7 +329,7 @@ Base::Base(int argc, char *argv[])
 
 
   // 
-  gui_ -> config_guis().Apply_Saved_Values();
+  gui_ -> config_guis() . Apply_Saved_Values();
 
 }
 

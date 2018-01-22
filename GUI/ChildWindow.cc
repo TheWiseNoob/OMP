@@ -128,17 +128,23 @@ void ChildWindow::show()
 bool ChildWindow::on_irregular_quit(GdkEventAny* event)                          
 {                                                                               
                                                                                 
-
+  // 
   if(child_class_destroy_function_)
   {
 
-
+    // 
     child_class_destroy_function_();
 
   }
 
+
+
+  // 
   window_.hide();
 
+
+
+  // 
   return true;
 
 }

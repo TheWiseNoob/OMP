@@ -43,6 +43,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef TRACK_H
 #define TRACK_H
 
@@ -50,16 +58,49 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include "Tag.h"
+
 #include "TrackType.h"
 
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include <string>
+
 #include <vector>
 
 
 
-typedef signed long gint64;
 
 
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
 
 namespace Glib
 {
@@ -72,88 +113,85 @@ namespace Glib
 
 
 
-class Tag
-{
-
-  public:
-
-    Tag(const char* new_name, const char* new_tag);
-
-    Tag(const char* new_name, const std::string &new_tag);
-
-    Tag(const char* new_name, const Glib::ustring &new_tag);
-
-    Tag(const char* new_name, std::vector<Glib::ustring*>* new_tags);
-
-    Glib::ustring &name() const
-    { 
- 
-      return *name_;
-
-    }
-
-    std::vector<Glib::ustring*> &values() const
-    {
-
-      return *values_;
-
-    }
-
-    //Overladed assignment operator
-    void operator =(const Tag& copied_tag);
-
-    //Overladed not equal to operator
-    bool operator !=(const Tag& compared_tag) const;
-
-    //Overladed equal to operator
-    bool operator ==(const Tag& compared_track) const;
-
- 
-  private:
-
-    Glib::ustring *name_;
-    std::vector<Glib::ustring*> *values_;
-
-};
-
-
-
-
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
 
 class Track
 {
 
+  //              //
+  //              //
+  // Constructors /////////////////////////////////////////////////////////////
+  //              //
+  //              //
+
   public:
 
-
-    //Default Constructor
     Track();
-    //Constructor Specifying TrackType
-    Track(TrackType type);
-    //Copy Constructor
+
     Track(const Track& new_track);
-    //Destructor
+
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
+
     ~Track();
 
 
 
-    //Overladed assignment operator
+
+
+  //                    //
+  //                    //
+  // Operator Overloads ///////////////////////////////////////////////////////
+  //                    //
+  //                    //
+
+  public:
+
     void operator =(const Track& copied_track);
 
-    //Overladed not equal to operator
     bool operator !=(const Track& compared_track) const;
 
-    //Overladed equal to operator
     bool operator ==(const Track& compared_track) const;
 
 
 
-    //Prints the object's data in a formattet cout statement. 
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public:
+
     bool Cue() const;
 
     bool Cue_Embedded() const;
 
     bool Is_Empty() const;
+
+  protected:
+    
+    Glib::ustring* 
+        Multiple_Values_To_Single_Value(std::vector<Glib::ustring*> &values);
+
+  public:
 
     bool Normal() const;
 
@@ -163,7 +201,16 @@ class Track
 
 
 
-    //Getters
+
+
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
     TrackType type() const;
 
     Glib::ustring &filename() const;
@@ -178,7 +225,7 @@ class Track
 
     Glib::ustring &length() const;
 
-    Glib::ustring &date() const;
+    int date() const;
 
     Glib::ustring &comment() const;
 
@@ -191,6 +238,10 @@ class Track
     Glib::ustring& codec() const;
 
     Glib::ustring& mime() const;
+
+    std::vector<Glib::ustring*>& album_artists();
+    std::vector<Glib::ustring*>& album_artists() const;
+    Glib::ustring* album_artists_string();
 
     std::vector<Glib::ustring*> &artists();
     std::vector<Glib::ustring*> &artists() const;
@@ -219,14 +270,14 @@ class Track
 
     int channels() const;
 
-    gint64 start() const;
+    long long start() const;
 
-    gint64 pregap_start() const;
+    long long pregap_start() const;
 
-    gint64 end() const;
+    long long end() const;
 
-    std::vector<gint64> &subindices();
-    std::vector<gint64> &subindices() const;
+    std::vector<long long> &subindices();
+    std::vector<long long> &subindices() const;
 
     double replaygain_album_gain() const;
 
@@ -243,7 +294,16 @@ class Track
 
 
 
-    //Setters
+
+
+  //         //
+  //         //
+  // Setters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
     void set_type(const TrackType new_type);
 
     void set_filename(const char* new_filename);
@@ -276,11 +336,6 @@ class Track
     void set_length(const Glib::ustring &new_setting);
     void set_length(Glib::ustring* new_setting);
 
-    void set_date(const char* new_date);
-    void set_date(const std::string &new_date);
-    void set_date(const Glib::ustring &new_date);
-    void set_date(Glib::ustring* new_date);
-    
     void set_comment(const char* new_comment);
     void set_comment(const std::string &new_comment);
     void set_comment(const Glib::ustring &new_comment);
@@ -311,6 +366,13 @@ class Track
     void set_mime(const Glib::ustring &new_mime);
     void set_mime(Glib::ustring* new_mime);
 
+    void set_album_artists(std::vector<Glib::ustring*> *new_album_artists);
+    void add_album_artist(const char* new_album_artist);
+    void add_album_artist(const std::string &new_album_artist);
+    void add_album_artist(const Glib::ustring &new_album_artist);
+    void add_album_artist(Glib::ustring* new_album_artist);
+    void clear_album_artists();
+
     void set_artists(std::vector<Glib::ustring*> *new_artists);
     void add_artist(const char* new_artist);
     void add_artist(const std::string &new_artist);
@@ -338,6 +400,9 @@ class Track
     void set_track_total(int new_track_total);
     void set_track_total(const std::string &new_track_total);
 
+    void set_date(int new_date);
+    void set_date(const std::string &new_date);
+
     void set_disc_number(int new_disc_number);
     void set_disc_number(const std::string &new_disc_number);
 
@@ -352,11 +417,11 @@ class Track
 
     void set_channels(int new_channels);
 
-    void set_start(gint64 new_setting);
+    void set_start(long long new_setting);
 
-    void set_pregap_start(gint64 new_setting);
+    void set_pregap_start(long long new_setting);
 
-    void set_end(gint64 new_setting);
+    void set_end(long long new_setting);
 
     void set_replaygain_album_gain(double new_setting);
 
@@ -368,12 +433,15 @@ class Track
 
     void set_duration(long long duration);
 
-  protected:
 
-    
-    Glib::ustring* 
-        Multiple_Values_To_Single_Value(std::vector<Glib::ustring*> &values);
 
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   private:    
 
@@ -385,7 +453,6 @@ class Track
                   *album_,
                   *title_,
                   *length_,
-                  *date_,
                   *comment_,
                   *disc_id_,
                   *catalog_,
@@ -393,12 +460,14 @@ class Track
                   *codec_,
                   *mime_;
  
-    std::vector<Glib::ustring*> *artists_,
-                                *genres_,
-                                *flags_;
+    std::vector<Glib::ustring*>* album_artists_,
+                               * artists_,
+                               * genres_,
+                               * flags_;
 
     int track_number_,
         track_total_,
+        date_,
         disc_number_,
         disc_total_,
         bit_rate_,
@@ -406,11 +475,11 @@ class Track
         sample_rate_,
         channels_;
  
-    gint64 start_,
-           pregap_start_,
+    long long start_,
+              pregap_start_,
            end_;
 
-    std::vector<gint64> *subindices_;
+    std::vector<long long> *subindices_;
 
     double replaygain_album_gain_,
            replaygain_album_peak_,
@@ -421,10 +490,18 @@ class Track
 
     long long duration_;
 
- };
+};
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

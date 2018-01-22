@@ -252,7 +252,7 @@ void ConfigurationGUIs::Open_Configuration()
   (*this)() . push_front(new_config_gui);
 
   // Sets the new ConfigGUI's location in ConfigGUIs.
-  new_config_gui -> set_gui_elements_it(config_guis()() . begin());
+  new_config_gui -> set_gui_elements_it((*this)() . begin());
 
 
 

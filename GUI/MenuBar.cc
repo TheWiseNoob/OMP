@@ -75,6 +75,10 @@
 
 #include "../Playback/Playback.h"
 
+#include "ChildWindow.h"
+
+#include "Elements/Abouts/Abouts.h"
+
 #include "Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
 #include "Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.h"
@@ -100,6 +104,8 @@
 //                 //
 
 #include <atomic>
+
+#include <gtkmm/accelmap.h>
 
 #include <gtkmm/box.h>
 
@@ -153,7 +159,7 @@ using namespace std;
 //             //
 //             //
 
-MenuBar::MenuBar(Base& base_ref)
+MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
 //
 // Inherited Class
@@ -257,7 +263,6 @@ MenuBar::MenuBar(Base& base_ref)
 
 
 
-
   //
   //Constructs the Main MenuItems.
   //
@@ -295,7 +300,7 @@ MenuBar::MenuBar(Base& base_ref)
   Add_Folder_MenuItem = Gtk::manage(new Gtk::MenuItem("_Add Folder(s)", true));
   Open_Folder_MenuItem = Gtk::manage(new Gtk::MenuItem("_Open Folder(s)",
                                                        true));
-  Quit_MenuItem = Gtk::manage(new Gtk::MenuItem("_Quit Base", true));
+  Quit_MenuItem = Gtk::manage(new Gtk::MenuItem("_Quit OMP", true));
 
   File_Menu -> append(*Add_File_MenuItem);
   File_Menu -> append(*Open_File_MenuItem);
@@ -328,6 +333,10 @@ MenuBar::MenuBar(Base& base_ref)
   Configuration_MenuItem = Gtk::manage(new Gtk::MenuItem("_Configuration",
                                                          true));
 
+
+
+
+
   Edit_Menu -> append(*Cut_MenuItem);
   Cut_MenuItem -> set_sensitive(false);
   Edit_Menu -> append(*Copy_MenuItem);
@@ -340,8 +349,8 @@ MenuBar::MenuBar(Base& base_ref)
   Edit_Menu -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
   Edit_Menu -> append(*Configuration_MenuItem);
 
-  Configuration_MenuItem -> signal_activate().connect(
-    sigc::mem_fun(*this, &MenuBar::Configuration));
+  Configuration_MenuItem -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MenuBar::Configuration));
 
 
 
@@ -582,18 +591,57 @@ MenuBar::MenuBar(Base& base_ref)
   //
 
   About_Base_MenuItem
-    = Gtk::manage(new Gtk::MenuItem("_About Base", true));
+    = Gtk::manage(new Gtk::MenuItem("_About OMP", true));
   Help_MenuItem = Gtk::manage(new Gtk::MenuItem("_Help", true));
 
   About_Menu -> append(*About_Base_MenuItem);
-  About_Base_MenuItem -> set_sensitive(false);
   About_Menu -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
   About_Menu -> append(*Help_MenuItem);
   Help_MenuItem -> set_sensitive(false);
 
+  About_Base_MenuItem -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MenuBar::Open_About));
 
 
+
+
+
+  // 
+  // Ending
+  //
+/*
+  Gtk::AccelMap::add_entry("<Window>/Edit/Configuration",
+                           GDK_KEY_j, Gdk::CONTROL_MASK);
+
+  Edit_Menu -> set_accel_group(window_ref . get_accel_group());
+
+  Edit_Menu -> set_accel_path("<Window>/Edit");
+
+  menu_bar_ -> accelerate(window_ref);
+*/
   box() . show_all_children();
+
+}
+
+
+
+
+
+void MenuBar::Open_About()
+{
+
+  abouts() . Open_About();
+
+}
+
+
+
+
+
+void MenuBar::Configuration()
+{
+
+  config_guis() . Open_Configuration();
 
 }
 
@@ -612,17 +660,6 @@ void MenuBar::Quit()
 {
 
   gui().Quit();
-
-}
-
-
-
-
-
-void MenuBar::Configuration()
-{
-
-  config_guis() . Open_Configuration();
 
 }
 

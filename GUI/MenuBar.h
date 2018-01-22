@@ -118,6 +118,8 @@ namespace Gtk
 
   class SeparatorMenuItem;
 
+  class Window;
+
 }
 
 
@@ -150,7 +152,7 @@ class MenuBar : public Parts
 
   public:
 
-    MenuBar(Base& base_ref);
+    MenuBar(Base& base_ref, Gtk::Window& window_ref);
 
 
 
@@ -161,6 +163,19 @@ class MenuBar : public Parts
   // Member Functions /////////////////////////////////////////////////////////
   //                  //
   //                  //
+
+  //       //
+  // About ////////////////////////////////////////////////////////////////////
+  //       //
+
+  public:
+
+    void Open_About();
+
+
+
+
+
 
   //      //
   // Edit /////////////////////////////////////////////////////////////////////

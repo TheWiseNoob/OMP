@@ -416,9 +416,6 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   private:
 
     //
-    bool cut_tracks_for_drag_;
-
-    //
     unsigned int dest_row_drop_position_;
 
     //

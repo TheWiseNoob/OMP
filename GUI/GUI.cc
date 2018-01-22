@@ -87,6 +87,8 @@
 
 #include "ChildWindow.h"
 
+#include "Elements/Abouts/Abouts.h"
+
 #include "Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
 #include "Elements/PlaybackControllers/PlaybackController.h"
@@ -123,10 +125,15 @@
 //                 //
 //                 //
 
-
 #include <fstream>
 
 #include <functional>
+
+#include <gdkmm/rectangle.h>
+
+#include <gdkmm/rgba.h>
+
+#include <glibmm/main.h>
 
 #include <gtkmm/applicationwindow.h>
 
@@ -148,15 +155,15 @@
 
 #include <gtkmm/paned.h>
 
-#include <gdkmm/rectangle.h>
-
-#include <gdkmm/rgba.h>
+#include <gtkmm/scale.h>
 
 #include <gtkmm/separator.h>
 
 #include <gtkmm/spinbutton.h>
 
 #include <gtkmm/stackswitcher.h>
+
+#include <gtkmm/treerowreference.h>
 
 #include <gtkmm/volumebutton.h>
 
@@ -219,6 +226,8 @@ GUI::GUI(Base& base_ref)
 
 
 // GUI Elements
+
+, abouts_(new Abouts(base_ref))
 
 , config_guis_(new ConfigurationGUIs(base_ref))
 
@@ -340,7 +349,7 @@ GUI::GUI(Base& base_ref)
   int window_size_y_ = config() . get("gui.window_size_y");
 
   // Sets default window size.
-  main_window() -> window().set_default_size(window_size_x_, window_size_y_);
+  main_window() -> window() . set_default_size(window_size_x_, window_size_y_);
 
 
 
@@ -517,7 +526,7 @@ GUI::GUI(Base& base_ref)
   // Header MenuBar Creation //////////////////////////////////////////////////
 
   // Creates two MenuBar pointers.
-  MenuBar* header_bar_menubar = new MenuBar(base_ref);
+  MenuBar* header_bar_menubar = new MenuBar(base_ref, main_window_ -> window());
 
   // Puts the first menubars in the menubars_ list.
   menubars_ . push_back(header_bar_menubar);
@@ -674,7 +683,7 @@ GUI::GUI(Base& base_ref)
 
 
   // 
-  cover_file_ = "/usr/share/pixmaps/no_cover.png"; 
+  cover_file_ = "/usr/share/pixmaps/No_Cover.png"; 
 
   // 
   default_cover_file_ = cover_file_;
@@ -707,7 +716,7 @@ GUI::GUI(Base& base_ref)
   }
 
   // Makes a reference to the first Artwork instance.
-  Gtk::Box* temp_box_ptr = &((*(artworks_.begin())) -> get_art_Box());
+  Gtk::Box* temp_box_ptr = &((*(artworks_.begin())) -> box());
 
   Gtk::Label artwork_page_label("Artwork");
 
@@ -716,27 +725,27 @@ GUI::GUI(Base& base_ref)
 
   // Adds the first Artwork instance to the left pain of the Main Content tab.
   left_main_content_paned_box_ 
-    -> pack_start(((*(artworks_.rbegin())) -> get_art_Box()),
+    -> pack_start(((*(artworks_.rbegin())) -> box()),
                   Gtk::PACK_EXPAND_WIDGET);
 
   // Sets the left margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_left(5);
+  ((*(artworks_.rbegin())) -> box()).set_margin_left(5);
 
   // Sets the right margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_right(5);
+  ((*(artworks_.rbegin())) -> box()).set_margin_right(5);
 
   // Sets the top margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_top(5);
+  ((*(artworks_.rbegin())) -> box()).set_margin_top(5);
 
   // Sets the bottom margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> get_art_Box()).set_margin_bottom(5);
+  ((*(artworks_.rbegin())) -> box()).set_margin_bottom(5);
 
 
 
   // Main Content MenuBar Creation ////////////////////////////////////////////
 
   // Creates two MenuBar pointers.
-  MenuBar* main_content_menubar = new MenuBar(base_ref);
+  MenuBar* main_content_menubar = new MenuBar(base_ref, main_window_ -> window());
 
   // Puts the first menubars in the menubars_ list.
   menubars_ . push_back(main_content_menubar);
@@ -833,7 +842,7 @@ GUI::GUI(Base& base_ref)
   //                         //
 
   // Creates labels for the four pages in main_content_notebook_.
-  Gtk::Label file_chooser_playlist_page_label("File Chooser & Playlist");
+  Gtk::Label file_chooser_playlist_page_label("File Chooser Playlist");
 
 
 
@@ -1168,6 +1177,54 @@ bool GUI::File_Exists(string& filename_ref)
 
 }
 
+bool GUI::On_Double_Playlist_Paned_Button_Release_Event
+  (GdkEventButton* release_event)
+{
+
+  // 
+  int double_playlist_paned_position
+    = double_playlist_paned_ -> get_position();
+
+  // 
+  config() . set("gui.double_playlist_paned_position",
+                 double_playlist_paned_position);
+
+
+
+  // 
+  config() . write_file();
+
+
+
+  // 
+  return false;
+
+} 
+
+bool GUI::On_File_Chooser_Playlist_Paned_Button_Release_Event
+  (GdkEventButton* release_event)
+{
+
+  // 
+  int file_chooser_playlist_paned_position
+    = file_chooser_playlist_paned_ -> get_position();
+
+  // 
+  config() . set("gui.file_chooser_playlist_paned_position",
+                 file_chooser_playlist_paned_position);
+
+
+
+  // 
+  config() . write_file();
+
+
+
+  // 
+  return false;
+
+}
+
 bool GUI::On_GUI_Window_Signal_Delete_Event(GdkEventAny* event)
 {
 
@@ -1277,6 +1334,29 @@ bool GUI::On_Key_Press_Event(GdkEventKey* event)
 
 }
 
+bool GUI::On_Main_Content_Paned_Button_Release_Event
+  (GdkEventButton* release_event)
+{
+
+  // 
+  int main_content_paned_position = main_content_paned_ -> get_position();
+
+  // 
+  config() . set("gui.main_content_paned_position",
+                 main_content_paned_position);
+
+
+
+  // 
+  config() . write_file();
+
+
+
+  // 
+  return false;
+
+}
+
 void GUI::On_Main_Window_Check_Resize_Signal()
 {
 
@@ -1363,77 +1443,6 @@ void GUI::On_Main_Window_Check_Resize_Signal()
 
 }
 
-bool GUI::On_Double_Playlist_Paned_Button_Release_Event
-  (GdkEventButton* release_event)
-{
-
-  // 
-  int double_playlist_paned_position
-    = double_playlist_paned_ -> get_position();
-
-  // 
-  config() . set("gui.double_playlist_paned_position",
-                 double_playlist_paned_position);
-
-
-
-  // 
-  config() . write_file();
-
-
-
-  // 
-  return false;
-
-} 
-
-bool GUI::On_File_Chooser_Playlist_Paned_Button_Release_Event
-  (GdkEventButton* release_event)
-{
-
-  // 
-  int file_chooser_playlist_paned_position
-    = file_chooser_playlist_paned_ -> get_position();
-
-  // 
-  config() . set("gui.file_chooser_playlist_paned_position",
-                 file_chooser_playlist_paned_position);
-
-
-
-  // 
-  config() . write_file();
-
-
-
-  // 
-  return false;
-
-}
-
-bool GUI::On_Main_Content_Paned_Button_Release_Event
-  (GdkEventButton* release_event)
-{
-
-  // 
-  int main_content_paned_position = main_content_paned_ -> get_position();
-
-  // 
-  config() . set("gui.main_content_paned_position",
-                 main_content_paned_position);
-
-
-
-  // 
-  config() . write_file();
-
-
-
-  // 
-  return false;
-
-}
-
 void GUI::Quit()
 { 
 
@@ -1508,25 +1517,42 @@ void GUI::Load_Cover_Art(string& filename_ref)
   }
 
 
-
+  // 
   list<string> cover_art_filename_str_list;
 
+  // 
   config() . get_list("gui.artwork.front_names", cover_art_filename_str_list);
 
 
 
+  // 
   for(auto filename_it : cover_art_filename_str_list)
-  {
+  { 
 
     // Set file_folder_path to final cover image filename.
     std::string new_cover_filename = file_folder_path + filename_it;
 
     // Does nothing if true because the the cover file is the same as the cover
     // file already being used.
-    if((cover_file_ == new_cover_filename))
+    if(cover_file_ == new_cover_filename)
     { 
 
-      return;
+      // 
+      if(!File_Exists(cover_file_))
+      {
+
+        continue;
+
+      }
+
+      // 
+      else
+      {
+
+        // 
+        return;
+
+      }
 
     }
 
@@ -1542,7 +1568,7 @@ void GUI::Load_Cover_Art(string& filename_ref)
       {
 
         // Sets the iterator's current Artwork image filename to the default.
-        (*artwork_it) -> set_image_filename(new_cover_filename);
+        (*artwork_it) -> Set_Image_Filename(new_cover_filename);
 
         // Increments the artworks_ iterator.
         artwork_it++;
@@ -1571,7 +1597,7 @@ void GUI::Load_Cover_Art(string& filename_ref)
   {
 
     // Sets the iterator's current Artwork image filename to the default.
-    (*artwork_it) -> set_image_filename("/usr/share/pixmaps/no_cover.png");
+    (*artwork_it) -> Set_Image_Filename("/usr/share/pixmaps/No_Cover.png");
  
     // Increments the iterator.
     artwork_it++;
@@ -1716,9 +1742,10 @@ bool GUI::Status_Bar_Event_Box_Button_Press(GdkEventButton* event)
 
 
   // Makes the function do nothing if nothing is playing.
-  if(base().playback().playing_track().Is_Empty())
+  if(!(playback() . Playing()))
   { 
 
+    // 
     return false;
 
   }
@@ -1741,7 +1768,7 @@ bool GUI::Status_Bar_Event_Box_Button_Press(GdkEventButton* event)
 
 
     // Updates the Tagviews as Playing.
-    if(playback().Playing())
+    if(playback() . Playing())
     {
 
       // Updates the Tagviews as Playing while including the playing track.
@@ -1750,7 +1777,7 @@ bool GUI::Status_Bar_Event_Box_Button_Press(GdkEventButton* event)
     }
 
     // Updates the Tagviews as Paused.
-    else if(playback().Paused())
+    else if(playback() . Paused())
     {
 
       // Updates the Tagviews as Paused while including the paused track.
@@ -1760,7 +1787,7 @@ bool GUI::Status_Bar_Event_Box_Button_Press(GdkEventButton* event)
 
     // Updates the Tagviews as Idle.
     else
-    {
+    { 
 
       // Sets the Tagviews as Idle.
       Update_Tagview("Idle", playback().empty_track());
@@ -1794,6 +1821,16 @@ bool GUI::Status_Bar_Event_Box_Button_Press(GdkEventButton* event)
       }
 
     }
+
+
+
+    // 
+    playlists() . set_selected_row_ref(playlists() . playing_row_ref());
+
+
+
+    // 
+    playback() . Reset_Track_Queue();
 
   }
 
@@ -1982,6 +2019,13 @@ long long GUI::position()
 //                      //
 // GUIElements Getters ///////////////////////////////////////////////////////
 //                      //
+
+Abouts& GUI::abouts()
+{
+
+  return *abouts_;
+
+}
 
 ConfigurationGUIs& GUI::config_guis()
 {  

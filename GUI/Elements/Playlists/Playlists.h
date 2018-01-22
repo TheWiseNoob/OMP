@@ -459,6 +459,10 @@ class Playlists : public GUIElementList<Playlist>
 
     bool skip_button_press_;
 
+  public:
+
+    bool drag_occurred_;
+
 
 
 

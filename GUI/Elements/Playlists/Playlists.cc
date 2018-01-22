@@ -179,6 +179,8 @@ Playlists::Playlists(Base& base)
 
 , skip_button_press_(false)
 
+, drag_occurred_(false)
+
 
 
 // Playlist Creation
@@ -421,7 +423,7 @@ bool Playlists::Add_Playlist(const char* name)
     auto new_playlists_menu_radio_menu_item
       = new Gtk::RadioMenuItem
               (playlist_it -> menu() . playlists_menu_radio_button_group(),
-               " ");
+               name);
 
     // Adds the new RadioMenuItem to playlist_radio_menu_items.
     playlist_it -> menu() . playlists_menu_radio_menu_items()
@@ -778,6 +780,26 @@ void Playlists::Fill_Row
 
 
 
+  //
+  int date = new_track_sptr -> date();
+
+  if(date == 0)
+  { 
+
+  }
+  else
+  {
+
+    // 
+    new_tree_row[playlist_column_record().date_col] = to_string(date);
+
+  }
+
+  // 
+  new_tree_row[playlist_column_record().date_int_col] = date;
+
+
+
   // 
   if(new_track_sptr -> title() . empty())
   {
@@ -797,6 +819,17 @@ void Playlists::Fill_Row
       = new_track_sptr -> title();
 
   }
+
+
+
+  // 
+  Glib::ustring* album_artists = new_track_sptr -> album_artists_string();
+
+  // 
+  new_tree_row[playlist_column_record().album_artist_col] = *album_artists;
+
+  // 
+  delete album_artists;
 
 
 
