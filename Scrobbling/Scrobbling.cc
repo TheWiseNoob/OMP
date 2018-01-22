@@ -43,36 +43,94 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//              //
+//              //
+// Class Header ///////////////////////////////////////////////////////////////
+//              //
+//              //
+
 #include "Scrobbling.h"
 
 
 
-#include "../Configuration/Configuration.h"
+
+
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../Base.h"
-#include "../Playback/Playback.h"
+
+#include "../Configuration/Configuration.h"
+
 #include "../Metadata/Track.h"
 
+#include "../Playback/Playback.h"
 
 
-#include <iomanip>
-#include <thread>
-#include <mutex>
-#include <list>
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include <chrono>
 
-#include <glibmm.h>
-
-
-
-
-
-//Includes the C API library for using various last.fm scrobbling features
 extern "C"
 {
 
   #include "clastfm.h"
 
 }
+
+#include <glibmm.h>
+
+#include <iomanip>
+
+#include <list>
+
+#include <thread>
+
+#include <mutex>
+
+
+
+
+
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
+
+using namespace std;
+
+
+
+
+
+//        //
+//        //
+//        //
+// Macros /////////////////////////////////////////////////////////////////////
+//        //
+//        //
+//        //
 
 namespace sigc
 {
@@ -83,99 +141,250 @@ namespace sigc
 
 
 
-using namespace std;
+
+
+//                 //
+//                 //
+//                 //
+// Class Functions ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+//                 //
+
+//             //
+//             //
+// Constructor ////////////////////////////////////////////////////////////////
+//             //
+//             //
+
+Scrobbling::Scrobbling(Base& base_ref)
+
+// Inherited Class
+
+: Parts(base_ref)
 
 
 
+// 
 
-
-
-Scrobbling::Scrobbling(Base& base)
-: Parts(base)
 , restart_(false)
-{
+
+{ 
 
   playing_scrobble_track_ = nullptr;
 
-  scrobbled_track_stage_ = nullptr;
-
-  scrobbling_threads_active_.store(false, memory_order_relaxed);
+  scrobbling_threads_active_ = false;
 
 }
 
 
 
 
+
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
 
 Scrobbling::~Scrobbling()
-{
+{ 
 
-  
+  // 
+  delete database_;
 
 }
 
 
 
 
+
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+
+void Scrobbling::Login(Track temp_track, 
+                       ScrobblingThread *scrobbling_thread,
+                       string temp_username,
+                       string temp_password,
+                       shared_ptr<bool> thread_finished, 
+                       shared_ptr<bool> successful)
+{
+
+  LASTFM_SESSION *lastfm_session;
+
+  lastfm_session = LASTFM_init("41940cc3bb675fba6283b0891b9de7f3",              
+                               "f18ff7cee0603cdf532e73297bc5a2db");
+
+  char* username = const_cast<char*>(temp_username.c_str());
+  char* password = const_cast<char*>(temp_password.c_str());
+
+
+  int login_info
+    = LASTFM_login_MD5(lastfm_session, username, password);
+
+
+  if(login_info != 0)
+  {
+
+    debug("An error occurred when logining in!");
+
+
+  }
+  else
+  {
+
+    debug("Login succcesful");
+
+    *successful = true;
+
+  }
+
+  LASTFM_dinit(lastfm_session);
+
+  *thread_finished = true;
+
+  delete scrobbling_thread;
+
+  debug("After delete scrobbling_thread");
+
+}
 
 void Scrobbling::Login_Lastfm()
 {
 
   debug("Logging in!");
 
+
+
+  // 
   Track temp_useless_track;
 
+
+
+  // 
   Track_Action(Scrobbling::Action::LOGIN, temp_useless_track, 
                shared_ptr<bool>(new bool(false)), 
                shared_ptr<bool>(new bool(false)));
 
 }
 
+void Scrobbling::Scrobble(Track temp_track, 
+                          ScrobblingThread *scrobbling_thread, 
+                          string temp_username,
+                          string temp_password,
+                          shared_ptr<bool> thread_finished,
+                          shared_ptr<bool> successful)
+{                        
+
+  // 
+  LASTFM_SESSION *lastfm_session;
+
+  //
+  lastfm_session = LASTFM_init("41940cc3bb675fba6283b0891b9de7f3",              
+                               "f18ff7cee0603cdf532e73297bc5a2db");
 
 
 
+  // 
+  char* username = const_cast<char*>(temp_username.c_str());
 
-void Scrobbling::Update_Playing_Track_Lastfm()
-{
-
-  sigc::connection program_conn = Glib::signal_timeout().connect
-  (
-
-    [this]() -> bool
-    {
-
-      if(playback().Duration() != 0LL)
-      {
+  // 
+  char* password = const_cast<char*>(temp_password.c_str());
 
 
-        debug("Updating track");
 
-        Track_Action(Scrobbling::Action::UPDATE, playback().playing_track(),
-                     shared_ptr<bool>(new bool(false)), 
-                     shared_ptr<bool>(new bool(false)));
+  // 
+  int login_info = LASTFM_login_MD5(lastfm_session, username, password);
+
+  // 
+  if(login_info != 0)
+  {
+
+    debug("An error occurred when logining in!");
 
 
-        return false;
 
-      }
-      else
-      {
+    // 
+    return;
 
-        return true;
+  }
 
-      }
+  // 
+  else
+  {
 
-    }, 
-    100 
+    debug("Login succcesful!");
 
-  );
+  }
 
+
+
+  // 
+  char title[100],
+       album[100],
+       artist[100];
+
+
+
+  // 
+  strcpy(title, const_cast<char*>((temp_track.title()).c_str()));
+
+  //
+  strcpy(album, const_cast<char*>((temp_track.album()).c_str()));
+
+  // 
+  Glib::ustring *temp_artists = temp_track.artists_string();
+
+  // 
+  strcpy(artist, const_cast<char*>(temp_artists -> c_str()));
+
+  // 
+  delete temp_artists;
+
+
+
+  // 
+  time_t started;
+         time(&started);
+         started -= 1;
+
+
+
+  // 
+  int result = LASTFM_track_scrobble(lastfm_session, title, album, artist,
+                                     started, 1000, 0, 0, NULL);
+
+  // 
+  LASTFM_dinit(lastfm_session);
+
+
+
+  // 
+  if(result != 0)
+  {
+
+    database_ -> Add_Track(temp_track, long(started));
+
+  }
+
+
+
+  debug("track track scrobbled!!");
+
+
+
+  // 
+  *thread_finished = true;
+
+
+
+  //
+  delete scrobbling_thread;
 
 }
-
-
-
-
 
 void Scrobbling::Scrobble_Playing_Track_Lastfm()
 {
@@ -309,14 +518,17 @@ void Scrobbling::Scrobble_Playing_Track_Lastfm()
 
         }
 
-        auto temp_playing_scrobble_track_ = playing_scrobble_track_;
 
+
+        // 
         playing_scrobble_track_ = nullptr;
 
-        scrobbled_track_stage_ = temp_playing_scrobble_track_;
-
+        //
         saved_elapsed_nanoseconds = 0LL;
 
+
+
+        // 
         return false;
 
       }
@@ -337,10 +549,6 @@ void Scrobbling::Scrobble_Playing_Track_Lastfm()
 
 }
 
-
-
-
-
 void Scrobbling::Track_Action(Scrobbling::Action action,
                               shared_ptr<bool> thread_finished,
                               shared_ptr<bool> successful)
@@ -351,10 +559,6 @@ void Scrobbling::Track_Action(Scrobbling::Action action,
   Track_Action(action, temp_useless_track, thread_finished, successful); 
 
 }
-
-
-
-
 
 void Scrobbling::Track_Action(Scrobbling::Action action,
                               Track &new_track,
@@ -446,61 +650,6 @@ void Scrobbling::Track_Action(Scrobbling::Action action,
 
 }
 
-
-
-
-
-void Scrobbling::Login(Track temp_track, 
-                       ScrobblingThread *scrobbling_thread,
-                       string temp_username,
-                       string temp_password,
-                       shared_ptr<bool> thread_finished, 
-                       shared_ptr<bool> successful)
-{
-
-  LASTFM_SESSION *lastfm_session;
-
-  lastfm_session = LASTFM_init("41940cc3bb675fba6283b0891b9de7f3",              
-                               "f18ff7cee0603cdf532e73297bc5a2db");
-
-  char* username = const_cast<char*>(temp_username.c_str());
-  char* password = const_cast<char*>(temp_password.c_str());
-
-
-  int login_info
-    = LASTFM_login_MD5(lastfm_session, username, password);
-
-
-  if(login_info != 0)
-  {
-
-    debug("An error occurred when logining in!");
-
-
-  }
-  else
-  {
-
-    debug("Login succcesful");
-
-    *successful = true;
-
-  }
-
-  LASTFM_dinit(lastfm_session);
-
-  *thread_finished = true;
-
-  delete scrobbling_thread;
-
-  debug("After delete scrobbling_thread");
-
-}
-
-
-
-
-
 void Scrobbling::Update(Track temp_track, 
                         ScrobblingThread *scrobbling_thread,
                         string temp_username,
@@ -584,80 +733,40 @@ void Scrobbling::Update(Track temp_track,
 
 }
 
+void Scrobbling::Update_Playing_Track_Lastfm()
+{
+
+  sigc::connection program_conn = Glib::signal_timeout().connect
+  (
+
+    [this]() -> bool
+    {
+
+      if(playback().Duration() != 0LL)
+      {
 
 
+        debug("Updating track");
+
+        Track_Action(Scrobbling::Action::UPDATE, playback().playing_track(),
+                     shared_ptr<bool>(new bool(false)), 
+                     shared_ptr<bool>(new bool(false)));
 
 
-void Scrobbling::Scrobble(Track temp_track, 
-                          ScrobblingThread *scrobbling_thread, 
-                          string temp_username,
-                          string temp_password,
-                          shared_ptr<bool> thread_finished,
-                          shared_ptr<bool> successful)
-{                        
+        return false;
 
-  LASTFM_SESSION *lastfm_session;
+      }
+      else
+      {
 
-  lastfm_session = LASTFM_init("41940cc3bb675fba6283b0891b9de7f3",              
-                               "f18ff7cee0603cdf532e73297bc5a2db");
+        return true;
 
+      }
 
-//  try
-//  {
+    }, 
+    100 
 
-  char* username = const_cast<char*>(temp_username.c_str());
-  char* password = const_cast<char*>(temp_password.c_str());
-
-  int login_info = LASTFM_login_MD5(lastfm_session, username, password);
-
-  if(login_info != 0)
-  {
-
-    debug("An error occurred when logining in!");
-
-    return;
-
-  }
-  else
-  {
-
-    debug("Login succcesful!");
-
-  }
-
-
-  char title[100],
-       album[100],
-       artist[100];
-
-  strcpy(title, const_cast<char*>((temp_track.title()).c_str()));
-
-  strcpy(album, const_cast<char*>((temp_track.album()).c_str()));
-
-  Glib::ustring *temp_artists = temp_track.artists_string();
-
-  strcpy(artist, const_cast<char*>(temp_artists -> c_str()));
-
-  delete temp_artists;
-
-
-  time_t started;
-         time(&started);
-         started -= 1;
-
-  LASTFM_track_scrobble(lastfm_session, title, album, artist,
-                        started, 1000, 0, 0, NULL);
-
-  LASTFM_dinit(lastfm_session);
-
-  temp_track.Print();
-
-  debug("track track scrobbled!!");
-
-  *thread_finished = true;
-
-  delete scrobbling_thread;
-
+  );
 
 
 }
@@ -666,8 +775,20 @@ void Scrobbling::Scrobble(Track temp_track,
 
 
 
+//         //
+//         //
+// Getters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
 
-list<ScrobblingThread> &Scrobbling::scrobbling_threads()
+bool Scrobbling::restart()
+{
+
+  return restart_;
+
+}
+
+list<ScrobblingThread>& Scrobbling::scrobbling_threads()
 { 
 
   while(scrobbling_threads_active().load())
@@ -682,5 +803,43 @@ list<ScrobblingThread> &Scrobbling::scrobbling_threads()
   set_scrobbling_threads_active(true);
 
   return scrobbling_threads_;
+
+}
+
+std::atomic<bool>& Scrobbling::scrobbling_threads_active()
+{
+
+  return scrobbling_threads_active_;  
+
+}
+
+
+
+
+
+//         //
+//         //
+// Setters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+void Scrobbling::set_restart(bool new_value)
+{
+
+  restart_ = new_value;
+
+}
+
+void Scrobbling::set_scrobbling_threads_active(bool new_setting)
+{
+
+  scrobbling_threads_active_.store(new_setting, std::memory_order_relaxed);
+
+}
+
+void Scrobbling::set_scrobbling_loop_paused(bool new_value)
+{
+
+  scrobbling_loop_paused_ = new_value;
 
 }
