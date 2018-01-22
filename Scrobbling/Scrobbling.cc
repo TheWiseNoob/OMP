@@ -190,9 +190,6 @@ Scrobbling::Scrobbling(Base& base_ref)
 Scrobbling::~Scrobbling()
 { 
 
-  // 
-  delete database_;
-
 }
 
 
@@ -366,7 +363,6 @@ void Scrobbling::Scrobble(Track temp_track,
   if(result != 0)
   {
 
-    database_ -> Add_Track(temp_track, long(started));
 
   }
 
