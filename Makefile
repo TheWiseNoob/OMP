@@ -8,10 +8,12 @@ OBJS = Main.o About.o Abouts.o Base.o Parts.o GUI.o SpinButtonScale.o \
 	KeyboardShortcutsPanel.o OutputPanel.o PlaybackPanel.o \
 	PlaylistPanel.o ReplayGainPanel.o ScrobblingPanel.o Panel.o \
 	ChildWindow.o Playback.o ParserAndDecoder.o TrackBin.o Metadata.o \
-	CueSheet.o Scrobbling.o TimeConversion.o Tag.o Track.o \
-	Configuration.o DefaultValues.o DefaultValue.o
+	CueSheet.o Scrobbling.o FailedScrobblesDatabase.o TimeConversion.o \
+	Tag.o Track.o Configuration.o DefaultValues.o DefaultValue.o
 
 CFLAGS = -std=c++14 -Wno-deprecated-declarations
+
+DESTDIR = ''
 
 all: base 
 
@@ -405,10 +407,18 @@ CueSheet.o: Metadata/CueSheet.cc Metadata/CueSheet.h Metadata/Track.h TimeConver
 
 Scrobbling.o: Scrobbling/Scrobbling.cc Scrobbling/Scrobbling.h \
 	Configuration/Configuration.h Base.h \
-	Playback/Playback.h Metadata/Track.h 
+	Playback/Playback.h Metadata/Track.h \
+	Scrobbling/FailedScrobblesDatabase.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Scrobbling/Scrobbling.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-lclastfm -pthread
+
+FailedScrobblesDatabase.o: Scrobbling/FailedScrobblesDatabase.cc \
+	Scrobbling/FailedScrobblesDatabase.h Parts.h \
+	Base.h Metadata/Track.h
+	g++ -g -Wall -pipe $(CFLAGS) -c -Wno-write-strings \
+	Scrobbling/FailedScrobblesDatabase.cc -l sqlite3 \
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 Tag.o: Metadata/Tag.cc Metadata/Tag.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/Tag.cc \
@@ -444,11 +454,11 @@ clean:
 
 
 install:
-	install -Dm0755 omp /usr/bin/omp
-	install -Dm0644 Images/No_Cover.svg /usr/share/pixmaps/No_Cover.png
-	install -Dm0644 Images/OMP_Icon_16.png /usr/share/pixmaps/OMP_Icon_16.png
-	install -Dm0644 Images/OMP_Icon_32.png /usr/share/pixmaps/OMP_Icon_32.png
-	install -Dm0644 Images/OMP_Icon_48.png /usr/share/pixmaps/OMP_Icon_48.png
-	install -Dm0644 Images/OMP_Icon_64.png /usr/share/pixmaps/OMP_Icon_64.png
-	install -Dm0644 Images/OMP_Icon_128.png /usr/share/pixmaps/OMP_Icon_128.png
-	install -Dm0644 omp.desktop /usr/share/applications/omp.desktop
+	install -Dm0755 omp $(DESTDIR)/usr/bin/omp
+	install -Dm0644 Images/No_Cover.svg $(DESTDIR)/usr/share/pixmaps/No_Cover.png
+	install -Dm0644 Images/OMP_Icon_16.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_16.png
+	install -Dm0644 Images/OMP_Icon_32.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_32.png
+	install -Dm0644 Images/OMP_Icon_48.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_48.png
+	install -Dm0644 Images/OMP_Icon_64.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_64.png
+	install -Dm0644 Images/OMP_Icon_128.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_128.png
+	install -Dm0644 omp.desktop $(DESTDIR)/usr/share/applications/omp.desktop

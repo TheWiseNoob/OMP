@@ -648,7 +648,7 @@ void Playlist::on_drag_begin(const Glib::RefPtr< Gdk::DragContext >& context)
 {
 
   // Sets the icon shown while dragging.
-  drag_source_set_icon("list-add");
+//  drag_source_set_icon("list-add");
 
 }
 
@@ -1236,23 +1236,19 @@ bool Playlist::on_drag_drop
 
 } 
 
-void Playlist::on_drag_end(const Glib::RefPtr< Gdk::DragContext >& context)
+void Playlist::on_drag_end(const Glib::RefPtr<Gdk::DragContext>& context)
 { 
 
   debug("In on_drag_end");
 
 
-/*
+
   if(!(playlists() . drag_occurred_))
   {
 
-    (*dest_tree_row_ref_) = *drag_tree_row_ref_;
-
-
-    on_drag_drop(context, 0, 0, 0);
 
   }
-*/
+
 
 
   playlists() . drag_occurred_ = false;
@@ -1262,9 +1258,6 @@ void Playlist::on_drag_end(const Glib::RefPtr< Gdk::DragContext >& context)
 
   // Sets the drag_occurring flag to false.
   playlists() . set_drag_occurring(false);
-
-
-
 
 }
 
@@ -2052,6 +2045,7 @@ bool Playlist::on_motion_notify_event(GdkEventMotion* motion_event)
 
     // Disables the selection change flag.
     playlists() . set_disable_on_selection_changed(true);
+
 
 
 
