@@ -407,7 +407,7 @@ CueSheet.o: Metadata/CueSheet.cc Metadata/CueSheet.h Metadata/Track.h TimeConver
 
 Scrobbling.o: Scrobbling/Scrobbling.cc Scrobbling/Scrobbling.h \
 	Configuration/Configuration.h Base.h \
-	Playback/Playback.h Metadata/Track.h \
+	Playback/Playback.h Metadata/Track.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Scrobbling/Scrobbling.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-lclastfm -pthread
