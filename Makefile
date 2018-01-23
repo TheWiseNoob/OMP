@@ -446,6 +446,9 @@ clean:
 
 
 install:
+	rm $(DESTDIR)/usr/bin/omp
+	rm $(DESTDIR)/usr/share/pixmaps/OMP*
+	rm $(DESTDIR)/usr/share/applications/omp.desktop
 	install -Dm0755 omp $(DESTDIR)/usr/bin/omp
 	install -Dm0644 Images/No_Cover.svg $(DESTDIR)/usr/share/pixmaps/No_Cover.png
 	install -Dm0644 Images/OMP_Icon_16.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_16.png
