@@ -55,7 +55,7 @@
 
 
 
-### Known Bugs:
+## Known Bugs:
 
   - File browser has no OK button or Cancel button if it's windowed.
   - Damaged files crash the program when metadata is read.
