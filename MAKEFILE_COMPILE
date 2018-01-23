@@ -1,5 +1,0 @@
-time make -j10 -f Makefile
-sudo install -DCm0755 omp /usr/bin/omp"
-sudo install -Dm0644 Images/No_Cover.svg /usr/share/pixmaps/no_cover.png"
-sudo install -Dm0644 Images/Icon_Small.png "${pkgdir}/usr/share/pixmaps/omp.png"
-sudo install -Dm0644 omp.desktop "${pkgdir}/usr/share/applications/omp.desktop"
