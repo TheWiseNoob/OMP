@@ -1,6 +1,6 @@
 ![Logo](/Images/OMP_Icon_128.png?raw=true)
 # OpenMusicPlayer
-#### Version: 0.0.2
+#### Version: 0.0.3
 
 
 
@@ -11,6 +11,7 @@
   To compile and then install, run the following commands:
 
   make
+
   sudo make install
 
 
@@ -62,6 +63,8 @@
   - Holding shift while dragging breaks dragging.
   - Dragging glitches when drag ends on non-valid drop.
   - Scrobbling might not be disableable.
+  - Dragging row to top of queue causes invalid path.
+  - Playing queue after closing might cause crash.
 
 
 
