@@ -1,5 +1,5 @@
 ![Logo](/Images/OMP_Icon_128.png?raw=true)
-# OpenMusicPlayer
+# OMP : Open Music Player
 #### Version: 0.0.3
 
 
