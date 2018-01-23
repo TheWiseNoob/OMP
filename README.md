@@ -1,6 +1,6 @@
 ![Logo](/Images/OMP_Icon_128.png?raw=true)
 # OpenMusicPlayer
-#### Version: 0.0.3
+#### Version: 0.0.2
 
 
 
@@ -8,31 +8,9 @@
 
 ## Compiling and Installing:
 
-  To compile and then install, run the following commands:
-
-  make
-
-  sudo make install
-
-
-
-  You can also install OMP via the PKGBUILD provided or install it via omp-git
-  that is on AUR.
-
-
-
-  You'll have to have everything used by the program before compiling if you're
-  not using the PKGBUILD. Only the packages from the latest version of 
-  Arch Linux have been tested with OMP.
-
-
-
-
-
 ### Dependencies Include:
 
   - gtkmm3
-  - GTK3+
   - GStreamer
      - gstream
      - gst-libav
@@ -44,8 +22,31 @@
   - libconfig
   - taglib
   - libclastfm 
-  - Boost
 
+
+
+### Compile & Install Instructions
+
+#### Method 1 : Makefile and Manual Dependency Retrieval
+
+  You will need all of the dependencies manually installed before being able to
+  use the compile and install instructions below.
+
+
+  To compile and then install, run the following commands:
+
+  make
+  sudo make install
+
+
+  Once compiled and installed, you can run omp as a command to open it.
+
+
+
+#### Method 2: Arch User Repository
+
+
+  You can also install OMP via the AUR with the official omp-git package.
 
 
   Once compiled and installed, you can run omp as a command to open it.
