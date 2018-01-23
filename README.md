@@ -1,11 +1,13 @@
 ![Logo](/Images/OMP_Icon_128.png?raw=true)
 # OpenMusicPlayer
-#### Version: 0.0.2
+#### Version: 0.0.3
 
 
 
 
 
+<br />
+<br />
 ## Compiling and Installing:
 
 ### Dependencies Include:
@@ -33,16 +35,18 @@
   use the compile and install instructions below.
 
 
-  To compile and then install, run the following commands:
+  To compile and then install, run the following commands:<br />
 
-  make
-  sudo make install
+
+  make<br />
+  sudo make install<br />
 
 
   Once compiled and installed, you can run omp as a command to open it.
 
 
 
+<br />
 #### Method 2: Arch User Repository
 
 
@@ -55,6 +59,8 @@
 
 
 
+<br />
+<br />
 ## Known Bugs:
 
   - File browser has no OK button or Cancel button if it's windowed.
@@ -71,5 +77,7 @@
 
 
 
+<br />
+<br />
 ## Screenshot:
 ![Screenshot1](Images/Screenshots/NRnilGB.png?raw=true)
