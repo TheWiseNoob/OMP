@@ -6,11 +6,9 @@
 
 
 
-<br />
-<br />
-## Compiling and Installing:
+## Compiling and Installing
 
-### Dependencies Include:
+### Dependencies
 
   - gtkmm3
   - GStreamer
@@ -42,11 +40,10 @@
   sudo make install<br />
 
 
-  Once compiled and installed, you can run omp as a command to open it.
+  Once compiled and installed, you can run omp as a command to open it.<br />
 
 
 
-<br />
 #### Method 2: Arch User Repository
 
 
@@ -59,9 +56,7 @@
 
 
 
-<br />
-<br />
-## Known Bugs:
+## Known Bugs
 
   - File browser has no OK button or Cancel button if it's windowed.
   - Damaged files crash the program when metadata is read.
@@ -77,7 +72,5 @@
 
 
 
-<br />
-<br />
-## Screenshot:
+## Screenshot
 ![Screenshot1](Images/Screenshots/NRnilGB.png?raw=true)
