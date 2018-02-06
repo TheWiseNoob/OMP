@@ -143,7 +143,7 @@ FailedScrobblesDatabase::FailedScrobblesDatabase(Base& base_ref)
 
 // Inherited Class
 
-: Parts(base_ref, true)
+: Parts(base_ref)
 
 
 
