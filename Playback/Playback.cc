@@ -2767,7 +2767,7 @@ void Playback::Pause()
 
 
     // Pauses the scrobbling loop.
-    base() . scrobbling() . set_scrobbling_loop_paused(true);
+    scrobbling() . set_scrobbling_loop_paused(true);
 
 
 

@@ -106,6 +106,8 @@ class PlaylistComboBoxes;
 
 class Playlists;
 
+class Scrobbling;
+
 class TimeConversion;
 
 
@@ -194,6 +196,8 @@ class Parts
     virtual PlaylistComboBoxes& playlist_comboboxes();
 
     virtual Playlists& playlists();
+
+    virtual Scrobbling& scrobbling();
 
     virtual TimeConversion& time_converter();
 

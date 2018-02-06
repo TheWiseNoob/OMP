@@ -77,6 +77,8 @@
 
 #include "../Playback/Playback.h"
 
+#include "FailedScrobblesDatabase.h"
+
 
 
 
@@ -161,19 +163,21 @@ Scrobbling::Scrobbling(Base& base_ref)
 
 // Inherited Class
 
-: Parts(base_ref)
+: Parts(base_ref, true)
 
 
 
-// 
+// Member Variables
+
+, failed_scrobbles_database_(new FailedScrobblesDatabase(base_ref))
+
+, playing_scrobble_track_(nullptr)
 
 , restart_(false)
 
+, scrobbling_threads_active_(false)
+
 { 
-
-  playing_scrobble_track_ = nullptr;
-
-  scrobbling_threads_active_ = false;
 
 }
 
@@ -189,6 +193,9 @@ Scrobbling::Scrobbling(Base& base_ref)
 
 Scrobbling::~Scrobbling()
 { 
+
+  // 
+  delete failed_scrobbles_database_;
 
 }
 
@@ -268,6 +275,164 @@ void Scrobbling::Login_Lastfm()
 
 }
 
+void Scrobbling::Rescrobble_Failed_Scrobbles(shared_ptr<bool> thread_finished)
+{
+
+  // 
+  thread rescrobble_thread([this, thread_finished]
+  {
+
+    // 
+    vector<Track*> unscrobbled_tracks;
+
+    // 
+    vector<int> unscrobbled_track_ids;
+
+    // 
+    vector<long> unscrobbled_track_times;
+
+
+
+    // 
+    failed_scrobbles_database_
+      -> Extract_Tracks(&unscrobbled_tracks, &unscrobbled_track_ids, 
+                        &unscrobbled_track_times);
+
+
+
+    // 
+    int count = 0;
+
+    // 
+    for(auto unscrobbled_tracks_it : unscrobbled_tracks)
+    {
+
+      // 
+      LASTFM_SESSION *lastfm_session;
+
+      //
+      lastfm_session = LASTFM_init("41940cc3bb675fba6283b0891b9de7f3",              
+                                   "f18ff7cee0603cdf532e73297bc5a2db");
+
+
+
+      // 
+      string username_str = config() . get("scrobbling.lastfm_username");
+
+      // 
+      string password_str = config() . get("scrobbling.lastfm_password");
+
+      // 
+      char* username_c_str = const_cast<char*>(username_str . c_str());
+
+      // 
+      char* password_c_str = const_cast<char*>(password_str . c_str());
+
+
+
+      // 
+      time_t started = unscrobbled_track_times[count];
+
+
+
+      // 
+      int login_info
+        = LASTFM_login_MD5(lastfm_session, username_c_str, password_c_str);
+
+      // 
+      if(login_info != 0)
+      {
+
+        debug("An error occurred when logining in!");
+
+      }
+
+      // 
+      else
+      {
+
+        debug("Login succcesful!");
+
+
+
+        // 
+        char title[100],
+        album[100],
+        artist[100];
+
+
+
+        // 
+        strcpy(title, const_cast<char*>((unscrobbled_tracks_it -> title()) . c_str()));
+
+        //
+        strcpy(album, const_cast<char*>((unscrobbled_tracks_it -> album()) . c_str()));
+
+        // 
+        Glib::ustring* temp_artists = unscrobbled_tracks_it -> artists_string();
+
+        // 
+        strcpy(artist, const_cast<char*>(temp_artists -> c_str()));
+
+        // 
+        delete temp_artists;
+
+
+
+        // 
+        int result
+          = LASTFM_track_scrobble(lastfm_session, title, album, artist,
+                                  started, 1000, 0, 0, NULL);
+
+
+
+        // 
+        if(result != 0)
+        {
+
+        }
+
+        // 
+        else
+        {
+
+          debug("track track scrobbled!!");
+
+
+
+          // 
+          failed_scrobbles_database_ -> Delete_Track(count);
+
+        }
+
+      }
+
+
+
+      // 
+      LASTFM_dinit(lastfm_session);
+
+
+
+      // 
+      count++;
+
+    }
+
+
+
+    // 
+    *thread_finished = true;
+
+  });  
+
+
+
+  // 
+  rescrobble_thread . detach();
+
+}
+
 void Scrobbling::Scrobble(Track temp_track, 
                           ScrobblingThread *scrobbling_thread, 
                           string temp_username,
@@ -294,6 +459,13 @@ void Scrobbling::Scrobble(Track temp_track,
 
 
   // 
+  time_t started;
+         time(&started);
+         started -= 1;
+
+
+
+  // 
   int login_info = LASTFM_login_MD5(lastfm_session, username, password);
 
   // 
@@ -305,7 +477,7 @@ void Scrobbling::Scrobble(Track temp_track,
 
 
     // 
-    return;
+    failed_scrobbles_database_ -> Add_Track(temp_track, long(started));
 
   }
 
@@ -315,60 +487,61 @@ void Scrobbling::Scrobble(Track temp_track,
 
     debug("Login succcesful!");
 
+
+
+    // 
+    char title[100],
+         album[100],
+         artist[100];
+
+
+
+    // 
+    strcpy(title, const_cast<char*>((temp_track.title()).c_str()));
+
+    //
+    strcpy(album, const_cast<char*>((temp_track.album()).c_str()));
+
+    // 
+    Glib::ustring *temp_artists = temp_track.artists_string();
+
+    // 
+    strcpy(artist, const_cast<char*>(temp_artists -> c_str()));
+
+    // 
+    delete temp_artists;
+
+
+
+    // 
+    int result = LASTFM_track_scrobble(lastfm_session, title, album, artist,
+                                       started, 1000, 0, 0, NULL);
+
+
+
+    // 
+    if(result != 0)
+    {
+
+      // 
+      failed_scrobbles_database_ -> Add_Track(temp_track, long(started));
+
+    }
+
+    // 
+    else
+    {
+
+      debug("track track scrobbled!!");
+
+    }
+
   }
 
 
-
-  // 
-  char title[100],
-       album[100],
-       artist[100];
-
-
-
-  // 
-  strcpy(title, const_cast<char*>((temp_track.title()).c_str()));
-
-  //
-  strcpy(album, const_cast<char*>((temp_track.album()).c_str()));
-
-  // 
-  Glib::ustring *temp_artists = temp_track.artists_string();
-
-  // 
-  strcpy(artist, const_cast<char*>(temp_artists -> c_str()));
-
-  // 
-  delete temp_artists;
-
-
-
-  // 
-  time_t started;
-         time(&started);
-         started -= 1;
-
-
-
-  // 
-  int result = LASTFM_track_scrobble(lastfm_session, title, album, artist,
-                                     started, 1000, 0, 0, NULL);
 
   // 
   LASTFM_dinit(lastfm_session);
-
-
-
-  // 
-  if(result != 0)
-  {
-
-
-  }
-
-
-
-  debug("track track scrobbled!!");
 
 
 
@@ -380,7 +553,7 @@ void Scrobbling::Scrobble(Track temp_track,
   //
   delete scrobbling_thread;
 
-}
+} 
 
 void Scrobbling::Scrobble_Playing_Track_Lastfm()
 {
@@ -502,9 +675,12 @@ void Scrobbling::Scrobble_Playing_Track_Lastfm()
         = (int(100 * (total_elapsed_nanoseconds / double(playback().Duration()))));
 
 
-      if(calculated_percent >= int(config().get("scrobbling.percent")))
-      {
 
+      // 
+      if(calculated_percent >= int(config().get("scrobbling.percent")))
+      { 
+
+        // 
         if(bool(config() . get("scrobbling.lastfm_enabled")))
         {
 
@@ -512,7 +688,7 @@ void Scrobbling::Scrobble_Playing_Track_Lastfm()
                        shared_ptr<bool>(new bool(false)), 
                        shared_ptr<bool>(new bool(false)));
 
-        }
+        } 
 
 
 
@@ -528,6 +704,8 @@ void Scrobbling::Scrobble_Playing_Track_Lastfm()
         return false;
 
       }
+
+      // 
       else
       {
 
@@ -548,7 +726,7 @@ void Scrobbling::Scrobble_Playing_Track_Lastfm()
 void Scrobbling::Track_Action(Scrobbling::Action action,
                               shared_ptr<bool> thread_finished,
                               shared_ptr<bool> successful)
-{
+{ 
 
   Track temp_useless_track;
 
@@ -777,6 +955,13 @@ void Scrobbling::Update_Playing_Track_Lastfm()
 //         //
 //         //
 
+FailedScrobblesDatabase& Scrobbling::failed_scrobbles_database()
+{
+
+  return *failed_scrobbles_database_;
+
+}
+
 bool Scrobbling::restart()
 {
 
@@ -787,7 +972,7 @@ bool Scrobbling::restart()
 list<ScrobblingThread>& Scrobbling::scrobbling_threads()
 { 
 
-  while(scrobbling_threads_active().load())
+  while(scrobbling_threads_active() . load())
   { 
 
      debug("scrobbling thread sleeping while waiting for access");

@@ -74,3 +74,21 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - No longer possible to open multiple instances of OMP.
 - Removed the & from the File Chooser & Playlist tab.
+
+
+
+## [0.0.4] - 2018-01-28
+
+### Added
+- Database for tracks that failed to scrobble.
+- Button to reattempt failed scrobbles.
+- Button to clear failed scrobbles.
+
+### Changed
+- Playlist views now save what playlist was used last.
+- Lock status of playlist is now saved.
+- Playlist ComboBox position is now saved.
+- Scrobbling now confirmed as fully disableable.
+
+### Removed
+- Boost build requirement removed.

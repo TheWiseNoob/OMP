@@ -57,10 +57,6 @@
 //              //
 //              //
 
-#include "../../ChildWindow.h"
-
-#include "../../GUI.h"
-
 #include "Abouts.h"
 
 
@@ -73,6 +69,10 @@
 //                 //
 //                 //
 
+#include "../../ChildWindow.h"
+
+#include "../../GUI.h"
+
 
 
 
@@ -83,6 +83,8 @@
 // Outside Headers ////////////////////////////////////////////////////////////
 //                 //
 //                 //
+
+#include <gtkmm/applicationwindow.h>
 
 
 
@@ -187,6 +189,6 @@ void Abouts::Open_About()
   new_child_window -> window() . set_resizable(false);
 
   // Displays the new window.
-  new_child_window -> show();
+  new_child_window -> Show();
 
 }

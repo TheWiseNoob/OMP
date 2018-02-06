@@ -89,6 +89,8 @@
 //                 //
 //                 //
 
+#include <gtkmm/applicationwindow.h>
+
 #include <gtkmm/button.h>
 
 
@@ -299,7 +301,7 @@ void ConfigurationGUIs::Open_Configuration()
   new_child_window -> window() . set_default_size(600, 400);
 
   // Displays the new window.
-  new_child_window -> show();
+  new_child_window -> Show();
 
 }
 

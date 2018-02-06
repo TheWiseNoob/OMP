@@ -176,7 +176,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   public:
 
-    Playlist(Base& base_ref, Playlists& playlists_ref);
+    Playlist(Base& base_ref, Playlists& playlists_ref,
+             const char* new_playlist_view_name);
 
 
 
@@ -269,6 +270,10 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     void Header_Clicked();
 
+    void Lock();
+
+    void On_Columns_Changed();
+
     void On_Selection_Changed();
 
 
@@ -329,6 +334,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     Glib::RefPtr<PlaylistTreeStore> playlist_treestore();
 
+    const char* playlist_view_name();
+
 
 
 
@@ -352,6 +359,18 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   // Member Variables /////////////////////////////////////////////////////////
   //                  //
   //                  //
+
+  //         //
+  // General //////////////////////////////////////////////////////////////////
+  //         //
+
+  private:
+
+    const char* playlist_view_name_;
+
+
+
+
 
   //       //
   // Flags ////////////////////////////////////////////////////////////////////

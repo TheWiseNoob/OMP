@@ -87,6 +87,8 @@
 
 #include "Playback/Playback.h"
 
+#include "Scrobbling/Scrobbling.h"
+
 
 
 
@@ -235,6 +237,13 @@ Playlists& Parts::playlists()
 {
 
   return base_.gui().playlists();
+
+}
+
+Scrobbling& Parts::scrobbling()
+{
+
+  return base_ . scrobbling();
 
 }
 

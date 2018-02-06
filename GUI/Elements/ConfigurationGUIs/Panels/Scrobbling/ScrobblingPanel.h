@@ -43,6 +43,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef SCROBBLING_PANEL_H
 #define SCROBBLING_PANEL_H
 
@@ -50,112 +58,320 @@
 
 
 
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
 #include "../../Panel.h"
 
 
 
+
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
+
 class ConfigurationGUI;
-class SpinButtonScale;
-
-
 
 namespace Gtk
 {
 
-  class Frame;
   class Box;
-  class Label;
-  class Entry;
-  class Switch;
+
   class Button;
+
+  class Entry;
+
+  class Frame;
+
+  class Label;
+
   class Spinner;
+
+  class Switch;
 
 }
 
+class SpinButtonScale;
 
 
 
+
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
 
 class ScrobblingPanel : public Panel
 {
+
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
 
   public: 
 
     ScrobblingPanel(Base& base_ref, ConfigurationGUI& new_config_gui);
 
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
+
     virtual ~ScrobblingPanel();
 
+
+
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  //         //
+  // General //////////////////////////////////////////////////////////////////
+  //         //
+
+  public:
+
     virtual void Apply_Saved_Values() final override;
+
+
+
+
+
+  //                     //
+  // Account Information //////////////////////////////////////////////////////
+  //                     //
+
+  protected:
+
+    void Lastfm_Login_Button_Signal_Clicked();
+
+    void Lastfm_Password_Entry_Signal_Changed();
+
+    bool Lastfm_Password_Entry_Signal_Focus_In_Event(GdkEventFocus* event);
+
+    bool Lastfm_Password_Entry_Signal_Focus_Out_Event(GdkEventFocus* event);
+
+    void Lastfm_Username_Entry_Signal_Changed();
+ 
+    bool Lastfm_Username_Entry_Signal_Focus_In_Event(GdkEventFocus* event);
+    
+    bool Lastfm_Username_Entry_Signal_Focus_Out_Event(GdkEventFocus* event);
+
+    void Lastfm_Switch_Signal_Changed();
+
+
+
+
+
+  //                  //
+  // Failed Scrobbles /////////////////////////////////////////////////////////
+  //                  //
+
+  protected:
+
+    void Clear_Scrobbles_Button_Signal_Clicked();
+
+    void Reattempt_Scrobbles_Button_Signal_Clicked();
+
+
+
+
+
+  //                  //
+  // Scrobble Percent /////////////////////////////////////////////////////////
+  //                  //
 
   protected:
 
     void Scrobble_Percent_SpinButtonScale_Signal_Changed();
 
-    bool Lastfm_Username_Entry_Signal_Focus_In_Event(GdkEventFocus* event);
-    
-    bool Lastfm_Username_Entry_Signal_Focus_Out_Event(GdkEventFocus* event);
 
-    void Lastfm_Username_Entry_Signal_Changed();
- 
-    bool Lastfm_Password_Entry_Signal_Focus_In_Event(GdkEventFocus* event);
 
-    bool Lastfm_Password_Entry_Signal_Focus_Out_Event(GdkEventFocus* event);
 
-    void Lastfm_Password_Entry_Signal_Changed();
 
-    void Lastfm_Switch_Signal_Changed();
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-    void Lastfm_Login_Button_Signal_Clicked();
+  //                     //
+  // Account Information //////////////////////////////////////////////////////
+  //                     //
 
   public:
-  
-    SpinButtonScale &scrobble_percent_spinbuttonscale()
-    { 
 
-      return *scrobble_percent_spinbuttonscale_; 
+    // 
+    Gtk::Button& lastfm_login_button();
 
-    }
- 
-    Gtk::Entry &lastfm_username_entry();
+    // 
+    Gtk::Entry& lastfm_password_entry();
 
-    Gtk::Entry &lastfm_password_entry();
+    // 
+    Gtk::Spinner& lastfm_spinner();
 
-    Gtk::Switch &lastfm_switch();
+    // 
+    Gtk::Switch& lastfm_switch();
 
-    Gtk::Button &lastfm_login_button();
+    // 
+    Gtk::Entry& lastfm_username_entry();
 
-    Gtk::Spinner &lastfm_spinner()
-    { 
 
-      return *lastfm_spinner_; 
 
-    }
+
+
+  //                  //
+  // Failed Scrobbles /////////////////////////////////////////////////////////
+  //                  //
+
+  public:
+
+    // 
+    Gtk::Button& clear_failed_scrobbles_button();
+
+    // 
+    Gtk::Label& failed_scrobbles_count_label();
+
+    // 
+    Gtk::Button& reattempt_failed_scrobbles_button();
+
+    // 
+    Gtk::Spinner& reattempt_scrobbles_spinner();
+
+
+
+
+
+  //                  //
+  // Scrobble Percent /////////////////////////////////////////////////////////
+  //                  //
+
+  public:
+
+    // 
+    SpinButtonScale& scrobble_percent_spinbuttonscale();
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  //                     //
+  // Account Information //////////////////////////////////////////////////////
+  //                     //
 
   private:
 
-    Gtk::Frame *lastfm_frame_;
+    // 
+    Gtk::Box* lastfm_box_;
 
-    Gtk::Box *lastfm_box_,
-             *lastfm_sub_box_;
+    // 
+    Gtk::Frame* lastfm_frame_;
 
-    Gtk::Label *scrobble_percent_label_;
+    // 
+    Gtk::Button* lastfm_login_button_;
 
-    SpinButtonScale *scrobble_percent_spinbuttonscale_;
+    // 
+    Gtk::Entry* lastfm_password_entry_;
 
-    Gtk::Entry *lastfm_username_entry_;
-    
-    Gtk::Entry *lastfm_password_entry_;
+    // 
+    Gtk::Spinner* lastfm_spinner_;
 
-    Gtk::Switch *lastfm_switch_;
+    // 
+    Gtk::Box* lastfm_sub_box_;
 
-    Gtk::Button *lastfm_login_button_;
+    // 
+    Gtk::Switch* lastfm_switch_;
 
-    Gtk::Spinner *lastfm_spinner_;
+    // 
+    Gtk::Entry* lastfm_username_entry_;
+
+
+
+
+
+  //                  //
+  // Failed Scrobbles /////////////////////////////////////////////////////////
+  //                  //
+
+  private:
+
+    // 
+    Gtk::Button* clear_failed_scrobbles_button_;
+
+    // 
+    Gtk::Box* failed_scrobbles_box_;
+
+    // 
+    Gtk::Label* failed_scrobbles_count_label_;
+
+    // 
+    Gtk::Label* failed_scrobbles_label_;
+
+    // 
+    Gtk::Button* reattempt_failed_scrobbles_button_;
+
+    // 
+    Gtk::Spinner* reattempt_scrobbles_spinner_;
+
+
+
+
+
+  //                  //
+  // Scrobble Percent /////////////////////////////////////////////////////////
+  //                  //
+
+  private:
+
+    // 
+    Gtk::Label* scrobble_percent_label_;
+
+    // 
+    SpinButtonScale* scrobble_percent_spinbuttonscale_;
 
 };
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

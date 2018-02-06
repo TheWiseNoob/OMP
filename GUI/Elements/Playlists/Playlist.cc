@@ -165,12 +165,18 @@ using namespace std;
 //             //
 //             //
 
-Playlist::Playlist(Base& base_ref, Playlists& playlists_ref)
+Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
+                   const char* new_playlist_view_name)
 
 // Inherited Class
 
-: GUIElement(base_ref, playlists_ref())
+: GUIElement(base_ref, playlists_ref(), true)
 
+
+
+// General
+
+, playlist_view_name_(new_playlist_view_name)
 
 
 // Flags
@@ -272,10 +278,36 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref)
 
 
 
-  //Assigns the TreeModel to the TreeView.
-  this
-    -> set_playlist_treestore
-         (*(++(playlists_ref . playlist_treestores() . begin())));
+  // 
+  string setting_name = "gui.playlist.view.";
+
+  // 
+  setting_name += playlist_view_name_;
+
+  // 
+  setting_name += ".active";
+
+
+
+  // 
+  string playlist_treestore_name = config() . get(setting_name . c_str());
+
+
+
+  // Assigns the TreeModel to the TreeView.
+  for(auto playlist_treestores_it : playlists_ref . playlist_treestores())
+  {
+
+    // 
+    if((playlist_treestores_it -> get_name()) == playlist_treestore_name)
+    {
+
+      // 
+      set_playlist_treestore(playlist_treestores_it);
+
+    }
+
+  }
 
 
 
@@ -564,6 +596,28 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref)
   menu_ = new PlaylistMenu(base_ref, *this, playlists_ref);
 
 
+
+  // 
+  setting_name = "gui.playlist.view.";
+
+  // 
+  setting_name += playlist_view_name_;
+
+  // 
+  setting_name += ".locked";
+
+
+
+  // 
+  bool playlist_active = config() . get(setting_name . c_str());
+
+
+
+  // 
+  menu_ -> lock_check_menu_item() . set_active(playlist_active);
+
+
+
   // Mouse button press shortcuts overload function signal connection.
   signal_button_press_event()
     . connect(sigc::mem_fun(*this, &Playlist::on_button_press_event), false);
@@ -588,6 +642,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref)
   // Mouse movement overload function signal connection.
   signal_motion_notify_event()
     . connect(sigc::mem_fun(*this, &Playlist::on_motion_notify_event), false);
+
 
 
 
@@ -2147,10 +2202,10 @@ void Playlist::Add_Selected_Tracks_Times()
 }
 
 void Playlist::Change_Playlist()
-{
+{ 
 
   // True if the Playlist is still constructing or if selection is disabled.
-  if(!constructed_ || (playlists().disable_on_selection_changed()))
+  if(!constructed_ || (playlists() . disable_on_selection_changed()))
   { 
 
     // Returns, ending the Change_Playlist function.
@@ -2161,7 +2216,7 @@ void Playlist::Change_Playlist()
 
 
   // Disables the selection changed callback.
-  playlists().set_disable_on_selection_changed(true);
+  playlists() . set_disable_on_selection_changed(true);
 
 
 
@@ -2171,20 +2226,42 @@ void Playlist::Change_Playlist()
 
   // Iterates through the the playlist treestores.
   for(auto playlist_treestores_it : playlists() . playlist_treestores())
-  { 
+   {
 
     // True if the current playlist RadioMenuItem is selected.
     if((*playlist_menu_radio_menu_items_it) -> get_active())
-    {
+     {
 
       // Sets the current playlist to the label of change_playlist_menu_item.
       menu_ -> change_playlist_menu_item()
-        .set_label("Playlist: " + playlist_treestores_it -> get_name());
+        . set_label("Playlist: " + playlist_treestores_it -> get_name());
 
 
 
       // Sets the playlist treestore as the current one of the iteration.
       set_playlist_treestore(playlist_treestores_it);
+
+
+
+      // 
+      string setting_name = "gui.playlist.view.";
+
+      // 
+      setting_name += playlist_view_name_;
+
+      // 
+      setting_name += ".active";
+
+
+
+      // 
+      config()
+        . set(setting_name . c_str(), playlist_treestores_it -> get_name());
+
+
+
+      // 
+      config() . write_file();
 
 
 
@@ -2203,7 +2280,7 @@ void Playlist::Change_Playlist()
 
 
   // Enables the selection changed function.
-  playlists().set_disable_on_selection_changed(false);
+  playlists() . set_disable_on_selection_changed(false);
 
 }
 
@@ -2240,6 +2317,36 @@ void Playlist::Header_Clicked()
       . Add_Tracks(playlist_name_str . c_str(), playlist_treestore_);
 
   }
+
+}
+
+void Playlist::Lock()
+{
+
+  // 
+  string setting_name = "gui.playlist.view.";
+
+  // 
+  setting_name += playlist_view_name_;
+
+  // 
+  setting_name += ".locked";
+
+
+
+  // 
+  bool playlist_active = menu_ -> lock_check_menu_item() . get_active();
+
+
+
+  // 
+  config() . set(setting_name . c_str(), playlist_active);
+
+
+
+  // 
+  config() . write_file();
+
 
 }
 
@@ -2829,13 +2936,14 @@ void Playlist::Paste_Clipboard_Rows()
 
 
   // 
-  const char* playlist_name = playlist_treestore_ -> get_name() . c_str();
+  string playlist_name = playlist_treestore_ -> get_name();
 
   // 
-  playlists() . database() . Clear_Playlist(playlist_name);
+  playlists() . database() . Clear_Playlist(playlist_name . c_str());
 
   // 
-  playlists() . database() . Add_Tracks(playlist_name, playlist_treestore_);
+  playlists() . database()
+    . Add_Tracks(playlist_name . c_str(), playlist_treestore_);
 
 
 
@@ -2907,7 +3015,7 @@ void Playlist::Queue_Rows()
 bool Playlist::Locked()
 {
 
-  return menu_ -> lock_check_menu_item().get_active();
+  return menu_ -> lock_check_menu_item() . get_active();
 
 }
 
@@ -2960,6 +3068,13 @@ Glib::RefPtr<PlaylistTreeStore> Playlist::playlist_treestore()
 {
 
   return playlist_treestore_;
+
+}
+
+const char* Playlist::playlist_view_name()
+{
+
+  return playlist_view_name_;
 
 }
 

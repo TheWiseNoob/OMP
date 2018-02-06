@@ -87,6 +87,8 @@
 //                 //
 //                 //
 
+#include <gtkmm/applicationwindow.h>
+
 #include <gtkmm/box.h>
 
 #include <gtkmm/button.h>

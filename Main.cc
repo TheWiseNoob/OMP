@@ -73,6 +73,8 @@
 
 #include <gtkmm/application.h>
 
+#include <gtkmm/applicationwindow.h>
+
 #include <glibmm/refptr.h>
 
 
@@ -93,7 +95,7 @@ int main (int argc, char *argv[])
   // 
   Glib::RefPtr<Gtk::Application> application 
     = Gtk::Application::create("openmusicplayer.com",
-                               Gio::APPLICATION_FLAGS_NONE);
+                               Gio::APPLICATION_FLAGS_NONE | Gio::APPLICATION_NON_UNIQUE);
 
 
 

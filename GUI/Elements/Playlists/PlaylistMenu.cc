@@ -62,6 +62,10 @@
 #include <gtkmm/radiobuttongroup.h>
 #include <gtkmm/separatormenuitem.h>
 
+#include <string>
+
+using namespace std;
+
 
 
 
@@ -141,6 +145,12 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
 
 
   // 
+  string playlist_treestore_name
+    = new_playlist . playlist_treestore() -> get_name();
+
+
+
+  // 
   for(auto playlist_treestores_it : temp_playlists.playlist_treestores())
   {
 
@@ -154,7 +164,8 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
     new_playlists_menu_radio_menu_item 
       -> set_label(playlist_treestores_it -> get_name()); 
 
-    if(count == 1)
+    // 
+    if((playlist_treestores_it -> get_name()) == playlist_treestore_name)
     {
 
       new_playlists_menu_radio_menu_item -> set_active(true);
@@ -195,6 +206,10 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
   // 
   delete_menu_item_ -> signal_activate()
     . connect(sigc::mem_fun(new_playlist, &Playlist::Delete_Selected_Rows));
+
+  // 
+  lock_check_menu_item_ -> signal_toggled()
+    . connect(sigc::mem_fun(new_playlist, &Playlist::Lock));
 
   // 
   paste_menu_item_ -> signal_activate()

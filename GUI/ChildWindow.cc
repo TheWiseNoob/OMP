@@ -43,11 +43,47 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//              //
+//              //
+// Class Header ///////////////////////////////////////////////////////////////
+//              //
+//              //
+
 #include "ChildWindow.h"
 
 
 
+
+
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "GUI.h"
+
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include <gtkmm/applicationwindow.h>
+
+#include <gtkmm/box.h>
 
 #include <iostream>
 
@@ -55,99 +91,134 @@
 
 
 
-ChildWindow::ChildWindow(const char* new_title,
-                         Base& new_main,
-                         std::function<void(void)> 
-                             new_child_class_destroy_function,
-                         bool make_main_window)
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
+
+using namespace std;
+
+
+
+
+
+//                 //
+//                 //
+//                 //
+// Class Functions ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+//                 //
+
+//             //
+//             //
+// Constructor ////////////////////////////////////////////////////////////////
+//             //
+//             //
+
+ChildWindow::ChildWindow
+  (const char* new_title, Base& new_main, std::function<void(void)> 
+   new_child_class_destroy_function, bool make_main_window)
+
+// Inherited Class
+
 : Parts(new_main)
+
+
+
+// Member Variables
+
+, box_(Gtk::manage(new Gtk::Box))
+
+, window_(new Gtk::ApplicationWindow)
+
 { 
 
+  // 
   main_window_ = make_main_window;
 
+  // 
   if(!main_window_)
-  {
+  { 
 
-    window_  . signal_key_press_event()
-      .connect(sigc::mem_fun(*this, &ChildWindow::On_Key_Press_Event));
+    // 
+    window_ -> signal_key_press_event()
+      . connect(sigc::mem_fun(*this, &ChildWindow::On_Key_Press_Event));
 
   }
 
 
-  window_.set_title(new_title);
 
-  window_.set_position(Gtk::WIN_POS_CENTER);
+  // 
+  window_ -> set_title(new_title);
 
-  window_.set_default_size(650,400);  
+  // 
+  window_ -> set_position(Gtk::WIN_POS_CENTER);
+
+  // 
+  window_ -> set_default_size(650,400);  
+
+
 
   debug("ChildWindow shown");
 
-  window_.signal_delete_event().connect(sigc::mem_fun(*this, 
-    &ChildWindow::on_irregular_quit));
 
+
+  // 
+  window_ -> signal_delete_event()
+    . connect(sigc::mem_fun(*this, &ChildWindow::On_Irregular_Quit));
+
+
+
+  // 
   child_class_destroy_function_ = new_child_class_destroy_function;
 
-  window_.add(box_);
+
+
+  // 
+  window_ -> add(*box_);
 
 }
 
 
 
 
+
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
 
 ChildWindow::~ChildWindow()
 {
 
-
   if(!main_window_)
   {
 
-    gui().windows().erase(windows_it_);
-
-  }
-
-}
-
-
-
-
-
-void ChildWindow::show()
-{
-
-  window_.show();
-
-  window_.show_all_children();
-
-}
-
-
-
-
-
-bool ChildWindow::on_irregular_quit(GdkEventAny* event)                          
-{                                                                               
-                                                                                
-  // 
-  if(child_class_destroy_function_)
-  {
-
-    // 
-    child_class_destroy_function_();
+    gui() . windows() . erase(windows_it_);
 
   }
 
 
 
   // 
-  window_.hide();
+  delete window_;
+
+ }
 
 
 
-  // 
-  return true;
 
-}
+
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
 
 bool ChildWindow::On_Key_Press_Event(GdkEventKey* event)
 {
@@ -157,7 +228,7 @@ bool ChildWindow::On_Key_Press_Event(GdkEventKey* event)
   {
 
     // 
-    on_irregular_quit(NULL);
+    On_Irregular_Quit(NULL);
 
 
 
@@ -171,5 +242,92 @@ bool ChildWindow::On_Key_Press_Event(GdkEventKey* event)
   // Allows normal keyboard event propagation.
   return false;
 
+} 
+
+bool ChildWindow::On_Irregular_Quit(GdkEventAny* event)                          
+{                                                                                
+                                                                                
+  // 
+  if(child_class_destroy_function_)
+  {
+
+    // 
+    child_class_destroy_function_();
+
+  } 
+
+
+
+  // 
+  window_ -> hide();
+
+
+
+  // 
+  return true;
+
 }
 
+void ChildWindow::Show()
+{
+
+  window_ -> show();
+
+  window_ -> show_all_children();
+
+}
+
+
+
+
+
+//         //
+//         //
+// Getters //////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+Gtk::Box& ChildWindow::box()
+{
+
+  return *box_; 
+
+}
+
+Gtk::ApplicationWindow& ChildWindow::window()
+{
+
+  return *window_;
+
+}
+
+
+
+
+
+//         //
+//         //
+// Setters //////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+void ChildWindow::set_default_size(int width, int height)
+{ 
+
+  window_ -> set_default_size(width, height); 
+
+}
+
+void ChildWindow::set_location(std::list<std::shared_ptr<ChildWindow>>::iterator new_it)
+{ 
+
+  windows_it_ = new_it; 
+
+}
+
+void ChildWindow::set_title(const char* new_title)
+{
+
+  window_ -> set_title(new_title); 
+
+}

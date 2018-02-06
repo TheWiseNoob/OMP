@@ -1358,13 +1358,18 @@ Gtk::TreeRowReference Playlists::playing_row_ref()
 Gtk::TreeRowReference Playlists::selected_row_ref()
 {
 
+  // 
   if(!(*selected_row_ref_))
-  {
+  { 
 
+    // 
     return Gtk::TreeRowReference();
 
   }
 
+
+
+  // 
   return *selected_row_ref_;
 
 }

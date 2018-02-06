@@ -51,8 +51,8 @@
 //                    //
 //                    //
 
-#ifndef SCROBBLING_H
-#define SCROBBLING_H
+#ifndef FAILED_SCROBBLES_DATABASE_H
+#define FAILED_SCROBBLES_DATABASE_H
 
 
 
@@ -66,11 +66,11 @@
 //         //
 //         //
 
-//                   //
-//                   //
-// Inherited Headers //////////////////////////////////////////////////////////
-//                   //
-//                   //
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 #include "../Parts.h"
 
@@ -84,70 +84,11 @@
 //                 //
 //                 //
 
-#include <atomic>
+#include <mutex>
 
-#include <list>
+#include <string>
 
-#include <memory>
-
-#include <thread>
-
-
-
-
-
-//                      //
-//                      //
-//                      //
-// Forward Declarations ///////////////////////////////////////////////////////
-//                      //
-//                      //
-//                      //
-
-class Base;
-
-class Configuration;
-
-class FailedScrobblesDatabase;
-
-class Track;
-
-class Playback;
-
-class Signals;
-
-
-
-
-
-//                    //
-//                    //
-//                    //
-// Struct Declaration /////////////////////////////////////////////////////////
-//                    //
-//                    //
-//                    //
-
-struct ScrobblingThread
-{
-
-  ScrobblingThread()
-  {
-
-  }
-
-  ~ScrobblingThread()
-  { 
-
-  }
-
-
-
-  std::list<ScrobblingThread>::iterator scrobbling_threads_it_;
-
-  std::shared_ptr<std::thread> thread_;
-
-};
+#include <vector>
 
 
 
@@ -161,8 +102,26 @@ struct ScrobblingThread
 //                   //
 //                   //
 
-class Scrobbling : public Parts
-{
+class Base;
+
+class sqlite3;
+
+class Track;
+
+
+
+
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
+class FailedScrobblesDatabase : public Parts
+{ 
 
   //             //
   //             //
@@ -172,7 +131,20 @@ class Scrobbling : public Parts
 
   public:
 
-    Scrobbling(Base& base_ref);
+    /* ////////////////////////////////////////////////////////////////////////
+    //
+    // Purpose:
+    //
+    //   Creates the FailedScrobblesDatabase class.
+    //
+    //
+    //
+    // Arguments: 
+    //
+    //   None.
+    //
+    //////////////////////////////////////////////////////////////////////// */
+    FailedScrobblesDatabase(Base& base_ref);
 
 
 
@@ -186,32 +158,20 @@ class Scrobbling : public Parts
 
   public:
 
-    ~Scrobbling();
-
-
-
-
-
-  //       //
-  //       //
-  // Enums ////////////////////////////////////////////////////////////////////
-  //       //
-  //       //
-
-  public:
-
-    enum Action
-    {
-
-      LOGIN = 0,
-
-      UPDATE,
-
-      SCROBBLE,
-
-      LOVE
-
-    };
+    /* ////////////////////////////////////////////////////////////////////////
+    //
+    // Purpose:
+    //
+    //   Used to destroy any data that needs it when FailedScrobblesDatabase ends.
+    //
+    //
+    //
+    // Arguments: 
+    //
+    //   None.
+    //
+    //////////////////////////////////////////////////////////////////////// */
+    ~FailedScrobblesDatabase();
 
 
 
@@ -223,52 +183,22 @@ class Scrobbling : public Parts
   //                  //
   //                  //
 
-  protected:
+  bool Add_Track(Track& new_track, long time);
 
-    void Login
-      (Track temp_track, ScrobblingThread* scrobbling_thread,
-       std::string temp_username, std::string temp_password,
-       std::shared_ptr<bool> thread_finished,
-       std::shared_ptr<bool> successful);
+  bool Clear();
 
-  public:
+  std::string Convert(std::string raw_str);
 
-    void Login_Lastfm();
+  bool Create_Table();
 
-    void Rescrobble_Failed_Scrobbles(std::shared_ptr<bool> thread_finished);
+  bool Delete_Track(int track_id);
 
-  protected:
+  bool Extract_Tracks(std::vector<Track*>* tracks, std::vector<int>* ids,
+                      std::vector<long>* times);
 
-    void Scrobble
-      (Track temp_track, ScrobblingThread *scrobbling_thread,
-       std::string temp_username, std::string temp_password,
-       std::shared_ptr<bool> thread_finished,
-       std::shared_ptr<bool> successful);
-
-  public:
-
-    void Scrobble_Playing_Track_Lastfm();
-
-    void Track_Action(Scrobbling::Action action,
-                      std::shared_ptr<bool> thread_finished,
-                      std::shared_ptr<bool> successful);
-
-    void Track_Action
-      (Scrobbling::Action action, Track& new_track,
-       std::shared_ptr<bool> thread_finished,
-       std::shared_ptr<bool> successful);
-
-  protected:
-
-    void Update
-      (Track temp_track, ScrobblingThread* scrobbling_thread,
-       std::string temp_username, std::string temp_password,
-       int song_duration_seconds, std::shared_ptr<bool> thread_finished,
-       std::shared_ptr<bool> successful);
-
-  public:
-
-    void Update_Playing_Track_Lastfm();
+  static int Extract_Tracks_Callback
+    (void* tracks_ids_times_tuple_vptr, int argc, char **argv,
+     char **column_name);
 
 
 
@@ -280,15 +210,7 @@ class Scrobbling : public Parts
   //         //
   //         //
 
-  public:
-
-    FailedScrobblesDatabase& failed_scrobbles_database();
-
-    bool restart();
-
-    std::list<ScrobblingThread>& scrobbling_threads();
- 
-    std::atomic<bool>& scrobbling_threads_active();
+  int database_size();
 
 
 
@@ -300,38 +222,24 @@ class Scrobbling : public Parts
   //         //
   //         //
 
-  public:
-
-    void set_restart(bool new_value);
-
-    void set_scrobbling_loop_paused(bool new_value);
-
-    void set_scrobbling_threads_active(bool new_setting);
+  void set_database_size(int new_database_size);
 
 
 
 
- 
+
   //                  //
   //                  //
   // Member Variables /////////////////////////////////////////////////////////
   //                  //
   //                  //
-   
-  private:
 
-    FailedScrobblesDatabase* failed_scrobbles_database_;
+  sqlite3* database_;
 
-    Track* playing_scrobble_track_;
+  std::mutex database_mutex_;
 
-    bool restart_;
+  int database_size_;
 
-    bool scrobbling_loop_paused_;
-
-    std::list<ScrobblingThread> scrobbling_threads_;
-
-    std::atomic<bool> scrobbling_threads_active_;
- 
 };
 
 

@@ -305,7 +305,7 @@ GUI::GUI(Base& base_ref)
 
 , file_chooser_playlist_paned_(Gtk::manage(new Gtk::Paned))
 
- {
+{
 
   //                   //
   // Quitting Function ////////////////////////////////////////////////////////
@@ -627,7 +627,8 @@ GUI::GUI(Base& base_ref)
 
 
   // 
-  Playlist* main_content_playlist = new Playlist(base_ref, (*playlists_));
+  Playlist* main_content_playlist
+    = new Playlist(base_ref, (*playlists_), "main_content");
 
   // Adds the right box to the right paned side.
   main_content_paned_ 
@@ -775,7 +776,7 @@ GUI::GUI(Base& base_ref)
   Gtk::Label playlist_page_label("Full Playlist");
 
   // 
-  Playlist* full_playlist = new Playlist(base_ref, (*playlists_));
+  Playlist* full_playlist = new Playlist(base_ref, (*playlists_), "full");
 
   // Adds the Playlist tab to the notebook.
   main_window_notebook_
@@ -795,10 +796,12 @@ GUI::GUI(Base& base_ref)
 
 
   // 
-  Playlist* left_double_playlist = new Playlist(base_ref, (*playlists_));
+  Playlist* left_double_playlist
+    = new Playlist(base_ref, (*playlists_), "double_left");
 
   // 
-  Playlist* right_double_playlist = new Playlist(base_ref, (*playlists_));
+  Playlist* right_double_playlist
+    = new Playlist(base_ref, (*playlists_), "double_right");
 
 
 
@@ -847,7 +850,8 @@ GUI::GUI(Base& base_ref)
 
 
   // 
-  Playlist* file_chooser_playlist = new Playlist(base_ref, (*playlists_));
+  Playlist* file_chooser_playlist
+    = new Playlist(base_ref, (*playlists_), "file_chooser");
 
   // 
   FileChooser* playlist_file_chooser
@@ -1642,7 +1646,7 @@ void GUI::Add_File()
                                   Gtk::PACK_EXPAND_WIDGET);
 
   // Displays the new ChildWindow and its contents.
-  temp_window -> show();
+  temp_window -> Show();
 
 }
 

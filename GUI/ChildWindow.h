@@ -43,6 +43,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef CHILD_WINDOW_H
 #define CHILD_WINDOW_H
 
@@ -50,45 +58,146 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Inherited Class ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../Parts.h"
 
 
 
-#include <gtkmm/box.h>
-#include <gtkmm/applicationwindow.h>
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include <functional>
+
 #include <list>
+
 #include <memory>
 
 
 
-class Windows;
+
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
+
+//         //
+//         //
+// Classes ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+//                            //
+//                            //
+// Class Forward Declarations /////////////////////////////////////////////////
+//                            //
+//                            //
+
 class Flags;
+
+namespace Gtk
+{
+
+  class ApplicationWindow;
+
+  class Box;
+
+}
+
 class GUI;
 
-using namespace std;
 
 
 
 
+//                             //
+//                             //
+// Struct Forward Declarations ////////////////////////////////////////////////
+//                             //
+//                             //
+
+struct _GdkEventAny;
+typedef struct _GdkEventAny GdkEventAny;
+
+struct _GdkEventKey;
+typedef struct _GdkEventKey GdkEventKey;
+
+struct _GMainLoop;
+typedef struct _GMainLoop GMainLoop;
+
+
+
+
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
 
 class ChildWindow : public Parts
 { 
 
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
+
   public:
 
+    ChildWindow
+      (const char* new_title, Base& new_main, std::function<void(void)> 
+       new_child_class_destroy_function, bool set_main_window = false);
 
-    ChildWindow(const char* new_title,
-                Base& new_main,
-                std::function<void(void)> 
-                    new_child_class_destroy_function, 
-                bool set_main_window = false);
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
 
     ~ChildWindow();
 
-    void show();
 
 
-    bool on_irregular_quit(GdkEventAny* event);                        
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public:
 
     /* ////////////////////////////////////////////////////////////////////////
     //
@@ -106,58 +215,78 @@ class ChildWindow : public Parts
     //////////////////////////////////////////////////////////////////////// */
     bool On_Key_Press_Event(GdkEventKey* event);
 
+    bool On_Irregular_Quit(GdkEventAny* event);                        
 
-    void set_default_size(int width, int height)
-    { 
+    void Show();
 
-      window_.set_default_size(width, height); 
 
-    }
 
-    void set_title(const char* new_title)
-    { 
 
-      window_.set_title(new_title); 
 
-    }
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-    void set_location(list<shared_ptr<ChildWindow>>::iterator new_it)
-    { 
+  public:
 
-      windows_it_ = new_it; 
+    Gtk::Box& box();
 
-    }
+    Gtk::ApplicationWindow& window();
 
-    Gtk::ApplicationWindow& window()
-    {
 
-      return window_;
 
-    }
 
-    Gtk::Box& box()
-    { 
 
-      return box_; 
+  //         //
+  //         //
+  // Setters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-    }
+  public:
+
+    void set_default_size(int width, int height);
+
+    void set_location(std::list<std::shared_ptr<ChildWindow>>::iterator new_it);
+
+    void set_title(const char* new_title);
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   private:
 
+    Gtk::Box* box_;
+
+    std::function<void(void)> child_class_destroy_function_;
+
     bool main_window_;
 
-    std::function <void(void)> child_class_destroy_function_;
+    Gtk::ApplicationWindow* window_;
 
-    Gtk::Box box_;
-
-    Gtk::ApplicationWindow window_;
-
-    list<shared_ptr<ChildWindow>>::iterator windows_it_;
+    std::list<std::shared_ptr<ChildWindow>>::iterator windows_it_;
 
 };
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

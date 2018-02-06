@@ -166,55 +166,24 @@ Base::Base(int argc, char *argv[])
 
 
 
-  // 
-  list<string> front_names_str_list;
-
-  // 
-  front_names_str_list . push_back(string("Cover.png"));
-
-  // 
-  front_names_str_list . push_back(string("cover.png"));
-
-  // 
-  front_names_str_list . push_back(string("Cover.jpg"));
-
-  // 
-  front_names_str_list . push_back(string("cover.jpg"));
-
-  // 
-  front_names_str_list . push_back(string("Front.png"));
-
-  // 
-  front_names_str_list . push_back(string("front.png"));
-
-  // 
-  front_names_str_list . push_back(string("Front.jpg"));
-
-  // 
-  front_names_str_list . push_back(string("front.jpg"));
-
-  // 
-  front_names_str_list . push_back(string("Folder.png"));
-
-  // 
-  front_names_str_list . push_back(string("folder.png"));
-
-  // 
-  front_names_str_list . push_back(string("Folder.jpg"));
-
-  // 
-  front_names_str_list . push_back(string("folder.jpg"));
-
-  // 
-  config() . add_default("gui.artwork.front_names", front_names_str_list);
-
-
-
   //
   config() . add_default("default_values", true);
 
   // 
   config() . add_default("last_folder", "");
+
+
+
+  // 
+  list<string> front_names_str_list
+    {"Cover.png", "cover.png", "Cover.jpg", "cover.jpg", "Front.png",
+     "front.png", "Front.jpg", "front.jpg", "Folder.png", "folder.png",
+     "Folder.jpg", "folder.jpg"};
+
+  // 
+  config() . add_default("gui.artwork.front_names", front_names_str_list);
+
+
 
   // 
   config() . add_default("gui.window_maximized", false);
@@ -247,7 +216,58 @@ Base::Base(int argc, char *argv[])
   config() . add_default("gui.playlist.empty_space_row_deselects", false);
 
   //
+  config() . add_default("gui.playlist.view.main_content.locked", false);
+
+
+
+  // 
+  list<string> view_names
+    {"main_content", "full", "double_left", "double_right", "file_chooser"};
+
+  for(auto view_names_it : view_names)
+  {
+
+    // 
+    string config_str = "gui.playlist.view";
+
+    // 
+    config_str += view_names_it;
+    
+
+
+    // 
+    string playlist_view_config_str = view_names_it + ".locked";
+
+    // 
+    config() . add_default(playlist_view_config_str, false);
+
+
+
+    // 
+    playlist_view_config_str = view_names_it + ".active";
+
+    // 
+    config() . add_default(playlist_view_config_str, "Library");
+
+
+
+    // 
+    list<string> column_names
+      {"track_number", "title", "artists", "album_artists", "album", "genre",
+       "length", "date", "track_total", "bit_rate", "bit_depth", "sample_rate",
+       "channels", "codec", "mime"};
+
+  }
+
+
+
+  //
   config() . add_default("gui.playlist.empty_space_playlist_deselects", false);
+
+  //
+  config() . add_default("gui.playlist_combobox.active", "Library");
+
+
 
   //
   config() . add_default("playback.cursor_follows_playback", true);
@@ -276,23 +296,15 @@ Base::Base(int argc, char *argv[])
   //
   config() . add_default("playback.start_at_pregap", true);
 
+
+
   //
   config() . add_default("output.buffer_time", 30000);
 
   // 
   config() . add_default("output.sink", string("autoaudiosink"));
 
-  // 
-  config() . add_default("scrobbling.lastfm_enabled", false);
 
-  // 
-  config() . add_default("scrobbling.lastfm_username", "Username");
-
-  // 
-  config() . add_default("scrobbling.lastfm_password", "Password");
-
-  // 
-  config() . add_default("scrobbling.percent", 51);
 
   // 
   config() . add_default("replaygain.limiter", true);
@@ -312,10 +324,26 @@ Base::Base(int argc, char *argv[])
 
 
   // 
+  config() . add_default("scrobbling.lastfm_enabled", false);
+
+  // 
+  config() . add_default("scrobbling.lastfm_username", "Username");
+
+  // 
+  config() . add_default("scrobbling.lastfm_password", "Password");
+
+  // 
+  config() . add_default("scrobbling.percent", 51);
+
+
+
+
+
+  // 
   time_converter_ = new TimeConversion;
 
   // 
-  metadata_ = (new Metadata(*this));
+  metadata_ = new Metadata(*this);
 
   // 
   playback_ = (new Playback(*this, argc, argv));
