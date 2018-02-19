@@ -300,7 +300,6 @@ GUI::GUI(Base& base_ref)
 
 
 
-
 // File Chooser Playlist
 
 , file_chooser_playlist_paned_(Gtk::manage(new Gtk::Paned))
@@ -562,17 +561,30 @@ GUI::GUI(Base& base_ref)
   main_window() -> box()
     . pack_start(*main_window_notebook_, Gtk::PACK_EXPAND_WIDGET);
 
+
+
   // Sets the tab position of the notebook at the top.
   main_window_notebook_ -> set_tab_pos(Gtk::POS_TOP);
+
+
 
   // Sets the notebook tabs as visual.
   main_window_notebook_ -> set_show_tabs(true);
 
+
+
   // Sets the notebook tabs to be scrollable.
   main_window_notebook_ -> set_scrollable(true);
 
+
+
   // Sets the notebook tabs to show the border.
   main_window_notebook_ -> set_show_border(true);
+
+
+
+  //
+  main_window_notebook_ -> set_show_tabs(!config() . get("gui.tabs.hide"));
 
 
 
@@ -1054,19 +1066,19 @@ GUI::GUI(Base& base_ref)
 
   // Overrides the enter event for the status_bar_event_box_.
   status_bar_event_box_ -> signal_enter_notify_event()
-    .connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Enter));
+    . connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Enter));
 
   // Overrides the leave event for the status_bar_event_box_.
   status_bar_event_box_ -> signal_leave_notify_event()
-    .connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Leave));
+    . connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Leave));
 
   // Overrides the button press event for the status_bar_event_box_.
   status_bar_event_box_ -> signal_button_press_event()
-    .connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Button_Press));
+    . connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Button_Press));
 
   // Overrides the button release event for the status_bar_event_box_.
   status_bar_event_box_ -> signal_button_release_event()
-    .connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Button_Release));
+    . connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Button_Release));
 
 
 
@@ -1128,6 +1140,28 @@ GUI::GUI(Base& base_ref)
 
   }
 
+
+
+  // 
+  string active_tab_str = config() . get("gui.tabs.active");
+
+  // 
+  for(auto tabs_it : main_window_notebook_ -> get_children())
+  {
+
+    // 
+    if((main_window_notebook_ -> get_tab_label_text(*tabs_it))
+         == active_tab_str)
+    {
+
+      // 
+      main_window_notebook_
+        -> set_current_page(main_window_notebook_ -> page_num(*tabs_it));
+
+    }
+
+  }
+
 }
 
 
@@ -1154,6 +1188,25 @@ GUI::~GUI()
 
   // Deletes the instance of the seekbar.
   delete seekbar_;
+
+
+
+  // 
+  int current_page_num = main_window_notebook_ -> get_current_page();
+
+  // 
+  auto active_page
+    = (main_window_notebook_ -> get_nth_page(current_page_num));
+
+  // 
+  string active_page_name
+    = main_window_notebook_ -> get_tab_label_text(*active_page);
+
+  // 
+  config() . set("gui.tabs.active", active_page_name);
+
+  // 
+  config() . write_file();
 
 }
 
@@ -2109,6 +2162,21 @@ Gtk::Frame& GUI::status_bar_frame()
   return *status_bar_frame_;
 
  }
+
+
+
+
+
+//          //
+// Notebook ///////////////////////////////////////////////////////////////////
+//          //
+
+Gtk::Notebook& GUI::main_window_notebook()
+{ 
+
+  return *main_window_notebook_;
+
+}
 
 
 

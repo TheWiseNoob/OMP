@@ -209,16 +209,6 @@ class MenuBar : public Parts
 
   public:
 
-    // State Changes
-
-    void Play();
-
-    void Pause();
-
-    void Stop();
-
-
-
     // Looping
 
     void On_None_Looping_Playback_Radio_Menu_Item_Toggled_Signal();
@@ -235,11 +225,25 @@ class MenuBar : public Parts
 
     void Playback_Follows_Cursor();
 
+
+
+    // Queue
+
     void Queue();
 
     void Queue_Saved();
 
     void Flush_Queue();
+
+
+
+    // State Changers
+
+    void Pause();
+
+    void Play();
+
+    void Stop();
 
 
 
@@ -250,6 +254,8 @@ class MenuBar : public Parts
   //      //
 
   public:
+
+    void Hide_Tabs();
 
     void On_Hide_Duplicates_Check_Menu_Item_Activate_Signal();
 
@@ -335,6 +341,9 @@ class MenuBar : public Parts
     //
     Gtk::CheckMenuItem& hide_status_bar_check_menu_item();
 
+    //
+    Gtk::CheckMenuItem& hide_tabs_check_menu_item();
+
 
 
 
@@ -414,12 +423,15 @@ class MenuBar : public Parts
 
     Gtk::Menu* File_Menu;
 
-    //File MenuItems
-    Gtk::MenuItem *Add_File_MenuItem,
-                  *Open_File_MenuItem,
-                  *Add_Folder_MenuItem,
-                  *Open_Folder_MenuItem,
-                  *Quit_MenuItem;
+    Gtk::MenuItem* Add_File_MenuItem;
+
+    Gtk::MenuItem* Open_File_MenuItem;
+
+    Gtk::MenuItem* Add_Folder_MenuItem;
+
+    Gtk::MenuItem* Open_Folder_MenuItem;
+
+    Gtk::MenuItem* Quit_MenuItem;
 
 
 
@@ -516,12 +528,16 @@ class MenuBar : public Parts
   private:
 
     Gtk::MenuItem *View_MenuItem;
+
     Gtk::Menu* View_Menu;
 
-    //View MenuItems
     Gtk::CheckMenuItem* hide_duplicates_check_menu_item_;
+
     Gtk::CheckMenuItem* hide_header_bar_check_menu_item_;
+
     Gtk::CheckMenuItem* hide_status_bar_check_menu_item_;
+
+    Gtk::CheckMenuItem* hide_tabs_check_menu_item_;
 
 };
 

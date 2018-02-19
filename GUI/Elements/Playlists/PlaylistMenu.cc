@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -43,26 +41,75 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//              //
+//              //
+// Class Header ///////////////////////////////////////////////////////////////
+//              //
+//              //
+
 #include "PlaylistMenu.h"
 
 
 
 
 
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../../../Playback/Playback.h"
-#include "PlaylistTreeStore.h"
+
 #include "Playlist.h"
+
 #include "Playlists.h"
+
+#include "PlaylistTreeStore.h"
+
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include <gtkmm/checkmenuitem.h>
+
+#include <gtkmm/menuitem.h>
+
+#include <gtkmm/radiobuttongroup.h>
+
+#include <gtkmm/radiomenuitem.h>
+
+#include <gtkmm/separatormenuitem.h>
 
 #include <iostream>
 
-#include <gtkmm/menuitem.h>
-#include <gtkmm/checkmenuitem.h>
-#include <gtkmm/radiomenuitem.h>
-#include <gtkmm/radiobuttongroup.h>
-#include <gtkmm/separatormenuitem.h>
-
 #include <string>
+
+
+
+
+
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
 
 using namespace std;
 
@@ -70,19 +117,53 @@ using namespace std;
 
 
 
-PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
-                           Playlists& temp_playlists)
+//                 //
+//                 //
+//                 //
+// Class Functions ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+//                 //
+
+//             //
+//             //
+// Constructor ////////////////////////////////////////////////////////////////
+//             //
+//             //
+
+PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
+                           Playlists& playlists_ref)
+
+// Inherited Class
+
 : Parts(base)
-, playlist_(new_playlist)
-, playlists_menu_(Gtk::manage(new Gtk::Menu))
-, change_playlist_menu_item_(Gtk::manage(new Gtk::MenuItem("Playlist: " + playlist_.active_playlist())))
-, edit_menu_item_(Gtk::manage(new Gtk::MenuItem("_Edit", true)))
-, delete_menu_item_(Gtk::manage(new Gtk::MenuItem("_Delete", true)))
-, queue_menu_item_(Gtk::manage(new Gtk::MenuItem("_Queue", true)))
-, cut_menu_item_(Gtk::manage(new Gtk::MenuItem("Cut")))
+
+
+
+// General
+
+, change_playlist_menu_item_(Gtk::manage
+    (new Gtk::MenuItem("Playlist: " + playlist_ref . active_playlist())))
+
 , copy_menu_item_(Gtk::manage(new Gtk::MenuItem("Copy")))
+
+, cut_menu_item_(Gtk::manage(new Gtk::MenuItem("Cut")))
+
+, delete_menu_item_(Gtk::manage(new Gtk::MenuItem("_Delete", true)))
+
+, edit_menu_item_(Gtk::manage(new Gtk::MenuItem("_Edit", true)))
+
+, lock_check_menu_item_
+    (Gtk::manage(new Gtk::CheckMenuItem("_Lock Playlist", true)))
+
+, queue_menu_item_(Gtk::manage(new Gtk::MenuItem("_Queue", true)))
+
 , paste_menu_item_(Gtk::manage(new Gtk::MenuItem("Paste")))
-, lock_check_menu_item_(Gtk::manage(new Gtk::CheckMenuItem("_Lock Playlist", true)))
+
+, playlist_(playlist_ref)
+
+, playlists_menu_(Gtk::manage(new Gtk::Menu))
+
 {
 
   // 
@@ -128,15 +209,30 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
 
 
 
+  // 
   Pango::FontDescription change_playlist_menu_item_font_description;
-  change_playlist_menu_item_font_description.set_weight(Pango::WEIGHT_HEAVY);
-  change_playlist_menu_item_font_description.set_stretch(Pango::STRETCH_ULTRA_EXPANDED);
+
+  // 
+  change_playlist_menu_item_font_description . set_weight(Pango::WEIGHT_HEAVY);
+
+  // 
+  change_playlist_menu_item_font_description
+    . set_stretch(Pango::STRETCH_ULTRA_EXPANDED);
+
+  // 
   change_playlist_menu_item_ 
     -> override_background_color(change_playlist_menu_item_rgba, 
                                  Gtk::STATE_FLAG_NORMAL);
+
+  // 
   change_playlist_menu_item_ 
     -> override_font(change_playlist_menu_item_font_description);
+
+  // 
   change_playlist_menu_item_ -> set_submenu(*playlists_menu_);
+
+
+
 
 
   // 
@@ -146,78 +242,87 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
 
   // 
   string playlist_treestore_name
-    = new_playlist . playlist_treestore() -> get_name();
+    = playlist_ref . playlist_treestore() -> get_name();
 
 
 
   // 
-  for(auto playlist_treestores_it : temp_playlists.playlist_treestores())
+  for(auto playlist_treestores_it : playlists_ref.playlist_treestores())
   {
 
-    Gtk::RadioMenuItem *new_playlists_menu_radio_menu_item
+    // 
+    Gtk::RadioMenuItem *playlist_refs_menu_radio_menu_item
       = Gtk::manage(new Gtk::RadioMenuItem
-                          (playlists_menu_radio_button_group())); 
- 
+                          (playlists_menu_radio_button_group()));
+
+    // 
     playlists_menu_radio_menu_items_
-      . push_back(new_playlists_menu_radio_menu_item);
- 
-    new_playlists_menu_radio_menu_item 
+      . push_back(playlist_refs_menu_radio_menu_item);
+
+    // 
+    playlist_refs_menu_radio_menu_item 
       -> set_label(playlist_treestores_it -> get_name()); 
+
+
 
     // 
     if((playlist_treestores_it -> get_name()) == playlist_treestore_name)
     {
 
-      new_playlists_menu_radio_menu_item -> set_active(true);
+      // 
+      playlist_refs_menu_radio_menu_item -> set_active(true);
 
+      // 
       change_playlist_menu_item_
         -> set_label("Playlist: " + playlist_treestores_it -> get_name()); 
 
-    }
+     }
 
 
 
     // 
-    playlists_menu_ -> append(*new_playlists_menu_radio_menu_item); 
+    playlists_menu_ -> append(*playlist_refs_menu_radio_menu_item); 
 
 
 
     // 
-    new_playlists_menu_radio_menu_item -> signal_activate()
-      . connect(sigc::mem_fun(new_playlist, &Playlist::Change_Playlist));
+    playlist_refs_menu_radio_menu_item -> signal_activate()
+      . connect(sigc::mem_fun(playlist_ref, &Playlist::Change_Playlist));
 
 
 
     // 
     count++;
 
-   } 
+  }
  
+
+
 
 
   // 
   copy_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(new_playlist, &Playlist::Copy_Selected_Rows));
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Copy_Selected_Rows));
 
   // 
   cut_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(new_playlist, &Playlist::Cut_Selected_Rows));
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Cut_Selected_Rows));
 
   // 
   delete_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(new_playlist, &Playlist::Delete_Selected_Rows));
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Delete_Selected_Rows));
 
   // 
   lock_check_menu_item_ -> signal_toggled()
-    . connect(sigc::mem_fun(new_playlist, &Playlist::Lock));
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Lock));
 
   // 
   paste_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(new_playlist, &Playlist::Paste_Clipboard_Rows));
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Paste_Clipboard_Rows));
 
   // 
   queue_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(new_playlist, &Playlist::Queue_Rows));
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Queue_Rows));
 
 
 
@@ -232,6 +337,11 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& new_playlist,
 
 
 
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
 
 PlaylistMenu::~PlaylistMenu()
 {
@@ -242,9 +352,85 @@ PlaylistMenu::~PlaylistMenu()
 
 
 
+//         //
+//         //
+// Getters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+Gtk::MenuItem& PlaylistMenu::change_playlist_menu_item()
+{
+
+  return *change_playlist_menu_item_;
+
+}
+
+Gtk::MenuItem& PlaylistMenu::copy_menu_item()
+{
+
+  return *copy_menu_item_;
+
+}
+
+Gtk::MenuItem& PlaylistMenu::cut_menu_item()
+{
+
+  return *cut_menu_item_;
+
+}
+
+Gtk::MenuItem& PlaylistMenu::delete_menu_item()
+{
+
+  return *delete_menu_item_;
+
+}
+
+Gtk::MenuItem& PlaylistMenu::edit_menu_item()
+{
+
+  return *edit_menu_item_;
+
+}
+
+Gtk::CheckMenuItem& PlaylistMenu::lock_check_menu_item()
+{
+
+  return *lock_check_menu_item_;
+
+}
+
+Gtk::MenuItem& PlaylistMenu::queue_menu_item()
+{
+
+  return *queue_menu_item_;
+
+}
+
+Gtk::MenuItem& PlaylistMenu::paste_menu_item()
+{
+
+  return *paste_menu_item_;
+
+}
+
+Gtk::Menu& PlaylistMenu::playlists_menu()
+{
+
+  return *playlists_menu_;
+
+}
+
 Gtk::RadioButtonGroup& PlaylistMenu::playlists_menu_radio_button_group()
 {
 
   return playlists_menu_radio_button_group_;
+
+}
+
+std::list<Gtk::RadioMenuItem*>& PlaylistMenu::playlists_menu_radio_menu_items()
+{
+
+  return playlists_menu_radio_menu_items_;
 
 }

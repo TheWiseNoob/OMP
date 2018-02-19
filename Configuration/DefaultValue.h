@@ -145,8 +145,6 @@ class DefaultValue
     string *string_value;    
     std::list<string> list_value_;
 
-
-
 };
 
 

@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/
@@ -109,6 +107,8 @@
 
 #include <iostream>
 
+#include <glibmm/ustring.h>
+
 #include <gtkmm/box.h>
 
 #include <gtkmm/button.h>
@@ -187,6 +187,8 @@ ConfigurationGUI::ConfigurationGUI
 // Panel Objects
 
 , active_panel_box_(nullptr)
+
+, active_panel_name_ustr_(new Glib::ustring(""))
 
 , panel_box_(Gtk::manage(new Gtk::Box))
 
@@ -489,28 +491,101 @@ ConfigurationGUI::ConfigurationGUI
 
 
 
-  // Gets an iterator to the first row in the panel_treeview_treestore_.
-  Gtk::TreeModel::iterator first_row_it
-    = panel_treeview_treestore_ -> children() . begin();
+  //
+  Glib::ustring temp_active_panel_name_ustr
+    = config() . get("gui.configuration.active_panel");
 
-  // Converts the iterator to a TreePath.
-  const Gtk::TreeModel::Path temp_treemodel_path
-    = panel_treeview_treestore_ -> get_path(first_row_it);
+  // 
+  *active_panel_name_ustr_ = temp_active_panel_name_ustr;
 
-  // Sets the cursor of the TreeView to the newly created TreePath.
-  panel_treeview_ -> set_cursor(temp_treemodel_path);
+  // 
+  for(auto panel_rows_it : panel_treeview_treestore_ -> children())
+  {
+
+    // Converts the iterator to a TreePath.
+    const Gtk::TreeModel::Path panel_path
+      = panel_treeview_treestore_ -> get_path(panel_rows_it);
+
+    // 
+    Gtk::TreeModel::iterator panel_treestore_it
+      = panel_treeview_treestore_ -> get_iter(panel_path);
+
+    // Converts the iterator into a row.
+    Gtk::TreeModel::Row row = *panel_treestore_it;
+
+    // 
+    Glib::ustring current_panel_name_str
+      = row[panel_treeview_column_record_ -> name_];
+
+    // 
+    if(*active_panel_name_ustr_ == current_panel_name_str)
+    {
+
+      // Sets the cursor of the TreeView to the newly created TreePath.
+      panel_treeview_ -> set_cursor(panel_path);
 
 
 
-  // Calls Panel_Chooser to set the current panel.
-  Panel_Chooser(temp_treemodel_path, NULL);
+      // Calls Panel_Chooser to set the current panel.
+      Panel_Chooser(panel_path, NULL);
+
+
+
+      // 
+      return;
+
+    }
+
+
+
+    // 
+    for(auto child_panel_rows_it : row . children())
+    {
+  
+      // Converts the iterator to a TreePath.
+      const Gtk::TreePath inner_panel_path
+        = panel_treeview_treestore_ -> get_path(child_panel_rows_it);
+  
+      // 
+      panel_treestore_it
+        = panel_treeview_treestore_ -> get_iter(inner_panel_path);
+  
+      // Converts the iterator into a row.
+      row = *panel_treestore_it;
+  
+      // 
+      current_panel_name_str
+        = row[panel_treeview_column_record_ -> name_];
+  
+      // 
+      if(*active_panel_name_ustr_ == current_panel_name_str)
+      {
+  
+        // Sets the cursor of the TreeView to the newly created TreePath.
+        panel_treeview_ -> set_cursor(inner_panel_path);
+  
+  
+  
+        // Calls Panel_Chooser to set the current panel.
+        Panel_Chooser(inner_panel_path, NULL);
+ 
+
+
+        // 
+        return;
+ 
+      }
+  
+    }
+
+  }
 
 
 
   // Enables ConfigGUI functions.
   config_guis_ref . set_disable_functions(false);
 
-}
+ }
 
 
 
@@ -527,6 +602,9 @@ ConfigurationGUI::~ConfigurationGUI()
 
   // Destroy the ColumnRecord of the panel TreeView.
   delete panel_treeview_column_record_;
+
+  // 
+  delete active_panel_name_ustr_;
 
 }
 
@@ -556,9 +634,6 @@ void ConfigurationGUI::Apply_Saved_Values()
 
 void ConfigurationGUI::Mark_Unsaved_Changes(bool new_value)
 {
-
-
-
 
   // 
   load_default_values_button_
@@ -617,8 +692,11 @@ void ConfigurationGUI::Panel_Chooser(const Gtk::TreePath& path,
     Gtk::TreeModel::Row row = *panel_treestore_it;
 
     // Copies a string of the panel's name.
-    Glib::ustring active_panel_name
+    *active_panel_name_ustr_
       = row[panel_treeview_column_record_ -> name_];
+
+    // 
+    config() . set("gui.configuration.active_panel", *active_panel_name_ustr_);
 
     // Copies a pointer of the panel's box.
     active_panel_box_
@@ -630,7 +708,7 @@ void ConfigurationGUI::Panel_Chooser(const Gtk::TreePath& path,
     panel_frame_ -> add(*active_panel_box_);
 
     // Sets panel_frame_'s label as the panel's name.
-    panel_frame_label_ -> set_text(active_panel_name);
+    panel_frame_label_ -> set_text(*active_panel_name_ustr_);
 
 
 

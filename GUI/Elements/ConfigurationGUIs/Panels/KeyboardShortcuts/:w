@@ -23,6 +23,8 @@
 //
 //  Libraries used by OMP:
 //
+//    - boost: http://www.boost.org/
+//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -55,7 +57,7 @@
 //              //
 //              //
 
-#include "ChildWindow.h"
+#include "KeyboardShortcutsPanel.h"
 
 
 
@@ -67,7 +69,7 @@
 //                 //
 //                 //
 
-#include "GUI.h"
+#include "../../ConfigurationGUI.h"
 
 
 
@@ -79,9 +81,7 @@
 //                 //
 //                 //
 
-#include <gtkmm/applicationwindow.h>
-
-#include <gtkmm/box.h>
+#include <gtkmm/eventbox.h>
 
 #include <iostream>
 
@@ -117,67 +117,49 @@ using namespace std;
 //             //
 //             //
 
-ChildWindow::ChildWindow
-  (const char* new_title, Base& new_main, std::function<void(void)> 
-   new_child_class_destroy_function, bool make_main_window)
+KeyboardShortcutsPanel::KeyboardShortcutsPanel
+  (Base& base_ref, ConfigurationGUI& new_config_gui)
 
 // Inherited Class
 
-: Parts(new_main)
+: Panel(base_ref, new_config_gui, "Keyboard Shortcuts")
 
 
 
-// Member Variables
+// 
 
-, box_(Gtk::manage(new Gtk::Box))
+, main_event_box_(Gtk::manage(new Gtk::EventBox))
 
-, window_(new Gtk::ApplicationWindow)
+{
 
-{ 
+  //                 //
+  // KeyboardShortcuts Sink //////////////////////////////////////////////////////////////
+  //             //
 
-  // 
-  main_window_ = make_main_window;
-
-  // 
-  if(!main_window_)
-  { 
-
-    // 
-    window_ -> signal_key_press_event()
-      . connect(sigc::mem_fun(*this, &ChildWindow::On_Key_Press_Event));
-
-  }
+  // Adds the output sink's box to the panel's box.
+  box() . pack_start(*main_event_box_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
-  // 
-  window_ -> set_title(new_title);
-
-  // 
-  window_ -> set_position(Gtk::WIN_POS_CENTER);
-
-  // 
-  window_ -> set_default_size(650,400);  
 
 
+  //       //
+  // Other ////////////////////////////////////////////////////////////////////
+  //       //
 
-  debug("ChildWindow shown");
+  // Adds the Apply_Saved_Value function to the ConfigGUI's list.
+  new_config_gui . Add_Apply_Saved_Value_Function(*this,
+                                                  &Panel::Apply_Saved_Values);
 
 
 
   // 
-  window_ -> signal_delete_event()
-    . connect(sigc::mem_fun(*this, &ChildWindow::On_Irregular_Quit));
+  main_event_box_ -> add_events(Gdk::KEY_PRESS_MASK);
 
-
-
-  // 
-  child_class_destroy_function_ = new_child_class_destroy_function;
-
-
-
-  // 
-  window_ -> add(*box_);
+  // Overrides the function for keypresses to allow custom shortcuts.
+  main_event_box_ -> signal_key_press_event()
+    . connect(sigc::mem_fun(*this, 
+                            &KeyboardShortcutsPanel::On_Key_Press_Event));
 
 }
 
@@ -191,24 +173,8 @@ ChildWindow::ChildWindow
 //            //
 //            //
 
-ChildWindow::~ChildWindow()
+KeyboardShortcutsPanel::~KeyboardShortcutsPanel()
 {
-
-  // 
-  if(!main_window_)
-  {
-
-    // 
-    gui() . windows() . erase(windows_it_);
-
-
-
-    // 
-    delete window_;
-
-  }
-
-
 
 }
 
@@ -222,15 +188,68 @@ ChildWindow::~ChildWindow()
 //                  //
 //                  //
 
-bool ChildWindow::On_Key_Press_Event(GdkEventKey* event)
+void KeyboardShortcutsPanel::Apply_Saved_Values()
 {
 
-  // Is true if the escape key is pressed.
-  if((event -> keyval == GDK_KEY_Escape))
+}
+
+bool KeyboardShortcutsPanel::On_Key_Press_Event(GdkEventKey* event)
+{
+
+  // 
+  cout << "\n\nDerp\n\n";
+
+
+
+/*
+  // Opens file chooser dialog for adding files to the currently selected
+  // playlists.
+  if((event -> keyval == GDK_KEY_o) && (event->state & GDK_CONTROL_MASK))
   {
 
-    // 
-    On_Irregular_Quit(NULL);
+    // Opens the FileChooser.
+    Add_File();
+
+    // End the key press function.
+    return true;
+
+  }
+
+  // Opens a new configuration window.
+  else if((event -> keyval == GDK_KEY_j) && (event->state & GDK_CONTROL_MASK))
+  {
+
+    // Calls the function for opening a new ConfigurationGUI window.
+    config_guis() . Open_Configuration();
+
+
+
+    return true;
+
+  }
+
+  // Is true if the space bar was pressed.
+  else if((event -> keyval == GDK_KEY_space))
+  {
+
+    // Pauses playback.
+    playback() . Pause();
+
+    return true;
+
+  } 
+
+  // Is true if the escape key is pressed.
+  else if((event -> keyval == GDK_KEY_Escape))
+  {
+
+    if(!(playback() . Stopped()))
+    {
+
+      // Stops playback.
+      playback().Stop();
+
+    }
 
 
 
@@ -239,97 +258,40 @@ bool ChildWindow::On_Key_Press_Event(GdkEventKey* event)
 
   }
 
-
-
-  // Allows normal keyboard event propagation.
-  return false;
-
-} 
-
-bool ChildWindow::On_Irregular_Quit(GdkEventAny* event)                          
-{                                                                                
-                                                                                
-  // 
-  if(child_class_destroy_function_)
+  // Is true if F11 is pressed.
+  else if((event -> keyval == GDK_KEY_F11))
   {
 
-    // 
-    child_class_destroy_function_();
+    // True the fullscreen_ variable is true.
+    if(fullscreen_)
+    {
 
-  } 
+      // Unfullscreens the window.
+      windows_.front() -> window().unfullscreen();
 
+      // Sets the fullscreen variable to false.
+      fullscreen_ = false;
 
+    }
+    else
+    {
 
-  // 
-  window_ -> hide();
+      // Fullscreens the window.
+      windows_.front() -> window().fullscreen();
 
+      // Sets the fullscreen variable to true.
+      fullscreen_ = true;
 
+    }
 
-  // 
-  return true;
+    // Ends the function.
+    return true;
 
-}
-
-void ChildWindow::Show()
-{
-
-  window_ -> show();
-
-  window_ -> show_all_children();
-
-}
-
-
-
+  }
 
 
-//         //
-//         //
-// Getters //////////////////////////////////////////////////////////////////
-//         //
-//         //
-
-Gtk::Box& ChildWindow::box()
-{
-
-  return *box_; 
-
-}
-
-Gtk::ApplicationWindow& ChildWindow::window()
-{
-
-  return *window_;
-
-}
-
-
-
-
-
-//         //
-//         //
-// Setters //////////////////////////////////////////////////////////////////
-//         //
-//         //
-
-void ChildWindow::set_default_size(int width, int height)
-{ 
-
-  window_ -> set_default_size(width, height); 
-
-}
-
-void ChildWindow::set_location(std::list<std::shared_ptr<ChildWindow>>::iterator new_it)
-{ 
-
-  windows_it_ = new_it; 
-
-}
-
-void ChildWindow::set_title(const char* new_title)
-{
-
-  window_ -> set_title(new_title); 
-
+*/
+  // Allows normal keyboard event propagation.
+  return false;
+ 
 }

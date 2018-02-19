@@ -160,6 +160,8 @@ class KeyboardShortcutsPanel : public Panel
 
     virtual void Apply_Saved_Values() final override;
 
+    bool On_Key_Press_Event(GdkEventKey* event);
+
 
 
 
@@ -179,6 +181,10 @@ class KeyboardShortcutsPanel : public Panel
   // Member Variables /////////////////////////////////////////////////////////
   //                  //
   //                  //
+
+  private:
+
+    Gtk::EventBox* main_event_box_;
 
 };
 

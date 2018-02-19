@@ -83,7 +83,7 @@ class GUIElement : public Parts
     virtual ~GUIElement()
     {
 
-      gui_element_list_.erase(gui_elements_it_);
+      gui_element_list_ . erase(gui_elements_it_);
 
     }
 

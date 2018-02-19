@@ -170,7 +170,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 // Inherited Class
 
-: GUIElement(base_ref, playlists_ref(), true)
+: GUIElement(base_ref, playlists_ref())
 
 
 
@@ -316,80 +316,239 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // Makes the TreeView's Columns headers clickable.
-  this -> set_headers_clickable(true);
+  set_headers_clickable(true);
 
   // Set the rows to be a source of dragging.
-  this -> enable_model_drag_source();
+  enable_model_drag_source();
 
   // Sets the rows as being a source for dropping.
-  this -> enable_model_drag_dest();
+  enable_model_drag_dest();
 
 
 
   // Suggests to draw rows contrastinly, but it depends on the theme engine.
-  this -> set_rules_hint(true);
+  set_rules_hint(true);
 
 
 
-  // Appends a track # column.
-  this -> append_column("#", playlists_ref
-                               . playlist_column_record() . track_num_col);
+  // 
+  list<string> column_order_list;
 
-  // Appends a title column.
-  this -> append_column("Title", playlists_ref
-                                   . playlist_column_record() . title_col);
+  // 
+  string column_order_str = "gui.playlist.view.";
 
-  // Appends an artist column.
-  this -> append_column("Artist(s)", playlists_ref
-                                    . playlist_column_record() . artist_col);
+  // 
+  column_order_str += playlist_view_name_;
 
-  // Appends an artist column.
-  this -> append_column("Album Artist(s)", 
-                        playlists_ref . playlist_column_record() . album_artist_col);
+  // 
+  column_order_str += ".column_order";
 
-  // Appends an album column.
-  this -> append_column("Album", playlists_ref
-                                   . playlist_column_record() . album_col);
+  // 
+  config() . get_list(column_order_str, column_order_list);
 
-  // Appends a genres column.
-  this -> append_column("Genre", playlists_ref
-                                   . playlist_column_record() . genre_col);
 
-  // Appends a length column.
-  this -> append_column("Length", playlists_ref
-                                    . playlist_column_record() . length_col);
 
-  // Appends a length column.
-  this -> append_column("Date", playlists_ref
-                                  . playlist_column_record() . date_col);
+  // 
+  for(auto column_order_list_it : column_order_list)
+  {
 
-  // Appends a track total column.
-  this -> append_column("Track Total", playlists_ref . playlist_column_record()
-                                                         . track_total_col);
+    // 
+    string title = playlists_ref . Find_Column_Title(column_order_list_it);
 
-  // Appends a bitrate column.
-  this -> append_column("Bitrate", playlists_ref . playlist_column_record()
-                                                     . bit_rate_col);
+    // 
+    Gtk::TreeViewColumn* new_column;
 
-  // Appends a bitrate column.
-  this -> append_column("Bit Depth", playlists_ref . playlist_column_record()
-                                                       . bit_depth_col);
 
-  // Appends a sameple rate column.
-  this -> append_column("Sample Rate", playlists_ref . playlist_column_record()
-                                                         . sample_rate_col);
 
-  // Appends a channels column.
-  this -> append_column("Channels", playlists_ref . playlist_column_record()
-                                                      . channels_col);
+    //
+    if(column_order_list_it == "track_number")
+    {
 
-  // Appends a codec column.
-  this -> append_column("Codec", playlists_ref . playlist_column_record()
-                                                   . codec_col);
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . track_num_col));
 
-  // Appends a channels column.
-  this -> append_column("Mime", playlists_ref . playlist_column_record()
-                                                  . mime_col);
+    }
+
+    //
+    else if(column_order_list_it == "title")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . title_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "artists")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . artist_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "album_artists")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . album_artist_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "album")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . album_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "genres")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . genre_col));
+
+    }
+    
+    //
+    else if(column_order_list_it == "length")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . length_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "date")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . date_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "track_total")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . track_total_col));
+
+    }
+    
+    //
+    else if(column_order_list_it == "bit_rate")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . bit_rate_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "bit_depth")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . bit_depth_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "sample_rate")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . sample_rate_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "channels")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . channels_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "codec")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . codec_col));
+
+    }
+
+    //
+    else if(column_order_list_it == "mime")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . mime_col));
+
+    }
+
+
+
+    // Appends a track # column.
+    append_column(*new_column);
+
+    // 
+    new_column -> set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
+
+
+
+    // 
+    string column_size_config_str
+      = "gui.playlist.view.";
+
+    // 
+    column_size_config_str += playlist_view_name_;
+
+    // 
+    column_size_config_str += ".columns." + column_order_list_it + ".size";
+
+    // 
+    new_column -> set_fixed_width(config() . get(column_size_config_str));
+
+  }
 
 
 
@@ -1783,20 +1942,9 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
 
       // True if there is a row at this position, but no text.
-      if((this -> is_blank_at_pos(x,y)))
+      if((this -> is_blank_at_pos(x,y))
+           && (config() . get("gui.playlist.empty_space_row_deselects")))
       {
-
-        // True if the config is set to not deselect when empty space in
-        // the playlist is clicked.
-        if(!(config() . get("gui.playlist.empty_space_row_deselects")))
-        {
-
-          // Passes the button event to the normal signal handler.
-            return Gtk::TreeView::on_button_press_event(event);
-
-        }
-
-
 
         // Unselects all of the track in the TreeView.
         playlist_treeselection_ -> unselect_all();

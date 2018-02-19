@@ -452,20 +452,28 @@ void Configuration::get_list(string& setting_name, list<string>& setting_list)
   else
   {
 
-    if(default_values_.exists(setting_name))
+    // 
+    if(default_values_ . exists(setting_name))
     {
 
-
+      // 
       default_values_ . get_list(setting_name, setting_list);
 
+
+
+      // 
       set(setting_name, setting_list, true);
 
+
+
+      // 
       write_file(true);
 
     }
+
+    // 
     else
     {
-
 
     }
 

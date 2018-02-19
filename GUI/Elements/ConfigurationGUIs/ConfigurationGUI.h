@@ -82,8 +82,6 @@
 
 #include <glibmm/refptr.h>
 
-#include <glibmm/ustring.h>
-
 
 
 
@@ -105,6 +103,13 @@ class Panel;
 
 
 // gtkmm
+
+namespace Glib
+{
+
+  class ustring;
+
+}
 
 namespace Gtk
 {
@@ -361,6 +366,8 @@ class ConfigurationGUI : public GUIElement<ConfigurationGUI>
   public:
 
     Gtk::Box* active_panel_box_;
+
+    Glib::ustring* active_panel_name_ustr_;
 
     Gtk::Box* panel_box_;
 

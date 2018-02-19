@@ -186,6 +186,11 @@ Base::Base(int argc, char *argv[])
 
 
   // 
+  config() . add_default("gui.configuration.active_panel", "Playback");
+
+
+
+  // 
   config() . add_default("gui.window_maximized", false);
 
   // 
@@ -202,6 +207,12 @@ Base::Base(int argc, char *argv[])
 
   //
   config() . add_default("gui.hide_status_bar", false);
+
+  //
+  config() . add_default("gui.tabs.hide", false);
+
+  //
+  config() . add_default("gui.tabs.active", "Main Content");
 
   // 
   config() . add_default("gui.main_content_paned_position", 420);
@@ -224,11 +235,168 @@ Base::Base(int argc, char *argv[])
   list<string> view_names
     {"main_content", "full", "double_left", "double_right", "file_chooser"};
 
+  // 
+  list<string> column_names
+    {"track_number", "title", "artists", "album_artists", "album", "genres",
+     "length", "date", "track_total", "bit_rate", "bit_depth", "sample_rate",
+     "channels", "codec", "mime"};
+
+
+
+  // 
+  for(auto column_names_it : column_names)
+  {
+
+    string column_name_config_str
+      = "gui.playlist.columns." + column_names_it + ".title";
+
+
+
+    // 
+    if(column_names_it == "album")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Album");
+
+    }
+
+    // 
+    else if(column_names_it == "album_artists")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Albums Artist(s)");
+
+    }
+
+    // 
+    else if(column_names_it == "artists")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Artist(s)");
+
+    }
+
+    // 
+    else if(column_names_it == "bit_depth")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Bit Depth");
+
+    }
+
+    // 
+    else if(column_names_it == "bit_rate")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Bitrate");
+
+    }
+
+    // 
+    else if(column_names_it == "channels")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Channels");
+
+    }
+
+    // 
+    else if(column_names_it == "codec")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Codec");
+
+    }
+
+    // 
+    else if(column_names_it == "date")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Date");
+
+    }
+
+    // 
+    else if(column_names_it == "genres")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Genre(s)");
+
+    }
+
+    // 
+    else if(column_names_it == "length")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Length");
+
+    }
+
+    // 
+    else if(column_names_it == "mime")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Mime");
+
+    }
+
+    // 
+    else if(column_names_it == "sample_rate")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Sample Rate");
+
+    }
+
+    // 
+    else if(column_names_it == "title")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Title");
+
+    }
+
+    // 
+    else if(column_names_it == "track_number")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "#");
+
+    }
+
+    // 
+    else if(column_names_it == "track_total")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Track Total");
+
+    }
+
+  }
+
+
+
+  // 
   for(auto view_names_it : view_names)
   {
 
     // 
-    string config_str = "gui.playlist.view";
+    string config_str = "gui.playlist.view.";
 
     // 
     config_str += view_names_it;
@@ -236,7 +404,7 @@ Base::Base(int argc, char *argv[])
 
 
     // 
-    string playlist_view_config_str = view_names_it + ".locked";
+    string playlist_view_config_str = config_str + ".locked";
 
     // 
     config() . add_default(playlist_view_config_str, false);
@@ -244,7 +412,7 @@ Base::Base(int argc, char *argv[])
 
 
     // 
-    playlist_view_config_str = view_names_it + ".active";
+    playlist_view_config_str = config_str + ".active";
 
     // 
     config() . add_default(playlist_view_config_str, "Library");
@@ -252,10 +420,27 @@ Base::Base(int argc, char *argv[])
 
 
     // 
-    list<string> column_names
-      {"track_number", "title", "artists", "album_artists", "album", "genre",
-       "length", "date", "track_total", "bit_rate", "bit_depth", "sample_rate",
-       "channels", "codec", "mime"};
+    playlist_view_config_str = config_str + ".column_order";
+
+    // 
+    config() . add_default(playlist_view_config_str, column_names);
+
+
+
+    // 
+    for(auto column_names_it : column_names)
+    {
+
+      // 
+      string column_position_config_str
+        = config_str + ".columns." + column_names_it + ".size";
+
+
+
+      // 
+      config() . add_default(column_position_config_str, 80);
+
+    }
 
   }
 
@@ -374,9 +559,11 @@ Base::Base(int argc, char *argv[])
 Base::~Base()
 {
 
+  delete gui_;
+
   delete playback_;
 
-  delete scrobbling_;
+  // delete scrobbling_;
 
   delete metadata_;
 

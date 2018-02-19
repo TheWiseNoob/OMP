@@ -382,8 +382,20 @@ void ConfigurationGUIs::Undo_Changes()
 
 
 
+  //
+  Glib::ustring temp_active_panel_name_ustr
+    = config() . get("gui.configuration.active_panel");
+
+
+
   // Reads the configuration file to get saved values.
   config() . read_file();
+
+
+
+  // 
+  config()
+    . set("gui.configuration.active_panel", temp_active_panel_name_ustr);
 
 
 

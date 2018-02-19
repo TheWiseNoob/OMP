@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -101,6 +99,8 @@
 
 #include <gtkmm/frame.h>
 
+#include <gtkmm/notebook.h>
+
 
 
 
@@ -141,7 +141,7 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
 
 
 
-// Selection
+// General
 
 , selection_box_(Gtk::manage(new Gtk::Box))
 
@@ -151,11 +151,13 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
 
 , hide_status_bar_check_button_(Gtk::manage(new Gtk::CheckButton))
 
+, hide_tabs_check_button_(Gtk::manage(new Gtk::CheckButton))
+
 {
 
-  //           //
-  // Selection //////////////////////////////////////////////////////////////
-  //           //
+  //         //
+  // General //////////////////////////////////////////////////////////////////
+  //         //
 
   // 
   box() . set_center_widget(*selection_box_);
@@ -170,6 +172,10 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
 
   // 
   selection_box_ -> pack_start(*hide_status_bar_check_button_,
+                               Gtk::PACK_EXPAND_PADDING);
+
+  // 
+  selection_box_ -> pack_start(*hide_tabs_check_button_,
                                Gtk::PACK_EXPAND_PADDING);
 
 
@@ -207,6 +213,9 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
   //
   hide_status_bar_check_button_ -> set_label("Hide the status bar.");
 
+  //
+  hide_tabs_check_button_ -> set_label("Hide the tabs.");
+
 
 
   // 
@@ -223,6 +232,10 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
   hide_status_bar_check_button_
     -> set_tooltip_text("Hides the status bar at the bottom " \
                         "of the main window.");
+
+  // 
+  hide_tabs_check_button_
+    -> set_tooltip_text("Hides the tabs of OMP.");
 
 
 
@@ -244,6 +257,12 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
   // 
   hide_status_bar_check_button_ -> set_margin_right(2);
 
+  // 
+  hide_tabs_check_button_ -> set_margin_left(2);
+
+  // 
+  hide_tabs_check_button_ -> set_margin_right(2);
+
 
 
   //
@@ -264,6 +283,10 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
         (*this, 
          &GUIPanel::On_Hide_Status_Bar_Check_Button_Toggled_Signal));
 
+  //
+  hide_tabs_check_button_ -> signal_toggled()
+    . connect(sigc::mem_fun(*this, &GUIPanel::Hide_Tabs));
+
 
 
 
@@ -273,8 +296,8 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
   //       //
 
   // Adds the Apply_Saved_Value function to the ConfigGUI's list.
-  config_gui_ref . Add_Apply_Saved_Value_Function(*this,
-                                                  &Panel::Apply_Saved_Values);
+  config_gui_ref
+    . Add_Apply_Saved_Value_Function(*this, &Panel::Apply_Saved_Values);
 
 }
 
@@ -453,6 +476,105 @@ void GUIPanel::Apply_Saved_Values()
 
   // 
   gui() . set_disable_menubar_functions_flag(false);
+
+
+
+
+
+  //           //
+  // Hide Tabs ////////////////////////////////////////////////////////////////
+  //           //
+
+  // 
+  active = config() . get("gui.tabs.hide");
+
+
+
+  // 
+  hide_tabs_check_button_ -> set_active(active);
+
+
+
+  // 
+  gui() . main_window_notebook() . set_show_tabs(!active);
+
+
+
+  // 
+  gui() . set_disable_menubar_functions_flag(true);
+
+  // 
+  for(auto menubars_it : gui() . menubars())
+  {
+
+    // 
+    menubars_it -> hide_tabs_check_menu_item() . set_active(active);
+
+  }
+
+  // 
+  gui() . set_disable_menubar_functions_flag(false);
+
+}
+
+void GUIPanel::Hide_Tabs()
+{
+
+  // 
+  if(config_guis() . disable_functions())
+  {
+
+    return;
+
+  }
+
+
+
+  // 
+  bool active = hide_tabs_check_button_ -> get_active();
+
+
+
+  // 
+  gui() . main_window_notebook() . set_show_tabs(!active);
+
+
+
+  // 
+  config_guis() . Mark_Unsaved_Changes(true);
+
+  // 
+  for(auto it : config_guis()())
+  {
+
+    // 
+    it -> gui_panel() . hide_tabs_check_button()
+      . set_active(active);
+
+  }
+
+
+
+  // 
+  gui() . set_disable_menubar_functions_flag(true);
+
+  // 
+  for(auto menubars_it : gui() . menubars())
+  {
+
+    // 
+    menubars_it -> hide_tabs_check_menu_item() . set_active(active);
+
+  } 
+
+  // 
+  gui() . set_disable_menubar_functions_flag(false);
+
+
+
+
+  // 
+  config() . set("gui.tabs.hide", active); 
 
 }
 
@@ -702,5 +824,13 @@ Gtk::CheckButton& GUIPanel::hide_status_bar_check_button()
 
   // 
   return *hide_status_bar_check_button_;
+
+}
+
+Gtk::CheckButton& GUIPanel::hide_tabs_check_button()
+{
+
+  // 
+  return *hide_tabs_check_button_;
 
 }

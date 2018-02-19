@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -82,6 +80,18 @@
 
 //                 //
 //                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include "PlaylistColumn.h"
+
+
+
+
+
+//                 //
+//                 //
 // Outside Headers ////////////////////////////////////////////////////////////
 //                 //
 //                 //
@@ -91,6 +101,8 @@
 #include <gtkmm/treestore.h>
 
 #include <list>
+
+#include <map>
 
 #include <memory>
 
@@ -184,6 +196,10 @@ class Playlists : public GUIElementList<Playlist>
     void Fill_Row
       (Gtk::TreeRow& new_tree_row, std::shared_ptr<Track> new_track_sptr);
 
+    std::string Find_Column_Name(std::string& column_title);
+
+    std::string Find_Column_Title(std::string& column_name);
+
     void Flush_Playback_Queue();
 
     void Open_Create_Playlist_Dialog();
@@ -221,6 +237,8 @@ class Playlists : public GUIElementList<Playlist>
   //         //
 
   public:
+
+    std::list<PlaylistColumn>& columns();
 
     PlaylistColumnRecord& playlist_column_record();
 
@@ -422,6 +440,8 @@ class Playlists : public GUIElementList<Playlist>
   //         //
 
   private:
+
+    std::list<PlaylistColumn> columns_;
 
     PlaylistColumnRecord* playlist_column_record_;
 

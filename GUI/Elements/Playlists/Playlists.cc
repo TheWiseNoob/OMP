@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/
@@ -203,7 +201,6 @@ Playlists::Playlists(Base& base)
 
 {
 
-
   debug("Beginning of Playlists constructor!");
 
 
@@ -213,6 +210,45 @@ Playlists::Playlists(Base& base)
 
   // 
   database() . Playlist_Names(playlist_names);
+
+
+
+  // 
+  list<string> column_names
+    {"track_number", "title", "artists", "album_artists", "album", "genres",
+     "length", "date", "track_total", "bit_rate", "bit_depth", "sample_rate",
+     "channels", "codec", "mime"};
+
+  // 
+  for(auto column_names_it : column_names)
+  {
+
+    // 
+    string column_title_config_str = "gui.playlist.columns.";
+
+    // 
+    column_title_config_str += column_names_it;
+
+    // 
+    column_title_config_str += ".title";
+
+
+
+    // 
+    string title = config() . get(column_title_config_str);
+
+
+
+    // 
+    columns_ . emplace_back();
+
+    // 
+    columns_ . back() . title_ = title;
+
+    // 
+    columns_ . back() . name_ = column_names_it;
+
+  }
 
 
 
@@ -364,10 +400,87 @@ Playlists::~Playlists()
   delete selected_row_ref_;
 
   // 
-  delete database_;
+  delete playlist_create_dialog_;
+
+
+
+  //
+  for(auto playlists_it : (*this)())
+  {
+
+    // 
+    list<string> column_order;
+
+
+
+    // 
+    for(auto columns_it : playlists_it -> get_columns())
+    {
+
+      // 
+      string column_title = columns_it -> get_title();
+
+      // 
+      string column_name = playlists() . Find_Column_Name(column_title);
+
+
+
+      // 
+      column_order . push_back(column_name);
+
+
+
+      // 
+      string column_position_config_str
+        = "gui.playlist.view.";
+
+      // 
+      column_position_config_str
+        += playlists_it -> playlist_view_name();
+
+      // 
+      column_position_config_str
+        += ".columns.";
+
+      // 
+      column_position_config_str
+        += column_name + ".size";
+
+
+
+      // 
+      int width = columns_it -> get_fixed_width();
+
+      // 
+      config() . set(column_position_config_str, width);
+
+    }
+
+
+
+    // 
+    string column_order_config_str
+      = "gui.playlist.view.";
+
+    // 
+    column_order_config_str
+      += playlists_it -> playlist_view_name();
+
+    // 
+    column_order_config_str
+        += ".column_order";
+
+
+
+    // 
+    config() . set(column_order_config_str, column_order);
+
+  }
+
+
 
   // 
-  delete playlist_create_dialog_;
+  config() . write_file();
 
 }
 
@@ -928,6 +1041,56 @@ void Playlists::Fill_Row
 
 }
 
+string Playlists::Find_Column_Name(string& column_title)
+{ 
+
+  // 
+  for(auto columns_it : columns_)
+  {
+
+    // 
+    if((columns_it . title_) == column_title)
+    { 
+
+      // 
+      return columns_it . name_;
+
+    }
+
+  }
+
+
+
+  // 
+  return "";
+
+}
+
+string Playlists::Find_Column_Title(string& column_name)
+{ 
+
+  // 
+  for(auto columns_it : columns_)
+   {
+
+    // 
+    if((columns_it . name_) == column_name)
+    {  
+
+      // 
+      return columns_it . title_;
+
+    }
+
+  }
+
+
+
+  // 
+  return "";
+
+}
+
 void Playlists::Flush_Playback_Queue()
 {
 
@@ -1106,6 +1269,13 @@ list<shared_ptr<Track>>& Playlists::clipboard_tracks()
 //         //
 // Columns ////////////////////////////////////////////////////////////////////
 //         //
+
+std::list<PlaylistColumn>& Playlists::columns()
+{
+
+  return columns_;
+
+}
 
 PlaylistColumnRecord& Playlists::playlist_column_record()
 {

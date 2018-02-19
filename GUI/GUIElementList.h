@@ -74,13 +74,6 @@ class GUIElementList : public Parts
     virtual ~GUIElementList()
     {
 
-      for(auto it : gui_elements_)
-      {
-
-        delete it;
-
-      }
-
     }
 
     virtual std::list<datatype*> &gui_elements() final

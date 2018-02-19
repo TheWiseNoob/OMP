@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -43,6 +41,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef PLAYLISTS_MENU_H
 #define PLAYLISTS_MENU_H
 
@@ -50,10 +56,33 @@
 
 
 
-#include <gtkmm/menu.h>
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
 #include "../../../Parts.h"
 
+#include <gtkmm/menu.h>
 
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 #include <gtkmm/radiobuttongroup.h>
 
@@ -61,127 +90,153 @@
 
 
 
-class Playlist;
-class Playlists;
+
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
 
 namespace Gtk
 {
 
-  class MenuItem;
   class CheckMenuItem;
+
+  class MenuItem;
+
   class RadioButtonGroup;
+
   class RadioMenuItem;
 
 }
 
+class Playlist;
+
+class Playlists;
 
 
 
+
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
 
 class PlaylistMenu : public Gtk::Menu, public Parts
 {
+
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
 
   public:
 
     PlaylistMenu(Base& base, Playlist& new_playlist, 
                  Playlists& temp_playlists);
 
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
+
     ~PlaylistMenu();
 
 
-    void Queue();
 
+
+
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
+    Gtk::MenuItem& change_playlist_menu_item();
+
+    Gtk::MenuItem& copy_menu_item();
+
+    Gtk::MenuItem& cut_menu_item();
+
+    Gtk::MenuItem& delete_menu_item();
+
+    Gtk::MenuItem& edit_menu_item();
+
+    Gtk::CheckMenuItem& lock_check_menu_item();
+
+    Gtk::MenuItem& queue_menu_item();
+
+    Gtk::MenuItem& paste_menu_item();
+
+    Gtk::Menu& playlists_menu();
 
     Gtk::RadioButtonGroup& playlists_menu_radio_button_group();
 
-    Gtk::Menu& playlists_menu()
-    {
+    std::list<Gtk::RadioMenuItem*>& playlists_menu_radio_menu_items();
 
-      return *playlists_menu_;
 
-    }
 
-    Gtk::MenuItem& change_playlist_menu_item()
-    {
 
-      return *change_playlist_menu_item_;
 
-    }
-
-    Gtk::MenuItem& edit_menu_item()
-    {
-
-      return *edit_menu_item_;
-
-    }
-
-    Gtk::MenuItem& delete_menu_item()
-    {
-
-      return *delete_menu_item_;
-
-    }
-
-    Gtk::MenuItem& queue_menu_item()
-    {
-
-      return *queue_menu_item_;
-
-    }
-
-    Gtk::MenuItem& cut_menu_item()
-    {
-
-      return *cut_menu_item_;
-
-    }
-
-    Gtk::MenuItem& copy_menu_item()
-    {
-
-      return *copy_menu_item_;
-
-    }
-
-    Gtk::MenuItem& paste_menu_item()
-    {
-
-      return *paste_menu_item_;
-
-    }
-
-    Gtk::CheckMenuItem& lock_check_menu_item()
-    {
-
-      return *lock_check_menu_item_;
-
-    }
-
-    std::list<Gtk::RadioMenuItem*>& playlists_menu_radio_menu_items()
-    {
-
-      return playlists_menu_radio_menu_items_;
-
-    }
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   private:
 
+    // 
+    Gtk::MenuItem* change_playlist_menu_item_;
+
+    // 
+    Gtk::MenuItem* copy_menu_item_;
+
+    // 
+    Gtk::MenuItem* cut_menu_item_;
+
+    // 
+    Gtk::MenuItem* delete_menu_item_;
+
+    // 
+    Gtk::MenuItem* edit_menu_item_;
+
+    //                   
+    Gtk::CheckMenuItem* lock_check_menu_item_;
+
+    // 
+    Gtk::MenuItem* queue_menu_item_;
+
+    // 
+    Gtk::MenuItem* paste_menu_item_;
+
+    // 
     Playlist& playlist_;
 
-    Gtk::Menu *playlists_menu_;
+    // 
+    Gtk::Menu* playlists_menu_;
 
-    Gtk::MenuItem *change_playlist_menu_item_,
-                  *edit_menu_item_,
-                  *delete_menu_item_,
-                  *queue_menu_item_,
-                  *cut_menu_item_,
-                  *copy_menu_item_,
-                  *paste_menu_item_;
-                  
-    Gtk::CheckMenuItem *lock_check_menu_item_;
-    
+    // 
     Gtk::RadioButtonGroup playlists_menu_radio_button_group_;
 
+    // 
     std::list<Gtk::RadioMenuItem*> playlists_menu_radio_menu_items_;
 
 };
@@ -189,5 +244,13 @@ class PlaylistMenu : public Gtk::Menu, public Parts
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

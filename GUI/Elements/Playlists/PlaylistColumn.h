@@ -49,24 +49,20 @@
 //                    //
 //                    //
 
-#ifndef GUI_PANEL_H
-#define GUI_PANEL_H
+#ifndef PLAYLIST_COLUMN_H
+#define PLAYLIST_COLUMN_H
 
 
 
 
 
-//                   //
-//                   //
-// Inherited Headers //////////////////////////////////////////////////////////
-//                   //
-//                   //
-
-#include "../../Panel.h"
-
-
-
-
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
 
 //                 //
 //                 //
@@ -74,7 +70,7 @@
 //                 //
 //                 //
 
-#include <glibmm/refptr.h>
+#include <string>
 
 
 
@@ -88,14 +84,10 @@
 //                      //
 //                      //
 
-class ConfigurationGUI;
-
 namespace Gtk
 {
 
-  class Box;
-
-  class CheckButton;
+  class TreeViewColumn;
 
 }
 
@@ -111,7 +103,7 @@ namespace Gtk
 //                   //
 //                   //
 
-class GUIPanel : public Panel
+class PlaylistColumn
 { 
 
   //             //
@@ -122,7 +114,10 @@ class GUIPanel : public Panel
 
   public:
 
-    GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref);
+    PlaylistColumn()
+    {
+
+    }
 
 
 
@@ -136,51 +131,10 @@ class GUIPanel : public Panel
 
   public:
 
-    ~GUIPanel();
+    virtual ~PlaylistColumn()
+    {
 
-
-
-
-
-  //                  //
-  //                  //
-  // Member Functions /////////////////////////////////////////////////////////
-  //                  //
-  //                  //
-
-  public:
-
-    virtual void Apply_Saved_Values() final override;
-
-    void Hide_Tabs();
-
-    void On_Hide_Duplicates_Check_Button_Toggled_Signal();
-
-    void On_Hide_Status_Bar_Check_Button_Toggled_Signal();
-
-    void On_Hide_Header_Bar_Check_Button_Toggled_Signal();
-
-
-
-
-
-  //         //
-  //         //
-  // Getters //////////////////////////////////////////////////////////////////
-  //         //
-  //         //
-
-  // 
-  Gtk::CheckButton& hide_duplicates_check_button();
-
-  // 
-  Gtk::CheckButton& hide_header_bar_check_button();
-
-  // 
-  Gtk::CheckButton& hide_status_bar_check_button();
-
-  // 
-  Gtk::CheckButton& hide_tabs_check_button();
+    }
 
 
 
@@ -192,22 +146,11 @@ class GUIPanel : public Panel
   //                  //
   //                  //
 
-  private:
+  public:
 
-    // 
-    Gtk::Box* selection_box_;
+    std::string name_;
 
-    // 
-    Gtk::CheckButton* hide_duplicates_check_button_;
-
-    // 
-    Gtk::CheckButton* hide_header_bar_check_button_;
-
-    // 
-    Gtk::CheckButton* hide_status_bar_check_button_;
-
-    // 
-    Gtk::CheckButton* hide_tabs_check_button_;
+    std::string title_;
 
 };
 
@@ -223,5 +166,4 @@ class GUIPanel : public Panel
 //                  //
 //                  //
 
-#endif
-
+#endif 

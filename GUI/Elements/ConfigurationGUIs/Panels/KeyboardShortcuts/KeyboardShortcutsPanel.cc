@@ -81,6 +81,10 @@
 //                 //
 //                 //
 
+#include <gtkmm/eventbox.h>
+
+#include <iostream>
+
 
 
 
@@ -120,6 +124,12 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 
 : Panel(base_ref, new_config_gui, "Keyboard Shortcuts")
 
+
+
+// 
+
+, main_event_box_(Gtk::manage(new Gtk::EventBox))
+
 {
 
   //                 //
@@ -127,7 +137,7 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
   //             //
 
   // Adds the output sink's box to the panel's box.
-//  box() . pack_start(*output_sink_eventbox_, Gtk::PACK_EXPAND_WIDGET);
+  box() . pack_start(*main_event_box_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
@@ -140,6 +150,17 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
   // Adds the Apply_Saved_Value function to the ConfigGUI's list.
   new_config_gui . Add_Apply_Saved_Value_Function(*this,
                                                   &Panel::Apply_Saved_Values);
+
+
+
+
+  // 
+  main_event_box_ -> set_events(Gdk::KEY_PRESS_MASK);
+
+  // Overrides the function for keypresses to allow custom shortcuts.
+  main_event_box_ -> signal_key_press_event()
+    . connect(sigc::mem_fun(*this, 
+                            &KeyboardShortcutsPanel::On_Key_Press_Event));
 
 }
 
@@ -171,4 +192,107 @@ KeyboardShortcutsPanel::~KeyboardShortcutsPanel()
 void KeyboardShortcutsPanel::Apply_Saved_Values()
 {
 
+}
+
+bool KeyboardShortcutsPanel::On_Key_Press_Event(GdkEventKey* event)
+{
+
+  // 
+  cout << "\n\nDerp\n\n";
+
+
+
+/*
+  // Opens file chooser dialog for adding files to the currently selected
+  // playlists.
+  if((event -> keyval == GDK_KEY_o) && (event->state & GDK_CONTROL_MASK))
+  {
+
+    // Opens the FileChooser.
+    Add_File();
+
+    // End the key press function.
+    return true;
+
+  }
+
+  // Opens a new configuration window.
+  else if((event -> keyval == GDK_KEY_j) && (event->state & GDK_CONTROL_MASK))
+  {
+
+    // Calls the function for opening a new ConfigurationGUI window.
+    config_guis() . Open_Configuration();
+
+
+
+    return true;
+
+  }
+
+  // Is true if the space bar was pressed.
+  else if((event -> keyval == GDK_KEY_space))
+  {
+
+    // Pauses playback.
+    playback() . Pause();
+
+    return true;
+
+  } 
+
+  // Is true if the escape key is pressed.
+  else if((event -> keyval == GDK_KEY_Escape))
+  {
+
+    if(!(playback() . Stopped()))
+    {
+
+      // Stops playback.
+      playback().Stop();
+
+    }
+
+
+
+    // 
+    return true;
+
+  }
+
+  // Is true if F11 is pressed.
+  else if((event -> keyval == GDK_KEY_F11))
+  {
+
+    // True the fullscreen_ variable is true.
+    if(fullscreen_)
+    {
+
+      // Unfullscreens the window.
+      windows_.front() -> window().unfullscreen();
+
+      // Sets the fullscreen variable to false.
+      fullscreen_ = false;
+
+    }
+    else
+    {
+
+      // Fullscreens the window.
+      windows_.front() -> window().fullscreen();
+
+      // Sets the fullscreen variable to true.
+      fullscreen_ = true;
+
+    }
+
+    // Ends the function.
+    return true;
+
+  }
+
+
+*/
+  // Allows normal keyboard event propagation.
+  return false;
+ 
 }

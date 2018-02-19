@@ -128,6 +128,7 @@ PlaylistsDatabase.o: GUI/Elements/Playlists/PlaylistsDatabase.cc \
 Playlists.o: GUI/Elements/Playlists/Playlists.cc \
 	GUI/Elements/Playlists/Playlists.h GUI/GUIElementList.h \
 	GUI/Elements/Playlists/Playlist.h Parts.h \
+	GUI/Elements/Playlists/PlaylistColumn.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h \
 	GUI/Elements/Playlists/PlaylistsDatabase.h \
 	GUI/Elements/Playlists/PlaylistCreateDialog.h \

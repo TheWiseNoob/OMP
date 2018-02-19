@@ -165,7 +165,7 @@ class Configuration
     void add_default(string setting_name, DV_Type new_default)
     { 
 
-      default_values_ . get_defaults()
+      default_values_ . defaults()
         . emplace_back(setting_name, new_default); 
 
     }
@@ -303,14 +303,14 @@ class ReturnProxy
     operator std::string()
     {
 
-      return string(config_.get_str(setting_name_));
+      return string(config_ . get_str(setting_name_));
 
     }
 
     operator Glib::ustring()
     {
 
-      return string(config_.get_str(setting_name_));
+      return Glib::ustring(config_ . get_str(setting_name_));
 
     }
 

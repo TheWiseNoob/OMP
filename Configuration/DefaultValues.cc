@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -50,7 +48,6 @@
 
 
 DefaultValues::DefaultValues()
-: for_default_it(defaults.end()), rev_default_it(defaults.rend())
 {
 
 }
@@ -62,279 +59,220 @@ DefaultValues::DefaultValues()
 bool DefaultValues::exists(string &setting_name)
 {
 
-  find(setting_name);
+  // 
+  auto defaults_it = find(setting_name);
 
-  if(for_default_it != (defaults.end()))
+
+
+  // 
+  if(defaults_it != (defaults_ . end()))
   {
 
+    // 
     return true;
 
   }
 
-  if(rev_default_it != (defaults.rend()))
-  {
 
-    return true;
 
-  }
-
+  // 
   return false;
 
 }
 
-
-
-
-
-void DefaultValues::find(string &setting_name)
+list<DefaultValue>::iterator DefaultValues::find(string& setting_name)
 {
 
-  for_default_it = defaults.begin();
-
-  rev_default_it = defaults.rbegin();
-
-  int half_length;
-
-  if(((defaults.size()) % 2) == 1)
+  // 
+  for(auto defaults_it = (defaults_ . begin());
+      (defaults_it != (defaults_ . end()));
+       defaults_it++)
   {
 
-     half_length = ((defaults.size()) / 2 ) + 1;
-
-  }
-  else
-  {
-
-    half_length = ((defaults.size()) / 2);
-
-  }
-
-
-  for(int i = 0; i < half_length; i++)
-  {
-
-    if(((*for_default_it).get_name()) == setting_name )
+    // 
+    if((defaults_it -> get_name()) == setting_name)
     {
 
-      rev_default_it = defaults.rend(); 
-
-
-      return;
+      // 
+      return defaults_it;
 
     }
 
-    if(((*rev_default_it).get_name()) == setting_name)
-    {
-
-      for_default_it = defaults.end(); 
-
-      clog << "\n\nfind() setting name: " << rev_default_it -> get_name() << "\n\n";
-
-      return;
-
-    }
-
-    for_default_it++;
-
-    rev_default_it++;
-
   }
 
-  for_default_it = defaults.end(); 
 
-  rev_default_it = defaults.rend();
+
+  // 
+  return defaults_ . end();
 
 }
-
-
-
-
 
 int DefaultValues::get_int(string &setting_name)
 {
 
-  find(setting_name);
+  // 
+  auto defaults_it = find(setting_name);
 
+  // 
   int default_setting;
 
-  if(for_default_it != (defaults.end()))
+
+
+  // 
+  if(defaults_it != (defaults_ . end()))
   {
 
-    ((*for_default_it).get(default_setting));
+    //
+    defaults_it -> get(default_setting);
 
 
+
+    // 
     return default_setting;
 
   }
 
-  if(rev_default_it != (defaults.rend()))
-  {
-
-    ((*rev_default_it).get(default_setting));
 
 
-    return default_setting;
-
-  }
-
+  // 
   throw No_Default_Found_Exception;
 
 }
-
-
-
-
 
 double DefaultValues::get_double(string &setting_name)
 {
 
-  find(setting_name);
+  // 
+  auto defaults_it = find(setting_name);
 
+  // 
   double default_setting;
 
-  if(for_default_it != (defaults.end()))
+
+
+  // 
+  if(defaults_it != (defaults_ . end()))
   {
 
-    ((*for_default_it).get(default_setting));
+    // 
+    defaults_it -> get(default_setting);
 
 
+
+    // 
     return default_setting;
 
   }
 
-  if(rev_default_it != (defaults.rend()))
-  {
-
-    ((*rev_default_it).get(default_setting));
 
 
-    return default_setting;
-
-  }
-
+  // 
   throw No_Default_Found_Exception;
 
 }
-
-
-
-
 
 bool DefaultValues::get_bool(string &setting_name)
 {
 
-  find(setting_name);
+  // 
+  auto defaults_it = find(setting_name);
 
+  // 
   bool default_setting;
 
-  if(for_default_it != (defaults.end()))
+
+
+  // 
+  if(defaults_it != (defaults_ . end()))
   {
 
-    ((*for_default_it).get(default_setting));
+    // 
+    defaults_it -> get(default_setting);
 
 
+
+    // 
     return default_setting;
 
   }
 
-  if(rev_default_it != (defaults.rend()))
-  {
-
-    ((*rev_default_it).get(default_setting));
 
 
-    return default_setting;
-
-  }
-
+  // 
   throw No_Default_Found_Exception;
 
 }
 
-
-
-
-
-void DefaultValues::get_list(string &setting_name, std::list<string>& setting_list)
+void DefaultValues::get_list
+  (string &setting_name, std::list<string>& setting_list)
 {
 
-  find(setting_name);
+  // 
+  auto defaults_it = find(setting_name);
 
-  if(for_default_it != (defaults.end()))
+
+
+  // 
+  if(defaults_it != (defaults_ . end()))
   {
 
-    ((*for_default_it).get(setting_list));
+    // 
+    defaults_it -> get(setting_list);
 
+
+
+    // 
+    return;
 
   }
 
-  else if(rev_default_it != (defaults.rend()))
-  {
 
-    ((*for_default_it).get(setting_list));
 
-  }
-
-  else
-  {
-
-    throw No_Default_Found_Exception;
-
-  }
+  // 
+  throw No_Default_Found_Exception;
 
 }
-
-
-
-
 
 string DefaultValues::get_str(string &setting_name)
 {
 
-  find(setting_name);
+  // 
+  auto defaults_it = find(setting_name);
 
+  // 
   string default_setting;
 
-  if(for_default_it != (defaults.end()))
+
+
+  // 
+  if(defaults_it != (defaults_ . end()))
   {
 
+    // 
+    defaults_it -> get(default_setting);
 
-    ((*for_default_it).get(default_setting));
 
 
+    // 
     return default_setting;
 
   }
 
-  if(rev_default_it != (defaults.rend()))
-  {
-
-    ((*rev_default_it).get(default_setting));
 
 
-    return default_setting;
-
-  }
-
+  // 
   throw No_Default_Found_Exception;
 
 }
 
-
-
-
-
 void DefaultValues::print_defaults()
 {
 
-  list<DefaultValue>::iterator defaults_it = defaults.begin();
-
-  while(defaults_it != (defaults.end()))
+  // 
+  for(auto defaults_it : defaults_)
   {
 
-    clog << "\nDefaultValue Name: \"" << defaults_it -> get_name() << "\"\n";
-//         << "DefaultValue Value: \"" << defaults_it -> get_value() << "\"\n";
-
-    defaults_it++;
+    clog << "\nDefaultValue Name: \"" << defaults_it . get_name() << "\"\n";
 
   }
 

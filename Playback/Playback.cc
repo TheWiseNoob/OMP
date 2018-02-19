@@ -1875,6 +1875,8 @@ bool Playback::Queue_Tracks()
     // 
     bool unused_playback_follows_cursor = false;
 
+
+
     // 
     if((config() . get("playback.playback_follows_cursor")) 
          &&
@@ -2845,6 +2847,9 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
   // Sets playback_state_change_ to true.
   playback_state_change_ = true;
 
+  // 
+  bool queue_track = false;
+
 
 
 
@@ -2863,6 +2868,11 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
       // 
       if((playlists() . queue_playlist_treestore() -> children() . size()) > 0)
       {
+
+        // 
+        queue_track = true;
+
+
 
         // 
         Gtk::TreePath first_queue_row_path
@@ -2884,7 +2894,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
         // Assigns the selected row ref to playing_row_ref.
         playing_row_ref = playlists() . selected_row_ref();
 
-      }
+       }
 
 
 
@@ -2916,7 +2926,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
 
     // Clears the track queue before starting new playback.
-    track_queue_.clear();
+    track_queue_ . clear();
 
 
 
@@ -2983,7 +2993,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
     first_track_ = true;
 
     // Sets the changing track variable to false.
-    playlists().changing_track() = false;
+    playlists() . changing_track() = false;
 
 
 
@@ -2994,14 +3004,32 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
     // Dereferences the playing track's TreeIter pointer and then dereferences
     // that iterator to get a copy of the TreeRow.
-    Gtk::TreeRow row
-      = *(playlists() . selected_playlist_treestore()
-                          -> get_iter(playing_row_ref . get_path()));
+    Gtk::TreeRow row;
+
+    // 
+    if(queue_track)
+    {
+
+      // 
+      row = *(playlists() . queue_playlist_treestore()
+                              -> get_iter(playing_row_ref . get_path()));
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      row = *(playlists() . selected_playlist_treestore()
+                              -> get_iter(playing_row_ref . get_path()));
+
+    }
 
     // Makes a new track_sptr and assigns it to a temporary variable. 
     Track* temp_track_ptr
       = new Track(*shared_ptr<Track>
-          ((row[playlists().playlist_column_record().track_col])));
+          ((row[playlists() . playlist_column_record() . track_col])));
 
 
 

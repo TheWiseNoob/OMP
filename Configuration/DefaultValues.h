@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -78,7 +76,7 @@ class DefaultValues
 
     bool exists(string &setting_name);
 
-    void find(string &setting_name);
+    list<DefaultValue>::iterator find(string &setting_name);
 
 
     int get_int(string &setting_name);
@@ -99,38 +97,34 @@ class DefaultValues
     int get_size()
     { 
 
-      return defaults.size(); 
+      return defaults_ . size(); 
 
     }
 
-    list<DefaultValue> &get_defaults()
-    { 
+    list<DefaultValue>& defaults()
+    {  
 
-      return defaults; 
+      return defaults_;
 
     }
 
     list<DefaultValue>::iterator it_begin()
-    { 
+    {  
 
-      return defaults.begin(); 
+      return defaults_ . begin(); 
 
     }
 
     list<DefaultValue>::iterator it_end()
-    { 
+    {  
 
-      return defaults.end(); 
+      return defaults_ . end(); 
 
     }
 
   private:
 
-    list<DefaultValue> defaults;
-
-    list<DefaultValue>::iterator for_default_it; 
-
-    list<DefaultValue>::reverse_iterator rev_default_it;
+    list<DefaultValue> defaults_;
 
 };
 

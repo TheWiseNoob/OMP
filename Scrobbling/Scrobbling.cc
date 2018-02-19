@@ -910,6 +910,18 @@ void Scrobbling::Update(Track temp_track,
 void Scrobbling::Update_Playing_Track_Lastfm()
 {
 
+  // 
+  if(!(config() . get("scrobbling.lastfm_enabled")))
+  {
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
   sigc::connection program_conn = Glib::signal_timeout().connect
   (
 
@@ -941,7 +953,6 @@ void Scrobbling::Update_Playing_Track_Lastfm()
     100 
 
   );
-
 
 }
 

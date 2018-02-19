@@ -278,6 +278,7 @@ bool DefaultValue::get(bool& retriever)
 bool DefaultValue::get(list<string>& retriever)
 { 
 
+  // 
   for(auto list_value_it : list_value_)
   {
  
@@ -285,6 +286,9 @@ bool DefaultValue::get(list<string>& retriever)
 
   }
 
+
+
+  // 
   return true;
 
 }
