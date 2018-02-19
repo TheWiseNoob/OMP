@@ -6,6 +6,13 @@
 
 
 
+## Screenshot
+![Screenshot1](Images/Screenshots/Main.png?raw=true)
+
+
+
+
+
 ## Compiling and Installing
 
 ### Dependencies
@@ -65,10 +72,4 @@
   - Dragging glitches when drag ends on non-valid drop.
   - Moving playing track to playback queue causes issues.
   - Tooltips missing in parts of the configuration.
-
-
-
-
-
-## Screenshot
-![Screenshot1](Images/Screenshots/NRnilGB.png?raw=true)
+  - Changing looping mode while playing breaks playback.
