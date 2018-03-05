@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -69,7 +67,15 @@
 //                 //
 //                 //
 
+#include "../../../../../Configuration/Configuration.h"
+
+#include "../../../../../KeyboardShortcuts/KeyboardShortcuts.h"
+
 #include "../../ConfigurationGUI.h"
+
+#include "../../ConfigurationGUIs.h"
+
+#include "KeyboardShortcutsPanelColumnRecord.h"
 
 
 
@@ -81,9 +87,17 @@
 //                 //
 //                 //
 
-#include <gtkmm/eventbox.h>
+#include <glibmm/ustring.h>
 
-#include <iostream>
+#include <gtkmm/box.h>
+
+#include <gtkmm/frame.h>
+
+#include <gtkmm/liststore.h>
+
+#include <gtkmm/treeview.h>
+
+#include <gtkmm/scrolledwindow.h>
 
 
 
@@ -118,7 +132,8 @@ using namespace std;
 //             //
 
 KeyboardShortcutsPanel::KeyboardShortcutsPanel
-  (Base& base_ref, ConfigurationGUI& new_config_gui)
+  (Base& base_ref, ConfigurationGUI& new_config_gui,
+   Glib::RefPtr<Gtk::ListStore> new_keyboard_shortcuts_liststore)
 
 // Inherited Class
 
@@ -126,18 +141,150 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 
 
 
-// 
+// Keyboard Shortcuts Key Display
 
-, main_event_box_(Gtk::manage(new Gtk::EventBox))
+, keyboard_shortcuts_display_box_(Gtk::manage(new Gtk::Box))
+
+, keyboard_shortcuts_display_inner_box_(Gtk::manage(new Gtk::Box))
+
+, keyboard_shortcuts_key_label_(Gtk::manage(new Gtk::Label("None")))
+
+, keyboard_shortcuts_label_(Gtk::manage(new Gtk::Label()))
+
+
+
+// Keyboard Shortcuts TreeView
+
+, keyboard_shortcuts_treeview_(Gtk::manage(new Gtk::TreeView))
+
+, keyboard_shortcuts_treeview_box_(Gtk::manage(new Gtk::Box))
+
+, keyboard_shortcuts_treeview_columnrecord_(new KeyboardShortcutsPanelColumnRecord)
+
+, keyboard_shortcuts_treeview_frame_(Gtk::manage(new Gtk::Frame))
+
+, keyboard_shortcuts_treeview_scrolled_window_(Gtk::manage(new Gtk::ScrolledWindow))
 
 {
 
-  //                 //
-  // KeyboardShortcuts Sink //////////////////////////////////////////////////////////////
-  //             //
+  //                   //
+  // Filename TreeView ////////////////////////////////////////////////////////
+  //                   //
 
   // Adds the output sink's box to the panel's box.
-  box() . pack_start(*main_event_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . pack_start(*keyboard_shortcuts_treeview_box_, Gtk::PACK_EXPAND_WIDGET);
+
+  // Adds the output sink's box to the panel's box.
+  keyboard_shortcuts_treeview_box_ -> pack_start(*keyboard_shortcuts_treeview_frame_, 
+                                       Gtk::PACK_EXPAND_WIDGET);
+
+  // Adds the output sink's box to the panel's box.
+  keyboard_shortcuts_treeview_frame_ -> add(*keyboard_shortcuts_treeview_scrolled_window_);
+
+  // Adds the output sink's box to the panel's box.
+  keyboard_shortcuts_treeview_scrolled_window_ -> add(*keyboard_shortcuts_treeview_);
+
+
+
+  // Sets the margin of the keyboard_shortcuts treeview box.
+  keyboard_shortcuts_treeview_box_ -> set_margin_top(2);
+
+  // Sets the margin of the keyboard_shortcuts treeview box.
+  keyboard_shortcuts_treeview_box_ -> set_margin_bottom(2);
+
+  // Sets the margin of the keyboard_shortcuts treeview box.
+  keyboard_shortcuts_treeview_box_ -> set_margin_left(2);
+
+  // Sets the margin of the keyboard_shortcuts treeview box.
+  keyboard_shortcuts_treeview_box_ -> set_margin_right(2);
+
+
+
+  // 
+  keyboard_shortcuts_treeview_ -> set_enable_search(false);
+
+
+
+  // Sets the behaviour of the scrobbable window of the keyboard_shortcuts treeview to 
+  // appear automatically when needed.
+  keyboard_shortcuts_treeview_scrolled_window_ -> set_policy(Gtk::POLICY_AUTOMATIC,
+                                          Gtk::POLICY_AUTOMATIC);
+
+
+
+  // 
+  keyboard_shortcuts_liststore_ = new_keyboard_shortcuts_liststore;
+
+
+
+  // 
+  keyboard_shortcuts_treeview_ -> set_model(keyboard_shortcuts_liststore_);
+
+
+
+  // 
+  keyboard_shortcuts_treeview_
+    -> set_tooltip_text("Double click a row to set the key binding of that" \
+                        " keyboard shortcut.");
+
+
+
+  // Appends a keyboard shortcut name column.
+  keyboard_shortcuts_treeview_
+    -> append_column
+         ("Shortcut Name", keyboard_shortcuts_treeview_columnrecord_ -> name_col_);
+
+  // Appends a keyboard shortcut column.
+  keyboard_shortcuts_treeview_
+    -> append_column
+         ("Key", keyboard_shortcuts_treeview_columnrecord_ -> label_col_);
+
+
+
+  keyboard_shortcuts_treeview_ -> signal_row_activated()
+    . connect(sigc::mem_fun(*this, &KeyboardShortcutsPanel::Row_Activated));
+
+
+
+
+
+  //                  //
+  // Filename Buttons /////////////////////////////////////////////////////////
+  //                  //
+
+  // Adds the output sink's box to the panel's box.
+  box() . pack_end(*keyboard_shortcuts_display_box_, Gtk::PACK_SHRINK);
+
+
+
+  // 
+  keyboard_shortcuts_display_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+
+
+
+  // 
+  keyboard_shortcuts_display_box_
+    -> set_center_widget(*keyboard_shortcuts_display_inner_box_);
+
+
+
+  // 
+  keyboard_shortcuts_display_inner_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+
+
+
+  // 
+  keyboard_shortcuts_display_inner_box_
+    -> pack_start(*keyboard_shortcuts_label_, Gtk::PACK_SHRINK);
+
+  // 
+  keyboard_shortcuts_display_inner_box_
+    -> pack_start(*keyboard_shortcuts_key_label_, Gtk::PACK_SHRINK);
+
+
+
+  // 
+  keyboard_shortcuts_label_ -> set_markup("<u>Key Press</u>: ");
 
 
 
@@ -150,17 +297,6 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
   // Adds the Apply_Saved_Value function to the ConfigGUI's list.
   new_config_gui . Add_Apply_Saved_Value_Function(*this,
                                                   &Panel::Apply_Saved_Values);
-
-
-
-
-  // 
-  main_event_box_ -> set_events(Gdk::KEY_PRESS_MASK);
-
-  // Overrides the function for keypresses to allow custom shortcuts.
-  main_event_box_ -> signal_key_press_event()
-    . connect(sigc::mem_fun(*this, 
-                            &KeyboardShortcutsPanel::On_Key_Press_Event));
 
 }
 
@@ -177,6 +313,9 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 KeyboardShortcutsPanel::~KeyboardShortcutsPanel()
 {
 
+  // 
+  delete keyboard_shortcuts_treeview_columnrecord_;
+
 }
 
 
@@ -192,107 +331,194 @@ KeyboardShortcutsPanel::~KeyboardShortcutsPanel()
 void KeyboardShortcutsPanel::Apply_Saved_Values()
 {
 
+  // 
+  list<string> key_names
+    {"add_files", "close_secondary", "configuration", "copy", "cut", "delete",
+     "next", "paste", "pause", "play", "select_all", "stop"};
+
+
+
+  // 
+  keyboard_shortcuts_liststore_ -> clear();
+
+  //
+  for(auto keys_it : key_names)
+  {
+
+    // 
+    Gtk::TreeIter new_keyboard_shortcuts_row_iter
+      = keyboard_shortcuts_liststore_ -> append();
+
+    // 
+    Gtk::TreeRow new_keyboard_shortcuts_row = *new_keyboard_shortcuts_row_iter;
+
+    // 
+    new_keyboard_shortcuts_row[keyboard_shortcuts_treeview_columnrecord_ -> name_col_] = keys_it;
+
+
+
+    // 
+    string config_str = "keyboard_shortcuts.keys." + keys_it;
+
+    // 
+    string key_name = config() . get(config_str);
+
+    // 
+    guint keyval;
+
+    // 
+    GdkModifierType mods;
+
+    // 
+    gtk_accelerator_parse(key_name . c_str(), &keyval, &mods);
+
+    // 
+    string key_label = gtk_accelerator_get_label(keyval, mods);
+
+    // 
+    new_keyboard_shortcuts_row[keyboard_shortcuts_treeview_columnrecord_ -> key_col_] = key_name;
+
+    // 
+    new_keyboard_shortcuts_row[keyboard_shortcuts_treeview_columnrecord_ -> label_col_] = key_label;
+
+  }
+
 }
 
-bool KeyboardShortcutsPanel::On_Key_Press_Event(GdkEventKey* event)
+void KeyboardShortcutsPanel::Update_Key(const char* name, const char* label)
 {
 
   // 
-  cout << "\n\nDerp\n\n";
+  keyboard_shortcuts() . set_skip_window_key_callback(true);
 
 
 
-/*
-  // Opens file chooser dialog for adding files to the currently selected
-  // playlists.
-  if((event -> keyval == GDK_KEY_o) && (event->state & GDK_CONTROL_MASK))
+  list<string> modifiers
+    {"Control L", "Control R", "Alt L", "Alt R", "Super L", "Super R"};
+
+  // 
+  for(auto mod_it : modifiers)
   {
 
-    // Opens the FileChooser.
-    Add_File();
-
-    // End the key press function.
-    return true;
-
-  }
-
-  // Opens a new configuration window.
-  else if((event -> keyval == GDK_KEY_j) && (event->state & GDK_CONTROL_MASK))
-  {
-
-    // Calls the function for opening a new ConfigurationGUI window.
-    config_guis() . Open_Configuration();
-
-
-
-    return true;
-
-  }
-
-  // Is true if the space bar was pressed.
-  else if((event -> keyval == GDK_KEY_space))
-  {
-
-    // Pauses playback.
-    playback() . Pause();
-
-    return true;
-
-  } 
-
-  // Is true if the escape key is pressed.
-  else if((event -> keyval == GDK_KEY_Escape))
-  {
-
-    if(!(playback() . Stopped()))
+    // 
+    if(mod_it == label)
     {
 
-      // Stops playback.
-      playback().Stop();
+      // 
+      return;
+
+    }
+
+  }
+
+
+
+  // 
+  Gtk::TreeRow key_row
+    = *(keyboard_shortcuts_liststore_ -> get_iter(editing_path_));
+
+
+
+  // 
+  Glib::ustring config_name
+    = key_row[keyboard_shortcuts_treeview_columnrecord_ -> name_col_];
+
+
+
+  // 
+  string final_config_name = "keyboard_shortcuts.keys.";
+
+  // 
+  final_config_name += config_name;
+
+
+
+  // 
+  string name_str = name;
+
+  // 
+  config() . set(final_config_name, name_str);
+
+
+
+  // 
+  config_guis() . Mark_Unsaved_Changes(true);
+
+
+
+  // 
+  key_row[keyboard_shortcuts_treeview_columnrecord_ -> label_col_] = label;
+
+
+
+  // 
+  keyboard_shortcuts() . set_updating_binding(false);
+
+}
+
+void KeyboardShortcutsPanel::Row_Activated
+  (const Gtk::TreePath& path, Gtk::TreeViewColumn* column)
+{
+
+  // 
+  Gtk::TreePath clicked_row_path
+    (keyboard_shortcuts_treeview_ -> get_selection() -> get_selected());
+
+  // 
+  editing_path_ = clicked_row_path . to_string();
+
+
+
+  // 
+  if(keyboard_shortcuts() . updating_binding())
+  {
+
+    // 
+    for(auto config_guis_it : config_guis()())
+    {
+
+      // 
+      config_guis_it -> Apply_Saved_Values();
 
     }
 
 
 
     // 
-    return true;
-
-  }
-
-  // Is true if F11 is pressed.
-  else if((event -> keyval == GDK_KEY_F11))
-  {
-
-    // True the fullscreen_ variable is true.
-    if(fullscreen_)
-    {
-
-      // Unfullscreens the window.
-      windows_.front() -> window().unfullscreen();
-
-      // Sets the fullscreen variable to false.
-      fullscreen_ = false;
-
-    }
-    else
-    {
-
-      // Fullscreens the window.
-      windows_.front() -> window().fullscreen();
-
-      // Sets the fullscreen variable to true.
-      fullscreen_ = true;
-
-    }
-
-    // Ends the function.
-    return true;
+    keyboard_shortcuts() . set_updating_binding(false);
 
   }
 
 
-*/
-  // Allows normal keyboard event propagation.
-  return false;
- 
+
+  // 
+  Gtk::TreeRow clicked_row 
+    = *(keyboard_shortcuts_liststore_ -> get_iter(editing_path_));
+
+  // 
+  clicked_row[keyboard_shortcuts_treeview_columnrecord_ -> label_col_]
+    = "~ Enter A New Binding ~";
+
+
+
+  // 
+  keyboard_shortcuts() . set_updating_binding(true);
+
+}
+
+
+
+
+
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+
+Gtk::Label& KeyboardShortcutsPanel::keyboard_shortcuts_key_label()
+{
+
+  return *keyboard_shortcuts_key_label_;
+
 }

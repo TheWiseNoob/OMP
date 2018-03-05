@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -85,9 +83,11 @@
 
 #include "Artwork.h"
 
-#include "ChildWindow.h"
-
 #include "Elements/Abouts/Abouts.h"
+
+#include "Elements/ChildWindows/ChildWindow.h"
+
+#include "Elements/ChildWindows/ChildWindows.h"
 
 #include "Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
@@ -108,6 +108,8 @@
 #include "Elements/FileChoosers/FileChooser.h"
 
 #include "Elements/FileChoosers/FileChoosers.h"
+
+#include "../KeyboardShortcuts/KeyboardShortcuts.h"
 
 #include "MenuBar.h"
 
@@ -219,15 +221,11 @@ GUI::GUI(Base& base_ref)
 
 
 
-// Member Variables
-
-, fullscreen_(false)
-
-
-
 // GUI Elements
 
 , abouts_(new Abouts(base_ref))
+
+, windows_(new ChildWindows(base_ref))
 
 , config_guis_(new ConfigurationGUIs(base_ref))
 
@@ -324,15 +322,15 @@ GUI::GUI(Base& base_ref)
   // Sets main_window equal to a new shared_ptr<ChildWindow> object that will
   // be the program's main window.
   main_window_
-    = make_shared<ChildWindow>("OMP", base_ref, temp_func_ptr, true);
+    = new ChildWindow("OMP", base_ref, *windows_, temp_func_ptr, true);
 
 
 
   // Adds the main window to the windows data structure. 
-  windows_ . push_front(main_window_);
+  (*windows_)() . push_front(main_window_);
 
   // Sets the list location of the window for easy access.
-  main_window() -> set_location(windows_ . begin());
+  main_window() -> set_gui_elements_it((*windows_)() . begin());
 
 
 
@@ -357,7 +355,7 @@ GUI::GUI(Base& base_ref)
 
   // 
   if(maximized)
-  {
+  { 
 
     // 
     main_window() -> window() . maximize();
@@ -374,7 +372,8 @@ GUI::GUI(Base& base_ref)
 
   // Overrides the function for keypresses to allow custom shortcuts.
   main_window() -> window() . signal_key_press_event()
-    . connect(sigc::mem_fun(*this, &GUI::On_Key_Press_Event));
+    . connect(sigc::mem_fun(base_ref . keyboard_shortcuts(),
+                            &KeyboardShortcuts::On_Key_Press_Event));
 
   // Event function for when the window irregularly closes.
   main_window() -> window() . signal_delete_event()
@@ -1208,6 +1207,11 @@ GUI::~GUI()
   // 
   config() . write_file();
 
+
+
+  // 
+  delete windows_;
+
 }
 
 
@@ -1285,109 +1289,17 @@ bool GUI::On_File_Chooser_Playlist_Paned_Button_Release_Event
 bool GUI::On_GUI_Window_Signal_Delete_Event(GdkEventAny* event)
 {
 
+  // 
+  base() . quitting() = true;
+
+
+
   // Releases the application window.
   main_window() -> window().get_application() -> release();
 
 
   // Ends the function.
   return true;
-
-}
-
-bool GUI::On_Key_Press_Event(GdkEventKey* event)
-{
-
-  // Opens file chooser dialog for adding files to the currently selected
-  // playlists.
-  if((event -> keyval == GDK_KEY_o) && (event->state & GDK_CONTROL_MASK))
-  {
-
-    // Opens the FileChooser.
-    Add_File();
-
-    // End the key press function.
-    return true;
-
-  }
-
-  // Opens a new configuration window.
-  else if((event -> keyval == GDK_KEY_j) && (event->state & GDK_CONTROL_MASK))
-  {
-
-    // Calls the function for opening a new ConfigurationGUI window.
-    config_guis() . Open_Configuration();
-
-
-
-    return true;
-
-  }
-
-  // Is true if the space bar was pressed.
-  else if((event -> keyval == GDK_KEY_space))
-  {
-
-    // Pauses playback.
-    playback() . Pause();
-
-    return true;
-
-  } 
-
-  // Is true if the escape key is pressed.
-  else if((event -> keyval == GDK_KEY_Escape))
-  {
-
-    if(!(playback() . Stopped()))
-    {
-
-      // Stops playback.
-      playback().Stop();
-
-    }
-
-
-
-    // 
-    return true;
-
-  }
-
-  // Is true if F11 is pressed.
-  else if((event -> keyval == GDK_KEY_F11))
-  {
-
-    // True the fullscreen_ variable is true.
-    if(fullscreen_)
-    {
-
-      // Unfullscreens the window.
-      windows_.front() -> window().unfullscreen();
-
-      // Sets the fullscreen variable to false.
-      fullscreen_ = false;
-
-    }
-    else
-    {
-
-      // Fullscreens the window.
-      windows_.front() -> window().fullscreen();
-
-      // Sets the fullscreen variable to true.
-      fullscreen_ = true;
-
-    }
-
-    // Ends the function.
-    return true;
-
-  }
-
-
-
-  // Allows normal keyboard event propagation.
-  return false;
 
 }
 
@@ -1502,6 +1414,11 @@ void GUI::On_Main_Window_Check_Resize_Signal()
 
 void GUI::Quit()
 { 
+
+  // 
+  base() . quitting() = true;
+
+
 
   // Releases the application window.
   main_window() -> window().get_application() -> release();
@@ -1666,40 +1583,6 @@ void GUI::Load_Cover_Art(string& filename_ref)
 
   // Sets cover_file_ to the default cover image.
   cover_file_ = default_cover_file_;
-
-}
-
-
-
-
-
-//              //
-// FileChoosers ///////////////////////////////////////////////////////////////
-//              //
-
-void GUI::Add_File()
-{
-
-  // Creates of new FileChooser pointer.
-  FileChooser* temp_file_chooser = new FileChooser(base(), file_choosers());
-
-  // Creates and std function pointer to the destroy function of the new
-  // FileChooser.
-  std::function<void(void)> temp_func_ptr
-    = std::bind(&FileChooser::Destroy, temp_file_chooser);
-
-  // Creates a new shared_ptr<ChildWindow> to hold the FileChooser 
-  shared_ptr<ChildWindow> temp_window;
-
-  // Creates the new ChildWindow.
-  temp_window = Create_New_Window("Add File(s)", temp_func_ptr);
-
-  // Adds the new FileChooser to the new ChildWindow.
-  temp_window -> box().pack_start(temp_file_chooser -> box(),
-                                  Gtk::PACK_EXPAND_WIDGET);
-
-  // Displays the new ChildWindow and its contents.
-  temp_window -> Show();
 
 }
 
@@ -2005,38 +1888,6 @@ void GUI::On_Signal_Value_Changed_Main_Volume_Button(double new_volume)
 
 
 //         //
-// Windows ////////////////////////////////////////////////////////////////////
-//         //
-
-shared_ptr<ChildWindow> GUI::Create_New_Window
-  (const char* window_name, auto temp_destroy_func_ptr)
-{
-
-  // Creates a window for the new ConfigGUI.
-  shared_ptr<ChildWindow> temp_window(nullptr);
-  temp_window = make_shared<ChildWindow>(window_name,
-                                         base(), temp_destroy_func_ptr);
-
-
-
-  // Adds the new window to the windows_ list.
-  windows_.push_front(temp_window);
-
-  // Sets the location of the new window in the windows_ list.
-  temp_window -> set_location(windows_.begin());
-
-
-
-  // Returns the new shared_ptr<ChildWindow> to whatever called this function.
-  return temp_window;
-
-}
-
-
-
-
-
-//         //
 //         //
 // Getters ////////////////////////////////////////////////////////////////////
 //         //
@@ -2081,6 +1932,13 @@ Abouts& GUI::abouts()
 {
 
   return *abouts_;
+
+}
+
+ChildWindows& GUI::windows()
+{  
+
+  return *windows_; 
 
 }
 
@@ -2141,13 +1999,6 @@ std::list<Tagview*>& GUI::tagviews()
 
 }
 
-std::list<std::shared_ptr<ChildWindow>>& GUI::windows()
-{  
-
-  return windows_; 
-
-}
-
 
 
 
@@ -2186,7 +2037,7 @@ Gtk::Notebook& GUI::main_window_notebook()
 // Windows ////////////////////////////////////////////////////////////////////
 //         //
 
-std::shared_ptr<ChildWindow> GUI::main_window()
+ChildWindow* GUI::main_window()
 { 
 
   return main_window_;

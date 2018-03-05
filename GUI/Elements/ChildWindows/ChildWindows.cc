@@ -55,7 +55,7 @@
 //              //
 //              //
 
-#include "Abouts.h"
+#include "ChildWindows.h"
 
 
 
@@ -67,29 +67,9 @@
 //                 //
 //                 //
 
-#include "../ChildWindows/ChildWindow.h"
+#include "../../../Base.h"
 
-#include "../ChildWindows/ChildWindows.h"
-
-#include "../../GUI.h"
-
-
-
-
-
-
-//                 //
-//                 //
-// Outside Headers ////////////////////////////////////////////////////////////
-//                 //
-//                 //
-
-#include <functional>
-
-#include <gtkmm/applicationwindow.h>
-
-#include <memory>
-
+#include "ChildWindow.h"
 
 
 
@@ -123,13 +103,14 @@ using namespace std;
 //             //
 //             //
 
-Abouts::Abouts(Base& base_ref)
+ChildWindows::ChildWindows(Base& base_ref)
 
 // Inherited Class
 
 : GUIElementList(base_ref)
-
 {
+
+  
 
 }
 
@@ -143,8 +124,9 @@ Abouts::Abouts(Base& base_ref)
 //            //
 //            //
 
-Abouts::~Abouts()
+ChildWindows::~ChildWindows()
 {
+
 
 }
 
@@ -158,41 +140,26 @@ Abouts::~Abouts()
 //                  //
 //                  //
 
-void Abouts::Open_About()
+ChildWindow* ChildWindows::Create_New_Window
+  (const char* window_name, std::function<void(void)> temp_destroy_func_ptr)
 {
 
-  // Creates a temporary ConfigGUI pointer.
-  About* new_about;
-
-  // Assigns a new ConfigGUI object to the pointer.
-  new_about = new About(base(), (*this));
-
-  // Sets the new ConfigGUI's location in ConfigGUIs.
-  new_about -> set_gui_elements_it((*this)() . begin());
+  // Creates a window for the new ConfigGUI.
+  ChildWindow* new_window
+    = new ChildWindow(window_name, base(), windows(),
+                   temp_destroy_func_ptr);
 
 
 
-  // Binds the ConfigGUI's Destroy function a std::function pointer.
-  std::function<void(void)> new_destroy_func_ptr
-    = std::bind(&About::Destroy, new_about);
+  // Adds the new window to the windows_ list.
+  windows()() . push_back(new_window);
 
-  // Creates of new window using the Create_New_Window function.
-  ChildWindow* new_child_window
-    = windows() . Create_New_Window("About OMP", new_destroy_func_ptr);
+  // Sets the location of the new window in the windows_ list.
+  new_window -> set_gui_elements_it(windows()() . begin());
 
 
 
-  // Adds the ConfigGUI to the new window. 
-  new_child_window -> box() . pack_start(new_about -> box(),
-                                         Gtk::PACK_EXPAND_WIDGET);
-
-  // 
-  new_child_window -> window() . set_default_size(300, 400);
-
-  // 
-  new_child_window -> window() . set_resizable(false);
-
-  // Displays the new window.
-  new_child_window -> Show();
+  // Returns the new shared_ptr<ChildWindow> to whatever called this function.
+  return new_window;
 
 }

@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.6] - 2018-03-04
+
+### Added
+- Configurable keyboard shortcuts.
+
+### Changed
+- Windows now use the GUIElement base class and have had their code cleaned up.
+
+
+
 ## [0.0.5] - 2018-02-18
 
 ### Added
@@ -12,7 +22,6 @@ All notable changes to this project will be documented in this file.
 - Last chosen configuration GUI column now saved.
 - Tabs are now hideable via the View menu or the GUI section of the
   configuration GUI.
-
 
 ### Changed
 - Queue bug that caused a crash is now fixed.

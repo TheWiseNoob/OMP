@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -75,6 +73,8 @@
 
 #include "GUI/Elements/Abouts/Abouts.h"
 
+#include "GUI/Elements/ChildWindows/ChildWindows.h"
+
 #include "GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
 #include "GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h"
@@ -82,6 +82,8 @@
 #include "GUI/Elements/Playlists/Playlists.h"
 
 #include "GUI/GUI.h"
+
+#include "KeyboardShortcuts/KeyboardShortcuts.h"
 
 #include "Metadata/Metadata.h"
 
@@ -212,6 +214,13 @@ GUI& Parts::gui()
 
 }
 
+KeyboardShortcuts& Parts::keyboard_shortcuts()
+{
+
+  return base_ . keyboard_shortcuts(); 
+
+}
+
 Metadata& Parts::metadata()
 {
 
@@ -251,5 +260,12 @@ TimeConversion& Parts::time_converter()
 {
 
   return base_.time_converter();
+
+}
+
+ChildWindows& Parts::windows()
+{
+
+  return base_ . gui() . windows();
 
 }

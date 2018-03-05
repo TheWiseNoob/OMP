@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -65,6 +63,8 @@ class FileChoosers : public GUIElementList<FileChooser>
     FileChoosers(Base& base);
 
     virtual ~FileChoosers();
+
+    void Add_Files();
 
   //Getters and Setters
 

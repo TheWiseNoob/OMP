@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -78,6 +76,8 @@
 
 #include <glibmm/refptr.h>
 
+#include <string>
+
 
 
 
@@ -90,6 +90,8 @@
 //                      //
 //                      //
 
+class KeyboardShortcutsPanelColumnRecord;
+
 class ConfigurationGUI;
 
 namespace Gtk
@@ -97,13 +99,23 @@ namespace Gtk
 
   class Box;
 
-  class ComboBoxText;
+  class Button;
 
-  class EventBox;
+  class CellEditable;
 
   class Frame;
 
-  class Label;
+  class ListStore;
+
+  class ScrolledWindow;
+
+  class TreeIter;
+
+  class TreePath;
+
+  class TreeView;
+
+  class TreeViewColumn;
 
 }
 
@@ -130,7 +142,8 @@ class KeyboardShortcutsPanel : public Panel
 
   public:
 
-    KeyboardShortcutsPanel(Base& base_ref, ConfigurationGUI& new_config_gui);
+    KeyboardShortcutsPanel(Base& base_ref, ConfigurationGUI& new_config_gui,
+                 Glib::RefPtr<Gtk::ListStore> new_keyboard_shortcuts_liststore);
 
 
 
@@ -160,7 +173,9 @@ class KeyboardShortcutsPanel : public Panel
 
     virtual void Apply_Saved_Values() final override;
 
-    bool On_Key_Press_Event(GdkEventKey* event);
+    void Update_Key(const char* name, const char* label);
+
+    void Row_Activated(const Gtk::TreePath& path, Gtk::TreeViewColumn* column);
 
 
 
@@ -172,6 +187,10 @@ class KeyboardShortcutsPanel : public Panel
   //         //
   //         //
 
+  public:
+
+    Gtk::Label& keyboard_shortcuts_key_label();
+
 
 
 
@@ -182,9 +201,39 @@ class KeyboardShortcutsPanel : public Panel
   //                  //
   //                  //
 
-  private:
+  //                  //
+  // Filename Buttons /////////////////////////////////////////////////////////
+  //                  //
 
-    Gtk::EventBox* main_event_box_;
+  Gtk::Box* keyboard_shortcuts_display_box_;
+
+  Gtk::Box* keyboard_shortcuts_display_inner_box_;
+
+  Gtk::Label* keyboard_shortcuts_key_label_;
+
+  Gtk::Label* keyboard_shortcuts_label_;
+
+
+
+
+
+  //                   //
+  // Filename TreeView ////////////////////////////////////////////////////////
+  //                   //
+
+  std::string editing_path_;
+
+  Glib::RefPtr<Gtk::ListStore> keyboard_shortcuts_liststore_;
+
+  Gtk::TreeView* keyboard_shortcuts_treeview_;
+
+  Gtk::Box* keyboard_shortcuts_treeview_box_;
+
+  KeyboardShortcutsPanelColumnRecord* keyboard_shortcuts_treeview_columnrecord_;
+
+  Gtk::Frame* keyboard_shortcuts_treeview_frame_;
+
+  Gtk::ScrolledWindow* keyboard_shortcuts_treeview_scrolled_window_;
 
 };
 
@@ -201,4 +250,3 @@ class KeyboardShortcutsPanel : public Panel
 //                  //
 
 #endif
-

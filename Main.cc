@@ -59,7 +59,9 @@
 
 #include "Base.h"
 
-#include "GUI/ChildWindow.h"
+#include "GUI/Elements/ChildWindows/ChildWindow.h"
+
+#include "GUI/Elements/ChildWindows/ChildWindows.h"
 
 #include "GUI/GUI.h"
 
@@ -110,6 +112,6 @@ int main (int argc, char *argv[])
 
 
   // Shows the window and returns when it is closed.
-  return application -> run(base . gui() . windows() . front() -> window());
+  return application -> run(base . gui() . windows()() . front() -> window());
 
 } 

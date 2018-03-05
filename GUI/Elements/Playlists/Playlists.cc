@@ -143,11 +143,11 @@ using namespace std;
 //             //
 //             //
 
-Playlists::Playlists(Base& base)
+Playlists::Playlists(Base& base_ref)
 
 // Inherited Class
 
-: GUIElementList(base)
+: GUIElementList(base_ref)
 
 
 
@@ -159,7 +159,7 @@ Playlists::Playlists(Base& base)
 
 // Database
 
-, database_(new PlaylistsDatabase(base))
+, database_(new PlaylistsDatabase(base_ref))
 
 
 
@@ -183,7 +183,7 @@ Playlists::Playlists(Base& base)
 
 // Playlist Creation
 
-, playlist_create_dialog_(new PlaylistCreateDialog(base))
+, playlist_create_dialog_(new PlaylistCreateDialog(base_ref))
 
 
 
@@ -257,7 +257,7 @@ Playlists::Playlists(Base& base)
 
     // Adds a new PlaylistTreeStore to the back of playlist_treestores_.
     playlist_treestores_
-      . push_back(PlaylistTreeStore::create(base, *playlist_column_record_));
+      . push_back(PlaylistTreeStore::create(base_ref, *playlist_column_record_));
 
     // Sets the new PlaylistTreeStore's name to Queue.
     playlist_treestores_ . back() -> set_name("Queue");
@@ -289,7 +289,7 @@ Playlists::Playlists(Base& base)
 
     // Adds a new PlaylistTreeStore to the back of playlist_treestores_.
     playlist_treestores_
-      . push_back(PlaylistTreeStore::create(base, *playlist_column_record_));
+      . push_back(PlaylistTreeStore::create(base_ref, *playlist_column_record_));
 
     // Sets the new PlaylistTreeStore's name to Queue.
     playlist_treestores_ . back() -> set_name("Library");
@@ -332,7 +332,7 @@ Playlists::Playlists(Base& base)
 
     // Adds a new PlaylistTreeStore to the back of playlist_treestores_.
     playlist_treestores_
-      . push_back(PlaylistTreeStore::create(base, *playlist_column_record_));
+      . push_back(PlaylistTreeStore::create(base_ref, *playlist_column_record_));
 
 
 

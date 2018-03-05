@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -84,6 +82,8 @@
 //                 //
 //                 //
 
+#include <functional>
+
 #include <list>
 
 #include <vector>
@@ -117,6 +117,8 @@ class Artwork;
 class Base;
 
 class ChildWindow;
+
+class ChildWindows;
 
 class Configuration;
 
@@ -199,6 +201,9 @@ class Track;
 //           //
 // GStreamer //////////////////////////////////////////////////////////////////
 //           //
+
+struct _GdkEventConfigure;
+typedef struct _GdkEventConfigure GdkEventConfigure;
 
 struct _GdkEventConfigure;
 typedef struct _GdkEventConfigure GdkEventConfigure;
@@ -311,8 +316,6 @@ class GUI : public Parts
     //////////////////////////////////////////////////////////////////////// */
     bool File_Exists(std::string& filename_ref);
 
-  protected:
-
     /* ////////////////////////////////////////////////////////////////////////
     //
     // Purpose: 
@@ -327,22 +330,6 @@ class GUI : public Parts
     //
     //////////////////////////////////////////////////////////////////////// */
     bool On_GUI_Window_Signal_Delete_Event(GdkEventAny* event);
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Called when a keyboard press occurs. Used to assign keyboard 
-    //   shortcuts to various functions.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   event: Holds the event type and GDK window.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    bool On_Key_Press_Event(GdkEventKey* event);
 
     void On_Main_Window_Check_Resize_Signal();
 
@@ -400,30 +387,6 @@ class GUI : public Parts
     void Load_Cover_Art(std::string& filename_ref);
 
 
-
-
-
-  //              //
-  // FileChoosers /////////////////////////////////////////////////////////////
-  //              //
-
-  public:
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Opens a new FileChooser window for adding files to the current 
-    //   playlist.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   None.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    void Add_File();
 
 
 
@@ -572,32 +535,6 @@ class GUI : public Parts
 
 
   //         //
-  // Windows //////////////////////////////////////////////////////////////////
-  //         //
-
-  public:
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Creates a new ChildWindow shared_ptr and returns it.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   temp_destroy_func_ptr: std function pointer for cleaning up.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    std::shared_ptr<ChildWindow> Create_New_Window
-      (const char* window_name, auto temp_destroy_func_ptr);
-
-
-
-
-
-  //         //
   //         //
   // Getters //////////////////////////////////////////////////////////////////
   //         //
@@ -647,6 +584,8 @@ class GUI : public Parts
   public:
 
     Abouts& abouts();
+
+    ChildWindows& windows();
 
     /* ////////////////////////////////////////////////////////////////////////
     //
@@ -721,15 +660,6 @@ class GUI : public Parts
     //////////////////////////////////////////////////////////////////////// */
     std::list<Tagview*>& tagviews();
 
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Returns the list of ChildWindows.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    std::list<std::shared_ptr<ChildWindow>>& windows();
-
 
 
 
@@ -764,6 +694,8 @@ class GUI : public Parts
 
   public:
 
+    bool fullscreen();
+
     /* ////////////////////////////////////////////////////////////////////////
     //
     // Purpose: 
@@ -771,7 +703,7 @@ class GUI : public Parts
     //   Returns a new shared_ptr to the main window.
     //
     //////////////////////////////////////////////////////////////////////// */
-    std::shared_ptr<ChildWindow> main_window();
+    ChildWindow* main_window();
 
 
 
@@ -863,6 +795,18 @@ class GUI : public Parts
 
 
 
+  //         //
+  // Windows //////////////////////////////////////////////////////////////////
+  //         //
+
+  public:
+
+    void set_fullscreen(bool new_value);
+
+
+
+
+
   //                  //
   //                  //
   // Member Variables /////////////////////////////////////////////////////////
@@ -876,6 +820,8 @@ class GUI : public Parts
   private:
 
     Abouts* abouts_;
+
+    ChildWindows* windows_;
 
     ConfigurationGUIs* config_guis_;
 
@@ -905,8 +851,6 @@ class GUI : public Parts
 
     std::list<Tagview*> tagviews_;
 
-    std::list<std::shared_ptr<ChildWindow>> windows_;
-
 
 
 
@@ -920,8 +864,6 @@ class GUI : public Parts
     std::string cover_file_;
 
     std::string default_cover_file_;
-
-    bool fullscreen_;
 
 
 
@@ -999,7 +941,7 @@ class GUI : public Parts
 
   private:
 
-    std::shared_ptr<ChildWindow> main_window_;
+    ChildWindow* main_window_;
 
     bool main_window_maximized_;
 
@@ -1028,6 +970,8 @@ class GUI : public Parts
   //              //
 
   private:
+
+    bool fullscreen_;
 
     Gtk::Box* top_box_;
 

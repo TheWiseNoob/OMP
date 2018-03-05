@@ -23,6 +23,8 @@
 //
 //  Libraries used by OMP:
 //
+//    - boost: http://www.boost.org/
+//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -49,68 +51,22 @@
 //                    //
 //                    //
 
-#ifndef PARTS_H
-#define PARTS_H
+#ifndef KEYBOARD_SHORTCUTS_COLUMN_RECORD_H
+#define KEYBOARD_SHORTCUTS_COLUMN_RECORD_H
 
 
 
 
 
-//         //
-//         //
-//         //
-// Headers ////////////////////////////////////////////////////////////////////
-//         //
-//         //
-//         //
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
 
-//                 //
-//                 //
-// Outside Headers ////////////////////////////////////////////////////////////
-//                 //
-//                 //
+#include <gtkmm/treemodel.h>
 
-#include <list>
-
-
-
-
-
-//                      //
-//                      //
-//                      //
-// Forward Declarations ///////////////////////////////////////////////////////
-//                      //
-//                      //
-//                      //
-
-class Abouts;
-
-class Base;
-
-class ChildWindows;
-
-class Configuration;
-
-class ConfigurationGUIs;
-
-class FileChoosers;
-
-class GUI;
-
-class KeyboardShortcuts;
-
-class Metadata;
-
-class Playback;
-
-class PlaylistComboBoxes;
-
-class Playlists;
-
-class Scrobbling;
-
-class TimeConversion;
+#include <gtkmm/treemodelcolumn.h>
 
 
 
@@ -124,7 +80,7 @@ class TimeConversion;
 //                   //
 //                   //
 
-class Parts
+class KeyboardShortcutsPanelColumnRecord : public Gtk::TreeModel::ColumnRecord
 {
 
   //             //
@@ -133,79 +89,21 @@ class Parts
   //             //
   //             //
 
-  protected:
-
-    Parts(Base& base, bool debug_value = false);
-
-
-
-
-
-  //            //
-  //            //
-  // Destructor ///////////////////////////////////////////////////////////////
-  //            //
-  //            //
-
   public:
 
-    virtual ~Parts() = 0;
+    KeyboardShortcutsPanelColumnRecord()
+    {
 
+      // 
+      add(key_col_);
 
+      // 
+      add(label_col_);
 
+      // 
+      add(name_col_);
 
-
-  //                  //
-  //                  //
-  // Member Functions /////////////////////////////////////////////////////////
-  //                  //
-  //                  //
-
-  public:
-
-    virtual int debug(char* debug_message) final;
-
-    virtual int debug(const char* debug_message) final;
-
-
-
-
-
-  //         //
-  //         //
-  // Getters //////////////////////////////////////////////////////////////////
-  //         //
-  //         //
-
-  public:
-
-    virtual Abouts& abouts();
-
-    virtual Base& base() final;
-
-    virtual Configuration& config() final;
-
-    virtual ConfigurationGUIs& config_guis();
-
-    virtual FileChoosers& file_choosers();
-
-    virtual GUI& gui() final;
-
-    virtual KeyboardShortcuts& keyboard_shortcuts() final;
-
-    virtual Metadata& metadata() final;
-
-    virtual Playback& playback() final;
-
-    virtual PlaylistComboBoxes& playlist_comboboxes();
-
-    virtual Playlists& playlists();
-
-    virtual Scrobbling& scrobbling();
-
-    virtual TimeConversion& time_converter();
-
-    virtual ChildWindows& windows();
+    }
 
 
 
@@ -217,18 +115,15 @@ class Parts
   //                  //
   //                  //
 
-  private:
+  public:
 
-    Base& base_;
+    Gtk::TreeModelColumn<Glib::ustring> key_col_;
 
-    bool debug_;
+    Gtk::TreeModelColumn<Glib::ustring> label_col_;
+
+    Gtk::TreeModelColumn<Glib::ustring> name_col_;
 
 };
-
-inline Parts::~Parts()
-{
-
-}
 
 
 

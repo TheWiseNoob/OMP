@@ -71,7 +71,7 @@
 
 #include "../../../Base.h"
 
-#include "../../ChildWindow.h"
+#include "../ChildWindows/ChildWindow.h"
 
 #include "../../GUI.h"
 

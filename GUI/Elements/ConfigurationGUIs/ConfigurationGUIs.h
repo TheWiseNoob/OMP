@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/
@@ -111,6 +109,8 @@
 //                      //
 
 class ArtworkPanelColumnRecord;
+
+class KeyboardShortcutsPanelColumnRecord;
 
 
 
@@ -210,6 +210,17 @@ class ConfigurationGUIs : public GUIElementList<ConfigurationGUI>
 
 
 
+  //                    //
+  // Keyboard Shortcuts ///////////////////////////////////////////////////////
+  //                    //
+
+  public:
+
+    Glib::RefPtr<Gtk::ListStore> keyboard_shortcuts_liststore();
+
+
+
+
 
   //         //
   //         //
@@ -254,6 +265,10 @@ class ConfigurationGUIs : public GUIElementList<ConfigurationGUI>
     ArtworkPanelColumnRecord* filename_liststore_column_record_;
 
     Glib::RefPtr<Gtk::ListStore> filename_liststore_;
+
+    KeyboardShortcutsPanelColumnRecord* keyboard_shortcuts_liststore_column_record_;
+
+    Glib::RefPtr<Gtk::ListStore> keyboard_shortcuts_liststore_;
 
 };
 

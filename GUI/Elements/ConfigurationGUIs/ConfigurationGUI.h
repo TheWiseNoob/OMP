@@ -287,6 +287,8 @@ class ConfigurationGUI : public GUIElement<ConfigurationGUI>
 
     GUIPanel& gui_panel();
 
+    KeyboardShortcutsPanel& keyboard_shortcuts_panel();
+
     OutputPanel& output_panel();
 
     PlaybackPanel& playback_panel();

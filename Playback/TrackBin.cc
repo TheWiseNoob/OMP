@@ -117,7 +117,7 @@ TrackBin::TrackBin(Base& base, Track* new_track,
                    GstElement* new_conv, GstElement* new_queue)
 
 // Inherited Class
-: Parts(base, true)
+: Parts(base)
 
 // Bin Parts
 , concat_request_sinkpad_(nullptr)

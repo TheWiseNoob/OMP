@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/
@@ -227,20 +225,6 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
 
 
-  //               //
-  // Key Callbacks ////////////////////////////////////////////////////////////
-  //               //
-
-  protected:
-
-    virtual bool on_key_press_event(GdkEventKey* event) override final;
-
-    virtual bool on_key_release_event(GdkEventKey* event) override final;
-
-
-
-
-
   //                 //
   // Mouse Callbacks //////////////////////////////////////////////////////////
   //                 //
@@ -295,6 +279,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
     void Paste_Clipboard_Rows();
 
     void Queue_Rows();
+
+    void Select_All_Rows();
 
 
 

@@ -49,8 +49,8 @@
 //                    //
 //                    //
 
-#ifndef PARTS_H
-#define PARTS_H
+#ifndef CHILD_WINDOW_H
+#define CHILD_WINDOW_H
 
 
 
@@ -66,11 +66,27 @@
 
 //                 //
 //                 //
+// Inherited Class ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include "../../GUIElement.h"
+
+
+
+
+
+//                 //
+//                 //
 // Outside Headers ////////////////////////////////////////////////////////////
 //                 //
 //                 //
 
+#include <functional>
+
 #include <list>
+
+#include <memory>
 
 
 
@@ -84,33 +100,48 @@
 //                      //
 //                      //
 
-class Abouts;
+//         //
+//         //
+// Classes ////////////////////////////////////////////////////////////////////
+//         //
+//         //
 
-class Base;
+//                            //
+//                            //
+// Class Forward Declarations /////////////////////////////////////////////////
+//                            //
+//                            //
 
 class ChildWindows;
 
-class Configuration;
+class Flags;
 
-class ConfigurationGUIs;
+namespace Gtk
+{
 
-class FileChoosers;
+  class ApplicationWindow;
+
+  class Box;
+
+}
 
 class GUI;
 
-class KeyboardShortcuts;
 
-class Metadata;
 
-class Playback;
 
-class PlaylistComboBoxes;
 
-class Playlists;
+//                             //
+//                             //
+// Struct Forward Declarations ////////////////////////////////////////////////
+//                             //
+//                             //
 
-class Scrobbling;
+struct _GdkEventAny;
+typedef struct _GdkEventAny GdkEventAny;
 
-class TimeConversion;
+struct _GdkEventKey;
+typedef struct _GdkEventKey GdkEventKey;
 
 
 
@@ -124,8 +155,8 @@ class TimeConversion;
 //                   //
 //                   //
 
-class Parts
-{
+class ChildWindow : public GUIElement<ChildWindow>
+{ 
 
   //             //
   //             //
@@ -133,9 +164,12 @@ class Parts
   //             //
   //             //
 
-  protected:
+  public:
 
-    Parts(Base& base, bool debug_value = false);
+    ChildWindow
+      (const char* new_title, Base& base_ref, ChildWindows& child_windows_ref,
+       std::function<void(void)> new_child_class_destroy_function,
+       bool set_main_window = false);
 
 
 
@@ -149,7 +183,7 @@ class Parts
 
   public:
 
-    virtual ~Parts() = 0;
+    virtual ~ChildWindow();
 
 
 
@@ -163,9 +197,25 @@ class Parts
 
   public:
 
-    virtual int debug(char* debug_message) final;
+    /* ////////////////////////////////////////////////////////////////////////
+    //
+    // Purpose: 
+    //
+    //   Called when a keyboard press occurs. Used to assign keyboard 
+    //   shortcuts to various functions.
+    //
+    // 
+    //
+    // Arguments: 
+    //
+    //   event: Holds the event type and GDK window.
+    //
+    //////////////////////////////////////////////////////////////////////// */
+    bool On_Key_Press_Event(GdkEventKey* event);
 
-    virtual int debug(const char* debug_message) final;
+    bool On_Irregular_Quit(GdkEventAny* event);                        
+
+    void Show();
 
 
 
@@ -179,33 +229,29 @@ class Parts
 
   public:
 
-    virtual Abouts& abouts();
+    Gtk::Box& box();
 
-    virtual Base& base() final;
+    bool fullscreen();
 
-    virtual Configuration& config() final;
+    Gtk::ApplicationWindow& window();
 
-    virtual ConfigurationGUIs& config_guis();
 
-    virtual FileChoosers& file_choosers();
 
-    virtual GUI& gui() final;
 
-    virtual KeyboardShortcuts& keyboard_shortcuts() final;
 
-    virtual Metadata& metadata() final;
+  //         //
+  //         //
+  // Setters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-    virtual Playback& playback() final;
+  public:
 
-    virtual PlaylistComboBoxes& playlist_comboboxes();
+    void set_default_size(int width, int height);
 
-    virtual Playlists& playlists();
+    void set_fullscreen(bool new_fullscreen);
 
-    virtual Scrobbling& scrobbling();
-
-    virtual TimeConversion& time_converter();
-
-    virtual ChildWindows& windows();
+    void set_title(const char* new_title);
 
 
 
@@ -219,16 +265,17 @@ class Parts
 
   private:
 
-    Base& base_;
+    Gtk::Box* box_;
 
-    bool debug_;
+    std::function<void(void)> child_class_destroy_function_;
+
+    bool fullscreen_;
+
+    bool main_window_;
+
+    Gtk::ApplicationWindow* window_;
 
 };
-
-inline Parts::~Parts()
-{
-
-}
 
 
 

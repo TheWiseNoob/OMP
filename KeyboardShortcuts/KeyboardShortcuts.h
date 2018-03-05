@@ -49,8 +49,8 @@
 //                    //
 //                    //
 
-#ifndef PARTS_H
-#define PARTS_H
+#ifndef KEYBOARD_SHOTCUTS_H
+#define KEYBOARD_SHOTCUTS_H
 
 
 
@@ -66,11 +66,21 @@
 
 //                 //
 //                 //
-// Outside Headers ////////////////////////////////////////////////////////////
+// Inherited Class ////////////////////////////////////////////////////////////
 //                 //
 //                 //
 
-#include <list>
+#include "../Parts.h"
+
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 
 
@@ -84,33 +94,24 @@
 //                      //
 //                      //
 
-class Abouts;
+//         //
+//         //
+// Classes ////////////////////////////////////////////////////////////////////
+//         //
+//         //
 
-class Base;
 
-class ChildWindows;
 
-class Configuration;
 
-class ConfigurationGUIs;
 
-class FileChoosers;
+//         //
+//         //
+// Structs ////////////////////////////////////////////////////////////////////
+//         //
+//         //
 
-class GUI;
-
-class KeyboardShortcuts;
-
-class Metadata;
-
-class Playback;
-
-class PlaylistComboBoxes;
-
-class Playlists;
-
-class Scrobbling;
-
-class TimeConversion;
+struct _GdkEventKey;
+typedef struct _GdkEventKey GdkEventKey;
 
 
 
@@ -124,8 +125,8 @@ class TimeConversion;
 //                   //
 //                   //
 
-class Parts
-{
+class KeyboardShortcuts : public Parts
+{ 
 
   //             //
   //             //
@@ -133,9 +134,22 @@ class Parts
   //             //
   //             //
 
-  protected:
+  public:
 
-    Parts(Base& base, bool debug_value = false);
+    /* ////////////////////////////////////////////////////////////////////////
+    //
+    // Purpose:  
+    //
+    //   Creates the class.
+    //
+    //
+    //
+    // Arguments: 
+    //
+    //   base: Passes a reference of the Base class instance to the class.
+    //
+    //////////////////////////////////////////////////////////////////////// */
+    KeyboardShortcuts(Base& base_ref);
 
 
 
@@ -149,7 +163,21 @@ class Parts
 
   public:
 
-    virtual ~Parts() = 0;
+    /* ////////////////////////////////////////////////////////////////////////
+    //
+    // Purpose: 
+    //
+    //   Cleans up anything that needs it when the Keyboard Shortcuts is 
+    //   being destroyed.
+    //
+    //
+    //
+    // Arguments: 
+    //
+    //   None
+    //
+    ////////////////////////// ////////////////////////////////////////////// */
+    virtual ~KeyboardShortcuts();
 
 
 
@@ -163,9 +191,7 @@ class Parts
 
   public:
 
-    virtual int debug(char* debug_message) final;
-
-    virtual int debug(const char* debug_message) final;
+    bool On_Key_Press_Event(GdkEventKey* event);
 
 
 
@@ -179,33 +205,29 @@ class Parts
 
   public:
 
-    virtual Abouts& abouts();
+    bool main_window();
 
-    virtual Base& base() final;
+    bool skip_window_key_callback();
 
-    virtual Configuration& config() final;
+    bool updating_binding();
 
-    virtual ConfigurationGUIs& config_guis();
 
-    virtual FileChoosers& file_choosers();
 
-    virtual GUI& gui() final;
 
-    virtual KeyboardShortcuts& keyboard_shortcuts() final;
 
-    virtual Metadata& metadata() final;
+  //         //
+  //         //
+  // Setters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-    virtual Playback& playback() final;
+  public:
 
-    virtual PlaylistComboBoxes& playlist_comboboxes();
+    void set_main_window(bool new_value);
 
-    virtual Playlists& playlists();
+    void set_skip_window_key_callback(bool new_value);
 
-    virtual Scrobbling& scrobbling();
-
-    virtual TimeConversion& time_converter();
-
-    virtual ChildWindows& windows();
+    void set_updating_binding(bool new_value);
 
 
 
@@ -217,18 +239,13 @@ class Parts
   //                  //
   //                  //
 
-  private:
+  bool main_window_;
 
-    Base& base_;
+  bool skip_window_key_callback_;
 
-    bool debug_;
+  bool updating_binding_;
 
 };
-
-inline Parts::~Parts()
-{
-
-}
 
 
 

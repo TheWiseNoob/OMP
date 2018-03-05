@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -58,6 +56,26 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include <atomic>
+
+
+
+
+
 //                      //
 //                      //
 //                      //
@@ -69,6 +87,8 @@
 class Configuration;
 
 class GUI;
+
+class KeyboardShortcuts;
 
 class Metadata;
 
@@ -131,13 +151,17 @@ class Base
 
     Configuration& config();
 
-    Scrobbling& scrobbling();
+    GUI& gui();
+
+    KeyboardShortcuts& keyboard_shortcuts();
 
     Metadata& metadata();
 
-    GUI& gui();
-
     Playback& playback();
+
+    std::atomic<bool>& quitting();
+
+    Scrobbling& scrobbling();
 
     TimeConversion& time_converter();
 
@@ -160,10 +184,16 @@ class Base
     GUI* gui_;
 
     // 
+    KeyboardShortcuts* keyboard_shortcuts_;
+
+    // 
     Metadata* metadata_;
 
     // 
     Playback* playback_;
+
+    // 
+    std::atomic<bool> quitting_;
 
     // 
     Scrobbling* scrobbling_;

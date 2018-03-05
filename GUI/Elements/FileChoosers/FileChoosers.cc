@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -51,8 +49,18 @@
 
 #include "../../../Base.h"
 
+#include "../ChildWindows/ChildWindow.h"
+
+#include "../ChildWindows/ChildWindows.h"
+
+#include "../../GUI.h"
 
 
+
+
+#include <memory>
+
+using namespace std;
 
 
 FileChoosers::FileChoosers(Base& base)
@@ -68,5 +76,43 @@ FileChoosers::FileChoosers(Base& base)
 
 FileChoosers::~FileChoosers()
 {
+
+}
+
+
+
+
+
+void FileChoosers::Add_Files()
+{
+
+  // Creates of new FileChooser pointer.
+  FileChooser* temp_file_chooser = new FileChooser(base(), file_choosers());
+
+
+
+  // Creates and std function pointer to the destroy function of the new
+  // FileChooser.
+  std::function<void(void)> temp_func_ptr
+    = std::bind(&FileChooser::Destroy, temp_file_chooser);
+
+
+
+  // Creates a new shared_ptr<ChildWindow> to hold the FileChooser 
+  ChildWindow* new_window;
+
+  // Creates the new ChildWindow.
+  new_window = windows() . Create_New_Window("Add File(s)", temp_func_ptr);
+
+
+
+  // Adds the new FileChooser to the new ChildWindow.
+  new_window -> box() . pack_start(temp_file_chooser -> box(),
+                                   Gtk::PACK_EXPAND_WIDGET);
+
+
+
+  // Displays the new ChildWindow and its contents.
+  new_window -> Show();
 
 }

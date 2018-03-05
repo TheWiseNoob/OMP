@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/
@@ -179,6 +177,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 , playlist_view_name_(new_playlist_view_name)
 
 
+
 // Flags
 
 , clipboard_event_(false)
@@ -314,6 +313,9 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   debug("After model set!");
 
 
+
+  // 
+  set_enable_search(false);
 
   // Makes the TreeView's Columns headers clickable.
   set_headers_clickable(true);
@@ -789,14 +791,6 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   signal_drag_data_received()
     . connect(sigc::mem_fun(*this, &Playlist::on_drag_data_received_signal),
               false);
-
-  // Keyboard button press shortcuts overload function signal connection.
-  signal_key_press_event()
-    . connect(sigc::mem_fun(*this, &Playlist::on_key_press_event), false);
-
-  // Keyboard button release shortcuts overload function signal connection.
-  signal_key_release_event()
-    . connect(sigc::mem_fun(*this, &Playlist::on_key_release_event), false);
 
   // Mouse movement overload function signal connection.
   signal_motion_notify_event()
@@ -1472,147 +1466,6 @@ void Playlist::on_drag_end(const Glib::RefPtr<Gdk::DragContext>& context)
 
   // Sets the drag_occurring flag to false.
   playlists() . set_drag_occurring(false);
-
-}
-
-
-
-
-
-//               //
-// Key Callbacks //////////////////////////////////////////////////////////////
-//               //
-
-bool Playlist::on_key_press_event(GdkEventKey* event)
-{
-
-  // True if the delete key is pressed.
-  if((event -> keyval == GDK_KEY_Delete))
-  {
-
-    if((playlist_treestore() -> children().size()) <= 0)
-    {
-      return true;
-    }
-
-    Delete_Selected_Rows();
-
-    //Returning true, cancelling the propagation of the event.
-    return true;
-
-  }
-
-  // True if the control key and 'c' are pressed.
-  else if((event -> keyval == GDK_KEY_c)
-            &&
-          (event -> state & GDK_CONTROL_MASK))
-  {
-
-    // Copies the selected tracks.
-    Copy_Selected_Rows();
-
-
-
-    // Returns true for the key press, stopping propagation.
-    return true;
-
-  } 
-
-  // True if the control key and 'x' are pressed.
-  else if((event -> keyval == GDK_KEY_x)
-            &&
-          (event -> state & GDK_CONTROL_MASK))
-  {
-
-    // Cuts the selected tracks.
-    Cut_Selected_Rows();
-
-
-
-    // Returns true for the key press, stopping propagation.
-    return true;
-
-  }
-
-  // True if the control key and 'v' are pressed.
-  else if((event -> keyval == GDK_KEY_v)
-             &&
-          (event -> state & GDK_CONTROL_MASK))
-  {
-
-    // Pastes the tracks from the clipboard.
-    Paste_Clipboard_Rows();
-
-
-
-    // Returns true for the key press, stopping propagation.
-    return true;
-
-  }
-
-  // True if the control key and 'a' are pressed.
-  else if((event -> state & GDK_CONTROL_MASK)
-            &&
-          (event -> keyval == GDK_KEY_a))
-  {
-
-    // Selects all of the rows.
-    playlist_treeselection_ -> select_all();
-
-
-
-    // Returns true for the key press, stopping propagation.
-    return true;
-
-  }
-
-
-
-  // Returns the event to the normal key press callback.
-  return Gtk::TreeView::on_key_press_event(event);
-
-}
-
-bool Playlist::on_key_release_event(GdkEventKey* event)
-{
-
-  // True if the control key is released.
-  if(event -> state & GDK_CONTROL_MASK)
-  {
-
-    // Sets the selection flag as false.
-    selecting_flag_ = false;
-
-  }
-
-
-
-  // True if the control key is pressed and the 'a' key is released.
-  if((event -> state & GDK_CONTROL_MASK)
-       &&
-     (event -> keyval == GDK_KEY_a))
-  {
-
-    // Sets the clipboard_event_ flag to false.
-    clipboard_event_ = false;
-
-
-
-    // Returns true to not propagate the normal event.
-    return true;
-
-  } 
-
-  else if(event -> keyval == GDK_KEY_Escape)
-  {
-
-
-  }
-
-
-
-  // Returns the normal key press event.
-  return Gtk::TreeView::on_key_release_event(event);
 
 }
 
@@ -3149,6 +3002,24 @@ void Playlist::Queue_Rows()
 
   // 
   playback() . Reset_Track_Queue();
+
+}
+
+void Playlist::Select_All_Rows()
+{
+
+  //
+  clipboard_event_ = true;
+
+
+
+  // Selects all of the rows.
+  playlist_treeselection_ -> select_all();
+
+
+
+  // 
+  clipboard_event_ = false;
 
 }
 

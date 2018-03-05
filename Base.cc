@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/
@@ -79,6 +77,8 @@
 
 #include "GUI/GUI.h"
 
+#include "KeyboardShortcuts/KeyboardShortcuts.h"
+
 #include "Metadata/Metadata.h"
 
 #include "Playback/Playback.h"
@@ -96,6 +96,8 @@
 // Outside Headers ////////////////////////////////////////////////////////////
 //                 //
 //                 //
+
+#include <atomic>
 
 #include <pwd.h>
 
@@ -126,6 +128,10 @@
 //             //
 
 Base::Base(int argc, char *argv[])
+
+// 
+: quitting_(false)
+
 {
 
   // 
@@ -454,6 +460,60 @@ Base::Base(int argc, char *argv[])
 
 
 
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.add_files", "<Primary>o");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.close_secondary", "Escape");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.configuration", "<Primary>j");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.copy", "<Primary>c");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.cut", "<Primary>x");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.delete", "Delete");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.fullscreen", "F11");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.next", "n");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.paste", "<Primary>v");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.pause", "p");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.play", "s");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.stop", "q");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.select_all", "<Primary>a");
+
+
+
   //
   config() . add_default("playback.cursor_follows_playback", true);
 
@@ -537,6 +597,9 @@ Base::Base(int argc, char *argv[])
   scrobbling_ = (new Scrobbling(*this));
 
   // 
+  keyboard_shortcuts_ = new KeyboardShortcuts(*this);
+
+  // 
   gui_ = (new GUI(*this));
 
 
@@ -559,7 +622,11 @@ Base::Base(int argc, char *argv[])
 Base::~Base()
 {
 
+  quitting_ = true;
+
   delete gui_;
+
+  delete keyboard_shortcuts_;
 
   delete playback_;
 
@@ -575,11 +642,11 @@ Base::~Base()
 
 
 
-//                  //
-//                  //
-// Member Functions ///////////////////////////////////////////////////////////
-//                  //
-//                  //
+//         //
+//         //
+// Getters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
 
 Configuration& Base::config()
 {
@@ -595,6 +662,13 @@ GUI& Base::gui()
 
 }
 
+KeyboardShortcuts& Base::keyboard_shortcuts()
+{
+
+  return *keyboard_shortcuts_;
+
+}
+
 Metadata& Base::metadata()
 { 
 
@@ -606,6 +680,13 @@ Playback& Base::playback()
 {
 
   return *playback_;
+
+}
+
+atomic<bool>& Base::quitting()
+{
+
+  return quitting_;
 
 }
 

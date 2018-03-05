@@ -1,17 +1,17 @@
-OBJS = Main.o About.o Abouts.o Base.o Parts.o GUI.o SpinButtonScale.o \
-	Seekbar.o PlaylistComboBox.o PlaylistComboBoxes.o MenuBar.o Tagview.o \
-	Artwork.o PlaylistsDatabase.o Playlists.o Playlist.o \
-	PlaylistCreateDialog.o PlaylistTreeStore.o PlaylistMenu.o \
+OBJS = Main.o About.o Abouts.o Base.o Parts.o GUI.o KeyboardShortcuts.o \
+	SpinButtonScale.o Seekbar.o PlaylistComboBox.o PlaylistComboBoxes.o \
+	MenuBar.o Tagview.o Artwork.o PlaylistsDatabase.o Playlists.o \
+	Playlist.o PlaylistCreateDialog.o PlaylistTreeStore.o PlaylistMenu.o \
 	FileChoosers.o FileChooser.o PlaybackController.o \
 	PlaybackControllers.o ConfigurationGUI.o \
 	ConfigurationGUIs.o ArtworkPanel.o GUIPanel.o \
 	KeyboardShortcutsPanel.o OutputPanel.o PlaybackPanel.o \
 	PlaylistPanel.o ReplayGainPanel.o ScrobblingPanel.o Panel.o \
-	ChildWindow.o Playback.o ParserAndDecoder.o TrackBin.o Metadata.o \
+	ChildWindow.o ChildWindows.o Playback.o ParserAndDecoder.o TrackBin.o Metadata.o \
 	CueSheet.o Scrobbling.o FailedScrobblesDatabase.o TimeConversion.o \
 	Tag.o Track.o Configuration.o DefaultValues.o DefaultValue.o
 
-CFLAGS = -std=c++14 -Wno-deprecated-declarations
+CFLAGS = -std=c++17 -Wno-deprecated-declarations
 
 DESTDIR = ''
 
@@ -24,23 +24,27 @@ base: $(OBJS) Makefile
 	`pkg-config --libs --cflags taglib` \
 	-pthread -lclastfm -lconfig++ -l sqlite3
 
-Main.o: Main.cc Base.h GUI/GUI.h GUI/ChildWindow.h
+Main.o: Main.cc Base.h GUI/GUI.h GUI/Elements/ChildWindows/ChildWindow.h \
+	GUI/Elements/ChildWindows/ChildWindows.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Main.cc \
 	-pthread `pkg-config --cflags --libs gtkmm-3.0`
 
 About.o: GUI/Elements/Abouts/About.cc GUI/Elements/Abouts/About.h \
-	GUI/GUIElement.h GUI/Elements/Abouts/Abouts.h GUI/ChildWindow.h \
+	GUI/GUIElement.h GUI/Elements/Abouts/Abouts.h GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/GUI.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Abouts/About.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 
 Abouts.o: GUI/Elements/Abouts/Abouts.cc GUI/Elements/Abouts/Abouts.h \
-	GUI/Elements/Abouts/About.h GUI/GUIElementList.h
+	GUI/Elements/Abouts/About.h GUI/GUIElementList.h \
+	GUI/Elements/ChildWindows/ChildWindow.h \
+	GUI/Elements/ChildWindows/ChildWindows.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Abouts/Abouts.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 
 Base.o: Base.cc Base.h Configuration/Configuration.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
+	KeyboardShortcuts/KeyboardShortcuts.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h \
 	GUI/GUI.h Playback/Playback.h Metadata/Metadata.h \
@@ -50,17 +54,26 @@ Base.o: Base.cc Base.h Configuration/Configuration.h \
 	-pthread
 
 Parts.o: Parts.cc Parts.h Base.h Configuration/Configuration.h \
-	GUI/GUI.h Playback/Playback.h Metadata/Metadata.h \
-	GUI/Elements/**/*.h Scrobbling/Scrobbling.h TimeConversion.h
+	GUI/GUI.h Playback/Playback.h KeyboardShortcuts/KeyboardShortcuts.h \
+	Metadata/Metadata.h GUI/Elements/**/*.h Scrobbling/Scrobbling.h \
+	TimeConversion.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Parts.cc \
 	`pkg-config --cflags --libs glibmm-2.4 gtkmm-3.0` \
 	-pthread
 
+KeyboardShortcuts.o: Parts.h KeyboardShortcuts/KeyboardShortcuts.h \
+	KeyboardShortcuts/KeyboardShortcuts.cc \
+	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h GUI/GUI.h \
+	GUI/Elements/Playlists/Playlists.h
+	g++ -g -Wall -pipe $(CFLAGS) -c \
+	KeyboardShortcuts/KeyboardShortcuts.cc \
+	`pkg-config --cflags --libs gtkmm-3.0`
+
 GUI.o: Parts.h GUI/GUI.cc GUI/GUI.h Base.h Configuration/Configuration.h \
 	Metadata/Metadata.h Playback/Playback.h TimeConversion.h \
-	Metadata/Track.h Scrobbling/Scrobbling.h GUI/Artwork.h GUI/ChildWindow.h \
+	Metadata/Track.h Scrobbling/Scrobbling.h GUI/Artwork.h \
 	GUI/Elements/**/*.h GUI/Tagview.h GUI/MenuBar.h GUI/SpinButtonScale.h \
-	GUI/Seekbar.h GUI/Tagview.h
+	GUI/Seekbar.h GUI/Tagview.h KeyboardShortcuts/KeyboardShortcuts.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/GUI.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread -Wno-reorder
@@ -94,11 +107,12 @@ PlaylistComboBoxes.o: GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.cc \
 
 MenuBar.o: GUI/MenuBar.cc GUI/MenuBar.h Parts.h GUI/GUI.h Base.h \
 	Configuration/Configuration.h Playback/Playback.h \
-	GUI/ChildWindow.h GUI/Elements/Abouts/Abouts.h \
+	GUI/Elements/ChildWindows/ChildWindow.h GUI/Elements/Abouts/Abouts.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
 	GUI/Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.h \
 	GUI/Elements/ConfigurationGUIs/Panels/Playback/PlaybackPanel.h \
+	GUI/Elements/FileChoosers/FileChoosers.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/MenuBar.cc \
@@ -178,9 +192,11 @@ PlaylistMenu.o: GUI/Elements/Playlists/PlaylistMenu.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
 FileChoosers.o: GUI/Elements/FileChoosers/FileChoosers.cc \
-	GUI/Elements/FileChoosers/FileChoosers.h \
+	GUI/Elements/FileChoosers/FileChoosers.h GUI/GUI.h \
 	GUI/GUIElementList.h GUI/Elements/FileChoosers/FileChooser.h \
 	Base.h Parts.h GUI/Elements/Playlists/Playlists.h \
+	GUI/Elements/ChildWindows/ChildWindow.h \
+	GUI/Elements/ChildWindows/ChildWindows.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h Metadata/Metadata.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	GUI/Elements/FileChoosers/FileChoosers.cc \
@@ -244,8 +260,11 @@ ConfigurationGUIs.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
 	GUI/GUIElementList.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
-	Base.h Configuration/Configuration.h GUI/ChildWindow.h GUI/GUI.h \
-	GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanelColumnRecord.h
+	Base.h Configuration/Configuration.h GUI/GUI.h \
+	GUI/Elements/ChildWindows/ChildWindow.h \
+	GUI/Elements/ChildWindows/ChildWindows.h \
+	GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanelColumnRecord.h \
+	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanelColumnRecord.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
@@ -290,10 +309,13 @@ PlaylistPanel.o: \
 KeyboardShortcutsPanel.o: \
 	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanel.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanel.h \
+	GUI/GUI.h \
 	GUI/Elements/ConfigurationGUIs/Panel.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
-	Configuration/Configuration.h
+	GUI/Elements/FileChoosers/FileChoosers.h \
+	Configuration/Configuration.h Playback/Playback.h \
+	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanelColumnRecord.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanel.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
@@ -356,12 +378,23 @@ Panel.o: GUI/Elements/ConfigurationGUIs/Panel.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread
 	
-ChildWindow.o: GUI/ChildWindow.cc GUI/ChildWindow.h \
-	Parts.h GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
+ChildWindow.o: GUI/Elements/ChildWindows/ChildWindow.cc \
+	GUI/Elements/ChildWindows/ChildWindow.h \
+	GUI/Elements/ChildWindows/ChildWindows.h \
+	Parts.h Configuration/Configuration.h \
+	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	GUI/GUI.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/ChildWindow.cc \
+	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/ChildWindows/ChildWindow.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread
+
+ChildWindows.o: GUI/Elements/ChildWindows/ChildWindows.cc \
+	GUI/Elements/ChildWindows/ChildWindows.h GUI/GUIElementList.h \
+	GUI/Elements/ChildWindows/ChildWindow.h \
+	Base.h Parts.h
+	g++ -g -Wall -pipe $(CFLAGS) -c \
+	GUI/Elements/ChildWindows/ChildWindows.cc \
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 Playback.o: Parts.h Playback/Playback.cc Playback/Playback.h \
 	Base.h Configuration/Configuration.h \

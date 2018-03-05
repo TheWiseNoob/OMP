@@ -49,10 +49,8 @@
 //                    //
 //                    //
 
-#ifndef PARTS_H
-#define PARTS_H
-
-
+#ifndef CHILD_WINDOWS_H
+#define CHILD_WINDOWS_H
 
 
 
@@ -64,13 +62,25 @@
 //         //
 //         //
 
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
+#include "../../GUIElementList.h"
+
+#include "ChildWindow.h"
+
+
+
+
+
 //                 //
 //                 //
 // Outside Headers ////////////////////////////////////////////////////////////
 //                 //
 //                 //
-
-#include <list>
 
 
 
@@ -84,33 +94,7 @@
 //                      //
 //                      //
 
-class Abouts;
-
 class Base;
-
-class ChildWindows;
-
-class Configuration;
-
-class ConfigurationGUIs;
-
-class FileChoosers;
-
-class GUI;
-
-class KeyboardShortcuts;
-
-class Metadata;
-
-class Playback;
-
-class PlaylistComboBoxes;
-
-class Playlists;
-
-class Scrobbling;
-
-class TimeConversion;
 
 
 
@@ -124,7 +108,7 @@ class TimeConversion;
 //                   //
 //                   //
 
-class Parts
+class ChildWindows : public GUIElementList<ChildWindow>
 {
 
   //             //
@@ -133,9 +117,9 @@ class Parts
   //             //
   //             //
 
-  protected:
+  public:
 
-    Parts(Base& base, bool debug_value = false);
+    ChildWindows(Base& base_ref);
 
 
 
@@ -149,7 +133,7 @@ class Parts
 
   public:
 
-    virtual ~Parts() = 0;
+    virtual ~ChildWindows();
 
 
 
@@ -163,10 +147,9 @@ class Parts
 
   public:
 
-    virtual int debug(char* debug_message) final;
-
-    virtual int debug(const char* debug_message) final;
-
+    ChildWindow* Create_New_Window
+      (const char* window_name,
+       std::function<void(void)> temp_destroy_func_ptr);
 
 
 
@@ -179,33 +162,17 @@ class Parts
 
   public:
 
-    virtual Abouts& abouts();
 
-    virtual Base& base() final;
 
-    virtual Configuration& config() final;
 
-    virtual ConfigurationGUIs& config_guis();
 
-    virtual FileChoosers& file_choosers();
+  //         //
+  //         //
+  // Setters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-    virtual GUI& gui() final;
-
-    virtual KeyboardShortcuts& keyboard_shortcuts() final;
-
-    virtual Metadata& metadata() final;
-
-    virtual Playback& playback() final;
-
-    virtual PlaylistComboBoxes& playlist_comboboxes();
-
-    virtual Playlists& playlists();
-
-    virtual Scrobbling& scrobbling();
-
-    virtual TimeConversion& time_converter();
-
-    virtual ChildWindows& windows();
+  public:
 
 
 
@@ -219,27 +186,8 @@ class Parts
 
   private:
 
-    Base& base_;
-
-    bool debug_;
-
 };
 
-inline Parts::~Parts()
-{
 
-}
-
-
-
-
-
-//                  //
-//                  //
-//                  //
-// Header Guard End ///////////////////////////////////////////////////////////
-//                  //
-//                  //
-//                  //
 
 #endif

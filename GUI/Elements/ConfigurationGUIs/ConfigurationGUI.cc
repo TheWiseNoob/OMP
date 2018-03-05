@@ -468,7 +468,7 @@ ConfigurationGUI::ConfigurationGUI
 
   // Creates a new .
   keyboard_shortcuts_panel_
-    = Gtk::manage(new KeyboardShortcutsPanel(base, *this));
+    = Gtk::manage(new KeyboardShortcutsPanel(base, *this, config_guis_ref . keyboard_shortcuts_liststore()));
 
   // Creates a new OutputPanel.
   output_panel_ = Gtk::manage(new OutputPanel(base, *this));
@@ -779,6 +779,13 @@ GUIPanel& ConfigurationGUI::gui_panel()
 { 
 
   return *gui_panel_;
+
+}
+
+KeyboardShortcutsPanel& ConfigurationGUI::keyboard_shortcuts_panel()
+{
+
+  return *keyboard_shortcuts_panel_;
 
 }
 

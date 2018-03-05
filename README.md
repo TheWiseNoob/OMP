@@ -1,6 +1,6 @@
 ![Logo](/Images/OMP_Icon_128.png?raw=true)
 # OMP : Open Music Player
-#### Version: 0.0.5
+#### Version: 0.0.6
 
 
 
@@ -73,3 +73,4 @@
   - Moving playing track to playback queue causes issues.
   - Tooltips missing in parts of the configuration.
   - Changing looping mode while playing breaks playback.
+  - Files with an empty field that is an integer will crashe OMP.

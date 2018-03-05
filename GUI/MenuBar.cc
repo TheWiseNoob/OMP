@@ -73,7 +73,7 @@
 
 #include "../Playback/Playback.h"
 
-#include "ChildWindow.h"
+#include "Elements/ChildWindows/ChildWindow.h"
 
 #include "Elements/Abouts/Abouts.h"
 
@@ -82,6 +82,8 @@
 #include "Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.h"
 
 #include "Elements/ConfigurationGUIs/Panels/Playback/PlaybackPanel.h"
+
+#include "Elements/FileChoosers/FileChoosers.h"
 
 #include "Elements/PlaylistComboBoxes/PlaylistComboBox.h"
 
@@ -852,7 +854,7 @@ void MenuBar::Configuration()
 void MenuBar::Add_File()
 {
 
-  gui().Add_File();
+  file_choosers() . Add_Files();
 
 }
 

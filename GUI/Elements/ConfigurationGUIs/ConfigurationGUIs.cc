@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -73,11 +71,15 @@
 
 #include "../../../Configuration/Configuration.h"
 
-#include "../../ChildWindow.h"
+#include "../ChildWindows/ChildWindow.h"
+
+#include "../ChildWindows/ChildWindows.h"
 
 #include "../../GUI.h"
 
 #include "Panels/Artwork/ArtworkPanelColumnRecord.h"
+
+#include "Panels/KeyboardShortcuts/KeyboardShortcutsPanelColumnRecord.h"
 
 
 
@@ -132,6 +134,14 @@ ConfigurationGUIs::ConfigurationGUIs(Base& base)
 , filename_liststore_column_record_(new ArtworkPanelColumnRecord)
 
 , filename_liststore_(Gtk::ListStore::create(*filename_liststore_column_record_))
+
+
+
+// Keyboard Shortcuts
+
+, keyboard_shortcuts_liststore_column_record_(new KeyboardShortcutsPanelColumnRecord)
+
+, keyboard_shortcuts_liststore_(Gtk::ListStore::create(*keyboard_shortcuts_liststore_column_record_))
 
 {
 
@@ -258,6 +268,7 @@ void ConfigurationGUIs::Open_Configuration()
 
 
 
+  // 
   bool unsaved_changes = this -> unsaved_changes();
 
 
@@ -267,8 +278,8 @@ void ConfigurationGUIs::Open_Configuration()
     = std::bind(&ConfigurationGUI::Destroy, new_config_gui);
 
   // Creates of new window using the Create_New_Window function.
-  shared_ptr<ChildWindow> new_child_window
-    = gui() . Create_New_Window("Configuration", new_destroy_func_ptr);
+  ChildWindow* new_child_window
+    = windows() . Create_New_Window("Configuration", new_destroy_func_ptr);
 
 
 
@@ -286,7 +297,6 @@ void ConfigurationGUIs::Open_Configuration()
 
 
 
-
   // Sets the flag to enable ConfigGUI functions after applying the values
   // to the new ConfigGUI.
   config_guis() . set_disable_functions(false);
@@ -295,7 +305,7 @@ void ConfigurationGUIs::Open_Configuration()
 
   // Adds the ConfigGUI to the new window. 
   new_child_window -> box() . pack_start(new_config_gui -> box(),
-                                    Gtk::PACK_EXPAND_WIDGET);
+                                         Gtk::PACK_EXPAND_WIDGET);
 
   // 
   new_child_window -> window() . set_default_size(600, 400);
@@ -437,6 +447,13 @@ Glib::RefPtr<Gtk::ListStore> ConfigurationGUIs::filename_liststore()
 {
 
   return filename_liststore_;
+
+}
+
+Glib::RefPtr<Gtk::ListStore> ConfigurationGUIs::keyboard_shortcuts_liststore()
+{
+
+  return keyboard_shortcuts_liststore_;
 
 }
 
