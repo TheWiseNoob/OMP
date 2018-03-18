@@ -15,7 +15,7 @@
 
 ## About OMP
 
-    OMP is an open-source music player being developed for Linux. It is
+OMP is an open-source music player being developed for Linux. It is
 programmed in modern C++ and some C using GTK, GStreamer, TagLib, libconfig, 
 libclastfm, and standard C and C++ libraries. It can play most of the 
 prevalent music audio file types gaplessly and stores tracks in a database.
