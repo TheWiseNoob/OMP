@@ -190,4 +190,14 @@ class ChildWindows : public GUIElementList<ChildWindow>
 
 
 
+
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
+
 #endif

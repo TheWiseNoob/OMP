@@ -49,8 +49,40 @@
 //                    //
 //                    //
 
-#ifndef SPINBUTTONSCALE_H
-#define SPINBUTTONSCALE_H
+#ifndef ERRORS_H
+#define ERRORS_H
+
+
+
+
+
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
+#include "../Parts.h"
+
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include <iosfwd>
 
 
 
@@ -64,26 +96,33 @@
 //                      //
 //                      //
 
-//                              //
-//                              //
+//                            //
+//                            //
 // Class Forward Declarations /////////////////////////////////////////////////
-//                              //
-//                              //
+//                            //
+//                            //
 
-class Audiophile;
 
-class Configuration;
 
-namespace Gtk
-{
 
-  class Box;
 
-  class Scale;
+//                             //
+//                             //
+// Struct Forward Declarations ////////////////////////////////////////////////
+//                             //
+//                             //
 
-  class SpinButton;
 
-}
+
+
+
+//          //
+//          //
+//          //
+// Typedefs ///////////////////////////////////////////////////////////////////
+//          //
+//          //
+//          //
 
 
 
@@ -97,8 +136,8 @@ namespace Gtk
 //                   //
 //                   //
 
-class SpinButtonScale
-{
+class Errors : public Parts
+{ 
 
   //             //
   //             //
@@ -108,7 +147,48 @@ class SpinButtonScale
 
   public:
 
-    SpinButtonScale(double begin, double end, int accuracy);
+     /* ////////////////////////////////////////////////////////////////////////
+    //
+    // Purpose:
+    //
+    //   Creates the errors class.
+    //
+    //
+    //
+    // Arguments: 
+    //
+    //   base_ref: A reference to the Base class of the program in order to set up
+    //         the quick access references in the inherited Parts class.
+    //
+    //////////////////////////////////////////////////////////////////////// */
+    Errors(Base& base_ref);
+
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
+
+    /* ////////////////////////////////////////////////////////////////////////
+    //
+    // Purpose:
+    //
+    //   Used to destroy any data that needs it when the playback class ends.
+    //
+    //
+    //
+    // Arguments: 
+    //
+    //   None.
+    //
+    //////////////////////////////////////////////////////////////////////// */
+    ~Errors();
 
 
 
@@ -120,35 +200,7 @@ class SpinButtonScale
   //                  //
   //                  //
 
-  //           //
-  // Callbacks ////////////////////////////////////////////////////////////////
-  //           //
-
-  public:
-
-    void On_Signal_Value_Changed_SBS_Scale();
-
-    void On_Signal_Value_Changed_SBS_SpinButton();
-
-
-
-
-
-  //         //
-  // General //////////////////////////////////////////////////////////////////
-  //         //
-
-  public:
-
-    double get_value();
-
-    void set_value(double new_value);
-
-    void set_range(double begin, double end);
-
-    void Flip();
-
-    void Set_Sensitive(bool new_value);
+  void Write_Error(const char* error_c_str);
 
 
 
@@ -160,44 +212,6 @@ class SpinButtonScale
   //         //
   //         //
 
-  public:
-
-    //Getters
-    Gtk::Box& box()
-    {
-
-      return *box_;
-
-    }
-
-    Gtk::Box& sbs_spinbutton_box()
-    { 
-
-      return *sbs_spinbutton_box_;
-
-    }
-
-    Gtk::Box& sbs_scale_box()
-    { 
-
-      return *sbs_scale_box_;
-
-    }
-
-    Gtk::SpinButton& sbs_spinbutton()
-    { 
-
-      return *sbs_spinbutton_; 
-
-    }
-
-    Gtk::Scale& sbs_scale()                                       
-    { 
-
-      return *sbs_scale_; 
-
-    }
-
 
 
 
@@ -207,21 +221,11 @@ class SpinButtonScale
   // Member Variables /////////////////////////////////////////////////////////
   //                  //
   //                  //
-   
+
   private:
 
-    Gtk::Box* box_;
-
-    Gtk::SpinButton* sbs_spinbutton_;
-    Gtk::Scale* sbs_scale_;
-
-    Gtk::Box* sbs_scale_box_;
-    Gtk::Box* sbs_spinbutton_box_;
-
-    bool disable_update_;
-
-    bool scale_first_;
-
+    std::ofstream* errors_log_file_;
+   
 };
 
 

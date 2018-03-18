@@ -1,4 +1,4 @@
-/* ////////////////////////////////////////////////////////////////////////////
+/* ////////////////////////////////////////////////////////////////////////////   
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@
 //
 //  Libraries used by OMP:
 //
-//    - clastfm: http://liblastfm.sourceforge.net/
+//    - clastfm: http://liblastfm.sourceforge.net/ 
 //
-//    - gstreamer: https://gstreamer.freedesktop.org/
+//    - gstreamer: https://gstreamer.freedesktop.org/ 
 //
 //    - gtkmm: https://www.gtkmm.org/en/
 //
@@ -55,7 +55,7 @@
 //              //
 //              //
 
-#include "PlaybackControllers.h"
+#include "Errors.h"
 
 
 
@@ -67,6 +67,11 @@
 //                 //
 //                 //
 
+#include "../Base.h"
+
+#include "../GUI/Elements/ChildWindows/ChildWindow.h"
+
+#include "../GUI/Elements/ChildWindows/ChildWindows.h"
 
 
 
@@ -77,6 +82,16 @@
 // Outside Headers ////////////////////////////////////////////////////////////
 //                 //
 //                 //
+
+#include <ctime>
+
+#include <fstream>
+
+#include <gtkmm/textview.h>
+
+#include <iostream>
+
+#include <string>
 
 
 
@@ -96,6 +111,18 @@ using namespace std;
 
 
 
+//        //
+//        //
+//        //
+// Macros /////////////////////////////////////////////////////////////////////
+//        //
+//        //
+//        //
+
+
+
+
+
 //                 //
 //                 //
 //                 //
@@ -110,15 +137,21 @@ using namespace std;
 //             //
 //             //
 
-PlaybackControllers::PlaybackControllers(Base& base)
+Errors::Errors(Base& base_ref)
 
 // Inherited Class
 
-: GUIElementList(base)
+: Parts(base_ref)
+
+
+
+// Member Variables
+
+, errors_log_file_(new ofstream)
 
 {
 
-}
+} 
 
 
 
@@ -130,8 +163,11 @@ PlaybackControllers::PlaybackControllers(Base& base)
 //            //
 //            //
 
-PlaybackControllers::~PlaybackControllers()
+Errors::~Errors()
 {
+
+  // 
+  delete errors_log_file_;
 
 }
 
@@ -145,6 +181,88 @@ PlaybackControllers::~PlaybackControllers()
 //                  //
 //                  //
 
+void Errors::Write_Error(const char* error_c_str)
+{
+
+  // 
+  string errors_log_file_str = base() . config_directory_c_str();
+
+
+
+  // 
+  errors_log_file_str += "/errors.log";
+
+  //
+  errors_log_file_ -> open(errors_log_file_str . c_str(), std::ofstream::app);
+
+
+
+  // current date/time based on current system
+  time_t time_now = time(0);
+   
+  // convert now to string form
+  char* date_and_time_c_str = ctime(&time_now);
+
+
+
+  // 
+  string final_error_str;
+
+  // 
+  final_error_str += "Date: ";
+
+  // 
+  final_error_str += date_and_time_c_str;
+
+  // 
+  final_error_str += "Error: ";
+
+  // 
+  final_error_str += error_c_str;
+
+  // 
+  final_error_str += "\n\n\n";
+
+
+
+  // 
+  (*errors_log_file_) << final_error_str;
+
+
+  // 
+  errors_log_file_ -> close();
+
+
+
+  // 
+  ChildWindow* errors_window_ptr
+    = windows() . Create_New_Window("Error(s)", nullptr);
+
+
+
+  // 
+  Gtk::TextView* errors_textview_ptr = Gtk::manage(new Gtk::TextView);  
+
+  // 
+  errors_window_ptr -> box()
+    . pack_start(*errors_textview_ptr, Gtk::PACK_EXPAND_WIDGET);
+
+  // 
+  errors_textview_ptr -> set_editable(false);
+
+  // 
+  errors_textview_ptr -> get_buffer() -> set_text(final_error_str);
+
+
+
+  // 
+  errors_window_ptr -> Show();
+
+}
+
+
+
+
 
 //         //
 //         //
@@ -152,8 +270,3 @@ PlaybackControllers::~PlaybackControllers()
 //         //
 //         //
 
-//         //
-//         //
-// Setters ////////////////////////////////////////////////////////////////////
-//         //
-//         //

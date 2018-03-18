@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.7] - 2018-03-18
+
+### Added
+- Error logging for files that fail to open with OMP.
+- Add playlist right-click menu option. 
+
+### Changed
+- Fixed a crash caused by OMP trying to convert an empty string to an int. It
+  happened when a metadata field exists, is empty, and is an integer. This
+  produced an exception that is now caught too. Thanks to aladar42 on GitHub
+  helping me solve this bug!
+- Makefile organized.
+- General code clean-up.
+- All mentions of Boost removed.
+- Other minor text changes.
+
+
+
 ## [0.0.6] - 2018-03-04
 
 ### Added

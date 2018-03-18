@@ -69,6 +69,8 @@
 
 #include "Configuration/Configuration.h"
 
+#include "Errors/Errors.h"
+
 #include "GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
 #include "GUI/Elements/Playlists/Playlists.h"
@@ -130,9 +132,10 @@
 Base::Base(int argc, char *argv[])
 
 // 
+
 : quitting_(false)
 
-{
+{ 
 
   // 
   struct passwd* pw = getpwuid(getuid());
@@ -145,6 +148,12 @@ Base::Base(int argc, char *argv[])
 
   // 
   directory_str += "/.omp";
+
+  // 
+  char* directory_str_c_str = const_cast<char*>(directory_str . c_str());
+
+  // 
+  strcpy(config_directory_c_str_, directory_str_c_str);
 
 
 
@@ -582,6 +591,9 @@ Base::Base(int argc, char *argv[])
 
 
 
+  // 
+  errors_ = new Errors(*this);
+
 
 
   // 
@@ -636,6 +648,8 @@ Base::~Base()
 
   delete config_;
 
+  delete errors_;
+
 }
 
 
@@ -652,6 +666,20 @@ Configuration& Base::config()
 {
 
   return *config_;
+
+}
+
+const char* Base::config_directory_c_str()
+{
+
+  return config_directory_c_str_;
+
+}
+
+Errors& Base::errors()
+{
+
+  return *errors_;
 
 }
 

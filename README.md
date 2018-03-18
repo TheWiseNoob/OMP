@@ -1,6 +1,6 @@
 ![Logo](/Images/OMP_Icon_128.png?raw=true)
 # OMP : Open Music Player
-#### Version: 0.0.6
+#### Version: 0.0.7
 
 
 
@@ -8,6 +8,14 @@
 
 ## Screenshot
 ![Screenshot1](Images/Screenshots/Main.png?raw=true)
+
+
+
+
+
+## About OMP
+
+    OMP is an open-source music player being developed for Linux. It is programmed in modern C++ and some C using GTK, GStreamer, TagLib, libconfig, libclastfm, and standard C and C++ libraries. It can play most of the prevalent music audio file types gaplessly and stores tracks in a database.
 
 
 
@@ -73,4 +81,3 @@
   - Moving playing track to playback queue causes issues.
   - Tooltips missing in parts of the configuration.
   - Changing looping mode while playing breaks playback.
-  - Files with an empty field that is an integer will crashe OMP.

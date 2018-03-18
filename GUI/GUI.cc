@@ -1234,7 +1234,7 @@ bool GUI::File_Exists(string& filename_ref)
 
   // Returns true if the file exists when attempting to open an ifstream
   // with its filename.
-  return bool(std::ifstream(filename_ref.c_str()));
+  return bool(std::ifstream(filename_ref . c_str()));
 
 }
 

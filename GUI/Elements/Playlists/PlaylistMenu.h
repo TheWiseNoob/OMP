@@ -204,6 +204,9 @@ class PlaylistMenu : public Gtk::Menu, public Parts
   private:
 
     // 
+    Gtk::MenuItem* add_playlist_menu_item_;
+
+    // 
     Gtk::MenuItem* change_playlist_menu_item_;
 
     // 
@@ -238,6 +241,9 @@ class PlaylistMenu : public Gtk::Menu, public Parts
 
     // 
     std::list<Gtk::RadioMenuItem*> playlists_menu_radio_menu_items_;
+
+    // 
+    Gtk::MenuItem* remove_playlist_menu_item_;
 
 };
 

@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -160,8 +158,8 @@ void PlaylistComboBoxes::Add_Playlist
 
 
 
-void PlaylistComboBoxes::Remove_Playlist(Gtk::TreeIter 
-                                           playlist_combobox_treestore_it)
+void PlaylistComboBoxes::Remove_Playlist
+  (Gtk::TreeIter playlist_combobox_treestore_it)
 {
 
   if(gui_elements().size() < 1)

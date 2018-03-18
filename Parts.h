@@ -94,6 +94,8 @@ class Configuration;
 
 class ConfigurationGUIs;
 
+class Errors;
+
 class FileChoosers;
 
 class GUI;
@@ -186,6 +188,8 @@ class Parts
     virtual Configuration& config() final;
 
     virtual ConfigurationGUIs& config_guis();
+
+    virtual Errors& errors() final;
 
     virtual FileChoosers& file_choosers();
 

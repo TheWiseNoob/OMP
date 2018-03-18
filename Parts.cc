@@ -71,6 +71,8 @@
 
 #include "Configuration/Configuration.h"
 
+#include "Errors/Errors.h"
+
 #include "GUI/Elements/Abouts/Abouts.h"
 
 #include "GUI/Elements/ChildWindows/ChildWindows.h"
@@ -197,6 +199,14 @@ ConfigurationGUIs& Parts::config_guis()
 {
 
   return base_.gui().config_guis();
+
+}
+
+Errors& Parts::errors()
+{
+
+  // 
+  return base() . errors();
 
 }
 

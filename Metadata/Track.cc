@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -616,23 +614,34 @@ Glib::ustring* Track::Multiple_Values_To_Single_Value
   (std::vector<Glib::ustring*> &values)
 {
 
-  Glib::ustring *values_string = new Glib::ustring;
+  // 
+  Glib::ustring* values_string = new Glib::ustring;
 
-  if(!(values.empty()))
+
+
+  // 
+  if(!(values . empty()))
   {
 
+    // 
     *values_string = *values[0];
 
+
+
+    // 
     for(int i = 1; i < int(values.size()); i++)
     {
 
+      // 
       *values_string += "; " + *values[i];
 
-    }
+    } 
 
-  }
+  } 
 
 
+
+  // 
   return values_string;
 
 }
@@ -1765,10 +1774,17 @@ void Track::set_track_number(int new_track_number)
 
 }
 
-void Track::set_track_number(const std::string &new_track_number)
+void Track::set_track_number(const std::string& new_track_number)
 {
 
-  track_number_ = stoi(new_track_number);
+  // 
+  if(!(new_track_number . empty()))
+  { 
+
+    // 
+    track_number_ = stoi(new_track_number);
+
+  }
 
 }
 
@@ -1782,7 +1798,14 @@ void Track::set_track_total(int new_track_total)
 void Track::set_track_total(const std::string &new_track_total)
 {
 
-  track_total_ = stoi(new_track_total);
+  // 
+  if(!(new_track_total . empty()))
+  {
+
+    // 
+    track_total_ = stoi(new_track_total);
+
+  }
 
 }
 
@@ -1796,7 +1819,14 @@ void Track::set_date(int new_date)
 void Track::set_date(const std::string &new_date)
 { 
 
-  date_ = stoi(new_date);
+  // 
+  if(!(new_date . empty()))
+  {
+
+    // 
+    date_ = stoi(new_date);
+
+  }
 
 }
 
@@ -1810,7 +1840,14 @@ void Track::set_disc_number(int new_disc_number)
 void Track::set_disc_number(const std::string &new_disc_number)
 {
 
-  disc_number_ = stoi(new_disc_number);
+  // 
+  if(!(new_disc_number . empty()))
+  {
+
+    // 
+    disc_number_ = stoi(new_disc_number);
+
+  }
 
 }
 
@@ -1824,7 +1861,14 @@ void Track::set_disc_total(int new_disc_total)
 void Track::set_disc_total(const std::string &new_disc_total)
 {
 
-  disc_total_ = stoi(new_disc_total);
+  // 
+  if(!(new_disc_total . empty()))
+  {
+
+    // 
+    disc_total_ = stoi(new_disc_total);
+
+  }
 
 }
 

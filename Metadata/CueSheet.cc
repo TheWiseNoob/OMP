@@ -23,8 +23,6 @@
 //
 //  Libraries used by Moyσikh:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/

@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -244,20 +242,7 @@ FailedScrobblesDatabase::FailedScrobblesDatabase(Base& base_ref)
 
 
     // 
-    int count = 0;
-
-    // 
-    for(auto it : unscrobbled_tracks)
-    {
-
-      count++;
-
-    }
-
-
-
-    // 
-    database_size_ = count;
+    database_size_ = unscrobbled_tracks . size();
 
   }
 

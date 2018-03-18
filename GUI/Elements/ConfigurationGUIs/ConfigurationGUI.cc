@@ -271,6 +271,11 @@ ConfigurationGUI::ConfigurationGUI
 
 
 
+  // 
+  panel_treeview_ -> set_enable_search(false);
+
+
+
   // Sets the function that is triggered when a row is clicked.
   panel_treeview_ -> signal_row_activated()
     . connect(sigc::mem_fun(*this, &ConfigurationGUI::Panel_Chooser));

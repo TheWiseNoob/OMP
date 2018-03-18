@@ -142,6 +142,8 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
 // General
 
+, add_playlist_menu_item_(Gtk::manage(new Gtk::MenuItem("Add Playlist")))
+
 , change_playlist_menu_item_(Gtk::manage
     (new Gtk::MenuItem("Playlist: " + playlist_ref . active_playlist())))
 
@@ -164,10 +166,30 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
 , playlists_menu_(Gtk::manage(new Gtk::Menu))
 
+, remove_playlist_menu_item_(Gtk::manage(new Gtk::MenuItem("Remove Playlist")))
+
 {
 
   // 
   append(*change_playlist_menu_item_);
+
+
+
+  // 
+  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
+  append(*add_playlist_menu_item_);
+
+  // 
+  add_playlist_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playlists_ref,
+                            &Playlists::Open_Create_Playlist_Dialog));
+
+  // 
+//  append(*remove_playlist_menu_item_);
+
+
 
   // 
   append(*Gtk::manage(new Gtk::SeparatorMenuItem));
@@ -181,6 +203,8 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
   // 
   append(*queue_menu_item_);
 
+
+
   // 
   append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
@@ -192,6 +216,8 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
   // 
   append(*paste_menu_item_);
+
+
 
   // 
   append(*Gtk::manage(new Gtk::SeparatorMenuItem));

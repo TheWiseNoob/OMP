@@ -86,6 +86,8 @@
 
 class Configuration;
 
+class Errors;
+
 class GUI;
 
 class KeyboardShortcuts;
@@ -151,6 +153,10 @@ class Base
 
     Configuration& config();
 
+    const char* config_directory_c_str();
+
+    Errors& errors();
+
     GUI& gui();
 
     KeyboardShortcuts& keyboard_shortcuts();
@@ -179,6 +185,12 @@ class Base
 
     // 
     Configuration* config_;
+
+    // 
+    char config_directory_c_str_[400];
+
+    // 
+    Errors* errors_;
 
     // 
     GUI* gui_;

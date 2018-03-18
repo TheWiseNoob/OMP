@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -69,9 +67,11 @@
 //                 //
 //                 //
 
-#include "../Metadata/Track.h"
+#include "../Errors/Errors.h"
 
 #include "../TimeConversion.h"
+
+#include "Track.h"
 
 #include "CueSheet.h"
 
@@ -653,8 +653,8 @@ void Metadata::Interpret_Multiple_Value_Tag
    void (Track::*setter)(Glib::ustring*), void (Track::*clear)() = NULL)
 { 
 
-  //  Checks if that tag provided is present in the metadata.
-  if(!(prop_map.contains(TagLib::String(tag_name))))
+  // Checks if that tag provided is present in the metadata.
+  if(!(prop_map . contains(TagLib::String(tag_name))))
   { 
 
     debug("Tag is not present. Returning!");
@@ -677,7 +677,7 @@ void Metadata::Interpret_Multiple_Value_Tag
     {
 
       // Adds the tag to the list of entries in the multiple-value tag.
-      (track.*setter)(new Glib::ustring(it.to8Bit(true)));
+      (track.*setter)(new Glib::ustring(it . to8Bit(true)));
 
     }
 
@@ -687,33 +687,48 @@ void Metadata::Interpret_Multiple_Value_Tag
   else
   {
 
-    if(((prop_map[TagLib::String(tag_name)].size() > 1))
+    // 
+    if(((prop_map[TagLib::String(tag_name)] . size() > 1))
          || 
-       ((track.*getter)().empty()))
-    {
+       ((track.*getter)() . empty()))
+     {
 
+      // 
       if(clear == NULL)
       { 
 
+        // 
         return;
 
       }
 
+
+
+      // 
       (track.*clear)(); 
 
-      debug("Multiple artists!");
 
+
+      debug("Multiple values!");
+
+
+
+      // 
       for(auto it : prop_map[TagLib::String(tag_name)])
       {
 
-        (track.*setter)(new Glib::ustring(it.to8Bit(true)));
+        // 
+        (track.*setter)(new Glib::ustring(it . to8Bit(true)));
 
-      }
+       }
 
     }
 
-  }
+  } 
 
+
+
+  // 
   prop_map.erase(TagLib::String(tag_name));
 
 }
@@ -909,8 +924,10 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
     // Creates a file ref for the track.
     TagLib::FileRef file_ref(filename . c_str()); 
-  
-  
+
+
+
+    //   
     if((file_ref . isNull()) || ((file_ref . audioProperties()) == NULL))
     {
 
@@ -927,12 +944,21 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
       }
 
+
+
+      // 
+      new_tracks -> clear();
+
+
+
+      // 
       return new_tracks;
 
 
     }  
 
-  
+
+
     // Creates a reference to the Track having data added to it.
     Track& new_track = *(new_tracks -> front());
   
@@ -951,7 +977,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
     auto audio_properties  = (file_ref . audioProperties());
   
   
-  
+
     // Determines the codec if supported.
     if(!Determine_Codec_If_Supported(*audio_properties, new_track))
     {
@@ -987,6 +1013,8 @@ std::vector<Track*> *Metadata::Interpret_Properties
     new_track . set_duration(duration);
 
 
+
+    // 
     std::string* temp_time_string;
 
       // Converts the duration to a time format string in centiseconds.
@@ -1010,45 +1038,69 @@ std::vector<Track*> *Metadata::Interpret_Properties
     {
 
       // Retrieves the title of the track. 
-      Interpret_Single_Value_Tag("TITLE", type, temp_prop_map, new_track, 
-                                 &Track::title, &Track::set_title);
+      Interpret_Single_Value_Tag
+        ("TITLE", type, temp_prop_map, new_track, &Track::title,
+         &Track::set_title);
 
       // Retireves the artists of the track.
-      Interpret_Multiple_Value_Tag("ALBUMARTIST", type, temp_prop_map, new_track, 
-                                   &Track::album_artists, &Track::add_album_artist, &Track::clear_album_artists);
+      Interpret_Multiple_Value_Tag
+        ("ALBUMARTIST", type, temp_prop_map, new_track, &Track::album_artists,
+         &Track::add_album_artist, &Track::clear_album_artists);
 
       // Retireves the artists of the track.
-      Interpret_Multiple_Value_Tag("ARTIST", type, temp_prop_map, new_track, 
-                                   &Track::artists, &Track::add_artist, &Track::clear_artists);
+      Interpret_Multiple_Value_Tag
+        ("ARTIST", type, temp_prop_map, new_track, &Track::artists,
+         &Track::add_artist, &Track::clear_artists);
 
       // Retrieves the album name of the track.
-      Interpret_Single_Value_Tag("ALBUM", type, temp_prop_map, new_track, 
-                                 &Track::album, &Track::set_album);
+      Interpret_Single_Value_Tag
+        ("ALBUM", type, temp_prop_map, new_track, &Track::album,
+         &Track::set_album);
 
       // Retrieves the genres of the track.
-      Interpret_Multiple_Value_Tag("GENRE", type, temp_prop_map, new_track, 
-                                   &Track::genres, &Track::add_genre, &Track::clear_genres);
+      Interpret_Multiple_Value_Tag
+        ("GENRE", type, temp_prop_map, new_track, &Track::genres,
+         &Track::add_genre, &Track::clear_genres);
 
 
 
       // True if the track has a track number.
-      if(temp_prop_map.contains(TagLib::String("TRACKNUMBER")))
+      if(temp_prop_map . contains(TagLib::String("TRACKNUMBER")))
       {
 
-        // 
-        new_track
-          . set_track_number(temp_prop_map[TagLib::String("TRACKNUMBER")]
-                                             . toString().to8Bit(true));
+        debug("Metadata: Interpret_Properties: NORMAL: TRACKNUMBER");
+
+
+
+        //  Saved the value of the tag to a string.
+        string track_num_str
+          = temp_prop_map[TagLib::String("TRACKNUMBER")]
+              . toString() . to8Bit(true);
+
+
+
+        // Sets the track number of new_track.
+        new_track . set_track_number(track_num_str);
 
       }
-
-
 
       // 
       if(temp_prop_map.contains(TagLib::String("TRACKTOTAL")))
       {
 
-        new_track.set_track_total(temp_prop_map[TagLib::String("TRACKTOTAL")].toString().to8Bit(true));
+        debug("Metadata: Interpret_Properties: NORMAL: TRACKTOTAL");
+
+
+
+        //  Saved the value of the tag to a string.
+        string track_total_str
+          = temp_prop_map[TagLib::String("TRACKTOTAL")]
+              . toString() . to8Bit(true);
+
+
+
+        // Sets the track total of new_track.
+        new_track . set_track_total(track_total_str);
 
       }
 
@@ -1056,6 +1108,11 @@ std::vector<Track*> *Metadata::Interpret_Properties
       if(temp_prop_map.contains(TagLib::String("DATE")))
       {
 
+        debug("Metadata: Interpret_Properties: NORMAL: DATE");
+
+
+
+        // 
         new_track.set_date(temp_prop_map[TagLib::String("DATE")].toString().to8Bit(true));
 
       }
@@ -1064,6 +1121,11 @@ std::vector<Track*> *Metadata::Interpret_Properties
       if(temp_prop_map.contains(TagLib::String("DISCNUMBER")))
       {
 
+        debug("Metadata: Interpret_Properties: NORMAL: DISCNUMBER");
+
+
+
+        // 
         new_track.set_disc_number(temp_prop_map[TagLib::String("DISCNUMBER")].toString().to8Bit(true));
 
       }
@@ -1072,6 +1134,11 @@ std::vector<Track*> *Metadata::Interpret_Properties
       if(temp_prop_map.contains(TagLib::String("DISCTOTAL")))
       {
 
+        debug("Metadata: Interpret_Properties: NORMAL: DISCTOTAL");
+
+
+
+        // 
         new_track . set_disc_total(temp_prop_map[TagLib::String("DISCTOTAL")].toString().to8Bit(true));
 
       }
@@ -1080,6 +1147,11 @@ std::vector<Track*> *Metadata::Interpret_Properties
       if(temp_prop_map.contains(TagLib::String("REPLAYGAIN_ALBUM_GAIN")))
       {
 
+        debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_ALBUM_GAIN");
+
+
+
+        // 
         new_track . set_replaygain_album_gain(stod(temp_prop_map[TagLib::String("REPLAYGAIN_ALBUM_GAIN")].toString().to8Bit(true)));
 
       }
@@ -1088,6 +1160,11 @@ std::vector<Track*> *Metadata::Interpret_Properties
       if(temp_prop_map.contains(TagLib::String("REPLAYGAIN_ALBUM_PEAK")))
       {
 
+        debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_ABLUM_PEAK");
+
+
+
+        // 
         new_track . set_replaygain_album_peak(stod(temp_prop_map[TagLib::String("REPLAYGAIN_ALBUM_PEAK")].toString().to8Bit(true)));
 
       }
@@ -1096,6 +1173,11 @@ std::vector<Track*> *Metadata::Interpret_Properties
       if(temp_prop_map.contains(TagLib::String("REPLAYGAIN_TRACK_GAIN")))
       {
 
+        debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_TRACK_GAIN");
+
+
+
+        // 
         new_track . set_replaygain_track_gain(stod(temp_prop_map[TagLib::String("REPLAYGAIN_TRACK_GAIN")].toString().to8Bit(true)));
 
       }
@@ -1104,14 +1186,36 @@ std::vector<Track*> *Metadata::Interpret_Properties
       if(temp_prop_map.contains(TagLib::String("REPLAYGAIN_TRACK_PEAK")))
       {
 
+        debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_TRACK_PEAK");
+
+
+
+        // 
         new_track . set_replaygain_track_peak(stod(temp_prop_map[TagLib::String("REPLAYGAIN_TRACK_PEAK")].toString().to8Bit(true)));
 
       }
 
     }
-    
+
+    //     
     catch(...)
     {
+
+      // 
+      debug("Exception caught in NORMAL track metadata retrieval");
+
+
+
+      // 
+      string error_message_str = new_track . filename();
+
+      // 
+      error_message_str += "   failed to open.";
+
+      // 
+      errors() . Write_Error(error_message_str . c_str());
+
+
 
       // 
       for(auto new_tracks_it : *new_tracks)
@@ -1121,6 +1225,11 @@ std::vector<Track*> *Metadata::Interpret_Properties
         delete new_tracks_it;
 
       }
+
+
+
+      // 
+      new_tracks -> clear();
 
 
 
@@ -1439,7 +1548,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
   }
 
- 
+
 
   //  
   return new_tracks;
