@@ -77,10 +77,8 @@ class PlaylistComboBoxColumnRecord : public Gtk::TreeModel::ColumnRecord
     Gtk::TreeModelColumn<Glib::ustring> name_;
 
     Gtk::TreeModelColumn<std::list<Glib::RefPtr<PlaylistTreeStore>>::iterator> 
-      playlist_treestore_it_;                       
+      playlist_treestore_it_;
 
-
-                                                                                
 }; 
 
 

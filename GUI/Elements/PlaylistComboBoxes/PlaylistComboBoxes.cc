@@ -41,23 +41,75 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//              //
+//              //
+// Class Header ///////////////////////////////////////////////////////////////
+//              //
+//              //
+
 #include "PlaylistComboBoxes.h"
 
-#include "PlaylistComboBox.h"
-#include "PlaylistComboBoxColumnRecord.h"
-#include "../Playlists/Playlist.h"
-#include "../Playlists/Playlists.h"
-#include "../Playlists/PlaylistTreeStore.h"
-#include "../Playlists/PlaylistMenu.h"
-#include "../../GUI.h"
+
+
+
+
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../../../Base.h"
 
-#include <memory>
+#include "../../GUI.h"
+
+#include "../Playlists/Playlist.h"
+
+#include "../Playlists/PlaylistMenu.h"
+
+#include "../Playlists/Playlists.h"
+
+#include "../Playlists/PlaylistTreeStore.h"
+
+#include "PlaylistComboBoxColumnRecord.h"
+
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include <gtkmm/combobox.h>
-#include <gtkmm/treeiter.h>
+
 #include <gtkmm/radiomenuitem.h>
 
+#include <gtkmm/treeiter.h>
 
+#include <memory>
+
+
+
+
+
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
 
 using namespace std;
 
@@ -65,53 +117,87 @@ using namespace std;
 
 
 
-PlaylistComboBoxes::PlaylistComboBoxes(Base& base, 
-                                       Playlists& temp_playlists)
-: GUIElementList(base)
+//                 //
+//                 //
+//                 //
+// Class Functions ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+//                 //
+
+//             //
+//             //
+// Constructor ////////////////////////////////////////////////////////////////
+//             //
+//             //
+
+PlaylistComboBoxes::PlaylistComboBoxes
+  (Base& base_ref, Playlists& playlists_ref)
+
+// Inherited Class
+
+: GUIElementList(base_ref)
+
+, active_row_number_(-1)
+
 {
 
-
+  // 
   playlist_combobox_column_record_ = new PlaylistComboBoxColumnRecord;
 
-  playlist_combobox_treestore_ 
+  // 
+  treestore_ 
     = Gtk::TreeStore::create(*playlist_combobox_column_record_);
 
 
+
+  // 
   on_playlist_combobox_changed_disabled_ = false;
 
 
+
+  // 
   for(auto playlist_treestores_it 
-        = temp_playlists.playlist_treestores().begin();
+        = playlists_ref . playlist_treestores() . begin();
       playlist_treestores_it 
-        != temp_playlists.playlist_treestores().end();
+        != playlists_ref . playlist_treestores() . end();
       playlist_treestores_it++)
   {
 
-
-    Gtk::TreeRow row;
-
-    row = *(playlist_combobox_treestore_ -> append());
+    // 
+    Gtk::TreeRow row = *(treestore_ -> append());
 
 
+
+    // 
     row[playlist_combobox_column_record_ -> name_]
       = ((*playlist_treestores_it) -> get_name());
 
-
+    // 
     row[playlist_combobox_column_record_ -> playlist_treestore_it_]
       = playlist_treestores_it;
-
 
   }
 
 
-  gui_elements().push_back(new PlaylistComboBox(base, *this));
-  gui_elements().push_back(new PlaylistComboBox(base, *this));
+
+  // 
+  gui_elements() . push_back(new PlaylistComboBox(base_ref, *this));
+
+  // 
+  gui_elements() . push_back(new PlaylistComboBox(base_ref, *this));
 
 }
 
 
 
 
+
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
 
 PlaylistComboBoxes::~PlaylistComboBoxes()
 {
@@ -124,31 +210,33 @@ PlaylistComboBoxes::~PlaylistComboBoxes()
 
 
 
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+
 void PlaylistComboBoxes::Add_Playlist
   (const char* name, 
    list<Glib::RefPtr<PlaylistTreeStore>>::iterator playlist_treestore_it)
 {
 
-
-
-    
-  Gtk::TreeRow row;
-
-  row = *(playlist_combobox_treestore_ -> append());
+  //     
+  Gtk::TreeRow row = *(treestore_ -> append());
 
   row[playlist_combobox_column_record_ -> name_] = name;
 
   row[playlist_combobox_column_record_ -> playlist_treestore_it_]
     = playlist_treestore_it;
 
-  for(auto it : playlist_comboboxes()())
+  for(auto playlist_comboboxes_it : playlist_comboboxes()())
   {
 
-    auto treestore_it = playlist_combobox_treestore_ -> children().end();
+    auto treestore_it = treestore_ -> children().end();
 
     treestore_it--;
 
-    it -> playlist_combobox().set_active(treestore_it);
+    playlist_comboboxes_it -> playlist_combobox() . set_active(treestore_it);
  
   }
 
@@ -158,104 +246,94 @@ void PlaylistComboBoxes::Add_Playlist
 
 
 
-void PlaylistComboBoxes::Remove_Playlist
-  (Gtk::TreeIter playlist_combobox_treestore_it)
+//         //
+//         //
+// Getters //////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+Gtk::TreeIter PlaylistComboBoxes::active_row_it()
 {
 
-  if(gui_elements().size() < 1)
-  {
-
-    return;
-
-  }
-  
-
-  auto previous_row_it = playlist_combobox_treestore_it;
-
-
-  previous_row_it--;
-
-
-  playlist_comboboxes().set_on_playlist_combobox_changed_disabled(true);
-
-  for(auto playlists_it : playlists()())
-  {
-
-    int count = 0;
-
-    int temp_active_row_number 
-      = playlist_comboboxes()().front() -> playlist_combobox()
-          .get_active_row_number();
-
-    auto playlists_menu_radio_menu_items_it
-      = playlists_it -> menu().playlists_menu_radio_menu_items().begin();
-
-    for(auto menu_it : playlists_it -> menu().playlists_menu().get_children())
-    {
-
-      if(count == temp_active_row_number)
-      {
-
-        playlists_it -> menu().playlists_menu()
-          .remove(*menu_it);
-
-        auto previous_menu_it = playlists_menu_radio_menu_items_it;
-
-        previous_menu_it--;
-
-        playlists_it -> menu().playlists_menu_radio_menu_items()
-          .erase(playlists_menu_radio_menu_items_it);
-
-        (*previous_menu_it) -> set_active(true);
-
-        break;
-
-      }
-
-      count++;
-
-      playlists_menu_radio_menu_items_it++;
-
-    }
-
-  }
-
-  for(auto it : gui_elements())
-  {
-
-    it -> playlist_combobox().set_active(previous_row_it);
-
-  }
-
-
-  
-
-  playlist_comboboxes().set_on_playlist_combobox_changed_disabled(false);
-
-
-  playlist_combobox_treestore_ -> erase(playlist_combobox_treestore_it);
-
+  // 
+  return (treestore_ -> children())[active_row_number_];
 
 }
 
-
-
-
-
-Glib::RefPtr<Gtk::TreeStore>& PlaylistComboBoxes::playlist_combobox_treestore()
+Glib::ustring* PlaylistComboBoxes::active_row_name()
 {
 
-  return playlist_combobox_treestore_;
+  // 
+  Glib::ustring active_row_name_ustr
+    = (*((treestore_ -> children())[active_row_number_]))[playlist_comboboxes()
+                                    . column_record() . name_];
+
+
+
+  // 
+  return new Glib::ustring(active_row_name_ustr);
 
 }
 
+int PlaylistComboBoxes::active_row_number()
+{
 
+  return active_row_number_;
 
+}
 
+std::list<Glib::RefPtr<PlaylistTreeStore>>::iterator 
+  PlaylistComboBoxes::active_treestore_it()
+{
 
-PlaylistComboBoxColumnRecord& PlaylistComboBoxes::playlist_combobox_column_record()
+  // 
+  return (*((treestore_ -> children())[active_row_number_]))
+           [playlist_comboboxes() . column_record() . playlist_treestore_it_];
+
+}
+
+bool PlaylistComboBoxes::on_playlist_combobox_changed_disabled()
+{
+
+  return on_playlist_combobox_changed_disabled_;
+
+}
+
+PlaylistComboBoxColumnRecord& PlaylistComboBoxes::column_record()
 {
 
   return *playlist_combobox_column_record_;
 
 }
+
+Glib::RefPtr<Gtk::TreeStore>& PlaylistComboBoxes::treestore()
+{
+
+  return treestore_;
+
+}
+
+
+
+
+//         //
+//         //
+// Setters //////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+void PlaylistComboBoxes::set_active_row_number(int new_value)
+{
+
+  active_row_number_ = new_value;
+
+}
+
+void PlaylistComboBoxes::set_on_playlist_combobox_changed_disabled
+       (bool new_value)
+{
+
+  on_playlist_combobox_changed_disabled_ = new_value;
+
+}
+

@@ -1023,7 +1023,7 @@ GUI::GUI(Base& base_ref)
   selected_time_label_ -> set_padding(10, 10);
 
   // Sets the default time of the selected_time_label_.
-  selected_time_label_ -> set_label("0:00.00");
+  selected_time_label_ -> set_label("00:00.00");
 
   // Adds the selected tracks total time display label to status_bar_box_.
   status_bar_box_ -> pack_end(*Gtk::manage(new Gtk::Separator()),

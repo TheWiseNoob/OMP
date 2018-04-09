@@ -193,6 +193,9 @@ class Playlists : public GUIElementList<Playlist>
 
     void Change_Track(); 
 
+    void Delete_Current_Playlist
+           (bool delete_playlist_combobox_playlist = false);
+
     void Fill_Row
       (Gtk::TreeRow& new_tree_row, std::shared_ptr<Track> new_track_sptr);
 

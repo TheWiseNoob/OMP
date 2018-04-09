@@ -3,25 +3,53 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [0.0.7] - 2018-03-18
+## [0.0.8] - April 8st, 2018
+
+### Added
+- Added a Fixed section to the CHANGELOG.
+- Add and remove playlist buttons are not in a playlist's right-click menu.
+
+### Changed
+- CHANGELOG date format was changed for clarification.
+- Removed the section of the CHANGELOG was removed. Things removed will now be
+  listed in the Changed section.
+- Removed the useless Edit button in the playlist right-click menu until 
+  advanced editing is added starting with version 0.3.0.
+- All bug fixes listed in the CHANGELOG have been moved to a new section called
+  Fixed.
+- Reorganized the playlist right-click menu.
+- Cleaned up the over 3 years-old code for playlist removal in order to
+  make it possible to remove a playlist from something other than a playlist
+  combobox.
+
+### Fixed
+- Fixed a bug that caused a playlist combobox to not saved its position after
+  a playlist is removed.
+- Renaming a playlist is now working again.
+
+
+
+## [0.0.7] - March 18th, 2018
 
 ### Added
 - Error logging for files that fail to open with OMP.
 - Add playlist right-click menu option. 
 
 ### Changed
-- Fixed a crash caused by OMP trying to convert an empty string to an int. It
-  happened when a metadata field exists, is empty, and is an integer. This
-  produced an exception that is now caught too. Thanks to aladar42 on GitHub
-  helping me solve this bug!
 - Makefile organized.
 - General code clean-up.
 - All mentions of Boost removed.
 - Other minor text changes.
 
+### Fixed
+- A crash caused by OMP trying to convert an empty string to an int has
+  been fixed. It happened when a metadata field exists, is empty, and is 
+  an integer. This produced an exception that is now caught too. 
+  Thanks to aladar42 on GitHub helping me find and solve this bug!
 
 
-## [0.0.6] - 2018-03-04
+
+## [0.0.6] - March 4th, 2018
 
 ### Added
 - Configurable keyboard shortcuts.
@@ -31,7 +59,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [0.0.5] - 2018-02-18
+## [0.0.5] - February 18th, 2018 
 
 ### Added
 - Playlist column orders now saved.
@@ -48,7 +76,7 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [0.0.4] - 2018-01-28
+## [0.0.4] - January 28th, 2018
 
 ### Added
 - Database for tracks that failed to scrobble.
@@ -59,14 +87,13 @@ All notable changes to this project will be documented in this file.
 - Playlist views now save what playlist was used last.
 - Lock status of playlist is now saved.
 - Playlist ComboBox position is now saved.
-- Scrobbling now confirmed as fully disableable.
-
-### Removed
 - Boost build requirement removed.
 
+### Fixed
+- Scrobbling now confirmed as fully disableable.
 
 
-## [0.0.3] - 2018-01-21
+## [0.0.3] - January 21st, 2018
 
 ### Added
 - Detects if the currently loaded cover image has been deleted and continues
@@ -77,22 +104,22 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - "Base" changed to "OMP" in MenuBar for Quit MenuItem and About MenuItem.
-- Fixed crash after changing the output sink and then restarting playback fixed.
-- Fixed the cause of an occasional crash when artwork is resizing or first
-  rendering.
-- Fixed bug with Playback Follow Cursor. This bug caused playback to still 
-  follow the last selected row that isn't the playing track after
-  clicking the status bar to select the playing row.
 - TagView ellipsizes a line if it's too long to display in its allocated space.
 - General code clean-up, sylization, and code commenting.
-
-### Removed
 - No longer possible to open multiple instances of OMP.
 - Removed the & from the File Chooser & Playlist tab.
 
+### Fixed
+- A crash after changing the output sink and then restarting playback fixed.
+- The cause of an occasional crash when artwork is resizing or first
+  rendering.
+- Abug caused playback to still follow the last selected row that isn't 
+  the playing track after clicking the status bar to select the playing row 
+  when Playback Follows Cursor is on.
 
 
-## [0.0.2] - 2018-01-14
+
+## [0.0.2] - January 14th, 2018
 
 ### Added
 - CHANGELOG.md added.
@@ -109,16 +136,17 @@ All notable changes to this project will be documented in this file.
 - MAKEFILE_COMPILE install elements moved to install section of Makefile.
 - Prevent extra newline in genre metadata if GENRE in the CUESHEET is empty.
 - Prevent extra newline in date metadata if DATE in the CUESHEET is empty.
-- Copy, Cut, Delete, and Paste menu items in the playlist menu now work.
 - Changed old name to new name in copyright statement at the top of files.
 - General code clean-up and stylization.
-
-### Removed
 - MAKEFILE_COMPILE removed.
 
+### Fixed
+- OMP no longer crashes if a CUESHEET has extra an MODE/2xxx track.
+- Copy, Cut, Delete, and Paste menu items in the playlist menu now work.
 
 
-## [0.0.1] - 2017-12-31
+
+## [0.0.1] - December 31st, 2017
 
 ### Added
 - First public source and build release.

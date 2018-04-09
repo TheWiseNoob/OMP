@@ -140,8 +140,8 @@ class PlaylistMenu : public Gtk::Menu, public Parts
 
   public:
 
-    PlaylistMenu(Base& base, Playlist& new_playlist, 
-                 Playlists& temp_playlists);
+    PlaylistMenu(Base& base_ref, Playlist& playlist_ref,
+                 Playlists& playlists_ref, const char* playlist_name);
 
 
 

@@ -81,6 +81,8 @@
 
 #include "../../Tagview.h"
 
+#include "../PlaylistComboBoxes/PlaylistComboBoxColumnRecord.h"
+
 #include "../PlaylistComboBoxes/PlaylistComboBoxes.h"
 
 #include "PlaylistColumnRecord.h"
@@ -102,6 +104,8 @@
 // Outside Headers ////////////////////////////////////////////////////////////
 //                 //
 //                 //
+
+#include <gtkmm/combobox.h>
 
 #include <gtkmm/dialog.h>
 
@@ -559,9 +563,6 @@ bool Playlists::Add_Playlist(const char* name)
 
 
 
-
-
-
   // 
   playlist_comboboxes().Add_Playlist(name, playlist_treestores_it);
 
@@ -842,6 +843,400 @@ void Playlists::Change_Track()
       playback() . delete_playback_queue_row() = true;
 
   }
+
+}
+
+void Playlists::Delete_Current_Playlist(bool delete_playlist_combobox_playlist)
+{
+
+  // Stores the name of the playlist to delete;
+  string playlist_name;
+
+  // 
+  if(delete_playlist_combobox_playlist)
+  {
+
+    // 
+    Glib::ustring* playlist_name_ustr_ptr
+      = playlist_comboboxes() . active_row_name();
+
+
+
+    // 
+    playlist_name = *playlist_name_ustr_ptr;
+
+    
+
+    // 
+    delete playlist_name_ustr_ptr;
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    playlist_name = selected_playlist_treestore() -> get_name();
+
+  }
+
+
+
+  stringstream debug_ss;
+
+  debug_ss << "Deleting playlist name: " << playlist_name;
+
+  debug(debug_ss . str() . c_str());
+
+
+
+  // Removes the playlist from the database.
+  database() . Delete_Playlist(playlist_name . c_str());
+
+
+
+  debug("After playlist database entry deleted.");
+
+
+
+  // 
+  auto active_combobox_row_it = playlist_comboboxes() . active_row_it();
+
+
+
+  // 
+  if(delete_playlist_combobox_playlist)
+  {
+
+    // Erases the 
+    playlist_treestores()
+      . erase(playlist_comboboxes() . active_treestore_it());
+
+  }
+
+  // 
+  else
+  {
+
+    // Erases the 
+    playlist_treestores()
+      . erase(selected_playlist() . playlist_treestore_it());
+
+  }
+
+
+
+  // 
+  playlist_comboboxes() . set_on_playlist_combobox_changed_disabled(true);
+
+
+
+  // 
+  int count = 0;
+
+  // 
+  int deleted_combobox_row_number
+    = playlist_comboboxes() . active_row_number();
+
+
+
+  debug_ss . str("");
+
+  debug_ss << "Active combobox row number: " << deleted_combobox_row_number;
+
+  debug(debug_ss . str() . c_str());
+
+
+
+  // 
+  Glib::ustring active_combobox_row_name_str
+    = config() . get("gui.playlist_combobox.active");
+
+
+
+  // True when the playlist deing deleted and the combobox are the same.
+  if((active_combobox_row_name_str == playlist_name)
+        || delete_playlist_combobox_playlist)
+  {
+
+    debug("Playlist name is the same as the playlist combobox name.");
+
+
+
+    // 
+    auto previous_combobox_row_it = active_combobox_row_it;
+
+
+
+    debug("After previous_combobox_row_it assignment.");
+
+
+
+    // 
+    previous_combobox_row_it--;
+
+
+
+    debug("After previous_combobox_row_it decrement.");
+
+
+
+    // 
+    Glib::ustring previous_combobox_row_name_str
+      = (*previous_combobox_row_it)
+          [playlist_comboboxes() . column_record() . name_];
+
+
+
+    debug_ss . str("");
+
+    debug_ss << "Previous combobox row name str: "
+             << previous_combobox_row_name_str;
+
+    debug(debug_ss . str() . c_str());
+
+
+
+    // 
+    for(auto playlist_comboboxes_it : playlist_comboboxes()())
+    {
+
+      // 
+      playlist_comboboxes_it -> playlist_combobox()
+        . set_active(previous_combobox_row_it);
+
+    }
+
+    // 
+    playlist_comboboxes()
+      . set_active_row_number(deleted_combobox_row_number - 1);
+
+
+
+    debug("Setting all comboboxes to the new setting");
+
+
+
+    // 
+    config() . set("gui.playlist_combobox.active",
+                   previous_combobox_row_name_str);
+
+
+
+    // 
+    playlist_comboboxes() . treestore() -> erase(active_combobox_row_it);
+
+
+
+    debug("After combobox row deletion.");
+
+   }
+
+  // True when the playlist being deleted and the combobox are not the same.
+  else
+  {
+
+    debug("Playlist name is NOT the same as the playlist combobox name.");
+
+
+
+    // 
+    auto playlist_comboboxes_treestore_it 
+      = playlist_comboboxes() . treestore() -> children() . begin();
+
+
+
+    // 
+    while(playlist_comboboxes_treestore_it
+            != playlist_comboboxes() . treestore() -> children() . end())
+    {
+
+      // 
+      Glib::ustring deleted_combobox_row_name_str
+        = (*playlist_comboboxes_treestore_it)
+            [playlist_comboboxes() . column_record() . name_];
+
+
+
+      // 
+      if(playlist_name == deleted_combobox_row_name_str)
+      {
+
+        // 
+        playlist_comboboxes() . treestore()
+          -> erase(playlist_comboboxes_treestore_it);
+
+
+
+        // 
+        int active_combobox_row_number = deleted_combobox_row_number;
+
+        // 
+        deleted_combobox_row_number = count;
+
+        // 
+        count = 0;
+  
+
+
+        // 
+        if(deleted_combobox_row_number < active_combobox_row_number)
+        {
+
+          // 
+          playlist_comboboxes()
+            . set_active_row_number(active_combobox_row_number - 1);
+
+        }
+
+
+
+        // 
+        break;
+
+      }
+
+
+
+      // 
+      playlist_comboboxes_treestore_it++;
+
+      // 
+      count++;
+
+    } 
+
+  }
+
+
+
+  debug("Removing Playlist Menu entry and changing playlist one back");
+
+
+
+  // 
+  for(auto playlists_it : playlists()())
+  {
+
+    // 
+    auto playlists_menu_radio_menu_items_it
+      = playlists_it -> menu() . playlists_menu_radio_menu_items() . begin();
+
+
+
+    // 
+    for(auto menu_it
+          : playlists_it -> menu() . playlists_menu() . get_children())
+    {
+
+      // 
+      if(count == deleted_combobox_row_number)
+      {
+
+        debug_ss . str("");
+
+        debug_ss << "Deleted menu row number: " << count;
+
+        debug(debug_ss . str() . c_str());
+
+
+
+
+        // 
+        playlists_it -> menu() . playlists_menu() . remove(*menu_it);
+
+        // 
+        auto previous_menu_it = playlists_menu_radio_menu_items_it;
+
+        // 
+        previous_menu_it--;
+
+        // 
+        (*previous_menu_it) -> set_active(true);
+
+        // 
+        playlists_it -> menu() . playlists_menu_radio_menu_items()
+          . erase(playlists_menu_radio_menu_items_it);
+
+
+
+        // 
+        break;
+
+      }
+
+
+
+      // 
+      count++;
+
+      // 
+      playlists_menu_radio_menu_items_it++;
+
+    }
+
+
+
+    //
+    count = 0;
+
+  }
+
+
+
+  // 
+  auto selected_playlist_treestore_it
+    = selected_playlist() . playlist_treestore_it();
+
+  // 
+  auto library_playlist_treestore_it = playlist_treestores() . begin();
+
+  // 
+  library_playlist_treestore_it++;
+
+
+
+  // 
+  for(auto playlist_comboboxes_it : playlist_comboboxes()())
+  { 
+
+    // 
+    if((selected_playlist_treestore_it == playlists() . playlist_treestores() . begin())
+         ||
+       (selected_playlist_treestore_it == library_playlist_treestore_it))
+    {
+
+      // 
+      playlist_comboboxes_it
+        -> remove_playlist_button() . set_sensitive(false);
+
+      // 
+      playlist_comboboxes_it
+        -> playlist_combobox_entry() . set_sensitive(false);
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      playlist_comboboxes_it
+        -> remove_playlist_button() . set_sensitive(true);
+
+      // 
+      playlist_comboboxes_it
+        -> playlist_combobox_entry() . set_sensitive(true);
+
+    }
+
+  }
+
+
+
+  // 
+  playlist_comboboxes() . set_on_playlist_combobox_changed_disabled(false);
 
 }
 
@@ -1663,8 +2058,6 @@ void Playlists::set_skip_button_press(bool new_value)
 
 void Playlists::set_selected_playlist(Playlist& new_selected_playlist)
 {
-
-
 
   selected_playlist_ = &new_selected_playlist;
 

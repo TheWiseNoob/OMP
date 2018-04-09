@@ -294,15 +294,18 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // Assigns the TreeModel to the TreeView.
-  for(auto playlist_treestores_it : playlists_ref . playlist_treestores())
+  for(auto playlist_treestores_it
+        = playlists_ref . playlist_treestores() . begin();
+      playlist_treestores_it != playlists_ref . playlist_treestores() . end();
+      playlist_treestores_it++)
   {
 
     // 
-    if((playlist_treestores_it -> get_name()) == playlist_treestore_name)
+    if(((*playlist_treestores_it) -> get_name()) == playlist_treestore_name)
     {
 
       // 
-      set_playlist_treestore(playlist_treestores_it);
+      set_playlist_treestore((*playlist_treestores_it));
 
     }
 
@@ -754,7 +757,9 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // Creates a new PlaylistMenu for the playlist TreeView.
-  menu_ = new PlaylistMenu(base_ref, *this, playlists_ref);
+  menu_
+    = new PlaylistMenu(base_ref, *this,
+                       playlists_ref, playlist_treestore_name . c_str());
 
 
 
@@ -2226,21 +2231,24 @@ void Playlist::Change_Playlist()
     = menu_ -> playlists_menu_radio_menu_items() . begin();
 
   // Iterates through the the playlist treestores.
-  for(auto playlist_treestores_it : playlists() . playlist_treestores())
+  for(auto playlist_treestores_it
+        = playlists() . playlist_treestores() . begin();
+      playlist_treestores_it != playlists() . playlist_treestores() . end();
+      playlist_treestores_it++)
    {
 
     // True if the current playlist RadioMenuItem is selected.
     if((*playlist_menu_radio_menu_items_it) -> get_active())
-     {
+    {
 
       // Sets the current playlist to the label of change_playlist_menu_item.
       menu_ -> change_playlist_menu_item()
-        . set_label("Playlist: " + playlist_treestores_it -> get_name());
+        . set_label("Playlist: " + (*playlist_treestores_it) -> get_name());
 
 
 
       // Sets the playlist treestore as the current one of the iteration.
-      set_playlist_treestore(playlist_treestores_it);
+      set_playlist_treestore((*playlist_treestores_it));
 
 
 
@@ -2257,7 +2265,7 @@ void Playlist::Change_Playlist()
 
       // 
       config()
-        . set(setting_name . c_str(), playlist_treestores_it -> get_name());
+        . set(setting_name . c_str(), (*playlist_treestores_it) -> get_name());
 
 
 
@@ -3090,6 +3098,37 @@ Glib::RefPtr<PlaylistTreeStore> Playlist::playlist_treestore()
 
 }
 
+std::list<Glib::RefPtr<PlaylistTreeStore>>::iterator 
+  Playlist::playlist_treestore_it()
+{
+
+  // 
+  auto playlist_treestores_it
+    = playlists() . playlist_treestores() .begin();
+
+  // 
+  for(; playlist_treestores_it != playlists() . playlist_treestores() . end();
+      playlist_treestores_it++)
+  {
+
+    // 
+    if((*playlist_treestores_it) == playlist_treestore_)
+    {
+
+      // 
+      return playlist_treestores_it;
+
+    }
+
+  }
+
+
+
+  // 
+  return playlists() . playlist_treestores() . end();
+
+}
+
 const char* Playlist::playlist_view_name()
 {
 
@@ -3111,8 +3150,16 @@ void Playlist::set_playlist_treestore
   (Glib::RefPtr<PlaylistTreeStore> new_treestore)
 {
 
+  // 
+  debug("Treestore set");
+
+
+
+
+  // 
   this -> set_model(new_treestore);
 
+  // 
   playlist_treestore_ = new_treestore;
 
 }

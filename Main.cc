@@ -92,14 +92,15 @@
 int main (int argc, char *argv[])
 {  
 
-  // 
+  // Created the Gtk::Application instance that is OMP's GUI.
   Glib::RefPtr<Gtk::Application> application 
-    = Gtk::Application::create("openmusicplayer.com",
-                               Gio::APPLICATION_FLAGS_NONE /*| Gio::APPLICATION_NON_UNIQUE*/);
+    = Gtk::Application::create
+        ("openmusicplayer.com",   // Uncomment this for multiple OMP instances.
+         Gio::APPLICATION_FLAGS_NONE | Gio::APPLICATION_NON_UNIQUE);
 
 
 
-  // 
+  // The base class of OMP.
   Base base(argc, argv);
 
 

@@ -140,7 +140,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   Gtk::Label* version_label = Gtk::manage(new Gtk::Label);
 
   // 
-  version_label -> set_markup("<b>OMP Version 0.0.7 (Pre-Alpha)</b>");
+  version_label -> set_markup("<b>OMP Version 0.0.8 (Pre-Alpha)</b>");
 
   // 
   box() . pack_start(*version_label, Gtk::PACK_EXPAND_PADDING);
@@ -173,6 +173,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
                 " Lead Developer: \n" \
                 "    DJ Griffin\n\n" \
                 " GIT Contributors: \n" \
+                "    aladar42\n" \
                 "    AxelSilverdew\n" \
                 "    FabioLolix\n" \
                 "    mmetak");

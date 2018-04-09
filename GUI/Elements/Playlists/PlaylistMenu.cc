@@ -132,7 +132,7 @@ using namespace std;
 //             //
 
 PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
-                           Playlists& playlists_ref)
+                           Playlists& playlists_ref, const char* playlist_name)
 
 // Inherited Class
 
@@ -142,44 +142,58 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
 // General
 
-, add_playlist_menu_item_(Gtk::manage(new Gtk::MenuItem("Add Playlist")))
+, add_playlist_menu_item_
+    (Gtk::manage(new Gtk::MenuItem("Create New Playlist")))
 
-, change_playlist_menu_item_(Gtk::manage
-    (new Gtk::MenuItem("Playlist: " + playlist_ref . active_playlist())))
+, change_playlist_menu_item_(Gtk::manage(new Gtk::MenuItem()))
 
-, copy_menu_item_(Gtk::manage(new Gtk::MenuItem("Copy")))
+, copy_menu_item_(Gtk::manage(new Gtk::MenuItem("Copy Row(s)")))
 
-, cut_menu_item_(Gtk::manage(new Gtk::MenuItem("Cut")))
+, cut_menu_item_(Gtk::manage(new Gtk::MenuItem("Cut Row(s)")))
 
-, delete_menu_item_(Gtk::manage(new Gtk::MenuItem("_Delete", true)))
+, delete_menu_item_(Gtk::manage(new Gtk::MenuItem("_Delete Row(s)", true)))
 
 , edit_menu_item_(Gtk::manage(new Gtk::MenuItem("_Edit", true)))
 
 , lock_check_menu_item_
     (Gtk::manage(new Gtk::CheckMenuItem("_Lock Playlist", true)))
 
-, queue_menu_item_(Gtk::manage(new Gtk::MenuItem("_Queue", true)))
+, queue_menu_item_(Gtk::manage(new Gtk::MenuItem("_Queue Row(s)", true)))
 
-, paste_menu_item_(Gtk::manage(new Gtk::MenuItem("Paste")))
+, paste_menu_item_(Gtk::manage(new Gtk::MenuItem("Paste Row(s)")))
 
 , playlist_(playlist_ref)
 
 , playlists_menu_(Gtk::manage(new Gtk::Menu))
 
-, remove_playlist_menu_item_(Gtk::manage(new Gtk::MenuItem("Remove Playlist")))
+, remove_playlist_menu_item_
+    (Gtk::manage(new Gtk::MenuItem("Delete Current Playlist")))
 
 {
+
+  //           //
+  // Playlists ////////////////////////////////////////////////////////////////
+  //           //
 
   // 
   append(*change_playlist_menu_item_);
 
-
-
-  // 
-  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
-
   // 
   append(*add_playlist_menu_item_);
+
+
+
+  //
+  string menu_item_name_str = "Playlist: ";
+
+  // 
+  menu_item_name_str += playlist_name;
+
+  // 
+  change_playlist_menu_item_ -> set_label(menu_item_name_str);
+
+
+
 
   // 
   add_playlist_menu_item_ -> signal_activate()
@@ -187,40 +201,15 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
                             &Playlists::Open_Create_Playlist_Dialog));
 
   // 
-//  append(*remove_playlist_menu_item_);
+  remove_playlist_menu_item_ -> signal_activate()
+    . connect(sigc::bind
+        (sigc::mem_fun(playlists_ref,
+                       &Playlists::Delete_Current_Playlist), false));
 
 
 
-  // 
-  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
-
-  // 
-  append(*edit_menu_item_);
-
-  // 
-  append(*delete_menu_item_);
-
-  // 
-  append(*queue_menu_item_);
-
-
-
-  // 
-  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
-
-  // 
-  append(*cut_menu_item_);
-
-  // 
-  append(*copy_menu_item_);
-
-  // 
-  append(*paste_menu_item_);
-
-
-
-  // 
-  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+  //
+  append(*remove_playlist_menu_item_);
 
   // 
   append(*lock_check_menu_item_);
@@ -254,10 +243,10 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
   change_playlist_menu_item_ 
     -> override_font(change_playlist_menu_item_font_description);
 
+
+
   // 
   change_playlist_menu_item_ -> set_submenu(*playlists_menu_);
-
-
 
 
 
@@ -267,14 +256,13 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
 
   // 
-  string playlist_treestore_name
-    = playlist_ref . playlist_treestore() -> get_name();
+  string playlist_treestore_name = playlist_name;
 
 
 
   // 
-  for(auto playlist_treestores_it : playlists_ref.playlist_treestores())
-  {
+  for(auto playlist_treestores_it : playlists_ref . playlist_treestores())
+  { 
 
     // 
     Gtk::RadioMenuItem *playlist_refs_menu_radio_menu_item
@@ -302,7 +290,7 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
       change_playlist_menu_item_
         -> set_label("Playlist: " + playlist_treestores_it -> get_name()); 
 
-     }
+    }
 
 
 
@@ -324,6 +312,69 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
  
 
 
+  // 
+  lock_check_menu_item_ -> signal_toggled()
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Lock));
+
+
+
+
+
+/*
+  //          //
+  // Metadata /////////////////////////////////////////////////////////////////
+  //          //
+
+  // 
+  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
+  append(*edit_menu_item_);
+*/
+
+
+
+
+
+  //       //
+  // Queue ////////////////////////////////////////////////////////////////////
+  //       //
+
+  // 
+  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
+  append(*queue_menu_item_);
+
+
+
+  // 
+  queue_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Queue_Rows));
+
+
+
+
+
+  //         //
+  // Editing //////////////////////////////////////////////////////////////////
+  //         //
+
+  // 
+  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
+  append(*cut_menu_item_);
+
+  // 
+  append(*copy_menu_item_);
+
+  // 
+  append(*delete_menu_item_);
+
+  // 
+  append(*paste_menu_item_);
+
 
 
   // 
@@ -339,16 +390,8 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
     . connect(sigc::mem_fun(playlist_ref, &Playlist::Delete_Selected_Rows));
 
   // 
-  lock_check_menu_item_ -> signal_toggled()
-    . connect(sigc::mem_fun(playlist_ref, &Playlist::Lock));
-
-  // 
   paste_menu_item_ -> signal_activate()
     . connect(sigc::mem_fun(playlist_ref, &Playlist::Paste_Clipboard_Rows));
-
-  // 
-  queue_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(playlist_ref, &Playlist::Queue_Rows));
 
 
 

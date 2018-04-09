@@ -59,14 +59,14 @@
 //         //
 //         //
 //         //
-// Headers ////////////////////////////////////////////////////////////////////
+// headers ////////////////////////////////////////////////////////////////////
 //         //
 //         //
 //         //
 
 //                   //
 //                   //
-// Inherited Headers //////////////////////////////////////////////////////////
+// inherited headers //////////////////////////////////////////////////////////
 //                   //
 //                   //
 
@@ -319,6 +319,9 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
     Glib::RefPtr<Gtk::TreeSelection>& playlist_treeselection();
 
     Glib::RefPtr<PlaylistTreeStore> playlist_treestore();
+
+    std::list<Glib::RefPtr<PlaylistTreeStore>>::iterator 
+      playlist_treestore_it();
 
     const char* playlist_view_name();
 

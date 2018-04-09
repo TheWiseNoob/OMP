@@ -617,28 +617,36 @@ bool PlaylistsDatabase::Cleanup_Database()
 std::string PlaylistsDatabase::Convert(std::string raw_str)
 {
 
+  // 
   string new_str;
 
+  // 
   for(auto it : raw_str)
-  {
+  { 
 
+    // 
     if(it == '\'')
     {
 
+      // 
       new_str += "''";
 
     }
+
+    // 
     else
     {
 
+      // 
       new_str += it;
 
-    }
+    } 
 
   }
 
 
 
+  // 
   return new_str;
 
 }
@@ -1275,23 +1283,23 @@ bool PlaylistsDatabase::Rename_Playlist
 
 
   // 
-  sql = "ALTER TABLE '";
+  sql = "ALTER TABLE \'";
 
   // 
   sql += Convert(playlist_name);
 
   // 
-  sql += "\" RENAME TO \"";
+  sql += "\' RENAME TO \'";
 
-  sql+= new_playlist_name;
+  sql += Convert(new_playlist_name);
 
-  sql += "\";";
+  sql += "\';";
 
 
 
   // 
-  result_code = sqlite3_exec(database_, sql . c_str(), 0,
-                             0, &error_message);
+  result_code
+  = sqlite3_exec(database_, sql . c_str(), 0, 0, &error_message);
 
 
 

@@ -41,6 +41,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef PLAYLIST_COMBOBOX_H 
 #define PLAYLIST_COMBOBOX_H
 
@@ -48,113 +56,185 @@
 
 
 
-#include <gtkmm/box.h>
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
 #include "../../GUIElement.h"
-#include "../../../Parts.h"
 
 
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 #include <glibmm/refptr.h>
-#include <string>
+
 #include <iostream>
+
 #include <list>
 
+#include <string>
 
+
+
+
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
 
 class Base;
-class PlaylistTreeStore;
-class PlaylistComboBoxColumnRecord;
 
 namespace Gtk
 {
 
-  class TreeStore;
-  class ComboBox;
-  class Label;
-  class Entry;
-  class StackSwitcher;
+  class Box;
+
   class Button;
+
+  class ComboBox;
+
+  class Entry;
+
+  class Label;
+
+  class StackSwitcher;
+
+  class TreeStore;
 
 }
 
+class PlaylistComboBoxColumnRecord;
+
+class PlaylistTreeStore;
 
 
 
 
-class PlaylistComboBox : public Gtk::Box, public GUIElement<PlaylistComboBox>
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
+class PlaylistComboBox : public GUIElement<PlaylistComboBox>
 {
+
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
 
   public:
 
-    PlaylistComboBox(Base &new_main,
-                     PlaylistComboBoxes& temp_playlist_comboboxes);
+    PlaylistComboBox
+      (Base& base_ref, PlaylistComboBoxes& playlist_comboboxes_ref);
 
 
-    void On_Playlist_ComboBox_Changed();
 
-    void On_Playlist_Combo_Box_Entry_Changed();
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public:
+
+    void Add_Playlist_Button_Pressed();
+
+    void Playlist_ComboBox_Changed();
+
+    void Playlist_Combo_Box_Entry_Changed();
+
+    void Remove_Playlist_Button_Pressed();
 
     void Set_Row_Active(int row_number);
 
-    void On_Add_Playlist_Button_Pressed();
-
-    void On_Remove_Playlist_Button_Pressed();
 
 
-    std::list<Glib::RefPtr<PlaylistTreeStore>>::iterator active_row_treestore_it();
 
-    Gtk::ComboBox& playlist_combobox()
-    {
 
-      return *playlist_combobox_;
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-    }
+  public:
 
+    Gtk::ComboBox& playlist_combobox();
 
     PlaylistComboBoxColumnRecord& playlist_combobox_column_record();
 
-    Gtk::Entry& playlist_combobox_entry()
-    {
+    Gtk::Entry& playlist_combobox_entry();
 
-      return *playlist_combobox_entry_;
+    Gtk::Button& remove_playlist_button();
 
-    }
 
-    Gtk::Button& remove_playlist_button()
-    {
 
-      return *remove_playlist_button_;
 
-    }
 
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   private:
 
-    //Child Widgets                                                             
+    Gtk::Button* add_playlist_button_;
+
+    bool constructed_;
+
     Gtk::ComboBox* playlist_combobox_;
 
     Gtk::Box* playlist_combobox_box_;
 
-    Gtk::Label* playlist_combobox_label_;
+    Gtk::StackSwitcher *playlist_combobox_buttons_stackswitcher_;
 
     Gtk::Entry* playlist_combobox_entry_;
 
-    Gtk::StackSwitcher *playlist_combobox_buttons_stackswitcher_;
-
-    Gtk::Button* add_playlist_button_;
+    Gtk::Label* playlist_combobox_label_;
 
     Gtk::Button* remove_playlist_button_;
-
-    bool constructed_;
-
-    int active_row_number_;
-
-
 
 };
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

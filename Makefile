@@ -404,6 +404,7 @@ Playlists.o: GUI/Elements/Playlists/Playlists.cc \
 	GUI/Elements/Playlists/PlaylistColumnRecord.h \
 	GUI/Elements/Playlists/PlaylistMenu.h \
 	GUI/Elements/Playlists/PlaylistsDatabase.h \
+	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxColumnRecord.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h \
 	GUI/GUI.h Metadata/Track.h Playback/Playback.h Playback/TrackBin.h \
 	Scrobbling/Scrobbling.h Configuration/Configuration.h

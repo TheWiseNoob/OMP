@@ -41,6 +41,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef PLAYLIST_COMBOBOXES_H
 #define PLAYLIST_COMBOBOXES_H
 
@@ -48,17 +56,60 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
 #include "../../GUIElementList.h"
+
 #include "PlaylistComboBox.h"
 
 
 
-#include <gtkmm/treestore.h>
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include <glibmm/refptr.h>
+
+#include <gtkmm/treestore.h>
+
 #include <list>
+
 #include <memory>
 
 
+
+
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
+
+namespace Glib
+{
+
+  class ustring;
+
+}
 
 class PlaylistComboBoxColumnRecord;
 
@@ -68,59 +119,132 @@ class PlaylistTreeStore;
 
 
 
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
 class PlaylistComboBoxes : public GUIElementList<PlaylistComboBox>
 { 
 
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
+
   public:
 
-    PlaylistComboBoxes(Base& base,
-                       Playlists& temp_playlists);
+    PlaylistComboBoxes(Base& base_ref, Playlists& playlists_ref);
+
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
 
     virtual ~PlaylistComboBoxes();
 
-  //Public Member Functions
+
+
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public:
 
     void Add_Playlist
       (const char* name, 
        std::list<Glib::RefPtr<PlaylistTreeStore>>::iterator 
          playlist_treestore_it);
 
-    void Remove_Playlist(Gtk::TreeIter playlist_comboboxes_treestore_it);
 
-  //Getters and Setters
 
-    Glib::RefPtr<Gtk::TreeStore>& playlist_combobox_treestore();
 
-    PlaylistComboBoxColumnRecord& playlist_combobox_column_record();
 
-    bool on_playlist_combobox_changed_disabled()
-    {
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-      return on_playlist_combobox_changed_disabled_;
+  public:
 
-    }
+    Gtk::TreeIter active_row_it();
 
-    void set_on_playlist_combobox_changed_disabled(bool new_value)
-    {
+    Glib::ustring* active_row_name();
 
-      on_playlist_combobox_changed_disabled_ = new_value;
+    int active_row_number();
 
-    }
+    std::list<Glib::RefPtr<PlaylistTreeStore>>::iterator active_treestore_it();
+
+    bool on_playlist_combobox_changed_disabled();
+
+    PlaylistComboBoxColumnRecord& column_record();
+
+    Glib::RefPtr<Gtk::TreeStore>& treestore();
+
+
+
+
+
+  //         //
+  //         //
+  // Setters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
+    void set_active_row_number(int new_value);
+
+    void set_on_playlist_combobox_changed_disabled(bool new_value);
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   private:
 
-    Glib::RefPtr<Gtk::TreeStore> playlist_combobox_treestore_;
+    int active_row_number_;
+
+    Glib::RefPtr<Gtk::TreeStore> treestore_;
 
     PlaylistComboBoxColumnRecord* playlist_combobox_column_record_;
 
     bool on_playlist_combobox_changed_disabled_;
-
-
 
 };
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif
