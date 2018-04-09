@@ -40,6 +40,7 @@ prevalent music audio file types gaplessly and stores tracks in a database.
   - libconfig
   - taglib
   - libclastfm 
+  - sqlite
 
 
 
