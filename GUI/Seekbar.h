@@ -41,6 +41,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef SEEKBAR_H
 #define SEEKBAR_H
 
@@ -48,43 +56,91 @@
 
 
 
-#include <gtkmm/box.h>
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Inherited Class ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../Parts.h"
 
+#include <gtkmm/box.h>
 
 
-class TimeConversion;
+
+
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
+
+//         //
+//         //
+// Classes ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
 class Base;
 
 namespace Gtk
 {
 
   class Entry;
+
   class Scale;
 
 } 
 
-namespace std
-{
-
-  class mutex;
-
-}
+class TimeConversion;
 
 
 
 
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
 
 class Seekbar : public Gtk::Box, public Parts 
 {
 
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
+
   public:
 
-    Seekbar(Base& base, 
-            int begin, int end);
+    Seekbar(Base& base, int begin, int end);
 
 
 
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public:
 
     bool Automation(int timeout_number);
 
@@ -92,47 +148,64 @@ class Seekbar : public Gtk::Box, public Parts
 
     void On_Signal_Value_Changed_Scale();
 
-    void set_range(double begin, double end);
+    void Set_Range(double begin, double end);
 
-    bool start_seekbar_movement(GdkEventButton* event);
+    bool Start_Seekbar_Movement(GdkEventButton* event);
 
-    bool stop_seekbar_movement(GdkEventButton* event);
-
-
-
-
-
-    //Getters
-    Gtk::Entry &entry()
-    { return *entry_; }
-
-    Gtk::Scale &scale()                                       
-    { return *scale_; }
+    bool Stop_Seekbar_Movement(GdkEventButton* event);
 
 
 
 
+
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
+    Gtk::Entry& entry();
+
+    Gtk::Scale& scale();                                      
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   private:
 
-    Gtk::Entry *entry_;
-    Gtk::Scale *scale_;
+    Gtk::Entry* entry_;
+
+    Gtk::Scale* scale_;
 
     Gtk::Box scale_box_;
+
     Gtk::Box entry_box_;
 
     bool seekbar_movement_;
+
     bool disable_update_;
-
-//    std::mutex* seek_mutex_;
-
-
-
 
 };
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

@@ -69,7 +69,7 @@
 
 #include "../Errors/Errors.h"
 
-#include "../TimeConversion.h"
+#include "TimeConversion.h"
 
 #include "Track.h"
 

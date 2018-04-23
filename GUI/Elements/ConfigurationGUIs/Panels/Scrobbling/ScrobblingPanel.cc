@@ -105,11 +105,13 @@
 
 #include <gtkmm/label.h>
 
-#include <gtkmm/switch.h>
+#include <gtkmm/scale.h>
 
 #include <gtkmm/spinbutton.h>
 
 #include <gtkmm/spinner.h>
+
+#include <gtkmm/switch.h>
 
 #include <iostream>
 
@@ -274,7 +276,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  scrobble_percent_spinbuttonscale_ -> sbs_spinbutton().signal_changed()
+  scrobble_percent_spinbuttonscale_ -> sbs_scale() . signal_value_changed()
     . connect(sigc::mem_fun
         (*this,
          &ScrobblingPanel::Scrobble_Percent_SpinButtonScale_Signal_Changed));
@@ -401,6 +403,20 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
   // 
   failed_scrobbles_count_label_ -> set_margin_left(6);
+
+
+
+  // 
+  clear_failed_scrobbles_button_box_ -> set_tooltip_text
+    ("Clears the tracks in the failed scrobbles database.");
+
+  // 
+  reattempt_failed_scrobbles_button_box_ -> set_tooltip_text
+    ("Reattempts to scrobble the tracks that failed to scrobble.");
+
+  // 
+  failed_scrobbles_count_label_ -> set_tooltip_text
+    ("The amount of tracks in the failed scrobbles database.");
 
 
 

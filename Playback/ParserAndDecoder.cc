@@ -124,16 +124,27 @@ using namespace std;
 ParserAndDecoder::ParserAndDecoder(Base& base, Track& track_ref)
 
 // Inherited Class
+
 : Parts(base)
 
+
+
 // Elements
+
 , decoder_(nullptr)
+
 , demuxer_(nullptr)
+
 , parser_(nullptr)
 
+
+
 // Plugin Names
+
 , decoder_plugin_("")
+
 , demuxer_plugin_("")
+
 , parser_plugin_("")
 
 {
@@ -348,7 +359,7 @@ ParserAndDecoder::ParserAndDecoder(Base& base, Track& track_ref)
 
 
   // Creates the decoder element.
-  decoder_ = gst_element_factory_make (decoder_plugin_, decoder_name);
+  decoder_ = gst_element_factory_make(decoder_plugin_, decoder_name);
 
   // True if the decoder creation failed.
   if(!decoder_)

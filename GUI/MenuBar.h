@@ -509,6 +509,8 @@ class MenuBar : public Parts
 
     // State Changers
 
+    Gtk::MenuItem* next_playback_menu_item_;
+
     Gtk::MenuItem* pause_playback_menu_item_;
 
     Gtk::MenuItem* play_playback_menu_item_;

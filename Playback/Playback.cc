@@ -93,7 +93,7 @@
 
 #include "../Scrobbling/Scrobbling.h"
 
-#include "../TimeConversion.h"
+#include "../Metadata/TimeConversion.h"
 
 #include "../Metadata/Track.h"
 

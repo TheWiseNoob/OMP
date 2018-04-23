@@ -308,7 +308,7 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   public:
 
-    Glib::ustring active_playlist();
+    Glib::ustring active_playlist_name();
 
     Gtk::Label& filename_label();
 

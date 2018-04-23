@@ -254,7 +254,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.copy")))
+  if(name == string(config() . get("keyboard_shortcuts.keys.copy_rows")))
   {
 
     // 
@@ -263,7 +263,16 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.cut")))
+  if(name == string(config() . get("keyboard_shortcuts.keys.create_playlist")))
+  {
+
+    // 
+    playlists() . Open_Create_Playlist_Dialog();
+
+  }
+
+  // 
+  if(name == string(config() . get("keyboard_shortcuts.keys.cut_rows")))
   {
 
     // 
@@ -272,7 +281,16 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.delete")))
+  if(name == string(config() . get("keyboard_shortcuts.keys.delete_playlist")))
+  {
+
+    // 
+    playlists() . Open_Delete_Playlist_Dialog();
+
+  }
+
+  // 
+  if(name == string(config() . get("keyboard_shortcuts.keys.delete_rows")))
   {
 
     // 
@@ -281,7 +299,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.next")))
+  if(name == string(config() . get("keyboard_shortcuts.keys.next_track")))
   {
 
     // 
@@ -290,7 +308,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.paste")))
+  if(name == string(config() . get("keyboard_shortcuts.keys.paste_rows")))
   {
 
     // 
@@ -317,7 +335,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.select_all")))
+  if(name == string(config() . get("keyboard_shortcuts.keys.select_all_rows")))
   {
 
     // 

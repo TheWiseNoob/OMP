@@ -123,64 +123,99 @@ SpinButtonScale::SpinButtonScale(double begin, double end, int accuracy)
 
 {
 
-
-
-
+  // 
   sbs_scale_ -> set_range(begin, end);
+
+  // 
   sbs_spinbutton_ -> set_range(begin, end);
+
+
+
+  // 
   sbs_spinbutton_ -> set_vexpand(false);
 
+
+
+  // 
   disable_update_ = false;
 
+
+
+  // 
   box_ -> pack_start(*sbs_scale_box_, Gtk::PACK_EXPAND_WIDGET);
+
+  // 
   box_ -> pack_end(*sbs_spinbutton_box_, Gtk::PACK_SHRINK);
 
 
+
+  // 
   sbs_scale_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+
+  // 
   sbs_scale_box_ -> pack_start(*sbs_scale_, Gtk::PACK_EXPAND_WIDGET);
+
+  // 
   sbs_spinbutton_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
-  sbs_spinbutton_box_ -> pack_start(*sbs_spinbutton_,
-                                    Gtk::PACK_EXPAND_PADDING);
+
+  // 
+  sbs_spinbutton_box_
+    -> pack_start(*sbs_spinbutton_, Gtk::PACK_EXPAND_PADDING);
 
 
+
+  // 
   sbs_scale_ -> set_draw_value(false);
 
+  // 
   sbs_scale_ -> set_digits(3);
+
+  // 
   sbs_scale_ -> set_value(begin);
 
-/*
 
-  int middle = begin + ((end - begin) / 2.000);
-  sbs_scale_ -> add_mark(begin, Gtk::POS_BOTTOM, to_string(begin));
-
-  sbs_scale_ -> add_mark(end, Gtk::POS_BOTTOM, to_string(end));
-
-  sbs_scale_ -> add_mark(middle, Gtk::POS_BOTTOM, to_string(middle));
-*/
 
   // Sets the increments of the SpinButtonScale for buffer time.
   sbs_spinbutton_ -> set_increments(1, 0.1);
 
 
 
-
+  // 
   sbs_spinbutton_ -> set_margin_right(2);
+
+  // 
   sbs_spinbutton_ -> set_margin_left(4);
+
+  // 
   sbs_spinbutton_ -> set_margin_top(2);
+
+  // 
   sbs_spinbutton_ -> set_margin_bottom(2);
+
+  // 
   sbs_spinbutton_ -> set_update_policy(Gtk::UPDATE_IF_VALID);
 
+
+
+  // 
   sbs_spinbutton_ -> set_digits(accuracy);
+
+  // 
   sbs_spinbutton_ -> set_value(begin);
 
 
+
+  // 
   sbs_scale_ -> signal_value_changed().connect(sigc::mem_fun(*this,
       &SpinButtonScale::On_Signal_Value_Changed_SBS_Scale));
 
+  // 
   sbs_spinbutton_ -> signal_value_changed().connect(sigc::mem_fun(*this,
       &SpinButtonScale::On_Signal_Value_Changed_SBS_SpinButton));
 
 
+
+  // 
   box_ -> show_all_children();
 
 }
@@ -202,44 +237,61 @@ SpinButtonScale::SpinButtonScale(double begin, double end, int accuracy)
 void SpinButtonScale::On_Signal_Value_Changed_SBS_Scale()
 {
 
+  // 
   if(disable_update_)
   {
 
+    // 
     return;
 
   }
 
+  // 
   disable_update_ = true;
 
+
+
+  // 
   double value = sbs_scale_ -> get_value();
 
-
-
+  // 
   sbs_spinbutton_ -> set_value(value);
 
 
 
+  // 
   disable_update_ = false;
 
-}
+} 
 
 void SpinButtonScale::On_Signal_Value_Changed_SBS_SpinButton()
 {
 
+  // 
   if(disable_update_)
-  {
+  { 
 
+    // 
     return;
 
   }
 
+
+
+  // 
   disable_update_ = true;
 
-  int value = sbs_spinbutton_ -> get_value();
 
+
+  // 
+  double value = sbs_spinbutton_ -> get_value();
+
+  // 
   sbs_scale_ -> set_value(value);
 
 
+
+  // 
   disable_update_ = false;
 
 }

@@ -49,8 +49,8 @@
 //                    //
 //                    //
 
-#ifndef PLAYLISTS_MENU_H
-#define PLAYLISTS_MENU_H
+#ifndef PLAYLIST_DELETE_DIALOG_H
+#define PLAYLIST_DELETE_DIALOG_H
 
 
 
@@ -72,22 +72,6 @@
 
 #include "../../../Parts.h"
 
-#include <gtkmm/menu.h>
-
-
-
-
-
-//                 //
-//                 //
-// Outside Headers ////////////////////////////////////////////////////////////
-//                 //
-//                 //
-
-#include <gtkmm/radiobuttongroup.h>
-
-#include <list>
-
 
 
 
@@ -100,22 +84,30 @@
 //                      //
 //                      //
 
+class Base;
+
+struct _GdkEventAny;
+typedef struct _GdkEventAny GdkEventAny;
+
+struct _GdkEventKey;
+typedef struct _GdkEventKey GdkEventKey;
+
 namespace Gtk
 {
 
-  class CheckMenuItem;
+  class Box;
 
-  class MenuItem;
+  class Button;
 
-  class RadioButtonGroup;
+  class Dialog;
 
-  class RadioMenuItem;
+  class Label;
+
+  class InfoBar;
+
+  class Window;
 
 }
-
-class Playlist;
-
-class Playlists;
 
 
 
@@ -129,8 +121,8 @@ class Playlists;
 //                   //
 //                   //
 
-class PlaylistMenu : public Gtk::Menu, public Parts
-{
+class PlaylistDeleteDialog : public Parts
+{ 
 
   //             //
   //             //
@@ -140,8 +132,7 @@ class PlaylistMenu : public Gtk::Menu, public Parts
 
   public:
 
-    PlaylistMenu(Base& base_ref, Playlist& playlist_ref,
-                 Playlists& playlists_ref, const char* playlist_name);
+    PlaylistDeleteDialog(Base& base_ref);
 
 
 
@@ -155,7 +146,27 @@ class PlaylistMenu : public Gtk::Menu, public Parts
 
   public:
 
-    ~PlaylistMenu();
+    virtual ~PlaylistDeleteDialog();
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public: 
+
+    void On_Delete_Playlist_Button_Clicked_Signal();
+
+    void On_Cancel_Button_Clicked_Signal();
+
+    bool On_Key_Press_Event(GdkEventKey* event);
+
+    void Run(bool new_delete_playlist_combobox_playlist = false);
 
 
 
@@ -166,32 +177,6 @@ class PlaylistMenu : public Gtk::Menu, public Parts
   // Getters //////////////////////////////////////////////////////////////////
   //         //
   //         //
-
-  public:
-
-    Gtk::MenuItem& change_playlist_menu_item();
-
-    Gtk::MenuItem& copy_menu_item();
-
-    Gtk::MenuItem& cut_menu_item();
-
-    Gtk::MenuItem& delete_menu_item();
-
-    Gtk::MenuItem& delete_playlist_menu_item();
-
-    Gtk::MenuItem& edit_menu_item();
-
-    Gtk::CheckMenuItem& lock_check_menu_item();
-
-    Gtk::MenuItem& queue_menu_item();
-
-    Gtk::MenuItem& paste_menu_item();
-
-    Gtk::Menu& playlists_menu();
-
-    Gtk::RadioButtonGroup& playlists_menu_radio_button_group();
-
-    std::list<Gtk::RadioMenuItem*>& playlists_menu_radio_menu_items();
 
 
 
@@ -205,47 +190,19 @@ class PlaylistMenu : public Gtk::Menu, public Parts
 
   private:
 
-    // 
-    Gtk::MenuItem* add_playlist_menu_item_;
+    Gtk::Box* button_box_;
 
-    // 
-    Gtk::MenuItem* change_playlist_menu_item_;
+    Gtk::Button* cancel_button_;
 
-    // 
-    Gtk::MenuItem* copy_menu_item_;
+    Gtk::Button* delete_playlist_button_;
 
-    // 
-    Gtk::MenuItem* cut_menu_item_;
+    bool delete_playlist_combobox_playlist_;
 
-    // 
-    Gtk::MenuItem* delete_menu_item_;
+    Gtk::Window* playlist_creation_window_;
 
-    // 
-    Gtk::MenuItem* edit_menu_item_;
+    Gtk::Box* playlist_creation_window_box_;
 
-    //                   
-    Gtk::CheckMenuItem* lock_check_menu_item_;
-
-    // 
-    Gtk::MenuItem* queue_menu_item_;
-
-    // 
-    Gtk::MenuItem* paste_menu_item_;
-
-    // 
-    Playlist& playlist_;
-
-    // 
-    Gtk::Menu* playlists_menu_;
-
-    // 
-    Gtk::RadioButtonGroup playlists_menu_radio_button_group_;
-
-    // 
-    std::list<Gtk::RadioMenuItem*> playlists_menu_radio_menu_items_;
-
-    // 
-    Gtk::MenuItem* delete_playlist_menu_item_;
+    Gtk::Label* playlist_prompt_label_;
 
 };
 

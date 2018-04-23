@@ -127,6 +127,8 @@ namespace Gtk
 
 class PlaylistCreateDialog;
 
+class PlaylistDeleteDialog;
+
 class PlaylistColumnRecord;
 
 class PlaylistsDatabase;
@@ -194,7 +196,7 @@ class Playlists : public GUIElementList<Playlist>
     void Change_Track(); 
 
     void Delete_Current_Playlist
-           (bool delete_playlist_combobox_playlist = false);
+      (bool delete_playlist_combobox_playlist = false);
 
     void Fill_Row
       (Gtk::TreeRow& new_tree_row, std::shared_ptr<Track> new_track_sptr);
@@ -206,6 +208,9 @@ class Playlists : public GUIElementList<Playlist>
     void Flush_Playback_Queue();
 
     void Open_Create_Playlist_Dialog();
+
+    void Open_Delete_Playlist_Dialog
+      (bool delete_playlist_combobox_playlist = false);
 
     void Scroll_To_Row(Gtk::TreeRowReference desired_row_ref);
 
@@ -497,6 +502,8 @@ class Playlists : public GUIElementList<Playlist>
   private:
 
     PlaylistCreateDialog* playlist_create_dialog_;
+
+    PlaylistDeleteDialog* playlist_delete_dialog_;
 
 
 

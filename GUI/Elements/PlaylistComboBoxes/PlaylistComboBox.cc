@@ -176,7 +176,12 @@ PlaylistComboBox::PlaylistComboBox
   box() . set_center_widget(*playlist_combobox_box_);
 
   // 
-  playlist_combobox_box_ -> set_center_widget(*playlist_combobox_);
+  playlist_combobox_box_
+    -> pack_end(*playlist_combobox_buttons_stackswitcher_, Gtk::PACK_SHRINK);
+
+  // 
+  playlist_combobox_buttons_stackswitcher_ 
+    -> pack_start(*playlist_combobox_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
@@ -188,6 +193,14 @@ PlaylistComboBox::PlaylistComboBox
   // 
   playlist_combobox_
     -> set_model(playlist_comboboxes_ref . treestore());
+
+  //
+  playlist_combobox_ -> set_tooltip_text
+    ("Changes the playlist of all playlist views that aren't locked.");
+
+  //
+  playlist_combobox_entry_ -> set_tooltip_text
+    ("Renames the currently selected playlist of this playlist combobox.");
 
 
 
@@ -319,10 +332,6 @@ PlaylistComboBox::PlaylistComboBox
   //         //
 
   // 
-  playlist_combobox_box_
-    -> pack_end(*playlist_combobox_buttons_stackswitcher_, Gtk::PACK_SHRINK);
-
-  // 
   playlist_combobox_buttons_stackswitcher_ 
     -> pack_end(*remove_playlist_button_, Gtk::PACK_SHRINK);
 
@@ -333,17 +342,23 @@ PlaylistComboBox::PlaylistComboBox
 
 
   // 
-  add_playlist_button_ -> set_margin_left(3);
-
-
-
-  // 
   add_playlist_button_ -> set_image_from_icon_name
     ("list-add-symbolic", Gtk::ICON_SIZE_SMALL_TOOLBAR);
 
   // 
   remove_playlist_button_ -> set_image_from_icon_name
     ("list-remove-symbolic", Gtk::ICON_SIZE_SMALL_TOOLBAR);
+
+
+
+  // 
+  add_playlist_button_ -> set_tooltip_text
+    ("Opens a dialog window for creating a new playlist.");
+
+  // 
+  remove_playlist_button_ -> set_tooltip_text
+    ("Opens a dialog window for deleting the current playlist of this " \
+     "playlist combobox.");
 
 
 
@@ -722,7 +737,7 @@ void PlaylistComboBox::Playlist_Combo_Box_Entry_Changed()
 
 
     // 
-    if(old_name_ustr == (playlists_it -> active_playlist()))
+    if(old_name_ustr == (playlists_it -> active_playlist_name()))
     {
 
       // 
@@ -819,7 +834,7 @@ void PlaylistComboBox::Remove_Playlist_Button_Pressed()
 {
 
   // 
-  playlists() . Delete_Current_Playlist(true);
+  playlists() . Open_Delete_Playlist_Dialog(true);
 
 }
 

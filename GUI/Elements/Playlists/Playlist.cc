@@ -73,13 +73,13 @@
 
 #include "../../../Metadata/Metadata.h"
 
+#include "../../../Metadata/TimeConversion.h"
+
+#include "../../../Metadata/Track.h"
+
 #include "../../../Playback/Playback.h"
 
 #include "../../../Playback/TrackBin.h"
-
-#include "../../../TimeConversion.h"
-
-#include "../../../Metadata/Track.h"
 
 #include "../../GUI.h"
 
@@ -273,7 +273,11 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
 
-  debug("Before model set!");
+  // 
+  this -> set_tooltip_text
+    ("- Double left-click to start playback at clicked row.\n\n" \
+     "- Single right-click to open the playlist menu.\n\n" \
+     "- Single left-click and hold to drag the selected row or rows.");
 
 
 
@@ -1603,6 +1607,30 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
 
 
+      // 
+      Glib::ustring active_playlist_name_str = active_playlist_name();
+
+      // 
+      if((active_playlist_name_str == "Library")
+         || (active_playlist_name_str == "Queue"))
+      {
+
+        // 
+        menu_ -> delete_playlist_menu_item() . set_sensitive(false);
+
+      }
+
+      // 
+      else
+      {
+
+        // 
+        menu_ -> delete_playlist_menu_item() . set_sensitive(true);
+
+      }
+
+
+
       debug("Before playlist_Menu popup");
 
 
@@ -1657,6 +1685,30 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
       // Sets the delete playlist menu item to unclickable.
       menu_ -> delete_menu_item() . set_sensitive(true);
+
+
+
+      // 
+      Glib::ustring active_playlist_name_str = active_playlist_name();
+
+      // 
+      if((active_playlist_name_str == "Library")
+         || (active_playlist_name_str == "Queue"))
+      {
+
+        // 
+        menu_ -> delete_playlist_menu_item() . set_sensitive(false);
+
+      }
+
+      // 
+      else
+      {
+
+        // 
+        menu_ -> delete_playlist_menu_item() . set_sensitive(true);
+
+      }
 
 
 
@@ -3056,7 +3108,7 @@ bool Playlist::Locked()
 //         //
 //         //
 
-Glib::ustring Playlist::active_playlist()
+Glib::ustring Playlist::active_playlist_name()
 {
 
   return playlist_treestore() -> get_name();

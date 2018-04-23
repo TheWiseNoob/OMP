@@ -99,6 +99,8 @@
 
 #include <gtkmm/scrolledwindow.h>
 
+#include <map>
+
 
 
 
@@ -232,7 +234,7 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
   // Appends a keyboard shortcut name column.
   keyboard_shortcuts_treeview_
     -> append_column
-         ("Shortcut Name", keyboard_shortcuts_treeview_columnrecord_ -> name_col_);
+         ("Shortcut", keyboard_shortcuts_treeview_columnrecord_ -> description_col_);
 
   // Appends a keyboard shortcut column.
   keyboard_shortcuts_treeview_
@@ -331,10 +333,21 @@ KeyboardShortcutsPanel::~KeyboardShortcutsPanel()
 void KeyboardShortcutsPanel::Apply_Saved_Values()
 {
 
-  // 
-  list<string> key_names
-    {"add_files", "close_secondary", "configuration", "copy", "cut", "delete",
-     "next", "paste", "pause", "play", "select_all", "stop"};
+  std::map<string, string> keys
+    {{"add_files", "Add Files To Active Playlist"},
+     {"close_secondary", "Close Active Secondary Window"},
+     {"configuration", "Configuration Window"},
+     {"copy_rows", "Copy Selected Rows"},
+     {"create_playlist", "Create A New Playlist"},
+     {"cut_rows", "Cut Selected Rows"},
+     {"delete_playlist", "Delete Active Playlist"},
+     {"delete_rows", "Delete Selected Rows"},
+     {"next_track", "Next Track"},
+     {"paste_rows", "Paste Clipboard Rows"},
+     {"pause", "Pause"},
+     {"play", "Play"},
+     {"select_all_rows", "Select All Rows"},
+     {"stop", "Stop"}};
 
 
 
@@ -342,7 +355,7 @@ void KeyboardShortcutsPanel::Apply_Saved_Values()
   keyboard_shortcuts_liststore_ -> clear();
 
   //
-  for(auto keys_it : key_names)
+  for(auto keys_it : keys)
   {
 
     // 
@@ -353,12 +366,15 @@ void KeyboardShortcutsPanel::Apply_Saved_Values()
     Gtk::TreeRow new_keyboard_shortcuts_row = *new_keyboard_shortcuts_row_iter;
 
     // 
-    new_keyboard_shortcuts_row[keyboard_shortcuts_treeview_columnrecord_ -> name_col_] = keys_it;
+    new_keyboard_shortcuts_row[keyboard_shortcuts_treeview_columnrecord_ -> description_col_] = keys_it . second;
+
+    // 
+    new_keyboard_shortcuts_row[keyboard_shortcuts_treeview_columnrecord_ -> name_col_] = keys_it . first;
 
 
 
     // 
-    string config_str = "keyboard_shortcuts.keys." + keys_it;
+    string config_str = "keyboard_shortcuts.keys." + keys_it . first;
 
     // 
     string key_name = config() . get(config_str);
@@ -394,7 +410,8 @@ void KeyboardShortcutsPanel::Update_Key(const char* name, const char* label)
 
 
   list<string> modifiers
-    {"Control L", "Control R", "Alt L", "Alt R", "Super L", "Super R"};
+    {"Control L", "Control R", "Alt L", "Alt R", "Shift L", "Shift R",
+     "Super L", "Super R"};
 
   // 
   for(auto mod_it : modifiers)

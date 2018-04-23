@@ -89,6 +89,8 @@
 
 #include "PlaylistCreateDialog.h"
 
+#include "PlaylistDeleteDialog.h"
+
 #include "PlaylistMenu.h"
 
 #include "PlaylistsDatabase.h"
@@ -188,6 +190,8 @@ Playlists::Playlists(Base& base_ref)
 // Playlist Creation
 
 , playlist_create_dialog_(new PlaylistCreateDialog(base_ref))
+
+, playlist_delete_dialog_(new PlaylistDeleteDialog(base_ref))
 
 
 
@@ -784,7 +788,7 @@ void Playlists::Change_Track()
 
 
     //
-    gui() . tagviews() . front() -> update_tags("Selected & Playing",
+    gui() . tagviews() . front() -> Update_Tags("Selected & Playing",
                                                 playlists().playing_track());
 
 
@@ -799,7 +803,7 @@ void Playlists::Change_Track()
 
     //
     gui() . tagviews() . front()
-      -> update_tags("Playing", playlists() . playing_track());
+      -> Update_Tags("Playing", playlists() . playing_track());
 
   }
 
@@ -1494,14 +1498,20 @@ void Playlists::Flush_Playback_Queue()
 
 }
 
+void Playlists::Open_Delete_Playlist_Dialog
+  (bool delete_playlist_combobox_playlist)
+{ 
+
+  // 
+  playlist_delete_dialog_ -> Run(delete_playlist_combobox_playlist);
+
+} 
+
 void Playlists::Open_Create_Playlist_Dialog()
 {
 
+  // 
   playlist_create_dialog_ -> Run();
-
-//  playlists().Add_Playlist("");
-
-
 
 } 
 

@@ -87,7 +87,7 @@
 
 #include "Scrobbling/Scrobbling.h"
 
-#include "TimeConversion.h"
+#include "Metadata/TimeConversion.h"
 
 
 
@@ -137,32 +137,36 @@ Base::Base(int argc, char *argv[])
 
 { 
 
+  //                                           //
+  // Finds Home Directory and Config Directory ////////////////////////////////
+  //                                           //
+
   // 
   struct passwd* pw = getpwuid(getuid());
 
   // 
   const char* homedir = pw -> pw_dir;
 
-  // 
+  // Stores the home directory as and std::string.
   std::string directory_str = homedir;
 
-  // 
+  // Adds the .omp folder to the folder path to make the full directory path.
   directory_str += "/.omp";
 
-  // 
+  // Saves the full directory path as a c string.
   char* directory_str_c_str = const_cast<char*>(directory_str . c_str());
 
-  // 
+  // Copies the .omp directory path to the member variable for storing it.
   strcpy(config_directory_c_str_, directory_str_c_str);
+ 
 
 
-
-  // 
+  // Used for determining if a folder exists. 
   struct stat st; 
 
-  // 
+  // True if the .omp directory does not exist yet.
   if(!(stat(directory_str . c_str(), &st) == 0))
-  {
+  {  
 
     // 
     mkdir(directory_str . c_str(), S_IWUSR);
@@ -171,23 +175,37 @@ Base::Base(int argc, char *argv[])
 
 
 
-  // 
+
+
+  //                          //
+  // Opens Main Configuration /////////////////////////////////////////////////
+  //                          //
+
+  // Creates a directory string to the main configuration file.
   string config_str = directory_str + "/configuration.conf";
 
 
 
-  //
+  // Creates the configuration class.
   config_  = new Configuration(argc, argv, config_str);
 
 
 
-  //
+
+
+  //                     //
+  // Sets Default Values //////////////////////////////////////////////////////
+  //                     //
+
+  // Sets the default value for determining if the default values have changed.
   config() . add_default("default_values", true);
 
   // 
   config() . add_default("last_folder", "");
 
 
+
+  // Cover Art ////////////////////////////////////////////////////////////////
 
   // 
   list<string> front_names_str_list
@@ -200,10 +218,14 @@ Base::Base(int argc, char *argv[])
 
 
 
+  // Configuration GUI ////////////////////////////////////////////////////////
+
   // 
   config() . add_default("gui.configuration.active_panel", "Playback");
 
 
+
+  // GUI General //////////////////////////////////////////////////////////////
 
   // 
   config() . add_default("gui.window_maximized", false);
@@ -237,6 +259,10 @@ Base::Base(int argc, char *argv[])
 
   // 
   config() . add_default("gui.file_chooser_playlist_paned_position", 500);
+
+
+
+  // Playlists ////////////////////////////////////////////////////////////////
 
   //
   config() . add_default("gui.playlist.empty_space_row_deselects", false);
@@ -469,6 +495,8 @@ Base::Base(int argc, char *argv[])
 
 
 
+  // Keyboard Shortcuts ///////////////////////////////////////////////////////
+
   // 
   config()
     . add_default("keyboard_shortcuts.keys.add_files", "<Primary>o");
@@ -483,15 +511,23 @@ Base::Base(int argc, char *argv[])
 
   // 
   config()
-    . add_default("keyboard_shortcuts.keys.copy", "<Primary>c");
+    . add_default("keyboard_shortcuts.keys.copy_rows", "<Primary>c");
 
   // 
   config()
-    . add_default("keyboard_shortcuts.keys.cut", "<Primary>x");
+    . add_default("keyboard_shortcuts.keys.create_playlist", "<Primary>n");
 
   // 
   config()
-    . add_default("keyboard_shortcuts.keys.delete", "Delete");
+    . add_default("keyboard_shortcuts.keys.cut_rows", "<Primary>x");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.delete_playlist", "<Shift>Delete");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.delete_rows", "Delete");
 
   // 
   config()
@@ -499,11 +535,11 @@ Base::Base(int argc, char *argv[])
 
   // 
   config()
-    . add_default("keyboard_shortcuts.keys.next", "n");
+    . add_default("keyboard_shortcuts.keys.next_track", "n");
 
   // 
   config()
-    . add_default("keyboard_shortcuts.keys.paste", "<Primary>v");
+    . add_default("keyboard_shortcuts.keys.paste_rows", "<Primary>v");
 
   // 
   config()
@@ -515,13 +551,14 @@ Base::Base(int argc, char *argv[])
 
   // 
   config()
-    . add_default("keyboard_shortcuts.keys.stop", "q");
+    . add_default("keyboard_shortcuts.keys.select_all_rows", "<Primary>a");
 
   // 
-  config()
-    . add_default("keyboard_shortcuts.keys.select_all", "<Primary>a");
+  config()  . add_default("keyboard_shortcuts.keys.stop", "q");
 
 
+
+  // Playback /////////////////////////////////////////////////////////////////
 
   //
   config() . add_default("playback.cursor_follows_playback", true);
@@ -552,6 +589,8 @@ Base::Base(int argc, char *argv[])
 
 
 
+  // Output ///////////////////////////////////////////////////////////////////
+
   //
   config() . add_default("output.buffer_time", 30000);
 
@@ -559,6 +598,8 @@ Base::Base(int argc, char *argv[])
   config() . add_default("output.sink", string("autoaudiosink"));
 
 
+
+  // ReplayGain ///////////////////////////////////////////////////////////////
 
   // 
   config() . add_default("replaygain.limiter", true);
@@ -577,6 +618,8 @@ Base::Base(int argc, char *argv[])
 
 
 
+  // Scrobbling ///////////////////////////////////////////////////////////////
+
   // 
   config() . add_default("scrobbling.lastfm_enabled", false);
 
@@ -591,10 +634,14 @@ Base::Base(int argc, char *argv[])
 
 
 
+
+
+  //                     //
+  // Main Parts Creation //////////////////////////////////////////////////////
+  //                     //
+
   // 
   errors_ = new Errors(*this);
-
-
 
   // 
   time_converter_ = new TimeConversion;

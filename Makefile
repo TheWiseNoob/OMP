@@ -6,8 +6,8 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	Metadata.o OutputPanel.o Panel.o ParserAndDecoder.o Parts.o \
 	Playback.o PlaybackController.o PlaybackControllers.o PlaybackPanel.o \
 	Playlist.o PlaylistComboBox.o PlaylistComboBoxes.o \
-	PlaylistCreateDialog.o PlaylistMenu.o PlaylistPanel.o \
-	PlaylistTreeStore.o Playlists.o PlaylistsDatabase.o \
+	PlaylistCreateDialog.o PlaylistDeleteDialog.o PlaylistMenu.o \
+	PlaylistPanel.o PlaylistTreeStore.o Playlists.o PlaylistsDatabase.o \
 	ReplayGainPanel.o Scrobbling.o ScrobblingPanel.o Seekbar.o \
 	SpinButtonScale.o Tag.o Tagview.o TimeConversion.o Track.o TrackBin.o
 
@@ -60,7 +60,7 @@ Base.o: Base.cc Base.h Configuration/Configuration.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h \
 	GUI/GUI.h Playback/Playback.h Metadata/Metadata.h \
-	Scrobbling/Scrobbling.h TimeConversion.h
+	Scrobbling/Scrobbling.h Metadata/TimeConversion.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Base.cc \
 	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4 giomm-2.4` \
 	-pthread
@@ -115,7 +115,8 @@ ConfigurationGUIs.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
-CueSheet.o: Metadata/CueSheet.cc Metadata/CueSheet.h Metadata/Track.h TimeConversion.h
+CueSheet.o: Metadata/CueSheet.cc Metadata/CueSheet.h Metadata/Track.h \
+	Metadata/TimeConversion.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/CueSheet.cc \
 	-pthread `pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
 
@@ -163,7 +164,7 @@ FileChoosers.o: GUI/Elements/FileChoosers/FileChoosers.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 	
 GUI.o: Parts.h GUI/GUI.cc GUI/GUI.h Base.h Configuration/Configuration.h \
-	Metadata/Metadata.h Playback/Playback.h TimeConversion.h \
+	Metadata/Metadata.h Playback/Playback.h Metadata/TimeConversion.h \
 	Metadata/Track.h Scrobbling/Scrobbling.h GUI/Artwork.h \
 	GUI/Elements/**/*.h GUI/Tagview.h GUI/MenuBar.h GUI/SpinButtonScale.h \
 	GUI/Seekbar.h GUI/Tagview.h KeyboardShortcuts/KeyboardShortcuts.h
@@ -222,8 +223,8 @@ MenuBar.o: GUI/MenuBar.cc GUI/MenuBar.h Parts.h GUI/GUI.h Base.h \
 	-pthread -Wno-reorder
 
 Metadata.o: Metadata/Metadata.h Metadata/Metadata.cc Parts.h \
-	Errors/Errors.h Metadata/TrackType.h Metadata/Track.h TimeConversion.h \
-	Metadata/CueSheet.h
+	Errors/Errors.h Metadata/TrackType.h Metadata/Track.h \
+	Metadata/TimeConversion.h Metadata/CueSheet.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	Metadata/Metadata.cc \
 	`pkg-config --libs --cflags taglib` \
@@ -265,7 +266,7 @@ Parts.o: Parts.cc Parts.h Base.h Configuration/Configuration.h \
 	Errors/Errors.h GUI/GUI.h Playback/Playback.h \
 	KeyboardShortcuts/KeyboardShortcuts.h \
 	Metadata/Metadata.h GUI/Elements/**/*.h Scrobbling/Scrobbling.h \
-	TimeConversion.h
+	Metadata/TimeConversion.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Parts.cc \
 	`pkg-config --cflags --libs glibmm-2.4 gtkmm-3.0` \
 	-pthread
@@ -279,7 +280,7 @@ Playback.o: Parts.h Playback/Playback.cc Playback/Playback.h \
 	GUI/Elements/Playlists/PlaylistColumnRecord.h GUI/GUI.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h GUI/GUI.h GUI/MenuBar.h \
 	GUI/Seekbar.h Metadata/Metadata.h Scrobbling/Scrobbling.h \
-	TimeConversion.h Metadata/Track.h Playback/ParserAndDecoder.h \
+	Metadata/TimeConversion.h Metadata/Track.h Playback/ParserAndDecoder.h \
 	Playback/TrackBin.h 
 	g++ -g -Wno-write-strings -pipe $(CFLAGS) -c Playback/Playback.cc \
 	`pkg-config --cflags --libs gstreamer-1.0` \
@@ -328,7 +329,7 @@ Playlist.o: GUI/Elements/Playlists/Playlist.cc \
 	Configuration/Configuration.h \
 	Metadata/Metadata.h Playback/Playback.h Playback/TrackBin.h \
 	Metadata/Track.h GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
-	GUI/Elements/Playlists/Playlists.h TimeConversion.h
+	GUI/Elements/Playlists/Playlists.h Metadata/TimeConversion.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Playlists/Playlist.cc \
 	-pthread `pkg-config --cflags --libs gtkmm-3.0`
 
@@ -366,6 +367,13 @@ PlaylistCreateDialog.o: GUI/Elements/Playlists/PlaylistCreateDialog.cc \
 	GUI/Elements/Playlists/PlaylistCreateDialog.cc \
 	-pthread `pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
 
+PlaylistDeleteDialog.o: GUI/Elements/Playlists/PlaylistDeleteDialog.cc \
+	GUI/Elements/Playlists/PlaylistDeleteDialog.h \
+	Parts.h GUI/Elements/Playlists/Playlists.h GUI/GUI.h
+	g++ -g -Wall -pipe $(CFLAGS) -c \
+	GUI/Elements/Playlists/PlaylistDeleteDialog.cc \
+	-pthread `pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
+
 PlaylistMenu.o: GUI/Elements/Playlists/PlaylistMenu.cc \
 	GUI/Elements/Playlists/PlaylistMenu.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h Parts.h \
@@ -400,6 +408,7 @@ Playlists.o: GUI/Elements/Playlists/Playlists.cc \
 	GUI/Elements/Playlists/PlaylistColumn.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h \
 	GUI/Elements/Playlists/PlaylistsDatabase.h \
+	GUI/Elements/Playlists/PlaylistDeleteDialog.h \
 	GUI/Elements/Playlists/PlaylistCreateDialog.h \
 	GUI/Elements/Playlists/PlaylistColumnRecord.h \
 	GUI/Elements/Playlists/PlaylistMenu.h \
@@ -451,9 +460,9 @@ ScrobblingPanel.o: \
 	GUI/Elements/ConfigurationGUIs/Panels/Scrobbling/ScrobblingPanel.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread
-Seekbar.o: GUI/Seekbar.cc GUI/Seekbar.h Playback/Playback.h TimeConversion.h \
-	Metadata/Track.h Configuration/Configuration.h \
-	GUI/Elements/Playlists/Playlists.h
+Seekbar.o: GUI/Seekbar.cc GUI/Seekbar.h Playback/Playback.h \
+	Metadata/TimeConversion.h Metadata/Track.h \
+	Configuration/Configuration.h GUI/Elements/Playlists/Playlists.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Seekbar.cc \
 	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4` \
 	-pthread
@@ -468,13 +477,13 @@ Tag.o: Metadata/Tag.cc Metadata/Tag.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/Tag.cc \
 	-pthread `pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
 
-Tagview.o: GUI/Tagview.cc GUI/Tagview.h GUI/GUI.h Metadata/Track.h
+Tagview.o: GUI/Tagview.cc GUI/Tagview.h Parts.h GUI/GUI.h Metadata/Track.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Tagview.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread -Wno-unused-but-set-variable
 
-TimeConversion.o: TimeConversion.cc TimeConversion.h
-	g++ -g -Wall -pipe -pthread $(CFLAGS) -c TimeConversion.cc
+TimeConversion.o: Metadata/TimeConversion.cc Metadata/TimeConversion.h
+	g++ -g -Wall -pipe -pthread $(CFLAGS) -c Metadata/TimeConversion.cc
 
 Track.o: Metadata/Track.cc Metadata/Track.h Metadata/Tag.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/Track.cc \

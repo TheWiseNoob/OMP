@@ -55,7 +55,7 @@
 //              //
 //              //
 
-#include "PlaylistCreateDialog.h"
+#include "PlaylistDeleteDialog.h"
 
 
 
@@ -95,9 +95,10 @@
 
 #include <gtkmm/dialog.h>
 
-#include <gtkmm/entry.h>
+#include <gtkmm/label.h>
 
 #include <gtkmm/infobar.h>
+
 
 
 
@@ -131,7 +132,7 @@ using namespace std;
 //             //
 //             //
 
-PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
+PlaylistDeleteDialog::PlaylistDeleteDialog(Base& base_ref)
 
 // Inherited Class
 
@@ -141,21 +142,17 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
 // General
 
-, add_playlist_button_(Gtk::manage(new Gtk::Button("Add Playlist")))
-
 , button_box_(Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL)))
 
 , cancel_button_(Gtk::manage(new Gtk::Button("Cancel")))
 
-, info_bar_(Gtk::manage(new Gtk::InfoBar))
-
-, info_bar_label_(Gtk::manage(new Gtk::Label))
+, delete_playlist_button_(Gtk::manage(new Gtk::Button("Delete Playlist")))
 
 , playlist_creation_window_(new Gtk::Window)
 
 , playlist_creation_window_box_(Gtk::manage(new Gtk::Box))
 
-, playlist_name_entry_(Gtk::manage(new Gtk::Entry))
+, playlist_prompt_label_(Gtk::manage(new Gtk::Label))
 
 {
 
@@ -166,15 +163,11 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
   // 
   playlist_creation_window_box_
-    -> pack_start(*info_bar_, Gtk::PACK_SHRINK);
-
-  // 
-  playlist_creation_window_box_
     -> pack_end(*button_box_, Gtk::PACK_SHRINK);
 
   // 
   playlist_creation_window_box_
-    -> pack_end(*playlist_name_entry_, Gtk::PACK_EXPAND_PADDING);
+    -> pack_end(*playlist_prompt_label_, Gtk::PACK_EXPAND_PADDING);
 
 
 
@@ -182,12 +175,8 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
   button_box_ -> pack_start(*cancel_button_, Gtk::PACK_SHRINK);
 
   // 
-  button_box_ -> pack_end(*add_playlist_button_, Gtk::PACK_SHRINK);
+  button_box_ -> pack_end(*delete_playlist_button_, Gtk::PACK_SHRINK);
 
-
-
-  // 
-  info_bar_ -> set_center_widget(*info_bar_label_);
 
 
   // 
@@ -206,31 +195,31 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
   // 
   playlist_creation_window_
-    -> set_title("Add a new playlist!");
+    -> set_title("Delete Playlist Confirmation Dialog");
 
 
 
   // 
-  playlist_name_entry_ -> signal_activate()
-    . connect(sigc::mem_fun
-        (*this, 
-         &PlaylistCreateDialog::On_Playlist_Name_Entry_Activate_Signal));
+  playlist_prompt_label_ -> set_text("Delete playlist?");
+  
+
+
 
   // 
-  add_playlist_button_ -> signal_clicked()
+  delete_playlist_button_ -> signal_clicked()
     . connect(sigc::mem_fun
-        (*this, &PlaylistCreateDialog::On_Add_Playlist_Button_Clicked_Signal));
+        (*this, &PlaylistDeleteDialog::On_Delete_Playlist_Button_Clicked_Signal));
 
   // 
   cancel_button_ -> signal_clicked()
     . connect(sigc::mem_fun
-        (*this, &PlaylistCreateDialog::On_Cancel_Button_Clicked_Signal));
+        (*this, &PlaylistDeleteDialog::On_Cancel_Button_Clicked_Signal));
 
 
 
   //
   playlist_creation_window_  -> signal_key_press_event()
-    . connect(sigc::mem_fun(*this, &PlaylistCreateDialog::On_Key_Press_Event));
+    . connect(sigc::mem_fun(*this, &PlaylistDeleteDialog::On_Key_Press_Event));
 
 }
 
@@ -244,7 +233,7 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 //            //
 //            //
 
-PlaylistCreateDialog::~PlaylistCreateDialog()
+PlaylistDeleteDialog::~PlaylistDeleteDialog()
 {
 
   delete playlist_creation_window_;
@@ -261,91 +250,37 @@ PlaylistCreateDialog::~PlaylistCreateDialog()
 //                  //
 //                  //
 
-void PlaylistCreateDialog::On_Add_Playlist_Button_Clicked_Signal()
+void PlaylistDeleteDialog::On_Delete_Playlist_Button_Clicked_Signal()
 {
 
-  On_Playlist_Name_Entry_Activate_Signal();
+  // 
+  playlists() . Delete_Current_Playlist(delete_playlist_combobox_playlist_);
 
-}
 
-void PlaylistCreateDialog::On_Cancel_Button_Clicked_Signal()
-{
 
+  // 
   playlist_creation_window_ -> hide();
 
-  info_bar_ -> hide();
-
-  playlist_name_entry_ -> set_text("");
-
 }
 
-void PlaylistCreateDialog::On_Playlist_Name_Entry_Activate_Signal()
+void PlaylistDeleteDialog::On_Cancel_Button_Clicked_Signal()
 {
 
   // 
-  string new_playlist_name = playlist_name_entry_ -> get_text() . c_str();
-
-
-
-  // 
-  if(new_playlist_name != "")
-  {
-
-    // 
-    if(playlists() . Add_Playlist(new_playlist_name . c_str()))
-    {
-
-      playlist_name_entry_ -> set_text("");
-
-      playlist_creation_window_ -> hide();
-
-    }
-
-    // True if the playlist with that name already exists.
-    else
-    {
-
-      string info_bar_label_text = "\"";
-
-      info_bar_label_text += new_playlist_name + "\" already exists!";
-
-      info_bar_label_ -> set_text(info_bar_label_text); 
-
-      info_bar_label_ -> show();
-
-      info_bar_ -> show();
-
-    }
-
-  }
-
-  // True if no name was put in the entry.
-  else
-  {
-
-    info_bar_label_ -> set_text("No name entered!"); 
-
-    info_bar_label_ -> show();
-
-    info_bar_ -> show();
-
-  }
-
+  playlist_creation_window_ -> hide();
 
 }
 
-bool PlaylistCreateDialog::On_Key_Press_Event(GdkEventKey* event)
+bool PlaylistDeleteDialog::On_Key_Press_Event(GdkEventKey* event)
 {
 
   // Is true if the escape key is pressed.
   if((event -> keyval == GDK_KEY_Escape))
   {
 
+    // 
     playlist_creation_window_ -> hide();
 
-    info_bar_ -> hide();
-
-    playlist_name_entry_ -> set_text("");
 
 
     // 
@@ -360,19 +295,25 @@ bool PlaylistCreateDialog::On_Key_Press_Event(GdkEventKey* event)
 
 }
 
-void PlaylistCreateDialog::Run()
+void PlaylistDeleteDialog::Run(bool new_delete_playlist_combobox_playlist)
 {
+
+  // 
+  delete_playlist_combobox_playlist_ = new_delete_playlist_combobox_playlist;
+
+
 
   // 
   playlist_creation_window_ 
     -> set_transient_for(gui() . main_window() -> window());
 
+  // 
   playlist_creation_window_ -> set_modal(true);
 
 
 
   // 
-  playlist_name_entry_ -> show();
+  playlist_prompt_label_ -> show();
 
   // 
   button_box_ -> show();
@@ -381,15 +322,23 @@ void PlaylistCreateDialog::Run()
   cancel_button_ -> show();
 
   // 
-  add_playlist_button_ -> show();
+  delete_playlist_button_ -> show();
+
+  //
+  delete_playlist_button_ -> grab_focus();
 
   // 
   playlist_creation_window_box_ -> show();
 
 
 
+  //
+  Glib::ustring playlist_prompt_label_ustr
+    = "Permanently delete <b>"
+       + playlists() . selected_playlist() . active_playlist_name() + "</b>?";
+
   // 
-  info_bar_ -> hide();
+  playlist_prompt_label_ -> set_markup(playlist_prompt_label_ustr);
 
 
 

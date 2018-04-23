@@ -3,7 +3,33 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [0.0.8] - April 8st, 2018
+## [0.0.9] - April 22nd, 2018
+
+### Added
+- A confirmation dialog for deleting a playlist is now displayed so a playlist
+  is not accidentally deleted.
+- Tooltips have been added to most of the parts of the program the might be
+  useful.
+- Time left in track is now visible in the upper right part of OMP next to
+  the seekbar.
+
+### Changed
+- The tagview is now designed slightly different and has more information.
+- Many placeholder buttons and parts for future features have been removed
+  until their feature is implemented.
+- The create and delete playlist buttons of the playlist combobox are now
+  attached to the playlist combobox.
+- General code clean-up.
+
+### Fixed
+- The right-click playlist menu delete option is no longer clickable when the
+  playlist is Library or Queue.
+- Info bar telling user that a playlist already exists disappears properly now.
+- The spinbutton of 4 parts of the configuration GUI can now be used.
+
+
+
+## [0.0.8] - April 8th, 2018
 
 ### Added
 - Added a Fixed section to the CHANGELOG.
@@ -21,11 +47,13 @@ All notable changes to this project will be documented in this file.
 - Cleaned up the over 3 years-old code for playlist removal in order to
   make it possible to remove a playlist from something other than a playlist
   combobox.
+- The initial time listed in the status bar upon opening OMP is now formatted
+  properly. 
 
 ### Fixed
 - Fixed a bug that caused a playlist combobox to not saved its position after
   a playlist is removed.
-- Renaming a playlist is now working again.
+- Renaming a playlist with a playlist combobox is now working again.
 
 
 

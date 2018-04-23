@@ -93,6 +93,9 @@ class KeyboardShortcutsPanelColumnRecord : public Gtk::TreeModel::ColumnRecord
     {
 
       // 
+      add(description_col_);
+
+      // 
       add(key_col_);
 
       // 
@@ -114,6 +117,8 @@ class KeyboardShortcutsPanelColumnRecord : public Gtk::TreeModel::ColumnRecord
   //                  //
 
   public:
+
+    Gtk::TreeModelColumn<Glib::ustring> description_col_;
 
     Gtk::TreeModelColumn<Glib::ustring> key_col_;
 

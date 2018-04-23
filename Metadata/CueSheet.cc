@@ -67,9 +67,9 @@
 //                 //
 //                 //
 
-#include "../Metadata/Track.h"
+#include "Track.h"
 
-#include "../TimeConversion.h"
+#include "TimeConversion.h"
 
 
 

@@ -224,18 +224,26 @@ void PlaylistComboBoxes::Add_Playlist
   //     
   Gtk::TreeRow row = *(treestore_ -> append());
 
+  // 
   row[playlist_combobox_column_record_ -> name_] = name;
 
+  // 
   row[playlist_combobox_column_record_ -> playlist_treestore_it_]
     = playlist_treestore_it;
 
+
+
+  // 
   for(auto playlist_comboboxes_it : playlist_comboboxes()())
-  {
+  { 
 
-    auto treestore_it = treestore_ -> children().end();
+    // 
+    auto treestore_it = treestore_ -> children() . end();
 
+    // 
     treestore_it--;
 
+    // 
     playlist_comboboxes_it -> playlist_combobox() . set_active(treestore_it);
  
   }

@@ -41,29 +41,71 @@
 
 
 
-#ifndef TAGS_H
-#define TAGS_H
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
+#ifndef TAGVIEW_H
+#define TAGVIEW_H
 
 
 
 
-#include <gtkmm/box.h>
-#include <string>
+
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Inherited Class ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include "../Parts.h"
 
 
-namespace Gtk
-{
 
-  class Frame;
-  class Label;
 
-}
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
+
+class Base;
+
 namespace Gdk
 {
 
   class RGBA;
 
 }
+
+class GUI;
+
+namespace Gtk
+{
+
+  class Box;
+
+  class Frame;
+
+  class Label;
+
+}
+
 namespace Pango
 {
 
@@ -71,59 +113,145 @@ namespace Pango
 
 }
 
-
-
 class Track;
-class GUI;
 
 
 
 
 
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
 
-
-class Tagview : public Gtk::Box
+class Tagview : public Parts
 {
+
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
 
   public:
 
     Tagview() = delete;
 
-    Tagview(GUI &new_gui);
+    Tagview(Base& base_ref);
+
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
 
     ~Tagview();
 
-    void update_tags(const char *new_frame_label_name, Track &new_track);
+
+
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public:
+
+    void Update_Tags(const char* new_frame_label_name, Track& new_track);
+
+
+
 
  
-    Gtk::Label &tag_frame_label()
-    { return *tag_frame_label_; }
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
 
-    Gtk::Label &tag_label()
-    { return *tag_label_; }
+  public:
 
-    GUI &gui()
-    { return gui_; }
+    Gtk::Box& box();
+
+    Gtk::Label& tag_frame_label();
+
+    Gtk::Label& tag_label_center();
+
+    Gtk::Label& tag_label_end_left();
+
+    Gtk::Label& tag_label_middle_right();
+
+    Gtk::Label& tag_label_middle_left();
+
+    Gtk::Label& tag_label_end_right();
+
+    Gtk::Label& tag_label_start_left();
+
+    Gtk::Label& tag_label_start_right();
+
+    Gtk::Box& tag_labels_box();
 
 
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   private:
 
-    GUI &gui_;
+    Gtk::Box* box_;
 
-    Gtk::Frame *tag_frame_;
+    Gtk::Frame* tag_frame_;
 
-    Gtk::Label *tag_frame_label_,
-               *tag_label_;
+    Gtk::Label* tag_frame_label_;
 
-    Gdk::RGBA *tag_frame_rgba_;
+    Gtk::Label* tag_label_center_;
 
-    Pango::FontDescription *tag_frame_label_fontdescription_; 
+    Gtk::Label* tag_label_end_left_;
+
+    Gtk::Label* tag_label_end_right_;
+
+    Gtk::Label* tag_label_middle_left_;
+
+    Gtk::Label* tag_label_middle_right_;
+
+    Gtk::Label* tag_label_start_left_;
+
+    Gtk::Label* tag_label_start_right_;
+
+    Gtk::Box* tag_labels_box_;
+
+    Gdk::RGBA* tag_frame_rgba_;
+
+    Pango::FontDescription* tag_frame_label_fontdescription_; 
 
 };
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

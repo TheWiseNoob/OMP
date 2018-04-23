@@ -176,8 +176,8 @@ PlaybackController::PlaybackController
 
 
   // Adds the previous button to the playback_button_stack_switcher_.
-  playback_buttons_stack_switcher_
-    -> pack_start(*previous_button_, Gtk::PACK_SHRINK, 0);
+//  playback_buttons_stack_switcher_
+//    -> pack_start(*previous_button_, Gtk::PACK_SHRINK, 0);
 
   // Adds the stop button to the playback_button_stack_switcher_.
   playback_buttons_stack_switcher_
@@ -217,6 +217,28 @@ PlaybackController::PlaybackController
   // Sets the icon of the next button.
   next_button_ -> set_image_from_icon_name("media-skip-forward-symbolic",
                                            Gtk::ICON_SIZE_DND);
+
+
+
+  // 
+  previous_button_ -> set_tooltip_text
+    ("Placeholder button for when playback history is added to OMP. " \
+     "Playback history will be added sometime before OMP 0.2 is released " \
+     "and after 0.1 is released.");
+
+  // 
+  play_button_ -> set_tooltip_text
+    ("Starts playback at the selected track or the next track in the " \
+     "playback queue if the playback queue is not empty.");
+
+  // 
+  pause_button_ -> set_tooltip_text("Pauses playback.");
+
+  // 
+  stop_button_ -> set_tooltip_text("Stops playback.");
+
+  // 
+  next_button_ -> set_tooltip_text("Skips playback to the next track.");
 
 
 

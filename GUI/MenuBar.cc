@@ -198,6 +198,8 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
 , playback_menu_item_(Gtk::manage(new Gtk::MenuItem("_Playback", true)))
 
+, next_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Next", true)))
+
 , play_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Play", true)))
 
 , pause_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Pause", true)))
@@ -319,7 +321,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   menu_bar_ -> append(*playback_menu_item_);
 
   // 
-  menu_bar_ -> append(*Library_MenuItem);
+//  menu_bar_ -> append(*Library_MenuItem);
 
   // 
   menu_bar_ -> append(*About_MenuItem);
@@ -374,7 +376,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   File_Menu -> append(*Add_File_MenuItem);
 
   // 
-  File_Menu -> append(*Open_File_MenuItem);
+//  File_Menu -> append(*Open_File_MenuItem);
 
   // 
   Open_File_MenuItem -> set_sensitive(false);
@@ -383,13 +385,13 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   File_Menu -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
   // 
-  File_Menu -> append(*Add_Folder_MenuItem);
+//  File_Menu -> append(*Add_Folder_MenuItem);
 
   // 
   Add_Folder_MenuItem -> set_sensitive(false);
 
   // 
-  File_Menu -> append(*Open_Folder_MenuItem);
+//  File_Menu -> append(*Open_Folder_MenuItem);
 
   // 
   Open_Folder_MenuItem -> set_sensitive(false);
@@ -399,6 +401,16 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
   // 
   File_Menu -> append(*Quit_MenuItem);
+
+
+
+  // 
+  Add_File_MenuItem -> set_tooltip_text
+    ("Opens a window that is used to add tracks to the currently active " \
+     "playlist view.");
+
+  //
+  Quit_MenuItem -> set_tooltip_text("Cleanly exits OMP.");
 
 
 
@@ -437,19 +449,19 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
 
   // 
-  Edit_Menu -> append(*Cut_MenuItem);
+//  Edit_Menu -> append(*Cut_MenuItem);
 
   // 
   Cut_MenuItem -> set_sensitive(false);
 
   // 
-  Edit_Menu -> append(*Copy_MenuItem);
+//  Edit_Menu -> append(*Copy_MenuItem);
 
   // 
   Copy_MenuItem -> set_sensitive(false);
 
   // 
-  Edit_Menu -> append(*Paste_MenuItem);
+//  Edit_Menu -> append(*Paste_MenuItem);
 
   // 
   Paste_MenuItem -> set_sensitive(false);
@@ -458,7 +470,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   Edit_Menu -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
   // 
-  Edit_Menu -> append(*Remove_MenuItem);
+//  Edit_Menu -> append(*Remove_MenuItem);
 
   // 
   Remove_MenuItem -> set_sensitive(false);
@@ -468,6 +480,12 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
   // 
   Edit_Menu -> append(*Configuration_MenuItem);
+
+
+
+  // 
+  Configuration_MenuItem -> set_tooltip_text
+    ("Opens a window with OMP's configuration GUI.");
 
 
 
@@ -484,56 +502,71 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   //                //
 
   // 
-  hide_duplicates_check_menu_item_
-    -> set_active(config() . get("gui.hide_duplicates"));
-
-
-  // 
   View_Menu -> append(*hide_duplicates_check_menu_item_);
 
   // 
-  hide_duplicates_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun
-        (*this, &MenuBar::On_Hide_Duplicates_Check_Menu_Item_Activate_Signal));
+  View_Menu -> append(*hide_header_bar_check_menu_item_);
+
+  // 
+  View_Menu -> append(*hide_status_bar_check_menu_item_);
+
+  // 
+  View_Menu -> append(*hide_tabs_check_menu_item_);
 
 
+
+  // 
+  hide_duplicates_check_menu_item_
+    -> set_active(config() . get("gui.hide_duplicates"));
 
   // 
   hide_header_bar_check_menu_item_
     -> set_active(config() . get("gui.hide_header_bar"));
 
   // 
-  View_Menu -> append(*hide_header_bar_check_menu_item_);
+  hide_status_bar_check_menu_item_
+    -> set_active(config() . get("gui.hide_status_bar"));
+
+  // 
+  hide_tabs_check_menu_item_
+    -> set_active((config() . get("gui.tabs.hide")));
+
+
+
+  // 
+  hide_duplicates_check_menu_item_ -> set_tooltip_text
+    ("Hides the duplicate menu bar and playlist combobox under the cover " \
+     "art in the Main Content tab.");
+
+  // 
+  hide_header_bar_check_menu_item_ -> set_tooltip_text
+    ("Hides the header bar. Requires OMP to be restarted in order to " \
+     "take effect.");
+
+  // 
+  hide_status_bar_check_menu_item_ -> set_tooltip_text
+    ("Hides the status bar at the bottom of the main window.");
+
+  // 
+  hide_tabs_check_menu_item_ -> set_tooltip_text
+    ("Hide the tabs of OMP.");
+
+
+
+  // 
+  hide_duplicates_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun
+        (*this, &MenuBar::On_Hide_Duplicates_Check_Menu_Item_Activate_Signal));
 
   // 
   hide_header_bar_check_menu_item_ -> signal_activate()
     . connect(sigc::mem_fun
         (*this, &MenuBar::On_Hide_Header_Bar_Check_Menu_Item_Activate_Signal));
 
-
-
-  // 
-  hide_status_bar_check_menu_item_
-    -> set_active(config() . get("gui.hide_status_bar"));
-
-  // 
-  View_Menu -> append(*hide_status_bar_check_menu_item_);
-
-
   // 
   hide_status_bar_check_menu_item_ -> signal_activate()
     . connect(sigc::mem_fun
         (*this, &MenuBar::On_Hide_Status_Bar_Check_Menu_Item_Activate_Signal));
-
-
-
-  // 
-  hide_tabs_check_menu_item_
-    -> set_active((config() . get("gui.tabs.hide")));
-
-  // 
-  View_Menu -> append(*hide_tabs_check_menu_item_);
-
 
   // 
   hide_tabs_check_menu_item_ -> signal_activate()
@@ -557,6 +590,9 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   playback_menu_ -> append(*stop_playback_menu_item_);
 
   // 
+  playback_menu_ -> append(*next_playback_menu_item_);
+
+  // 
   playback_menu_ -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
   // 
@@ -572,7 +608,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
   // 
   cursor_follows_playback_playback_check_menu_item_
-    -> set_active(base().config().get("playback.cursor_follows_playback"));
+    -> set_active(config() . get("playback.cursor_follows_playback"));
 
   // 
   playback_follows_cursor_playback_check_menu_item_
@@ -580,7 +616,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
   // 
   playback_follows_cursor_playback_check_menu_item_
-    -> set_active(base().config().get("playback.playback_follows_cursor"));
+    -> set_active(config() . get("playback.playback_follows_cursor"));
 
 
 
@@ -595,6 +631,8 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
   // 
   looping_playback_menu_item_ -> set_submenu(*looping_playback_menu_);
+
+
 
   // 
   looping_playback_menu_ -> append(*looping_none_playback_radio_menu_item_);
@@ -714,6 +752,27 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
 
   // 
+  play_playback_menu_item_ -> set_tooltip_text
+    ("Starts playback at the selected track or the next track in the " \
+     "playback queue if the playback queue is not empty.");
+
+  // 
+  pause_playback_menu_item_ -> set_tooltip_text("Pauses playback.");
+
+  // 
+  stop_playback_menu_item_ -> set_tooltip_text("Stops playback.");
+
+  // 
+  next_playback_menu_item_
+    -> set_tooltip_text("Skips playback to the next track.");
+
+
+
+  // 
+  next_playback_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playback(), &Playback::Next_Track));
+
+  // 
   play_playback_menu_item_ -> signal_activate()
     . connect(sigc::mem_fun(*this, &MenuBar::Play));
 
@@ -728,28 +787,28 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
 
   // 
-  stop_after_current_track_playback_check_menu_item_ -> signal_activate().connect(
-    sigc::mem_fun(*this, &MenuBar::Stop_After_Current_Track));
+  stop_after_current_track_playback_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MenuBar::Stop_After_Current_Track));
 
   // 
-  cursor_follows_playback_playback_check_menu_item_ -> signal_activate().connect(
-    sigc::mem_fun(*this, &MenuBar::Cursor_Follows_Playback));
+  cursor_follows_playback_playback_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MenuBar::Cursor_Follows_Playback));
 
   // 
-  playback_follows_cursor_playback_check_menu_item_ -> signal_activate().connect(
-    sigc::mem_fun(*this, &MenuBar::Playback_Follows_Cursor));
+  playback_follows_cursor_playback_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MenuBar::Playback_Follows_Cursor));
 
   // 
-  queue_playback_check_menu_item_ -> signal_activate().connect(
-    sigc::mem_fun(*this, &MenuBar::Queue));
+  queue_playback_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MenuBar::Queue));
 
   // 
-  queue_saved_playback_check_menu_item_ -> signal_activate().connect(
-    sigc::mem_fun(*this, &MenuBar::Queue_Saved));
+  queue_saved_playback_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MenuBar::Queue_Saved));
 
   // 
-  flush_queue_playback_menu_item_ -> signal_activate().connect(
-    sigc::mem_fun(*this, &MenuBar::Flush_Queue));
+  flush_queue_playback_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MenuBar::Flush_Queue));
 
   // 
   flush_queue_playback_menu_item_ -> set_sensitive(false);
@@ -769,7 +828,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   Help_MenuItem -> set_sensitive(false);
 
   // 
-  About_Menu -> append(*Help_MenuItem);
+//  About_Menu -> append(*Help_MenuItem);
 
 
 

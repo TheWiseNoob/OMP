@@ -73,13 +73,13 @@
 
 #include "../Metadata/Metadata.h"
 
+#include "../Metadata/TimeConversion.h"
+
 #include "../Metadata/Track.h"
 
 #include "../Playback/Playback.h"
 
 #include "../Scrobbling/Scrobbling.h"
-
-#include "../TimeConversion.h"
 
 #include "Artwork.h"
 
@@ -668,13 +668,14 @@ GUI::GUI(Base& base_ref)
   Tagview *temp_tagview;
 
   // Creates a new Tagview and assigns it to the pointer.
-  temp_tagview = new Tagview(*this);
+  temp_tagview = new Tagview(base_ref);
 
   // Adds the Tagview to the Tagview list.
-  tagviews_.push_front(temp_tagview);
+  tagviews_ . push_front(temp_tagview);
 
   // Adds the new Tagview to the left pane's box.
-  left_main_content_paned_box_ -> pack_start(*temp_tagview, Gtk::PACK_SHRINK);
+  left_main_content_paned_box_
+    -> pack_start(temp_tagview -> box(), Gtk::PACK_SHRINK);
 
 
 
@@ -959,6 +960,14 @@ GUI::GUI(Base& base_ref)
 
 
 
+  // 
+  status_bar_box_ -> set_tooltip_text
+    ("Double click this status bar to select the playing track.");
+
+
+
+
+
   //                 //
   // Volume Creation //////////////////////////////////////////////////////////
   //                 //
@@ -1003,6 +1012,10 @@ GUI::GUI(Base& base_ref)
   // Sets the padding of the playback_status_label_. 
   playback_status_label_ -> set_padding(15,0);
 
+  // 
+  playback_status_label_
+    -> set_tooltip_text("The current status of playback.");
+
 
 
   // Sets the orientation of the time_label_box_.
@@ -1025,6 +1038,10 @@ GUI::GUI(Base& base_ref)
   // Sets the default time of the selected_time_label_.
   selected_time_label_ -> set_label("00:00.00");
 
+  // 
+  selected_time_label_ -> set_tooltip_text
+    ("Total added time of all tracks selected in all playlists.");
+
   // Adds the selected tracks total time display label to status_bar_box_.
   status_bar_box_ -> pack_end(*Gtk::manage(new Gtk::Separator()),
                               Gtk::PACK_SHRINK);
@@ -1034,6 +1051,10 @@ GUI::GUI(Base& base_ref)
 
   // Sets the padding of the selected_time_label_. 
   selected_rows_count_label_ -> set_padding(10, 10);
+
+  // 
+  selected_rows_count_label_
+    -> set_tooltip_text("Total selected tracks in all playlists.");
 
 
 
@@ -1851,7 +1872,7 @@ void GUI::Update_Tagview(const char* tag_frame_label_name, Track& new_track)
   {
 
     // Updates the Tagview with the frame label and track.
-    (*(tagviews_.begin())) -> update_tags(tag_frame_label_name, new_track);
+    (*(tagviews_.begin())) -> Update_Tags(tag_frame_label_name, new_track);
 
   }
 
