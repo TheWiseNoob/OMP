@@ -24,6 +24,14 @@ prevalent music audio file types gaplessly and stores tracks in a database.
 
 
 
+## Next OMP Release
+
+### Version 0.0.10 : May 6th, 2018
+
+
+
+
+
 ## Compiling and Installing
 
 ### Dependencies
