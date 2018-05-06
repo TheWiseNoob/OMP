@@ -41,27 +41,83 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//              //
+//              //
+// Class Header ///////////////////////////////////////////////////////////////
+//              //
+//              //
+
 #include "FileChoosers.h"
 
 
 
 
 
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../../../Base.h"
+
+#include "../../GUI.h"
 
 #include "../ChildWindows/ChildWindow.h"
 
 #include "../ChildWindows/ChildWindows.h"
 
-#include "../../GUI.h"
 
 
 
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 #include <memory>
 
+
+
+
+
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
+
 using namespace std;
 
+
+
+
+
+//                 //
+//                 //
+//                 //
+// Class Functions ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+//                 //
+
+//             //
+//             //
+// Constructor ////////////////////////////////////////////////////////////////
+//             //
+//             //
 
 FileChoosers::FileChoosers(Base& base)
 : GUIElementList(base)
@@ -74,6 +130,12 @@ FileChoosers::FileChoosers(Base& base)
 
 
 
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
+
 FileChoosers::~FileChoosers()
 {
 
@@ -82,6 +144,12 @@ FileChoosers::~FileChoosers()
 
 
 
+
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
 
 void FileChoosers::Add_Files()
 {
@@ -103,6 +171,11 @@ void FileChoosers::Add_Files()
 
   // Creates the new ChildWindow.
   new_window = windows() . Create_New_Window("Add File(s)", temp_func_ptr);
+
+
+
+  // Adds a cancel button to the FileChooser window.
+  temp_file_chooser -> Enable_Cancel_Button(new_window);
 
 
 

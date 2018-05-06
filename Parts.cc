@@ -85,6 +85,8 @@
 
 #include "GUI/GUI.h"
 
+#include "GUI/StatusBar.h"
+
 #include "KeyboardShortcuts/KeyboardShortcuts.h"
 
 #include "Metadata/Metadata.h"
@@ -140,19 +142,23 @@ Parts::Parts(Base& new_base, bool debug_value)
 int Parts::debug(char* debug_message)
 {
 
+  // 
   if(debug_)
-  {
+  { 
 
     cout << "\n\n" << debug_message << "\n\n";
 
   }
 
+  // 
   else
   {
 
-  }
+  } 
 
 
+
+  // 
   return debug_;
 
 }
@@ -160,6 +166,7 @@ int Parts::debug(char* debug_message)
 int Parts::debug(const char* debug_message)
 {
 
+  // 
   return debug(const_cast<char*>(debug_message));
 
 }
@@ -191,19 +198,19 @@ Base& Parts::base()
 Configuration& Parts::config()
 { 
 
-  return base_.config(); 
+  return base_ . config(); 
 
 }
 
 ConfigurationGUIs& Parts::config_guis()
-{
+{ 
 
-  return base_.gui().config_guis();
+  return base_ . gui() . config_guis();
 
 }
 
 Errors& Parts::errors()
-{
+{ 
 
   // 
   return base() . errors();
@@ -213,49 +220,49 @@ Errors& Parts::errors()
 FileChoosers& Parts::file_choosers()
 {
 
-  return base_.gui().file_choosers();
+  return base_ . gui() . file_choosers();
 
 }
 
 GUI& Parts::gui()
 {  
 
-  return base_.gui(); 
+  return base_ . gui(); 
 
-}
+} 
 
 KeyboardShortcuts& Parts::keyboard_shortcuts()
 {
 
   return base_ . keyboard_shortcuts(); 
 
-}
+} 
 
 Metadata& Parts::metadata()
 {
 
-  return base_.metadata();
+  return base_ . metadata();
 
-}
+} 
 
 Playback& Parts::playback()
 {
 
-  return base_.playback();
+  return base_ . playback();
 
-}
+} 
 
 PlaylistComboBoxes& Parts::playlist_comboboxes()
 {
 
-  return base_.gui().playlist_comboboxes();
+  return base_ . gui() . playlist_comboboxes();
 
 }
 
 Playlists& Parts::playlists()
-{
+{ 
 
-  return base_.gui().playlists();
+  return base_ . gui() . playlists();
 
 }
 
@@ -264,17 +271,24 @@ Scrobbling& Parts::scrobbling()
 
   return base_ . scrobbling();
 
+} 
+
+StatusBar& Parts::status_bar()
+{
+
+  return base_ . gui() . status_bar();
+
 }
 
 TimeConversion& Parts::time_converter()
-{
+{ 
 
-  return base_.time_converter();
+  return base_ . time_converter();
 
 }
 
 ChildWindows& Parts::windows()
-{
+{ 
 
   return base_ . gui() . windows();
 

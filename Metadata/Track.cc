@@ -610,6 +610,114 @@ bool Track::Is_Empty() const
 
 }
 
+std::vector<Glib::ustring*>* Track::Multiple_Values_Tag_Decode
+  (Glib::ustring& tags_ustr)
+{
+
+  // 
+  vector<Glib::ustring*>* decoded_tags = new vector<Glib::ustring*>;
+
+
+
+  // 
+  if(tags_ustr . empty())
+  {
+
+    // 
+    return decoded_tags;
+
+  }
+
+
+
+  // 
+  Glib::ustring* tag_ustr_ptr = new Glib::ustring;
+
+
+
+  // 
+  for(auto tags_char_it = tags_ustr . begin();
+      tags_char_it != tags_ustr . end();
+      tags_char_it++)
+  {
+
+    // 
+    if((*tags_char_it) == '\\')
+    {
+
+      // 
+      auto temp_tags_char_it = tags_char_it;
+
+
+
+
+      // 
+      if((*temp_tags_char_it) == ';')
+      {
+
+        // 
+        tags_char_it = temp_tags_char_it;
+
+
+
+        // 
+        (*tag_ustr_ptr) += ";";
+
+      }
+
+      // 
+      else
+      {
+
+        // 
+        (*tag_ustr_ptr) += "\\";
+
+      }
+
+    }
+
+    //
+    else if((*tags_char_it) == ';')
+    {
+
+      // 
+      decoded_tags -> push_back(tag_ustr_ptr);
+
+
+
+      //
+      tag_ustr_ptr = new Glib::ustring;
+
+
+
+      // 
+      tags_char_it++;
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      (*tag_ustr_ptr) += (*tags_char_it);
+
+    }
+
+  }
+
+
+
+  // 
+  decoded_tags -> push_back(tag_ustr_ptr);
+
+
+
+  // 
+  return decoded_tags;
+
+}
+
 Glib::ustring* Track::Multiple_Values_To_Single_Value
   (std::vector<Glib::ustring*> &values)
 {
@@ -633,7 +741,7 @@ Glib::ustring* Track::Multiple_Values_To_Single_Value
     {
 
       // 
-      *values_string += "; " + *values[i];
+      *values_string += ", " + *values[i];
 
     } 
 
@@ -1617,10 +1725,15 @@ void Track::clear_album_artists()
 
 }
 
-void Track::set_artists(std::vector<Glib::ustring*> *new_artists)
-{
+void Track::set_artists(std::vector<Glib::ustring*>* new_artists)
+{ 
 
+  // 
   delete artists_;
+
+
+
+  // 
   artists_ = new_artists;
 
 }

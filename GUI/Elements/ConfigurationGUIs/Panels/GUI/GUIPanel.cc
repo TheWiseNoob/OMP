@@ -73,6 +73,8 @@
 
 #include "../../../../../GUI/MenuBar.h"
 
+#include "../../../../../GUI/StatusBar.h"
+
 #include "../../../PlaylistComboBoxes/PlaylistComboBox.h"
 
 #include "../../../PlaylistComboBoxes/PlaylistComboBoxes.h"
@@ -447,7 +449,7 @@ void GUIPanel::Apply_Saved_Values()
   {
 
     // 
-    gui() . status_bar_frame() . hide();
+    status_bar() . status_bar_frame() . hide();
 
   }
 
@@ -456,7 +458,7 @@ void GUIPanel::Apply_Saved_Values()
   {
 
     // 
-    gui() . status_bar_frame() . show();
+    status_bar() . status_bar_frame() . show();
 
   }
 
@@ -740,7 +742,7 @@ void GUIPanel::On_Hide_Status_Bar_Check_Button_Toggled_Signal()
   {
 
     // 
-    gui() . status_bar_frame() . hide();
+    status_bar() . status_bar_frame() . hide();
 
   }
 
@@ -749,7 +751,7 @@ void GUIPanel::On_Hide_Status_Bar_Check_Button_Toggled_Signal()
   {
 
     // 
-    gui() . status_bar_frame() . show();
+    status_bar() . status_bar_frame() . show();
 
   }
 

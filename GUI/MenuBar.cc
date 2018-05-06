@@ -93,6 +93,8 @@
 
 #include "GUI.h"
 
+#include "StatusBar.h"
+
 
 
 
@@ -717,14 +719,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   looping_none_playback_radio_menu_item_ -> signal_toggled()
     . connect(sigc::mem_fun
         (*this, 
-         &MenuBar::On_None_Looping_Playback_Radio_Menu_Item_Toggled_Signal));
-
-  // 
-  looping_playlist_playback_radio_menu_item_ -> signal_toggled()
-    . connect(sigc::mem_fun
-        (*this, 
-         &MenuBar
-            ::On_Playlist_Looping_Playback_Radio_Menu_Item_Toggled_Signal));
+         &MenuBar::On_Looping_Playback_Radio_Menu_Item_Toggled_Signal));
 
 
 
@@ -934,7 +929,7 @@ void MenuBar::Quit()
 
 // Looping
 
-void MenuBar::On_None_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
+void MenuBar::On_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
 {
 
   // 
@@ -949,7 +944,22 @@ void MenuBar::On_None_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
 
 
   // 
-  config() . set("playback.looping", "none");
+  if(looping_none_playback_radio_menu_item_ -> get_active())
+  {
+
+    // 
+    config() . set("playback.looping", "none");
+
+  }
+
+  // 
+  else if(looping_playlist_playback_radio_menu_item_ -> get_active())
+  {
+
+    // 
+    config() . set("playback.looping", "playlist");
+
+  }
 
 
 
@@ -964,12 +974,29 @@ void MenuBar::On_None_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
   // 
   config_guis() . set_disable_functions(true);
 
+  // 
   for(auto config_guis_it : config_guis()())
   {
 
     // 
-    config_guis_it -> playback_panel() . none_looping_radio_button()
-      . set_active(true);
+    if(looping_none_playback_radio_menu_item_ -> get_active())
+    {
+
+      // 
+      config_guis_it -> playback_panel() . none_looping_radio_button()
+        . set_active(true);
+
+    }
+
+    // 
+    else if(looping_playlist_playback_radio_menu_item_ -> get_active())
+    {
+
+      // 
+      config_guis_it -> playback_panel() . playlist_looping_radio_button()
+        . set_active(true);
+
+    }
 
   }
 
@@ -986,8 +1013,24 @@ void MenuBar::On_None_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
   { 
 
     // 
-    menu_bars_it -> looping_none_playback_radio_menu_item()
-      . set_active(true);
+    if(looping_none_playback_radio_menu_item_ -> get_active())
+    {
+
+      // 
+      menu_bars_it -> looping_none_playback_radio_menu_item()
+        . set_active(true);
+
+    }
+
+    // 
+    else if(looping_playlist_playback_radio_menu_item_ -> get_active())
+    {
+
+      // 
+      menu_bars_it -> looping_playlist_playback_radio_menu_item()
+        . set_active(true);
+
+    }
 
   } 
 
@@ -997,69 +1040,7 @@ void MenuBar::On_None_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
 
 
   // 
-  playback() . Reset_Track_Queue();
-
-}
-
-void MenuBar::On_Playlist_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
-{
-
-  // 
-  if(gui() . disable_menubar_functions_flag())
-  {
-
-    // 
-    return;
-
-  }
-
-
-
-  // 
-  config() . set("playback.looping", "playlist");
-
-
-
-  // 
-  config_guis() . Save_Changes();
-
-  // 
-  config_guis() . Mark_Unsaved_Changes(false);
-
-
-
-  // 
-  config_guis() . set_disable_functions(true);
-
-  for(auto config_guis_it : config_guis()())
-  {
-
-    // 
-    config_guis_it -> playback_panel() . playlist_looping_radio_button()
-      . set_active(true);
-
-  }
-
-  // 
-  config_guis() . set_disable_functions(false);
-
-
-
-  // 
-  gui() . set_disable_menubar_functions_flag(true);
-
-  // 
-  for(auto menu_bars_it : gui() . menubars())
-  { 
-
-    // 
-    menu_bars_it -> looping_playlist_playback_radio_menu_item()
-      . set_active(true);
-
-  } 
-
-  // 
-  gui() . set_disable_menubar_functions_flag(false);
+  cout << "\n\nMenubar changer\n\n";
 
 
 
@@ -1720,7 +1701,7 @@ void MenuBar::On_Hide_Status_Bar_Check_Menu_Item_Activate_Signal()
   {
 
     // 
-    gui() . status_bar_frame() . hide();
+    status_bar() . status_bar_frame() . hide();
 
   }
 
@@ -1728,7 +1709,7 @@ void MenuBar::On_Hide_Status_Bar_Check_Menu_Item_Activate_Signal()
   {
 
     // 
-    gui() . status_bar_frame() . show();
+    status_bar() . status_bar_frame() . show();
 
   }
 

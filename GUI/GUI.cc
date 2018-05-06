@@ -115,6 +115,8 @@
 
 #include "Seekbar.h"
 
+#include "StatusBar.h"
+
 #include "Tagview.h"
 
 
@@ -142,6 +144,8 @@
 #include <gtkmm/box.h>
 
 #include <gtkmm/button.h>
+
+#include <gtkmm/combobox.h>
 
 #include <gtkmm/eventbox.h>
 
@@ -263,32 +267,9 @@ GUI::GUI(Base& base_ref)
 
 
 
-// Status Bar
+// Status Bar 
 
-, status_bar_frame_(Gtk::manage(new Gtk::Frame))
-
-, status_bar_event_box_(Gtk::manage(new Gtk::EventBox))
-
-, status_bar_box_(Gtk::manage(new Gtk::Box))
-
-, time_label_box_(Gtk::manage(new Gtk::Box))
-
-, time_label_(Gtk::manage(new Gtk::Label("00:00.00 / 00:00.00", 
-                                         0.5, 1.0, false)))
-
-, selected_rows_count_label_(Gtk::manage(new Gtk::Label("0")))
-
-, selected_time_label_(Gtk::manage(new Gtk::Label()))
-
-, playback_status_label_(Gtk::manage(new Gtk::Label("⏹ Stopped")))
-
-
-
-// Volume
-
-, main_volume_button_(Gtk::manage(new Gtk::VolumeButton))
-
-, main_volume_button_box_(Gtk::manage(new Gtk::Box))
+, status_bar_(new StatusBar(base_ref))
 
 
 
@@ -505,7 +486,7 @@ GUI::GUI(Base& base_ref)
   // Seekbar Creation /////////////////////////////////////////////////////////
 
   // Adds the seekbar to the top of the main window's box.
-  top_box_ -> pack_end(seekbar());
+  top_box_ -> pack_end(seekbar() . box());
 
   // Disables the displayed value of the seekbar.
   seekbar() . scale() . set_draw_value(false);
@@ -731,6 +712,7 @@ GUI::GUI(Base& base_ref)
   // Makes a reference to the first Artwork instance.
   Gtk::Box* temp_box_ptr = &((*(artworks_.begin())) -> box());
 
+  // 
   Gtk::Label artwork_page_label("Artwork");
 
   // Adds the Artwork tab with the second Artwork instances.
@@ -757,6 +739,14 @@ GUI::GUI(Base& base_ref)
 
   // Main Content MenuBar Creation ////////////////////////////////////////////
 
+  // 
+  Gtk::Box* duplicates_box = Gtk::manage(new Gtk::Box);
+
+  // Adds a MenuBar to the left pane in Main Content.
+  left_main_content_paned_box_ -> pack_end(*duplicates_box, Gtk::PACK_SHRINK);
+
+
+
   // Creates two MenuBar pointers.
   MenuBar* main_content_menubar = new MenuBar(base_ref, main_window_ -> window());
 
@@ -764,17 +754,40 @@ GUI::GUI(Base& base_ref)
   menubars_ . push_back(main_content_menubar);
 
   // Adds a MenuBar to the left pane in Main Content.
-  left_main_content_paned_box_
-    -> pack_end(main_content_menubar -> box(), Gtk::PACK_SHRINK);
+  duplicates_box
+    -> pack_start(main_content_menubar -> box(), Gtk::PACK_SHRINK);
 
 
 
   // Main Content Playlist ComboBox Creation //////////////////////////////////
 
+  // Adds a MenuBar to the left pane in Main Content.
+  duplicates_box
+    -> pack_start(*Gtk::manage(new Gtk::Separator), false, false, 10);
+
+
+
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  left_main_content_paned_box_ 
-    -> pack_end(((*(playlist_comboboxes()().rbegin())) -> box()), 
-                Gtk::PACK_SHRINK);
+  duplicates_box -> pack_end(((*(playlist_comboboxes()().rbegin())) -> box()), 
+                             true, true, 0);
+
+  // Adds a PlaylistCombobox to the the left pane in Main Content.
+  (*(playlist_comboboxes()().rbegin())) -> box() . set_hexpand(true);
+
+  // Adds a PlaylistCombobox to the the left pane in Main Content.
+  (*(playlist_comboboxes()().rbegin())) -> playlist_combobox_entry() . set_hexpand(true);
+
+  // Adds a PlaylistCombobox to the the left pane in Main Content.
+  (*(playlist_comboboxes()().rbegin())) -> playlist_combobox() . set_hexpand(true);
+
+  // Adds a PlaylistCombobox to the the left pane in Main Content.
+  (*(playlist_comboboxes()().rbegin())) -> box() . set_hexpand_set(true);
+
+  // Adds a PlaylistCombobox to the the left pane in Main Content.
+  (*(playlist_comboboxes()().rbegin())) -> playlist_combobox_entry() . set_hexpand_set(true);
+
+  // Adds a PlaylistCombobox to the the left pane in Main Content.
+  (*(playlist_comboboxes()().rbegin())) -> playlist_combobox() . set_hexpand_set(true);
 
 
 
@@ -932,173 +945,8 @@ GUI::GUI(Base& base_ref)
   //                     //
   //                     //
 
-  // Adds the Status Bar's event box to the status_bar_frame_.
-  status_bar_frame_ -> add(*status_bar_event_box_);
-
   // Adds the status_bar_frame to the bottom of the main_window's box.
-  main_window() -> box() . pack_end(*status_bar_frame_, Gtk::PACK_SHRINK);
-
-  // Adds a box to the status_bar_event_box_.
-  status_bar_event_box_ -> add(*status_bar_box_);
-
-  // Sets the orientation of the inner status_bar_box_.
-  status_bar_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
-
-
-
-  // Sets the upper margin of the status_bar_box_.
-  status_bar_box_ ->set_margin_top(0);
-
-  // Sets the lower margin of the status_bar_box_.
-  status_bar_box_ -> set_margin_bottom(0);
-
-  // Sets the end margin of the status_bar_box_.
-  status_bar_box_ -> set_margin_end(0);
-
-  // Sets the start margin of the status_bar_box_.
-  status_bar_box_ -> set_margin_start(0);
-
-
-
-  // 
-  status_bar_box_ -> set_tooltip_text
-    ("Double click this status bar to select the playing track.");
-
-
-
-
-
-  //                 //
-  // Volume Creation //////////////////////////////////////////////////////////
-  //                 //
-
-  // Adds the volume box to the header bar.
-  status_bar_box_ -> pack_start(*main_volume_button_box_, Gtk::PACK_SHRINK);
-
-  // Creates a Gtk::Sepratator pointer.
-  Gtk::Separator* separator;
-
-  // Creates the Gtk::Separator object.
-  separator = Gtk::manage(new Gtk::Separator);
-
-  // Sets the separator orientation to vertical.
-  separator -> set_orientation(Gtk::ORIENTATION_VERTICAL);
-
-  // Adds the separator to the start of the header bar.
-  status_bar_box_ -> pack_start(*separator, Gtk::PACK_SHRINK);
-
-  // Sets the left margin of the main_volume_button_box_.
-  main_volume_button_box_ -> set_margin_left(5);
-
-  // Sets the right margin of the main_volume_button_box_.
-  main_volume_button_box_ -> set_margin_right(5);
-
-  // Adds main_volume_button_ to main_volume_button_box_.
-  main_volume_button_box_ -> set_center_widget(*main_volume_button_);
-
-  // Sets the value of the main_volume_button_.
-  main_volume_button_ -> set_value(base().config().get("playback.volume"));
-
-  // Attachs the function called when the value of the button changes.
-  main_volume_button_ -> signal_value_changed()
-    . connect(sigc::mem_fun(*this, 
-                           &GUI::On_Signal_Value_Changed_Main_Volume_Button));
-
-
-
-  // Adds the playback status label to status_bar_box_.
-  status_bar_box_ -> pack_start(*playback_status_label_, Gtk::PACK_SHRINK);
-
-  // Sets the padding of the playback_status_label_. 
-  playback_status_label_ -> set_padding(15,0);
-
-  // 
-  playback_status_label_
-    -> set_tooltip_text("The current status of playback.");
-
-
-
-  // Sets the orientation of the time_label_box_.
-  time_label_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
-
-  // Adds a label to the time_label_box_.
-  time_label_box_ -> set_center_widget(*time_label_);
-
-  // Adds the time_label_box_ to the Status Bar.
-  status_bar_box_ -> set_center_widget(*time_label_box_);
-
-
-
-  // Adds the selected tracks total time display label to status_bar_box_.
-  status_bar_box_ -> pack_end(*selected_time_label_, Gtk::PACK_SHRINK);
-
-  // Sets the padding of the selected_time_label_. 
-  selected_time_label_ -> set_padding(10, 10);
-
-  // Sets the default time of the selected_time_label_.
-  selected_time_label_ -> set_label("00:00.00");
-
-  // 
-  selected_time_label_ -> set_tooltip_text
-    ("Total added time of all tracks selected in all playlists.");
-
-  // Adds the selected tracks total time display label to status_bar_box_.
-  status_bar_box_ -> pack_end(*Gtk::manage(new Gtk::Separator()),
-                              Gtk::PACK_SHRINK);
-
-  // Adds the selected tracks total time display label to status_bar_box_.
-  status_bar_box_ -> pack_end(*selected_rows_count_label_, Gtk::PACK_SHRINK);
-
-  // Sets the padding of the selected_time_label_. 
-  selected_rows_count_label_ -> set_padding(10, 10);
-
-  // 
-  selected_rows_count_label_
-    -> set_tooltip_text("Total selected tracks in all playlists.");
-
-
-
-  // Creates a slot for the time display.
-  sigc::slot<bool> my_slot = sigc::bind(sigc::mem_fun(*this,
-      &GUI::Display_Time), 0);
-
-  // Uses the slot to make a Glib::signal_timeout.
-  sigc::connection conn
-    = Glib::signal_timeout().connect(my_slot, 20, Glib::PRIORITY_HIGH);
-
-
-
-  // Enables overriding of the enter event for the status_bar_event_box_.
-  status_bar_event_box_ -> set_events(Gdk::ENTER_NOTIFY_MASK);
-
-  // Enables overriding of the leave event for the status_bar_event_box_.
-  status_bar_event_box_ -> set_events(Gdk::LEAVE_NOTIFY_MASK);
-
-  // Enables overriding of the button press event for the 
-  // status_bar_event_box_.
-  status_bar_event_box_ -> set_events(Gdk::BUTTON_PRESS_MASK);
-
-  // Enables overriding of the button release event for the 
-  // status_bar_event_box_.
-  status_bar_event_box_ -> set_events(Gdk::BUTTON_RELEASE_MASK);
-
-
-
-  // Overrides the enter event for the status_bar_event_box_.
-  status_bar_event_box_ -> signal_enter_notify_event()
-    . connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Enter));
-
-  // Overrides the leave event for the status_bar_event_box_.
-  status_bar_event_box_ -> signal_leave_notify_event()
-    . connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Leave));
-
-  // Overrides the button press event for the status_bar_event_box_.
-  status_bar_event_box_ -> signal_button_press_event()
-    . connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Button_Press));
-
-  // Overrides the button release event for the status_bar_event_box_.
-  status_bar_event_box_ -> signal_button_release_event()
-    . connect(sigc::mem_fun(*this, &GUI::Status_Bar_Event_Box_Button_Release));
+  main_window() -> box() . pack_end(status_bar_ -> status_bar_frame(), Gtk::PACK_SHRINK);
 
 
 
@@ -1140,25 +988,6 @@ GUI::GUI(Base& base_ref)
   }
 
 
-
-
-  // Sets the visibility of the Status Bar based on the
-  if(config() . get("gui.hide_status_bar"))
-  {
-
-    // 
-    status_bar_frame_ -> hide();
-
-  }
-
-  // 
-  else
-  {
-
-    // 
-    status_bar_frame_ -> show();
-
-  }
 
 
 
@@ -1205,6 +1034,9 @@ GUI::~GUI()
 
   // Deletes the instance of the ConfigGUIs class.
   delete config_guis_;
+
+  // 
+  delete status_bar_;
 
   // Deletes the instance of the seekbar.
   delete seekbar_;
@@ -1611,255 +1443,6 @@ void GUI::Load_Cover_Art(string& filename_ref)
 
 
 
-//             //
-// Status Bars ////////////////////////////////////////////////////////////////
-//             //
-
-bool GUI::Display_Time(int timeout_number)
-{
-
-  // Ends the Glib::signal_timeout if the program is closing.
-  if(base().playback().backend_quitting())
-  {
-
-    // Ends the Glib::signal_timeout.
-    return false;
-
-  }
-
-
-
-
-  // Sets the StatusBar time if music is playing.
-  if((!(playback().Stopped())))
-  {
-
-    // Creates position string pointer and assigns it a new object of the 
-    // current position.
-    std::string* position_string_ptr
-      = base().time_converter()
-                 .Nanoseconds_To_Time_Format(playback().Position());
-
-    // Creates duration string pointer and assigns it a new object of the 
-    // current duration.
-    std::string* duration_string_ptr
-      = base().time_converter()
-                 .Nanoseconds_To_Time_Format(playback().Duration());
-
-    // Combines the two strings into the standard time output.
-    Glib::ustring final_time_string
-      = *position_string_ptr + " / " + *duration_string_ptr;
-
-    // Deletes the position string memeory.
-    delete position_string_ptr;
-
-    // Deletes the duration string memeory.
-    delete duration_string_ptr;
-
-    // Sets time_label_ with final_time_string.
-    time_label_ -> set_label(final_time_string);
-
-  }
-
-  else if(playlists() . changing_track())
-  {
-
-    debug("hanging track");
-
-  }
-
-  // Is true if playback is stopped.
-  else
-  { 
-
-    // Sets the time label to the zero value.
-    time_label_ -> set_label("00:00.00 / 00:00.00");
-
-    // Lets the timeout propagate.
-    return true;
-
-  }
-
-
-  // Lets the timeout propagate.
-  return true;
-
-
-}
-
-bool GUI::Status_Bar_Event_Box_Button_Press(GdkEventButton* event)
-{
-
-  // Makes a new Gdk::RGBA.
-  Gdk::RGBA status_bar_box_rgba;
-
-  // Sets the RGBA to black and 24% opacity.
-  status_bar_box_rgba.set_rgba(0.0,0.0,0.0,0.24);
-
-  // Sets the status_bar_box_ to be the color of the new RGBA.
-  status_bar_box_ -> override_background_color(status_bar_box_rgba,
-                                               Gtk::STATE_FLAG_NORMAL);
-
-
-
-  // Makes the function do nothing if nothing is playing.
-  if(!(playback() . Playing()))
-  { 
-
-    // 
-    return false;
-
-  }
-
-
-
-  // Is true if the StatusBar was double-clicked.
-  if((event -> type) == GDK_2BUTTON_PRESS)
-  { 
-
-    // Selects the playing track.
-    playlists() . Select_Row(playlists() . playing_row_ref());
-
-    // Scrolls to the playing track.
-    playlists() . Scroll_To_Row(playlists() . playing_row_ref());
-
-    // Gets the filename of the playing track.
-    string temp_string = playlists() . playing_track() . filename();
-
-
-
-    // Updates the Tagviews as Playing.
-    if(playback() . Playing())
-    {
-
-      // Updates the Tagviews as Playing while including the playing track.
-      Update_Tagview("Playing", playback().playing_track());
-
-    }
-
-    // Updates the Tagviews as Paused.
-    else if(playback() . Paused())
-    {
-
-      // Updates the Tagviews as Paused while including the paused track.
-      Update_Tagview("Paused", playback().playing_track());
-
-    }
-
-    // Updates the Tagviews as Idle.
-    else
-    { 
-
-      // Sets the Tagviews as Idle.
-      Update_Tagview("Idle", playback().empty_track());
-
-    }
-
-
-
-    // Sets the cover art.
-    Load_Cover_Art(temp_string);
-
-
-
-    // Sets the selected time label.
-    playlists()() . front() -> Add_Selected_Tracks_Times();
-
-
-    // 
-    for(auto playlists_it : playlists()())
-    {
-
-      // 
-      if(playlists_it -> playlist_treestore()
-           == playlists() . playing_playlist_treestore())
-      {
-
-        // Sets the filename label to the newly selected track.
-        playlists_it -> filename_label()
-          . set_label(playlists() . playing_track() . filename());
-
-      }
-
-    }
-
-
-
-    // 
-    playlists() . set_selected_row_ref(playlists() . playing_row_ref());
-
-
-
-    // 
-    playback() . Reset_Track_Queue();
-
-  }
-
-
-
-  // Ends the function call.
-  return false;
-
-}
-
-bool GUI::Status_Bar_Event_Box_Button_Release(GdkEventButton *event)
-{
-
-  // Makes a new Gdk::RGBA.
-  Gdk::RGBA status_bar_box_rgba;
-
-  // Sets the RGBA to black and 12% opacity.
-  status_bar_box_rgba.set_rgba(0.0,0.0,0.0,0.12);
-
-  // Sets the status_bar_box_ to be the color of the new RGBA.
-  status_bar_box_ -> override_background_color(status_bar_box_rgba,
-                                               Gtk::STATE_FLAG_NORMAL);
-
-  // Ends the function call.
-  return false;
-
-}
-
-bool GUI::Status_Bar_Event_Box_Enter(GdkEventCrossing* event)
-{
-
-  // Makes a new Gdk::RGBA.
-  Gdk::RGBA status_bar_box_rgba;
-
-  // Sets the RGBA to black and 12% opacity.
-  status_bar_box_rgba.set_rgba(0.0,0.0,0.0,0.12);
-
-  // Sets the status_bar_box_ to be the color of the new RGBA.
-  status_bar_box_ -> override_background_color(status_bar_box_rgba,
-                                               Gtk::STATE_FLAG_NORMAL);
-
-  // Ends the function call.
-  return false;
-
-}
-
-bool GUI::Status_Bar_Event_Box_Leave(GdkEventCrossing* event)
-{
-
-  // Makes a new Gdk::RGBA.
-  Gdk::RGBA status_bar_box_rgba;
-
-  // Sets the RGBA to black and 0% opacity.
-  status_bar_box_rgba.set_rgba(0.0,0.0,0.0,0.00);
-
-  // Sets the status_bar_box_ to be the color of the new RGBA.
-  status_bar_box_ -> override_background_color(status_bar_box_rgba,
-                                               Gtk::STATE_FLAG_NORMAL);
-
-  // Ends the function call.
-  return false;
-
-}
-
-
-
-
-
 //         //
 // Tagview ////////////////////////////////////////////////////////////////////
 //         //
@@ -1875,32 +1458,6 @@ void GUI::Update_Tagview(const char* tag_frame_label_name, Track& new_track)
     (*(tagviews_.begin())) -> Update_Tags(tag_frame_label_name, new_track);
 
   }
-
-}
-
-
-
-
-
-//                   //
-// Volume Spinbutton //////////////////////////////////////////////////////////
-//                   //
-
-void GUI::On_Signal_Value_Changed_Main_Volume_Button(double new_volume)
-{
-
-  // Sets the new volume level in the configuration
-  base().config().set("playback.volume", new_volume);
-
-  // Writes the configuration to the file.
-  base().config().write_file();
-
-
-
-  // Sets volume level of the volume element in the playback pipeline.
-  g_object_set (G_OBJECT(playback().volume()),
-                "volume", gdouble(config().get("playback.volume")),
-                NULL);
 
 }
 
@@ -2013,27 +1570,19 @@ Seekbar& GUI::seekbar()
 
 }
 
+StatusBar& GUI::status_bar()
+{
+
+  return *status_bar_;
+
+}
+
 std::list<Tagview*>& GUI::tagviews()
 { 
 
   return tagviews_; 
 
 }
-
-
-
-
-
-//            //
-// Status Bar /////////////////////////////////////////////////////////////////
-//            //
-
-Gtk::Frame& GUI::status_bar_frame()
-{
-
-  return *status_bar_frame_;
-
- }
 
 
 
@@ -2083,37 +1632,5 @@ void GUI::set_disable_menubar_functions_flag(bool new_setting)
 { 
 
   disable_menubar_functions_flag_ = new_setting; 
-
-}
-
-
-
-
-
-//             //
-// Status Bars ////////////////////////////////////////////////////////////////
-//             //
-
-void GUI::set_playback_status_label(const char* new_label)
-{
-
-  // Sets the playback status label with the new status.
-  playback_status_label_ -> set_label(new_label);
-
-}
-
-void GUI::set_selected_rows_count_label(int new_row_count)
-{ 
-
-  // Sets the label used for displaying the amount of selected rows.
-  selected_rows_count_label_ -> set_label(to_string(new_row_count));
-
-}
-
-void GUI::set_selected_time_label(const char* new_time)
-{ 
-
-  // Sets the label used for displaying the summed time of the selected tracks.
-  selected_time_label_ -> set_label(new_time); 
 
 }

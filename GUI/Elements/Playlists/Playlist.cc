@@ -83,6 +83,8 @@
 
 #include "../../GUI.h"
 
+#include "../../StatusBar.h"
+
 #include "../PlaylistComboBoxes/PlaylistComboBox.h"
 
 #include "PlaylistColumnRecord.h"
@@ -2249,10 +2251,10 @@ void Playlist::Add_Selected_Tracks_Times()
         . Nanoseconds_To_Time_Format(total_duration_nanoseconds);
 
   // Sets the StatusBars' label for the selected track times.
-  gui() . set_selected_time_label(time_str_ptr -> c_str());
+  status_bar() . set_selected_time_label(time_str_ptr -> c_str());
 
   // 
-  gui() . set_selected_rows_count_label(row_count);
+  status_bar() . set_selected_rows_count_label(row_count);
 
   // Deletes the time time format string.
   delete time_str_ptr;

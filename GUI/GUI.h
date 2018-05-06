@@ -184,6 +184,8 @@ class Playlists;
 
 class Seekbar;
 
+class StatusBar;
+
 class Tagview;
 
 class Track;
@@ -390,98 +392,6 @@ class GUI : public Parts
 
 
 
-
-
-  //             //
-  // Status Bars //////////////////////////////////////////////////////////////
-  //             //
-
-  public:
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Formats the position and time and sets it as the value of time_label_.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   timeout_number: Time in milliseconds to recall the function after
-    //   finishing.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    bool Display_Time(int timeout_number);
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Changes the color of the StatusBar and selects the current playing
-    //   track if double-clicked.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   event: Event data structure.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    bool Status_Bar_Event_Box_Button_Press(GdkEventButton* event);
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Changes the color of the StatusBar and selects upon mouse button
-    //   release.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   event: Event data structure.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    bool Status_Bar_Event_Box_Button_Release(GdkEventButton* event);
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Changes the color of the StatusBar and selects upon mouse button
-    //   release.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   event: Event data structure.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    bool Status_Bar_Event_Box_Enter(GdkEventCrossing* event);
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Changes the color of the StatusBar and selects upon mouse button
-    //   release.
-    //   
-    // 
-    //
-    // Arguments: 
-    //
-    //   event: Event data structure.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    bool Status_Bar_Event_Box_Leave(GdkEventCrossing* event);
-
-
-
-
-
   //         //
   // Tagview //////////////////////////////////////////////////////////////////
   //         //
@@ -504,31 +414,6 @@ class GUI : public Parts
     //
     //////////////////////////////////////////////////////////////////////// */
     void Update_Tagview(const char* tag_frame_label_name, Track& new_track);
-
-
-
-
-
-  //                    //
-  // Volume Spinbuttons ///////////////////////////////////////////////////////
-  //                    //
-
-  protected:
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Function run when the value of the volume spin button is changed.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   new_volume: New value of the volume changer.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    void On_Signal_Value_Changed_Main_Volume_Button(double new_volume);
 
 
 
@@ -651,6 +536,8 @@ class GUI : public Parts
     //////////////////////////////////////////////////////////////////////// */
     Seekbar& seekbar();
 
+    StatusBar& status_bar();
+
     /* ////////////////////////////////////////////////////////////////////////
     //
     // Purpose: 
@@ -671,18 +558,6 @@ class GUI : public Parts
   public:
 
     Gtk::Notebook& main_window_notebook();
-
-
-
-
-
-  //            //
-  // Status Bar ///////////////////////////////////////////////////////////////
-  //            //
-
-  public:
-
-    Gtk::Frame& status_bar_frame();
 
 
 
@@ -735,61 +610,6 @@ class GUI : public Parts
     //
     //////////////////////////////////////////////////////////////////////// */
     void set_disable_menubar_functions_flag(bool new_setting);
-
-
-
-
-
-  //             //
-  // Status Bars //////////////////////////////////////////////////////////////
-  //             //
-
-  public:
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Sets the playback status label.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   New value for the playback status label.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    void set_playback_status_label(const char* new_label); 
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Used to set the label of the selected rows count.
-    //
-    //
-    //
-    // Arguments: 
-    //
-    //   new_rows_count: Amount of rows selected.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    void set_selected_rows_count_label(int new_rows_count);
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Used to set the label of the selected tracks time sum.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   new_time: String that is the time sum of the selected tracks.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    void set_selected_time_label(const char* new_time);
 
 
 
@@ -905,36 +725,6 @@ class GUI : public Parts
 
 
 
-  //            //
-  // Status Bar ///////////////////////////////////////////////////////////////
-  //            //
-
-  private:
-
-    Gtk::Frame* status_bar_frame_;
-
-    Gtk::EventBox* status_bar_event_box_;
-
-    Gtk::Box* status_bar_box_;    
-
-    Gtk::Box* time_label_box_;
-
-    Gtk::Label* time_label_;
-
-    Gtk::Label* playback_status_label_;
-
-    Gtk::Label* selected_rows_count_label_;
-
-    Gtk::Label* selected_time_label_;
-
-    Gtk::Box* main_volume_button_box_;
-
-    Gtk::VolumeButton* main_volume_button_;
-
-
-
-
-
   //         //
   // Windows //////////////////////////////////////////////////////////////////
   //         //
@@ -948,6 +738,18 @@ class GUI : public Parts
     int window_size_x_;
 
     int window_size_y_;
+
+
+
+
+
+  //            //
+  // Status Bar ///////////////////////////////////////////////////////////////
+  //            //
+
+  public:
+
+    StatusBar* status_bar_;
 
 
 

@@ -102,6 +102,13 @@
 
 class Base;
 
+namespace Glib
+{
+
+  class ustring;
+
+}
+
 class PlaylistTreeStore;
 
 class sqlite3;
@@ -208,6 +215,8 @@ class PlaylistsDatabase : public Parts
 
   static int Extract_Tracks_Callback
     (void* tracks_and_ids_vptr, int argc, char **argv, char **column_name);
+
+  Glib::ustring* Multiple_Values_Tag_Encode(std::vector<Glib::ustring*>& tag);
 
   bool Playlist_Names(std::vector<std::string>& playlist_names);
 

@@ -679,9 +679,9 @@ void Metadata::Interpret_Multiple_Value_Tag
       // Adds the tag to the list of entries in the multiple-value tag.
       (track.*setter)(new Glib::ustring(it . to8Bit(true)));
 
-    }
+     }
 
-  }
+  } 
 
   // 
   else
@@ -729,7 +729,7 @@ void Metadata::Interpret_Multiple_Value_Tag
 
 
   // 
-  prop_map.erase(TagLib::String(tag_name));
+  prop_map . erase(TagLib::String(tag_name));
 
 }
 
@@ -1017,9 +1017,9 @@ std::vector<Track*> *Metadata::Interpret_Properties
     // 
     std::string* temp_time_string;
 
-      // Converts the duration to a time format string in centiseconds.
-      temp_time_string
-        = time_converter_ -> Nanoseconds_To_Time_Format(duration);
+    // Converts the duration to a time format string in centiseconds.
+    temp_time_string
+      = time_converter_ -> Nanoseconds_To_Time_Format(duration);
 
 
 
@@ -1251,7 +1251,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
 
       // 
-      if(((it->first).to8Bit(true)) == "")
+      if(((it -> first) . to8Bit(true)) == "")
       {
 
       }

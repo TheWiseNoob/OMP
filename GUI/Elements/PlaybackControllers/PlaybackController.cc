@@ -175,6 +175,11 @@ PlaybackController::PlaybackController
 
 
 
+  // 
+  next_button_ -> set_margin_right(10);
+
+
+
   // Adds the previous button to the playback_button_stack_switcher_.
 //  playback_buttons_stack_switcher_
 //    -> pack_start(*previous_button_, Gtk::PACK_SHRINK, 0);
@@ -264,10 +269,6 @@ PlaybackController::PlaybackController
 
   // Makes the previous button unclickable.
   previous_button_ -> set_sensitive(false);
-
-
-
-
 
 }
 

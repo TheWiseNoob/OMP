@@ -72,8 +72,6 @@
 
 #include "../Parts.h"
 
-#include <gtkmm/box.h>
-
 
 
 
@@ -97,13 +95,30 @@ class Base;
 namespace Gtk
 {
 
+  class Box;
+
   class Entry;
 
   class Scale;
 
+  class StackSwitcher;
+
 } 
 
 class TimeConversion;
+
+
+
+
+
+//         //
+//         //
+// Structs ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+struct _GdkEventButton;
+typedef struct _GdkEventButton GdkEventButton;
 
 
 
@@ -117,7 +132,7 @@ class TimeConversion;
 //                   //
 //                   //
 
-class Seekbar : public Gtk::Box, public Parts 
+class Seekbar : public Parts 
 {
 
   //             //
@@ -166,7 +181,7 @@ class Seekbar : public Gtk::Box, public Parts
 
   public:
 
-    Gtk::Entry& entry();
+    Gtk::Box& box();
 
     Gtk::Scale& scale();                                      
 
@@ -182,18 +197,24 @@ class Seekbar : public Gtk::Box, public Parts
 
   private:
 
-    Gtk::Entry* entry_;
-
-    Gtk::Scale* scale_;
-
-    Gtk::Box scale_box_;
-
-    Gtk::Box entry_box_;
-
-    bool seekbar_movement_;
+    Gtk::Box* box_;
 
     bool disable_update_;
 
+    bool seekbar_movement_;
+
+    Gtk::Scale* scale_;
+
+    Gtk::Box* scale_box_;
+
+    Gtk::Box* time_entry_box_;
+
+    Gtk::StackSwitcher* time_entry_stack_switcher_;
+
+    Gtk::Entry* time_left_entry_;
+
+    Gtk::Entry* time_right_entry_;
+  
 };
 
 

@@ -89,9 +89,13 @@
 
 #include <glibmm/main.h>
 
+#include <gtkmm/box.h>
+
 #include <gtkmm/entry.h>
 
 #include <gtkmm/scale.h>
+
+#include <gtkmm/stackswitcher.h>
 
 #include <gtkmm/treerowreference.h>
 
@@ -141,9 +145,23 @@ Seekbar::Seekbar(Base& base, int begin, int end)
 
 // General
 
-, seekbar_movement_(true)
+, box_(Gtk::manage(new Gtk::Box))
 
 , disable_update_(false)
+
+, seekbar_movement_(true)
+
+, scale_(Gtk::manage(new Gtk::Scale))
+
+, scale_box_(Gtk::manage(new Gtk::Box))
+
+, time_entry_box_(Gtk::manage(new Gtk::Box))
+
+, time_entry_stack_switcher_(Gtk::manage(new Gtk::StackSwitcher))
+
+, time_left_entry_(Gtk::manage(new Gtk::Entry))
+
+, time_right_entry_(Gtk::manage(new Gtk::Entry))
 
 {
 
@@ -152,10 +170,61 @@ Seekbar::Seekbar(Base& base, int begin, int end)
 
 
   // 
-  entry_ = Gtk::manage(new Gtk::Entry);
+  box_ -> pack_end(*time_entry_box_, Gtk::PACK_SHRINK);
 
   // 
-  scale_ = Gtk::manage(new Gtk::Scale);
+  box_ -> pack_start(*scale_box_, Gtk::PACK_EXPAND_WIDGET);
+
+ 
+
+  // 
+  scale_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+
+
+
+  // 
+  scale_box_ -> pack_start(*scale_, Gtk::PACK_EXPAND_WIDGET);
+
+
+
+  // 
+  time_entry_box_ -> pack_start(*time_entry_stack_switcher_, true, false, 0);
+
+
+
+  // 
+  time_entry_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+
+  // 
+  time_entry_stack_switcher_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+
+
+
+  // 
+  time_entry_stack_switcher_ -> set_vexpand(false);
+
+
+
+  // 
+  time_entry_stack_switcher_ -> add(*time_left_entry_);
+
+  // 
+  time_entry_stack_switcher_ -> add(*time_right_entry_);
+
+
+
+  // 
+  scale_ -> set_draw_value(false);                                         
+
+
+
+  // 
+  scale_ -> set_digits(0);
+
+
+
+  // 
+  scale_ -> set_value(begin); 
 
 
 
@@ -165,61 +234,63 @@ Seekbar::Seekbar(Base& base, int begin, int end)
 
 
   // 
-  pack_end(entry_box_, Gtk::PACK_SHRINK);
+  time_left_entry_ -> set_vexpand(false);
 
   // 
-  pack_start(scale_box_, Gtk::PACK_EXPAND_WIDGET);
-
- 
-
-  // 
-  scale_box_ . set_orientation(Gtk::ORIENTATION_VERTICAL);
-
-  // 
-  scale_box_ . pack_start(*scale_, Gtk::PACK_EXPAND_WIDGET);
-
-  // 
-  entry_box_ . set_orientation(Gtk::ORIENTATION_VERTICAL);
-
-  // 
-  entry_box_ . set_center_widget(*entry_);
+  time_right_entry_ -> set_vexpand(false);
 
 
 
   // 
-  scale_ -> set_draw_value(false);                                         
+  time_left_entry_ -> set_margin_left(4);
 
   // 
-  scale_ -> set_digits(0);    
+  time_left_entry_ -> set_margin_top(2);                                    
 
   // 
-  scale_ -> set_value(begin); 
+  time_left_entry_ -> set_margin_bottom(2);
+
+  // 
+  time_right_entry_ -> set_margin_right(2);
+
+  // 
+  time_right_entry_ -> set_margin_top(2);
+
+  // 
+  time_right_entry_ -> set_margin_bottom(2);
 
 
 
   // 
-  entry_ -> set_margin_right(2);  
+  time_left_entry_ -> set_sensitive(false);
 
   // 
-  entry_ -> set_margin_left(4);
-
-  // 
-  entry_ -> set_margin_top(2);                                    
-
-  // 
-  entry_ -> set_margin_bottom(2);                                    
-
-  // 
-  entry_ -> set_sensitive(false);
+  time_right_entry_ -> set_sensitive(false);
 
 
 
 
   // 
-  entry_ -> set_placeholder_text("00:00.00 / 00:00.00");
+  time_left_entry_ -> set_text("00:00.00");
 
   // 
-  entry_ -> set_alignment(0.5);
+  time_right_entry_ -> set_text("00:00.00");
+
+
+
+  // 
+  time_left_entry_ -> set_width_chars(9);
+
+  // 
+  time_right_entry_ -> set_width_chars(9);
+
+
+
+  // 
+  time_left_entry_ -> set_alignment(0.5);
+
+  // 
+  time_right_entry_ -> set_alignment(0.5);
 
 
 
@@ -227,8 +298,12 @@ Seekbar::Seekbar(Base& base, int begin, int end)
   scale_ -> set_tooltip_text("Drag to seek the currently active track.");
 
   //
-  entry_ -> set_tooltip_text
-    ("Position in Playing Track / Time Left in Playing Track");
+  time_left_entry_ -> set_tooltip_text
+    ("Position in Playing Track");
+
+  //
+  time_right_entry_ -> set_tooltip_text
+    ("Time Left in Playing Track");
 
 
 
@@ -237,21 +312,17 @@ Seekbar::Seekbar(Base& base, int begin, int end)
     . connect(sigc::mem_fun(*this, &Seekbar::On_Signal_Value_Changed_Scale));
 
   // 
-  entry_ -> signal_changed()
-    . connect(sigc::mem_fun(*this, &Seekbar::On_Signal_Value_Changed_Entry));            
- 
-  // 
-  scale() . signal_button_press_event()
+  scale_ -> signal_button_press_event()
     . connect(sigc::mem_fun(*this, &Seekbar::Stop_Seekbar_Movement), false);
 
   // 
-  scale() . signal_button_release_event()
+  scale_ -> signal_button_release_event()
     . connect(sigc::mem_fun(*this, &Seekbar::Start_Seekbar_Movement), false);
 
 
 
   // 
-  show_all_children();
+  box_ -> show_all_children();
 
 
 
@@ -286,15 +357,15 @@ bool Seekbar::Automation(int timeout_number)
     scale() . set_value(0);
 
     // 
-    entry() . set_text("00:00:00 / 00:00.00");
+    time_left_entry_ -> set_text("00:00:00");
+
+    // 
+    time_right_entry_ -> set_text("00:00:00");
 
 
 
     // 
     scale() . set_sensitive(false);
-
-    // 
-    entry() . set_sensitive(false);
 
 
 
@@ -315,15 +386,15 @@ bool Seekbar::Automation(int timeout_number)
     scale() . set_value(0);
 
     // 
-    entry() . set_text("00:00:00 / 00:00.00");
+    time_left_entry_ -> set_text("00:00:00");
+
+    // 
+    time_right_entry_ -> set_text("00:00:00");
 
 
 
     // 
     scale() . set_sensitive(false);
-
-    // 
-    entry() . set_sensitive(false);
 
 
 
@@ -337,10 +408,7 @@ bool Seekbar::Automation(int timeout_number)
   {
 
     // 
-    scale().set_sensitive(true);
-
-    // 
-    entry().set_sensitive(true);
+    scale() . set_sensitive(true);
 
 
 
@@ -353,7 +421,7 @@ bool Seekbar::Automation(int timeout_number)
 
 
     // 
-    auto playing_track_copy = playback().playing_track();
+    auto playing_track_copy = playback() . playing_track();
 
 
 
@@ -364,11 +432,11 @@ bool Seekbar::Automation(int timeout_number)
       // 
       scale() . set_range(0, 100); 
 
-    }
+    } 
 
     // 
     else if(playing_track_copy . Pregap())
-    {
+    { 
 
       // 
       long long track_start_ll 
@@ -385,7 +453,7 @@ bool Seekbar::Automation(int timeout_number)
 
     // 
     else
-    {
+    { 
 
       scale() . set_range(0, double((duration_temp) / 10000000.0000000));
 
@@ -406,30 +474,18 @@ bool Seekbar::Automation(int timeout_number)
 }
 
 void Seekbar::On_Signal_Value_Changed_Entry() 
-{                                                                               
-                                                            
+{
+
+  //                                                             
   if(disable_update_)                                                            
-  {                                                                             
-                                                                                
+  {
+
+    // 
     return;                                                                     
                                                                                 
   }                                                                             
 
- /*
-                                                                                
-  disable_update = true;                                                        
-
-  int value = entry_ -> get_value();
-                                                                                
-  scale_ -> set_value(value);                                              
-                                                                                
-  cout << "\n\nentry_.value: " << entry_ -> get_value()
-       << "\n" << "Scale value: " << scale_ -> get_value() << "\n\n";               
-                                                                                
-  disable_update = false;  
-*/
-
-}    
+}     
 
 void Seekbar::On_Signal_Value_Changed_Scale()
 {
@@ -466,19 +522,18 @@ void Seekbar::On_Signal_Value_Changed_Scale()
 
 
 
-  //   
-  string final_time_str = (*pos_str) + " / " + (*time_left_str);
-
+  // 
+  time_left_entry_ -> set_text(*pos_str);
 
   // 
-  entry_ -> set_text(final_time_str);
+  time_right_entry_ -> set_text(*time_left_str);
 
 
 
   // 
   delete pos_str;
 
-  // 
+ // 
   delete time_left_str;
 
 
@@ -521,7 +576,7 @@ bool Seekbar::Start_Seekbar_Movement(GdkEventButton* event)
     = time_converter().Nanoseconds_To_Time_Format(new_value);
 
   // 
-  entry_ -> set_text(*temp_time);
+//  entry_ -> set_text(*temp_time);
 
   // 
   delete temp_time;
@@ -598,10 +653,10 @@ bool Seekbar::Stop_Seekbar_Movement(GdkEventButton* event)
 //         //
 //         //
 
-Gtk::Entry& Seekbar::entry()
+Gtk::Box& Seekbar::box()
 {
 
-  return *entry_;
+  return *box_;
 
 }
 

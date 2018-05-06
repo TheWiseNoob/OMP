@@ -112,6 +112,8 @@ class Playlists;
 
 class Scrobbling;
 
+class StatusBar;
+
 class TimeConversion;
 
 
@@ -204,6 +206,8 @@ class Parts
     virtual PlaylistComboBoxes& playlist_comboboxes();
 
     virtual Playlists& playlists();
+
+    virtual StatusBar& status_bar();
 
     virtual Scrobbling& scrobbling();
 

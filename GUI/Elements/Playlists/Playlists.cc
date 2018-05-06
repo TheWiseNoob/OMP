@@ -1251,12 +1251,15 @@ void Playlists::Fill_Row
   //
   int track_number = new_track_sptr -> track_number();
 
+  // 
   if(track_number == 0)
   {
 
-  }
+  } 
+
+  // 
   else
-  {
+  { 
 
     // 
     new_tree_row[playlist_column_record().track_num_col]
@@ -1273,10 +1276,13 @@ void Playlists::Fill_Row
   //
   int track_total = new_track_sptr -> track_total();
 
+  // 
   if(track_total == 0)
   {
 
   }
+
+  // 
   else
   {
 
@@ -1295,10 +1301,13 @@ void Playlists::Fill_Row
   //
   int date = new_track_sptr -> date();
 
+  // 
   if(date == 0)
   { 
 
   }
+
+  // 
   else
   {
 

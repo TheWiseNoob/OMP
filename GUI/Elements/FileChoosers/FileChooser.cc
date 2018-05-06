@@ -41,42 +41,142 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//              //
+//              //
+// Class Header ///////////////////////////////////////////////////////////////
+//              //
+//              //
+
 #include "FileChooser.h"
 
 
 
 
 
-#include "FileChoosers.h"
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include "../../../Base.h"
 
 #include "../../../Configuration/Configuration.h"
-#include "../../../Base.h"
+
 #include "../../../Metadata/Metadata.h"
+
+#include "../ChildWindows/ChildWindow.h"
+
 #include "../Playlists/Playlists.h"
+
 #include "../Playlists/PlaylistTreeStore.h"
 
+#include "FileChoosers.h"
 
 
-#include <gtkmm/filechooserwidget.h>
-#include <gtkmm/filefilter.h>
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include <iostream>
+
+#include <gdkmm/device.h>
+
+#include <gdkmm/devicemanager.h>
+
+#include <gdkmm/display.h>
+
+#include <gdkmm/window.h>
 
 #include <glibmm/refptr.h>
 
-#include <iostream>
+#include <gtkmm/box.h>
+
+#include <gtkmm/filechooserwidget.h>
+
+#include <gtkmm/filefilter.h>
+
+#include <gtkmm/frame.h>
+
+#include <gtkmm/label.h>
+
+#include <gtkmm/radiomenuitem.h>
+
+#include <gtkmm/scrolledwindow.h>
+
+#include <gtkmm/treepath.h>
+
+#include <gtkmm/treerowreference.h>
+
+#include <gtkmm/treeselection.h>
+
+#include <pangomm/fontdescription.h>
+
 #include <vector>
 
 
+
+
+
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
 
 using namespace std;
 
 
 
 
-FileChooser::FileChooser(Base& base, 
-                         FileChoosers& file_choosers_ref)
-: GUIElement(base, file_choosers_ref())
-, file_chooser_(new Gtk::FileChooserWidget)
+
+//                 //
+//                 //
+//                 //
+// Class Functions ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+//                 //
+
+//             //
+//             //
+// Constructor ////////////////////////////////////////////////////////////////
+//             //
+//             //
+
+FileChooser::FileChooser(Base& base_ref, FileChoosers& file_choosers_ref)
+
+// Inherited Class
+
+: GUIElement(base_ref, file_choosers_ref())
+
+
+
+// General
+
 , action_box_(new Gtk::Box)
+
+, cancel_button_(new Gtk::Button("Cancel"))
+
+, file_chooser_(new Gtk::FileChooserWidget)
+
+, okay_button_(new Gtk::Button("Add Files"))
+
 {
 
   // Adds the new FileChooser object to the FileChoosers list.
@@ -87,136 +187,228 @@ FileChooser::FileChooser(Base& base,
 
 
 
-  box().set_orientation(Gtk::ORIENTATION_VERTICAL);
+  // 
+  box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
 
-  box().pack_start(*file_chooser_, Gtk::PACK_EXPAND_WIDGET);
+  // 
+  box() . pack_start(*file_chooser_, Gtk::PACK_EXPAND_WIDGET);
 
-  box().pack_end(*action_box_, Gtk::PACK_SHRINK);
 
+
+  // 
+  file_chooser_ -> set_extra_widget(*action_box_);
+
+
+
+  // 
   file_chooser_ -> set_select_multiple(true);
 
+  // 
   file_chooser_ -> set_create_folders(true);
 
+
+
+  // 
   file_chooser_ -> set_action(Gtk::FILE_CHOOSER_ACTION_OPEN);
 
+  // 
   file_chooser_ -> set_use_preview_label(true);
 
-  file_chooser_ -> signal_file_activated()
-    .connect(sigc::mem_fun(*this, &FileChooser::Use_Selected));
 
 
-
-  //Filter Creation
-  //  
-  Glib::RefPtr<Gtk::FileFilter> temp_file_filter;
-
-
-  temp_file_filter = Gtk::FileFilter::create();
-
-  temp_file_filter
-    -> set_name("All Compatible File Types " 
-                "(.cue, .ape, .flac .m4a, .oga, .ogg, .wv)");
-
-  temp_file_filter -> add_mime_type("application/x-cue");
-
-  temp_file_filter -> add_mime_type("audio/x-ape");
-
-  temp_file_filter -> add_mime_type("audio/flac");
-
-  temp_file_filter -> add_mime_type("audio/mp4");
-
-  temp_file_filter -> add_mime_type("audio/mpeg");
-
-  temp_file_filter -> add_mime_type("audio/ogg");
-
-  temp_file_filter -> add_mime_type("audio/x-wavpack");
-
-  file_chooser_ -> add_filter(temp_file_filter);
-
-
-  temp_file_filter = Gtk::FileFilter::create();
-
-  temp_file_filter -> set_name(".cue - (CUESHEET)");
-
-  temp_file_filter -> add_mime_type("application/x-cue");
-
-  file_chooser_ -> add_filter(temp_file_filter);
-
-
-  temp_file_filter = Gtk::FileFilter::create();
-
-  temp_file_filter -> set_name(".ape - (Monkey's Audio)");
-
-  temp_file_filter -> add_mime_type("audio/x-ape");
-
-  file_chooser_ -> add_filter(temp_file_filter);
-
-
-  temp_file_filter = Gtk::FileFilter::create();
-
-  temp_file_filter -> set_name(".flac - (FLAC)");
-
-  temp_file_filter -> add_mime_type("audio/flac");
-
-  file_chooser_ -> add_filter(temp_file_filter);
-
-
-  temp_file_filter = Gtk::FileFilter::create();
-
-  temp_file_filter -> set_name(".m4a - (AAC or ALAC)");
-
-  temp_file_filter -> add_mime_type("audio/mp4");
-
-  file_chooser_ -> add_filter(temp_file_filter);
-
-
-  temp_file_filter = Gtk::FileFilter::create();
-
-  temp_file_filter -> set_name(".mp3 - (MP3)");
-
-  temp_file_filter -> add_mime_type("audio/mpeg");
-
-  file_chooser_ -> add_filter(temp_file_filter);
-
-
-  temp_file_filter = Gtk::FileFilter::create();
-
-  temp_file_filter -> set_name(".ogg | .oga - (Ogg Vorbis)");
-
-  temp_file_filter -> add_mime_type("audio/ogg");
-
-  file_chooser_ -> add_filter(temp_file_filter);
-
-
-  temp_file_filter = Gtk::FileFilter::create();
-
-  temp_file_filter -> set_name(".wv - (WavPack)");
-
-  temp_file_filter -> add_mime_type("audio/x-wavpack");
-
-  file_chooser_ -> add_filter(temp_file_filter);
-
-
-
+  // 
   string last_folder_str = config() . get("last_folder");
 
+  // 
   if(last_folder_str != "")
-  {
+  { 
 
+    // 
     file_chooser_ -> set_current_folder(last_folder_str);
 
   }
 
 
+
+  // 
+  action_box_ -> set_hexpand(true);
+
+
+
+  // 
+  action_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+
+
+
+  // 
+  action_box_ -> pack_start(*okay_button_, true, true, 0);
+
+
+
+  // 
+  okay_button_ -> signal_clicked()
+    . connect(sigc::mem_fun(*this, &FileChooser::Use_Selected));
+
+  // 
   file_chooser_ -> signal_current_folder_changed()
     . connect(sigc::mem_fun
         (*this, &FileChooser::On_Current_Folder_Changed_Signal));
 
-}
+  // 
+  file_chooser_ -> signal_file_activated()
+    . connect(sigc::mem_fun(*this, &FileChooser::Use_Selected));
 
 
 
 
+
+  //                 //
+  // Filter Creation //////////////////////////////////////////////////////////
+  //                 //
+
+  // 
+  Glib::RefPtr<Gtk::FileFilter> temp_file_filter;
+
+  // 
+  temp_file_filter = Gtk::FileFilter::create();
+
+  // 
+  temp_file_filter -> set_name
+    ("All Compatible File Types (.ape, .cue, .flac .m2a, .oga, .ogg, .wv)");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/x-ape");
+
+  // 
+  temp_file_filter -> add_mime_type("application/x-cue");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/flac");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/mp4");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/mpeg");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/ogg");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/x-wavpack");
+
+  // 
+  file_chooser_ -> add_filter(temp_file_filter);
+
+
+
+  // 
+  temp_file_filter = Gtk::FileFilter::create();
+
+  // 
+  temp_file_filter -> set_name(".cue - (CUESHEET)");
+
+  // 
+  temp_file_filter -> add_mime_type("application/x-cue");
+
+  // 
+  file_chooser_ -> add_filter(temp_file_filter);
+
+
+
+  // 
+  temp_file_filter = Gtk::FileFilter::create();
+
+  // 
+  temp_file_filter -> set_name(".ape - (Monkey's Audio)");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/x-ape");
+
+  // 
+  file_chooser_ -> add_filter(temp_file_filter);
+
+
+
+  // 
+  temp_file_filter = Gtk::FileFilter::create();
+
+  // 
+  temp_file_filter -> set_name(".flac - (FLAC)");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/flac");
+
+  // 
+  file_chooser_ -> add_filter(temp_file_filter);
+
+
+
+  // 
+  temp_file_filter = Gtk::FileFilter::create();
+
+  // 
+  temp_file_filter -> set_name(".m4a - (AAC or ALAC)");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/mp4");
+
+  // 
+  file_chooser_ -> add_filter(temp_file_filter);
+
+
+
+  // 
+  temp_file_filter = Gtk::FileFilter::create();
+
+  // 
+  temp_file_filter -> set_name(".mp3 - (MP3)");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/mpeg");
+
+  // 
+  file_chooser_ -> add_filter(temp_file_filter);
+
+
+
+  // 
+  temp_file_filter = Gtk::FileFilter::create();
+
+  // 
+  temp_file_filter -> set_name(".ogg | .oga - (Ogg Vorbis)");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/ogg");
+
+  // 
+  file_chooser_ -> add_filter(temp_file_filter);
+
+
+
+  // 
+  temp_file_filter = Gtk::FileFilter::create();
+
+  // 
+  temp_file_filter -> set_name(".wv - (WavPack)");
+
+  // 
+  temp_file_filter -> add_mime_type("audio/x-wavpack");
+
+  // 
+  file_chooser_ -> add_filter(temp_file_filter);
+
+ }
+
+
+
+
+
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
 
 FileChooser::~FileChooser()
 {
@@ -229,8 +421,39 @@ FileChooser::~FileChooser()
 
 
 
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+
+void FileChooser::Enable_Cancel_Button(ChildWindow* child_window_ptr)
+{
+
+  // 
+  action_box_ -> pack_end(*cancel_button_, true, true, 0);
+
+
+
+  // 
+  cancel_button_ -> set_margin_left(6);
+
+
+
+  // 
+  cancel_button_ -> signal_clicked()
+    . connect(sigc::bind(sigc::mem_fun
+        (*this, &FileChooser::Quit), child_window_ptr));
+
+}
+
 void FileChooser::On_Current_Folder_Changed_Signal()
 {
+
+  // 
+  filenames_ . clear();
+
+
 
   // 
   config() . set("last_folder", file_chooser_ -> get_current_folder());
@@ -242,21 +465,33 @@ void FileChooser::On_Current_Folder_Changed_Signal()
 
 }
 
+void FileChooser::Quit(ChildWindow* child_window_ref)
+{
 
+  // 
+  child_window_ref -> On_Irregular_Quit(NULL);
 
-
+}
 
 void FileChooser::Use_Selected()
 {
 
-
-
+  //
   vector<string> filenames = file_chooser_ -> get_filenames();
 
 
-  playlists().Append_Rows(metadata().Filenames_To_Tracks(filenames),
-                          playlists() . selected_playlist_treestore());
+
+  for(auto filenames_it : filenames)
+  {
+
+    cout << "\n\nFilename: " << filenames_it << "\n\n";
+
+  }
 
 
+
+  // 
+  playlists() . Append_Rows(metadata() . Filenames_To_Tracks(filenames), 
+                            playlists() . selected_playlist_treestore());
 
 }

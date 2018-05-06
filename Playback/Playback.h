@@ -88,6 +88,8 @@
 
 #include <memory>
 
+#include <mutex>
+
 #include <vector>
 
 
@@ -462,7 +464,7 @@ class Playback : public Parts
     //   None.
     //
     //////////////////////////////////////////////////////////////////////// */
-    bool Queue_Tracks();
+    bool Fill_Track_Data_Queue();
 
     /* ////////////////////////////////////////////////////////////////////////
     //
@@ -633,9 +635,8 @@ class Playback : public Parts
     //   just the end of the file.
     //
     //////////////////////////////////////////////////////////////////////// */
-    bool Update_Seek_Positions(GstElement* seeking_element,
-                               gint64 new_start, 
-                               gint64 new_end);
+    bool Update_Seek_Positions
+      (GstElement* seeking_element, gint64 new_start, gint64 new_end);
 
 
 
@@ -808,8 +809,11 @@ class Playback : public Parts
     // Returns the variable to stop playback after the current track. 
     std::atomic<bool>& stop_after_current_track();
 
+    // Indicates the track queue thread is active.
+    std::atomic<bool>& track_data_queue_active();
+
     // Indicates the track queue is active.
-    std::atomic<bool>& track_queue_active();
+    std::atomic<bool>& track_data_queue_thread_active();
 
     // Indicates the track queue is full.
     std::atomic<bool>& track_queue_full();
@@ -937,9 +941,6 @@ class Playback : public Parts
     // Only allows Stop(), Pause(), or Play() runs to happen one at a time.
     std::atomic<bool> playback_state_change_;
 
-    // Stores whether the preparing trackbins thread is active or not.
-    std::atomic<bool> preparing_trackbins_thread_active_; 
-
     // Stores whether to quit the track queueing process partway through.
     std::atomic<bool> quit_queue_;
 
@@ -950,7 +951,13 @@ class Playback : public Parts
     std::atomic<bool> stop_after_current_track_; 
 
     // Stores whether the track queue is active or not.
-    std::atomic<bool> track_queue_active_;
+    std::atomic<bool> track_data_queue_active_;
+
+    // 
+    std::mutex track_data_queue_mutex_;
+
+    // Stores whether the track queue is thread is active or not.
+    std::atomic<bool> track_data_queue_thread_active_;
 
     // Stores whether the track queue is full or not.
     std::atomic<bool> track_queue_full_;

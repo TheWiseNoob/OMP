@@ -82,8 +82,9 @@
 //                 //
 //                 //
 
-#include <string>
 #include <atomic>
+
+#include <string>
 
 
 
@@ -209,10 +210,8 @@ class MenuBar : public Parts
 
     // Looping
 
-    void On_None_Looping_Playback_Radio_Menu_Item_Toggled_Signal();
+    void On_Looping_Playback_Radio_Menu_Item_Toggled_Signal();
 
-    void On_Playlist_Looping_Playback_Radio_Menu_Item_Toggled_Signal();
-    
 
 
     // Options

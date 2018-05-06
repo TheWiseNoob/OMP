@@ -260,14 +260,6 @@ bool PlaylistsDatabase::Add_Tracks
 
 
   // 
-  Add_Column(playlist_name, "ALBUM_ARTIST", "TEXT");
-
-  // 
-  Add_Column(playlist_name, "DATE", "INT");
-
-
-
-  // 
   for(auto it : playlist_treestore -> children())
   {
 
@@ -286,13 +278,16 @@ bool PlaylistsDatabase::Add_Tracks
 
 
     // 
-    Glib::ustring* artists_str_ptr = track_sptr -> artists_string();
+    Glib::ustring* artists_str_ptr
+      = Multiple_Values_Tag_Encode(track_sptr -> artists());
 
     // 
-    Glib::ustring* album_artists_str_ptr = track_sptr -> album_artists_string();
+    Glib::ustring* album_artists_str_ptr
+      = Multiple_Values_Tag_Encode(track_sptr -> album_artists());
 
     // 
-    Glib::ustring* genres_str_ptr = track_sptr -> genres_string();
+    Glib::ustring* genres_str_ptr
+      = Multiple_Values_Tag_Encode(track_sptr -> genres());
 
 
 
@@ -958,14 +953,19 @@ int PlaylistsDatabase::Extract_Tracks_Callback
       // 
       new_track_ptr -> set_album(argv[i]);
 
-    }
+    } 
 
     // 
     else if(strcmp(column_name[i], "ALBUM_ARTIST") == 0)
     {
 
       // 
-      new_track_ptr -> add_album_artist(argv[i]);
+      Glib::ustring album_artists_ustr = argv[i];
+
+
+
+      // 
+      new_track_ptr -> set_album_artists(new_track_ptr -> Multiple_Values_Tag_Decode(album_artists_ustr));
 
     }
 
@@ -974,10 +974,16 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> add_artist(argv[i]);
+      Glib::ustring artists_ustr = argv[i];
 
-    }
 
+
+      // 
+      new_track_ptr -> set_artists(new_track_ptr -> Multiple_Values_Tag_Decode(artists_ustr));
+
+    } 
+
+    // 
     else if(strcmp(column_name[i], "BIT_DEPTH") == 0)
     {
 
@@ -986,6 +992,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 
     }
 
+    // 
     else if(strcmp(column_name[i], "BIT_RATE") == 0)
     { 
 
@@ -1053,7 +1060,12 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> add_genre(argv[i]);
+      Glib::ustring genres_ustr = argv[i];
+
+
+
+      // 
+      new_track_ptr -> set_genres(new_track_ptr -> Multiple_Values_Tag_Decode(genres_ustr));
 
     }
 
@@ -1190,6 +1202,71 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 
   // 
   return 0;
+
+}
+
+Glib::ustring* PlaylistsDatabase::Multiple_Values_Tag_Encode
+  (vector<Glib::ustring*>& tag)
+{
+
+  // 
+  Glib::ustring* tags_ustr_ptr = new Glib::ustring;
+
+  // 
+  int count = 0;
+
+
+
+  // 
+  for(auto tag_it : tag)
+  {
+
+    // 
+    if(count > 0)
+    {
+
+      // 
+      (*tags_ustr_ptr) += "; ";
+
+    }
+
+
+
+    // 
+    for(auto tag_it_char : *tag_it)
+    {
+
+      // 
+      if(tag_it_char == ';')
+      {
+
+        // 
+        (*tags_ustr_ptr) += "\\;";
+
+      }
+
+      // 
+      else
+      {
+
+        // 
+        (*tags_ustr_ptr) += tag_it_char;
+
+      }
+
+    }
+
+
+
+    // 
+    count++;
+
+  }
+
+
+
+  // 
+  return tags_ustr_ptr;
 
 }
 

@@ -184,6 +184,9 @@ class Track
 
     bool Is_Empty() const;
 
+    std::vector<Glib::ustring*>* Multiple_Values_Tag_Decode
+      (Glib::ustring& tag);
+
   protected:
     
     Glib::ustring* 

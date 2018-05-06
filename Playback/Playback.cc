@@ -89,6 +89,8 @@
 
 #include "../GUI/Seekbar.h"
 
+#include "../GUI/StatusBar.h"
+
 #include "../Metadata/Metadata.h"
 
 #include "../Scrobbling/Scrobbling.h"
@@ -206,17 +208,17 @@ Playback::Playback(Base& base, int argc, char* argv[])
 
 , first_track_(true)
 
-, quit_queue_(false)
-
 , playback_state_change_(false)
 
-, preparing_trackbins_thread_active_(false)
+, quit_queue_(false)
 
 , resetting_track_queue_(false)
 
 , stop_after_current_track_(false)
 
-, track_queue_active_(false)
+, track_data_queue_active_(false)
+
+, track_data_queue_thread_active_(false)
 
 , track_queue_full_(false)
 
@@ -653,7 +655,7 @@ guint Playback::Idle_Change_Track(void* playback_vptr)
   {
 
     // Queues tracks if necessary.
-    playback_ptr -> Queue_Tracks();
+    playback_ptr -> Fill_Track_Data_Queue();
 
   }  
 
@@ -775,6 +777,7 @@ gulong Playback::Track_Probe(GstPad* trackbin_srcpad_ptr,
   if(GST_EVENT_TYPE(event) == GST_EVENT_EOS)
   {
 
+    // 
     if(playback_ptr -> stop_after_current_track())
     {
 
@@ -799,13 +802,13 @@ gulong Playback::Track_Probe(GstPad* trackbin_srcpad_ptr,
 
 
       // Waits for several conditions until allowing the stream to end.
-      while(((playback_ptr -> track_queue_active())
+      while(((playback_ptr -> track_data_queue_thread_active())
               && 
             (playback_ptr -> track_queue() . size() <= 1))
                 ||
             (playback_ptr -> Track_Time_In_Queued_At_Minimum()
               &&
-            (playback_ptr -> track_queue_active())));
+            (playback_ptr -> track_data_queue_thread_active())));
 
     }
 
@@ -1093,9 +1096,7 @@ bool Playback::Store_Pipeline_Position_And_Duration(int timeout_number)
 //                 //
 
 std::shared_ptr<TrackBin> Playback::Create_Track_Bin_Sptr
-                                      (Track* new_track,
-                                       Gtk::TreeRowReference new_tree_row_ref,
-                                       bool attach)
+  (Track* new_track, Gtk::TreeRowReference new_tree_row_ref, bool attach)
 {
 
   // Pointer to the converter element for the track bin.
@@ -1471,7 +1472,7 @@ std::shared_ptr<TrackBin> Playback::Create_Track_Bin_Sptr
     while(ret == GST_STATE_CHANGE_FAILURE)
     {
 
-//      debug("State change failed!");
+      debug("State change failed!");
 
 
 
@@ -1691,7 +1692,7 @@ std::shared_ptr<TrackBin> Playback::Create_Track_Bin_Sptr
   // Returns the newly created TrackBin shared pointer.
   return trackbin_sptr;
 
- }
+}
 
 
 
@@ -1701,18 +1702,19 @@ std::shared_ptr<TrackBin> Playback::Create_Track_Bin_Sptr
 // Queue //////////////////////////////////////////////////////////////////////
 //       //
 
-bool Playback::Queue_Tracks() 
-{ 
+bool Playback::Fill_Track_Data_Queue() 
+{
 
-  debug("Inside Queue_Tracks");  
+  debug("Inside Fill_Track_Data_Queue.");
 
 
 
-  // Checks if the backend is cancelling in order to end the timeout. 
-  if(backend_quitting_ || track_queue_active_)
-  { 
+  // True if OMP is quitting or the track queue is already active.
+  if(!(track_data_queue_mutex_ . try_lock()) || backend_quitting_ || track_data_queue_active_
+       || track_data_queue_thread_active_ || Stopped())
+  {
 
-    debug("TRACK QUEUE NOT ACTIVE");
+    debug("Track queue is already active.");
 
 
 
@@ -1721,10 +1723,10 @@ bool Playback::Queue_Tracks()
 
 
 
-    // Ends the timeout.
+    // Ends Fill_Track_Data_Queue.
     return false;
 
-  }
+  } 
 
 
 
@@ -1732,53 +1734,73 @@ bool Playback::Queue_Tracks()
   long long minimum_buffer_time_nanoseconds
     = 1000000LL * int(config() . get("output.buffer_time"));
 
-  // Retrieves the current time in the track queue not including the playing
-  // track 
+  // Retrieves the current time in the track queue not including playing track.
   long long current_buffer_time_nanoseconds = Track_Time_In_Queued();
 
 
 
-  // Adds more tracks to the track queue if there is not enough tracks and
-  // more are available.
+  // Adds more tracks to the track queue if needed and available.
   if(current_buffer_time_nanoseconds < minimum_buffer_time_nanoseconds)
-  {   
+  {
 
-    debug("TRACK QUEUE NOT FULL");
+    //                      //
+    // Variable Declaration ///////////////////////////////////////////////////
+    //                      //
 
-
-
-    // 
-    string looping_type = config() . get("playback.looping");
-
+    debug("Track queue is not full.");
 
 
-    // Sets the track's queue to full.
+
+    // Marks the track data queue as active.
+    track_data_queue_active_ = true;
+
+    // Sets the track's queue to not full.
     track_queue_full_ = false;
 
 
 
+    // Saves the looping type of playback.
+    string looping_type = config() . get("playback.looping");
+
     // Sets the playback order to be used to by the track queue.
     Glib::ustring playback_order = "linear";
 
-      
 
-    // 
-    Gtk::TreeIter next_track_row_it;
 
+    // Makes the data queue start with the playback queue if set to true.
+    bool start_with_playback_queue = false;
+
+    // Makes the data queue start with the selected track if set to true. If
+    // the playback queue is also set to start first, the selected track is
+    // used after the playback queue if needed. 
+    bool unused_playback_follows_cursor = false;
+
+
+
+    // Reference to the row that is next to be readied for playback.
     Gtk::TreeRowReference next_track_row_ref;
 
+    // Iterator to the row that is next to be readied for playback.
+    Gtk::TreeIter next_track_row_it;
+
+    // RefPtr to the TreeStore that the next_track_row_ref is from.
+    Glib::RefPtr<PlaylistTreeStore> next_track_row_treestore;
 
 
-    // 
+
+
+    // Reference to the selected row of the active playlist view if it exists.
     Gtk::TreeRowReference selected_row_ref = playlists() . selected_row_ref();
 
+    // Iterator to the selected row in the active playlist view.
     Gtk::TreeIter selected_row_it;
 
-    //
+    // True if a selected row exists in the active playlist.
     if(selected_row_ref)
     {
 
-      // 
+      // Creates an iterator for the selected row that was found using 
+      // the selected row's reference.
       selected_row_it
         = selected_row_ref . get_model()
             -> get_iter(selected_row_ref . get_path());
@@ -1786,65 +1808,73 @@ bool Playback::Queue_Tracks()
     }
 
 
-    // 
+
+    // Stores an iterator to the playing row.
     Gtk::TreeIter playing_row_it
       = playlists() . playing_row_ref() . get_model()
           -> get_iter(playlists() . playing_row_ref() . get_path());
 
 
 
-    // 
-    bool start_with_playback_queue = false;
-
-    // 
+    // Reference to the currently last track in the track data queue.
     Gtk::TreeRowReference last_in_track_data_queue_row_ref
       = track_queue_ . back() -> row_ref();
 
-    // 
+    // RefPtr to the treestore for the last track in the track data queue.
     Glib::RefPtr<PlaylistTreeStore> last_in_track_data_queue_treestore
       = Glib::RefPtr<PlaylistTreeStore>::cast_dynamic
           (last_in_track_data_queue_row_ref . get_model());
 
-    //
-    Glib::RefPtr<PlaylistTreeStore> next_track_row_treestore;
 
-    // 
+
+    // Iterator to the next track in the track playback queue.
     Gtk::TreeIter next_in_track_playback_queue_row_it;
 
 
 
-    debug("Before check if playback queue is empty.");
+
+
+    //                                 //
+    // Track Playback Queue Assessment ////////////////////////////////////////
+    //                                 //
+
+    debug("Before checking if track playback queue has tracks not in the " \
+          "track data queue.");
 
 
 
-    // 
+    // True if the playback queue is not empty.
     if((playlists() . queue_playlist_treestore() -> children() . size()) > 0)
     {
 
-      // 
+      // True if playback is currently occurring from the playback queue.
       if(playlists() . playing_playlist_treestore()
            == playlists() . queue_playlist_treestore())
       { 
 
+        // True if the last track in the track data queue is from the 
+        // track playback queue.
         if((playlists() . queue_playlist_treestore())
              == last_in_track_data_queue_treestore)
         {
 
-          // 
+          // Gets an iterator to the last track in the track data queue.
           next_in_track_playback_queue_row_it
             = last_in_track_data_queue_treestore
                 -> get_iter(last_in_track_data_queue_row_ref . get_path());
 
 
 
-          // 
+          // Iterates the last track to see if there are tracks left to be
+          // added to the track data queue from the track playback queue.
           next_in_track_playback_queue_row_it++;
 
-          // 
+          // True if there is at least one more track to be queued from the
+          // track playback queue.
           if(next_in_track_playback_queue_row_it)
           {
 
-            // 
+            // Makes the track data queue start with the track playback queue.
             start_with_playback_queue = true;
 
           }
@@ -1853,15 +1883,15 @@ bool Playback::Queue_Tracks()
 
       }
 
-      // 
+      // True if playback is not occurring from the track playback queue.
       else
       {
 
-        // 
+        // Sets the next track to be queued as the start of the playback queue.
         next_in_track_playback_queue_row_it
           = playlists() . queue_playlist_treestore() -> children() . begin();
 
-        // 
+        // Makes the track data queue start with the track playback queue.
         start_with_playback_queue = true;
 
       }
@@ -1870,86 +1900,105 @@ bool Playback::Queue_Tracks()
 
 
 
-    // 
-    bool unused_playback_follows_cursor = false;
+    //                                               //
+    // Next Normal Track Data to Queue Determination //////////////////////////
+    //                                               //
 
+    // True if the selected track is determined to be set to play next. 
+    if(
 
+       // True if playback follows cursor is enabled
+       (config() . get("playback.playback_follows_cursor")) 
 
-    // 
-    if((config() . get("playback.playback_follows_cursor")) 
          &&
+
+       // True if there is a valid selected row.
        (playlists() . selected_row_ref())
+
          &&
+
+       // True if the selected treestore is not the playing treestore or the 
+       // the selected row is not the playing row.
        ((playlists() . selected_playlist_treestore()
            != 
         (playlists() . playing_playlist_treestore()))
            ||
        (selected_row_it != playing_row_it))
+
          &&
+
+       // True if the selected row is useable for playback follows cursor.
        (playlists() . new_selection()))
     {
 
-      // 
+      // Sets the next normal track to have data queued as the track of the 
+      // selected row.
       next_track_row_it = selected_row_it;
 
-      // 
+      // Sets the next track to queue as the selected row's track.
       next_track_row_ref = playlists() . selected_row_ref();
 
-      // 
+      // Sets the treestore of the next track as the selected row's treestore.
       next_track_row_treestore
         = Glib::RefPtr<PlaylistTreeStore>
             ::cast_dynamic(next_track_row_ref . get_model());
 
 
 
-      // 
+      // Sets the selected row as not being an unused new selection.
       playlists() . new_selection() = false;
 
-      // 
+      // Indicates the new playback follows cursor track has not been used yet.
       unused_playback_follows_cursor = true;
 
     }
 
-    // 
+    // True if the next track to play will be what's next in the playlist 
+    // based on the playback order setting.
     else
-    {
+    { 
 
-      // 
+      // True if data queueing starts with the playback queue.
       if(start_with_playback_queue)
       {
 
-        // 
+        // True if the last non-queue track to be played is valid.
         if(playlists() . last_non_queue_row_ref())
         {
 
-          // 
+          // Sets the next normal track to be queued as the last non-queue 
+          // track to be played.
           next_track_row_ref = playlists() . last_non_queue_row_ref();
 
 
 
-          // Gets the row it for the last track in the track_queue.
+          // Gets the row it for the next normal track in the track data queue.
           next_track_row_it
             = (next_track_row_ref . get_model())
                 -> get_iter(next_track_row_ref . get_path());
 
-          // 
+          // Gets the treestore for the next track.
           next_track_row_treestore
             = Glib::RefPtr<PlaylistTreeStore>
                 ::cast_dynamic(next_track_row_ref . get_model());
 
 
 
-          // Iterators the row it.
+          // Iterators the next track row it so it is finally the next row 
+          // after the last normal track to be played.
           next_track_row_it++;
 
-          // 
+
+
+          // True if playback looping is set to loop a playlist.
           if(looping_type == "playlist")
           {
 
-            // 
+            // True if the end of a playlist has been reached.
             if(!next_track_row_it)
             {
 
+              // Sets the next track as the beginning of the playlist.
               next_track_row_it 
                 = next_track_row_ref . get_model() -> children() . begin();
 
@@ -1959,16 +2008,17 @@ bool Playback::Queue_Tracks()
 
         }
 
+        // Does nothing if the last non-queue track row is not valid. There
+        // will be no next normal track row queued.
         else
         {
 
-
-        
         }
 
       }
 
-      // 
+      // True if the track playback queue will not be used when queueing more 
+      // tracks in the track data queue.
       else
       {
 
@@ -2008,6 +2058,7 @@ bool Playback::Queue_Tracks()
         else
         {
 
+          // 
           if(last_in_track_data_queue_row_ref)
           {
 
@@ -2074,10 +2125,18 @@ bool Playback::Queue_Tracks()
         {
 
           // Sets the track queue to inactive.
-          track_queue_active_ = false;
+          track_data_queue_thread_active_ = false;
 
           // Sets the track queue as full.
           track_queue_full_ = true;
+
+          // 
+          track_data_queue_mutex_ . unlock();
+
+          // 
+          track_data_queue_active_ = false;
+
+
 
           // Ends the track loop.
           return false;
@@ -2249,7 +2308,7 @@ bool Playback::Queue_Tracks()
 
 
     // Marks the preparing trackbins thread to active!
-    preparing_trackbins_thread_active_ = true;
+    track_data_queue_thread_active_ = true;
 
     // Starts the thread that prepares the tracks.
     std::thread trackbin_preparation_thread
@@ -2281,7 +2340,7 @@ bool Playback::Queue_Tracks()
 
 
 
-        debug("Inside Queue_Tracks thread.");
+        debug("Inside Fill_Track_Data_Queue thread.");
 
 
 
@@ -2322,7 +2381,7 @@ bool Playback::Queue_Tracks()
 
 
         // Ads the new track to the track queue.
-        track_queue_.push_back(new_trackbin_sptr);
+        track_queue_ . push_back(new_trackbin_sptr);
 
 
 
@@ -2342,8 +2401,8 @@ bool Playback::Queue_Tracks()
 
 
 
-      // Sets the flag for the preparing_trackbins thread to inactive.
-      preparing_trackbins_thread_active() = false;
+      // Sets the flag for the track data queue thread to inactive.
+      track_data_queue_thread_active_ = false;
 
       // Sets the track queue to full.
       track_queue_full_ = true;
@@ -2351,8 +2410,11 @@ bool Playback::Queue_Tracks()
       // Sets the track queue to ran.
       track_queue_ran_ = false;
 
-      // Sets the track queue to inactive.
-      track_queue_active_ = false;
+      // Sets the track data queue to inactive.
+      track_data_queue_active_ = false;
+
+      // 
+      track_data_queue_mutex_ . unlock();
 
     });
 
@@ -2364,13 +2426,16 @@ bool Playback::Queue_Tracks()
 
   // True if the queue is full already.
   else
-  {
+  { 
 
     // Sets the track queue to full. 
     track_queue_full_ = true;
 
-    // Sets the track to to inactive.
-    track_queue_active_ = false;
+    // Sets the track data queue to inactive.
+    track_data_queue_active_ = false;
+
+    // 
+    track_data_queue_mutex_ . unlock();
 
 
 
@@ -2403,7 +2468,7 @@ bool Playback::Reset_Track_Queue()
 
 
   // True if the track queue is active.
-  if(track_queue_active_)
+  if(track_data_queue_thread_active_)
   {
 
     // Sets the track queue to quit.
@@ -2412,7 +2477,7 @@ bool Playback::Reset_Track_Queue()
 
 
     // Waits for the track queue to not be active.
-    while(track_queue_active_);
+    while(track_data_queue_thread_active_);
 
 
 
@@ -2480,7 +2545,7 @@ bool Playback::Reset_Track_Queue()
 
 
 
-  debug("Before eraseing TrackBins from track queue.");
+  debug("Before eraseing TrackBins from track date queue.");
 
 
 
@@ -2492,13 +2557,13 @@ bool Playback::Reset_Track_Queue()
   // Sets the track_queue_full_ to false.
   track_queue_full_ = false;
 
-  // Calls the function to requeue tracks.
-  Queue_Tracks();
-
-
-
   // Sets the resetting_track_queue_ flag to false.
   resetting_track_queue_ = false;
+
+
+
+  // Calls the function to requeue tracks.
+  Fill_Track_Data_Queue();
 
 
 
@@ -2613,6 +2678,15 @@ bool Playback::Track_Time_In_Queued_At_Minimum()
 void Playback::Next_Track()
 {
 
+  // 
+  static mutex next_track_mutex;
+
+  // 
+  lock_guard<mutex> next_track_mutex_lock_guard(next_track_mutex);
+
+
+
+  // 
   if(Stopped())
   {
 
@@ -2689,13 +2763,18 @@ void Playback::Next_Track()
     }
 
 
+
     // 
     Play(next_track_row_ref, true);
+
+
 
     // 
     return;
 
   }
+
+
 
   // True if the playing track is of a single-file album.
   if(playing_track() . type() == TrackType::SINGLE_FILE)
@@ -2703,7 +2782,7 @@ void Playback::Next_Track()
 
     // True if the playing track is the last track of a single-file album.
     if((playing_track() . end()) == -1)
-     {
+    {
 
       // Seeks the playing track to the end.
       Update_Track_Position(duration_);
@@ -2722,7 +2801,7 @@ void Playback::Next_Track()
   }
 
   // True if the playing track is a normal track.
-  else/* if(playing_track() . type() == TrackType::NORMAL)*/
+  else
   {
 
     // Seeks the playing track to the end.
@@ -2762,7 +2841,7 @@ void Playback::Pause()
   { 
 
     // Updates the playback status label.
-    gui() . set_playback_status_label("⏸ Paused");
+    status_bar() . Playback_Status_Paused();
 
 
 
@@ -2919,7 +2998,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
 
     // Waits until the track queue from the last playback is finished.
-    while(track_queue_active_);
+    while(track_data_queue_thread_active_);
 
 
 
@@ -2996,7 +3075,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
 
     // Updates the playback status label.
-    gui() . set_playback_status_label("▶️ Playing");
+    status_bar() . Playback_Status_Playing();
 
 
 
@@ -3111,7 +3190,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
 
       // Starts queueing more tracks.
-      Queue_Tracks();
+      Fill_Track_Data_Queue();
 
 
 
@@ -3178,7 +3257,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
 
       // Starts queueing more tracks.
-      Queue_Tracks();
+      Fill_Track_Data_Queue();
 
 
 
@@ -3192,9 +3271,12 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
       [this]() -> bool
       {
 
+        // 
         g_main_loop_run(this -> loop());
 
 
+
+        // 
         return false;
 
       }, 2);
@@ -3211,12 +3293,20 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
        != (playlists() . selected_row_ref() . get_path()))
     {
 
+      // 
       playback_state_change_ = false;
 
+
+
+      // 
       Stop();
 
+      // 
       Play(playlists() . selected_row_ref());
 
+
+
+      // 
       return;
 
     }
@@ -3238,15 +3328,15 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
 
     // Updates the playback status label.
-    gui() . set_playback_status_label("▶️ Playing");
+    status_bar() . Playback_Status_Playing();
 
 
 
     // Starts scrobbling again.
-    base().scrobbling().Scrobble_Playing_Track_Lastfm();
+    scrobbling() . Scrobble_Playing_Track_Lastfm();
 
     // Updates the playing track on last.fm.
-    base().scrobbling().Update_Playing_Track_Lastfm();
+    scrobbling() . Update_Playing_Track_Lastfm();
 
 
 
@@ -3293,6 +3383,11 @@ void Playback::Stop()
     return;
 
   }
+
+
+
+  //
+  quit_queue_ = true;
 
 
 
@@ -3354,7 +3449,7 @@ void Playback::Stop()
     quit_queue_ = true;
 
     // Waits until the queue isn't active.
-    while(track_queue_active_);
+    while(track_data_queue_thread_active_);
 
     // Sets the queue to not quit.
     quit_queue_ = false;
@@ -3401,7 +3496,7 @@ void Playback::Stop()
 
 
   // Updates the playback status label.
-  gui() . set_playback_status_label("⏹ Stopped");
+  status_bar() . Playback_Status_Stopped();
 
 
 
@@ -3837,13 +3932,6 @@ std::atomic<bool>& Playback::playback_state_change()
 
 }
 
-std::atomic<bool>& Playback::preparing_trackbins_thread_active()
-{
-
-  return preparing_trackbins_thread_active_;
-
-}
-
 std::atomic<bool>& Playback::stop_after_current_track()
 {
 
@@ -3851,10 +3939,17 @@ std::atomic<bool>& Playback::stop_after_current_track()
 
 }
 
-std::atomic<bool>& Playback::track_queue_active()
+std::atomic<bool>& Playback::track_data_queue_active()
 {
 
-  return track_queue_active_;
+  return track_data_queue_active_;
+
+}
+
+std::atomic<bool>& Playback::track_data_queue_thread_active()
+{
+
+  return track_data_queue_thread_active_;
 
 }
 

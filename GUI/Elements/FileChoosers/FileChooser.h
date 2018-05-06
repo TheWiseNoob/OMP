@@ -41,6 +41,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef FILE_CHOOSER_H
 #define FILE_CHOOSER_H
 
@@ -48,22 +56,46 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
 #include "../../GUIElement.h"
 
 
 
 
 
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
+
+class ChildWindow;
+
 class FileChoosers;
-
-
 
 namespace Gtk
 {
 
-  class FileChooserWidget;
   class Box;
+
   class Button;
+
+  class FileChooserWidget;
 
 }
 
@@ -71,22 +103,88 @@ namespace Gtk
 
 
 
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include <string>
+
+#include <vector>
+
+
+
+
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
 class FileChooser : public GUIElement<FileChooser>
 {
 
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
+
   public:
 
-    FileChooser(Base& base, FileChoosers& file_choosers_ref);
+    FileChooser(Base& base_ref, FileChoosers& file_choosers_ref);
+
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  public:
 
     virtual ~FileChooser();
 
-  //Public Member Functions
 
-    void Use_Selected();
+
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public:
+
+    void Enable_Cancel_Button(ChildWindow* child_window_ptr);
 
     void On_Current_Folder_Changed_Signal();
 
-  //Getters and Setters
+    void Quit(ChildWindow* child_window_ptr);
+
+    void Selection_Changed();
+
+    void Use_Selected();
+
+
+
+
+
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
 
     Gtk::FileChooserWidget& file_chooser()
     {
@@ -95,15 +193,27 @@ class FileChooser : public GUIElement<FileChooser>
 
     }
 
-  private:
 
-    Gtk::FileChooserWidget* file_chooser_;
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  private:
 
     Gtk::Box* action_box_;
 
-    Gtk::Button* choose_button_;
+    Gtk::Button* cancel_button_;
 
+    Gtk::FileChooserWidget* file_chooser_;
 
+    std::vector<std::string> filenames_;
+
+    Gtk::Button* okay_button_;
 
 };
 
@@ -111,5 +221,12 @@ class FileChooser : public GUIElement<FileChooser>
 
 
 
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

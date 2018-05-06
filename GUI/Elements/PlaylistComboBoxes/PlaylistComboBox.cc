@@ -173,11 +173,11 @@ PlaylistComboBox::PlaylistComboBox
   //          //
 
   // 
-  box() . set_center_widget(*playlist_combobox_box_);
+  box() . pack_start(*playlist_combobox_box_, true, true, 0);
 
   // 
   playlist_combobox_box_
-    -> pack_end(*playlist_combobox_buttons_stackswitcher_, Gtk::PACK_SHRINK);
+    -> pack_end(*playlist_combobox_buttons_stackswitcher_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
   playlist_combobox_buttons_stackswitcher_ 
@@ -188,11 +188,20 @@ PlaylistComboBox::PlaylistComboBox
   // 
   playlist_combobox_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 
+  //
+  playlist_combobox_entry_ -> set_hexpand_set(false);
+
+  // 
+  playlist_combobox_ -> set_hexpand_set(false);
+
 
 
   // 
   playlist_combobox_
     -> set_model(playlist_comboboxes_ref . treestore());
+
+  //
+  playlist_combobox_entry_ -> set_max_length(1000);
 
   //
   playlist_combobox_ -> set_tooltip_text

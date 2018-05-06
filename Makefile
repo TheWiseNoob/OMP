@@ -9,7 +9,8 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	PlaylistCreateDialog.o PlaylistDeleteDialog.o PlaylistMenu.o \
 	PlaylistPanel.o PlaylistTreeStore.o Playlists.o PlaylistsDatabase.o \
 	ReplayGainPanel.o Scrobbling.o ScrobblingPanel.o Seekbar.o \
-	SpinButtonScale.o Tag.o Tagview.o TimeConversion.o Track.o TrackBin.o
+	SpinButtonScale.o StatusBar.o Tag.o Tagview.o TimeConversion.o \
+	Track.o TrackBin.o
 
 CFLAGS = -std=c++17 -Wno-deprecated-declarations
 
@@ -146,8 +147,9 @@ FailedScrobblesDatabase.o: Scrobbling/FailedScrobblesDatabase.cc \
 FileChooser.o: GUI/Elements/FileChoosers/FileChooser.cc \
 	GUI/Elements/FileChoosers/FileChooser.h \
 	GUI/GUIElement.h GUI/Elements/FileChoosers/FileChoosers.h \
-	Metadata/Metadata.h GUI/Elements GUI/Elements/Playlists/Playlists.h \
-	Base.h Configuration/Configuration.h Parts.h
+	Metadata/Metadata.h GUI/Elements/ChildWindows/ChildWindow.h \
+	GUI/Elements/Playlists/Playlists.h Base.h \
+	Configuration/Configuration.h Parts.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	GUI/Elements/FileChoosers/FileChooser.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
@@ -166,8 +168,9 @@ FileChoosers.o: GUI/Elements/FileChoosers/FileChoosers.cc \
 GUI.o: Parts.h GUI/GUI.cc GUI/GUI.h Base.h Configuration/Configuration.h \
 	Metadata/Metadata.h Playback/Playback.h Metadata/TimeConversion.h \
 	Metadata/Track.h Scrobbling/Scrobbling.h GUI/Artwork.h \
-	GUI/Elements/**/*.h GUI/Tagview.h GUI/MenuBar.h GUI/SpinButtonScale.h \
-	GUI/Seekbar.h GUI/Tagview.h KeyboardShortcuts/KeyboardShortcuts.h
+	GUI/Elements/**/*.h GUI/StatusBar.h GUI/Tagview.h GUI/MenuBar.h \
+	GUI/SpinButtonScale.h GUI/Seekbar.h GUI/Tagview.h \
+	KeyboardShortcuts/KeyboardShortcuts.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/GUI.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread -Wno-reorder
@@ -177,7 +180,7 @@ GUIPanel.o: GUI/Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.cc \
 	GUI/Elements/ConfigurationGUIs/Panel.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
-	Configuration/Configuration.h GUI/GUI.h GUI/MenuBar.h \
+	Configuration/Configuration.h GUI/GUI.h GUI/MenuBar.h GUI/StatusBar.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
@@ -217,7 +220,8 @@ MenuBar.o: GUI/MenuBar.cc GUI/MenuBar.h Parts.h GUI/GUI.h Base.h \
 	GUI/Elements/ConfigurationGUIs/Panels/Playback/PlaybackPanel.h \
 	GUI/Elements/FileChoosers/FileChoosers.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
-	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h
+	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h \
+	GUI/StatusBar.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/MenuBar.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread -Wno-reorder
@@ -263,7 +267,7 @@ ParserAndDecoder.o: Playback/ParserAndDecoder.h Playback/ParserAndDecoder.cc \
 	`pkg-config --cflags --libs gstreamer-1.0` -pthread
 
 Parts.o: Parts.cc Parts.h Base.h Configuration/Configuration.h \
-	Errors/Errors.h GUI/GUI.h Playback/Playback.h \
+	Errors/Errors.h GUI/GUI.h GUI/StatusBar.h Playback/Playback.h \
 	KeyboardShortcuts/KeyboardShortcuts.h \
 	Metadata/Metadata.h GUI/Elements/**/*.h Scrobbling/Scrobbling.h \
 	Metadata/TimeConversion.h
@@ -279,9 +283,9 @@ Playback.o: Parts.h Playback/Playback.cc Playback/Playback.h \
 	GUI/Elements/Playlists/PlaylistsDatabase.h \
 	GUI/Elements/Playlists/PlaylistColumnRecord.h GUI/GUI.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h GUI/GUI.h GUI/MenuBar.h \
-	GUI/Seekbar.h Metadata/Metadata.h Scrobbling/Scrobbling.h \
-	Metadata/TimeConversion.h Metadata/Track.h Playback/ParserAndDecoder.h \
-	Playback/TrackBin.h 
+	GUI/Seekbar.h GUI/StatusBar.h Metadata/Metadata.h \
+	Scrobbling/Scrobbling.h Metadata/TimeConversion.h Metadata/Track.h \
+	Playback/ParserAndDecoder.h Playback/TrackBin.h 
 	g++ -g -Wno-write-strings -pipe $(CFLAGS) -c Playback/Playback.cc \
 	`pkg-config --cflags --libs gstreamer-1.0` \
 	`pkg-config --cflags --libs glibmm-2.4 giomm-2.4` \
@@ -472,6 +476,15 @@ SpinButtonScale.o: GUI/SpinButtonScale.cc GUI/SpinButtonScale.h \
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/SpinButtonScale.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread
+
+StatusBar.o: Parts.h GUI/StatusBar.h GUI/StatusBar.cc GUI/GUI.cc GUI/GUI.h Base.h Configuration/Configuration.h \
+	Metadata/Metadata.h Playback/Playback.h Metadata/TimeConversion.h \
+	Metadata/Track.h Scrobbling/Scrobbling.h GUI/Artwork.h \
+	GUI/Elements/**/*.h GUI/Tagview.h GUI/MenuBar.h GUI/SpinButtonScale.h \
+	GUI/Seekbar.h GUI/Tagview.h KeyboardShortcuts/KeyboardShortcuts.h
+	g++ -g -Wall -pipe $(CFLAGS) -c GUI/StatusBar.cc \
+	`pkg-config --cflags --libs gtkmm-3.0` \
+	-pthread -Wno-reorder
 
 Tag.o: Metadata/Tag.cc Metadata/Tag.h
 	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/Tag.cc \

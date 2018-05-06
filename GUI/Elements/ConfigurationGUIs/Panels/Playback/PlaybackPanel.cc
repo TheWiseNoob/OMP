@@ -458,13 +458,7 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   none_looping_radio_button_ -> signal_toggled()
     . connect(sigc::mem_fun
         (*this, &PlaybackPanel
-                   ::On_None_Looping_Radio_Button_Toggled_Signal));
-
-  // 
-  playlist_looping_radio_button_ -> signal_toggled()
-    . connect(sigc::mem_fun
-        (*this, &PlaybackPanel
-                   ::On_Playlist_Looping_Radio_Button_Toggled_Signal));
+                   ::On_Looping_Radio_Button_Toggled_Signal));
 
 
 
@@ -696,7 +690,7 @@ void PlaybackPanel::Apply_Saved_Values()
 // Looping ////////////////////////////////////////////////////////////////////
 //         //
 
-void PlaybackPanel::On_None_Looping_Radio_Button_Toggled_Signal()
+void PlaybackPanel::On_Looping_Radio_Button_Toggled_Signal()
 {
 
   // 
@@ -711,7 +705,22 @@ void PlaybackPanel::On_None_Looping_Radio_Button_Toggled_Signal()
 
 
   // 
-  config() . set("playback.looping", "none");
+  if(none_looping_radio_button_ -> get_active())
+  {
+
+    // 
+    config() . set("playback.looping", "none");
+
+  }
+
+  // 
+  else if(playlist_looping_radio_button_ -> get_active())
+  {
+
+    // 
+    config() . set("playback.looping", "playlist");
+
+  }
 
 
 
@@ -723,12 +732,29 @@ void PlaybackPanel::On_None_Looping_Radio_Button_Toggled_Signal()
   // 
   config_guis() . set_disable_functions(true);
 
+  // 
   for(auto config_guis_it : config_guis()())
   {
 
     // 
-    config_guis_it -> playback_panel() . none_looping_radio_button()
-      . set_active(true);
+    if(none_looping_radio_button_ -> get_active())
+    {
+
+      // 
+      config_guis_it -> playback_panel() . none_looping_radio_button()
+        . set_active(true);
+
+    }
+
+    // 
+    else if(playlist_looping_radio_button_ -> get_active())
+    {
+
+      // 
+      config_guis_it -> playback_panel() . playlist_looping_radio_button()
+        . set_active(true);
+
+    }
 
   }
 
@@ -738,84 +764,36 @@ void PlaybackPanel::On_None_Looping_Radio_Button_Toggled_Signal()
 
 
   // 
-  gui().set_disable_menubar_functions_flag(true);
+  gui() . set_disable_menubar_functions_flag(true);
 
   // 
   for(auto menu_bars_it : gui() . menubars())
   { 
 
     // 
-    menu_bars_it -> looping_none_playback_radio_menu_item()
-      . set_active(true);
+    if(none_looping_radio_button_ -> get_active())
+    {
 
-  }
+      // 
+      menu_bars_it -> looping_none_playback_radio_menu_item()
+        . set_active(true);
 
-  // 
-  gui().set_disable_menubar_functions_flag(false);
-
-
-
-  // 
-  playback() . Reset_Track_Queue();
-
-}
-
-void PlaybackPanel::On_Playlist_Looping_Radio_Button_Toggled_Signal()
-{
-
-  // 
-  if(config_guis() . disable_functions())
-  {
+    }
 
     // 
-    return;
+    else if(playlist_looping_radio_button_ -> get_active())
+    {
 
-  }
+      // 
+      menu_bars_it -> looping_playlist_playback_radio_menu_item()
+        . set_active(true);
 
-
-
-  // 
-  config() . set("playback.looping", "playlist");
-
-
-
-  // 
-  config_guis() . Mark_Unsaved_Changes(true);
-
-
-
-  // 
-  config_guis() . set_disable_functions(true);
-
-  for(auto config_guis_it : config_guis()())
-  {
-
-    // 
-    config_guis_it -> playback_panel() . playlist_looping_radio_button()
-      . set_active(true);
+    }
 
   }
 
   // 
-  config_guis() . set_disable_functions(false);
-
-
-
-  // 
-  gui().set_disable_menubar_functions_flag(true);
-
-  // 
-  for(auto menu_bars_it : gui() . menubars())
-  { 
-
-    // 
-    menu_bars_it -> looping_playlist_playback_radio_menu_item()
-      . set_active(true);
-
-  }
-
-  // 
-  gui().set_disable_menubar_functions_flag(false);
+  gui() . set_disable_menubar_functions_flag(false);
 
 
 

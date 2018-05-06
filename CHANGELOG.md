@@ -3,6 +3,30 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.10] - May 6th, 2018
+
+### Added
+- Add Files button has been added to the FileChooser. If the FileChooser is in
+  a window, a Cancel button also shows that closes the window.
+
+### Changed
+- The times shown with the seekbar and the status bar for the playing track
+  are now designed different. Insensitive entries are used instead of labels.
+- The entry of the playlist combobox of the duplicate content under the album
+  art in Main Content now expands.
+- The playback status symbol in the status bar is now and image instead
+  of the text symbol for play, pause, or stop.
+
+### Fixed
+- Multiple album artists, artists, and genres now display and store properly
+  for normal track files. Tracks with multi-field metadata fields and use a 
+  cuesheet are not confirmed working yet. They will be working by the next 
+  release.
+- Switching between None and Playlist Repeat while playing or paused no longer
+  breaks OMP.
+
+
+
 ## [0.0.9] - April 22nd, 2018
 
 ### Added

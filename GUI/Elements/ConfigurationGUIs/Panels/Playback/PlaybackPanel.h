@@ -173,9 +173,7 @@ class PlaybackPanel : public Panel
 
   public:
 
-    void On_None_Looping_Radio_Button_Toggled_Signal();
-
-    void On_Playlist_Looping_Radio_Button_Toggled_Signal();
+    void On_Looping_Radio_Button_Toggled_Signal();
 
 
 

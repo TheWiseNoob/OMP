@@ -115,23 +115,41 @@ TrackBin::TrackBin(Base& base, Track* new_track,
                    GstElement* new_conv, GstElement* new_queue)
 
 // Inherited Class
+
 : Parts(base)
 
+
+
 // Bin Parts
+
 , concat_request_sinkpad_(nullptr)
+
 , conv_(new_conv)
+
 , decoder_(new_decoder)
+
 , demuxer_(new_demuxer)
+
 , parser_(new_parser)
+
 , queue_(new_queue)
+
 , source_(new_source)
+
 , track_bin_(new_track_bin)
 
+
+
 // State Indicators
+
 , seeked_(false)
 
+
+
 // Track Data
+
 , row_ref_(new Gtk::TreeRowReference(new_track_row_ref))
+
 , track_(new_track)
 
 {  
@@ -335,6 +353,11 @@ void TrackBin::Attach()
 
 void TrackBin::Detach()
 {
+
+  // 
+  debug("Detaching TrackBin.");
+
+
 
   // Unlinks the track bin from the concat element.
   gst_element_unlink(track_bin_, playback().concat());
