@@ -292,7 +292,7 @@ bool ChildWindow::On_Key_Press_Event(GdkEventKey* event)
 
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.close_secondary")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.close_secondary"))
   {
 
     // 
@@ -312,7 +312,7 @@ bool ChildWindow::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.fullscreen")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.fullscreen"))
   {
 
     // 

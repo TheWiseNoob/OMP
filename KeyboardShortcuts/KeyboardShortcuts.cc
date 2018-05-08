@@ -221,7 +221,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
 
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.add_files")))
+  if(name == string(config() . get_str("keyboard_shortcuts.keys.add_files")))
   {
 
     // Calls the function for opening a new ConfigurationGUI window.
@@ -230,7 +230,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.close_secondary")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.close_secondary"))
   { 
 
     //
@@ -245,7 +245,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.configuration")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.configuration"))
   {
 
     // Calls the function for opening a new ConfigurationGUI window.
@@ -254,7 +254,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.copy_rows")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.copy_rows"))
   {
 
     // 
@@ -263,7 +263,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.create_playlist")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.create_playlist"))
   {
 
     // 
@@ -272,7 +272,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.cut_rows")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.cut_rows"))
   {
 
     // 
@@ -281,7 +281,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.delete_playlist")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.delete_playlist"))
   {
 
     // 
@@ -290,7 +290,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.delete_rows")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.delete_rows"))
   {
 
     // 
@@ -299,7 +299,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.next_track")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.next_track"))
   {
 
     // 
@@ -308,7 +308,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.paste_rows")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.paste_rows"))
   {
 
     // 
@@ -317,7 +317,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.pause")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.pause"))
   {
 
     // 
@@ -326,7 +326,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.play")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.play"))
   {
 
     // 
@@ -335,7 +335,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.select_all_rows")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.select_all_rows"))
   {
 
     // 
@@ -344,7 +344,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
-  if(name == string(config() . get("keyboard_shortcuts.keys.stop")))
+  if(name == config() . get_str("keyboard_shortcuts.keys.stop"))
   {
 
     // Calls the function for stopping music playback.
