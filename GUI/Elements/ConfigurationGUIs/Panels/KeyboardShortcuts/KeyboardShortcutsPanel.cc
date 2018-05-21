@@ -347,6 +347,7 @@ void KeyboardShortcutsPanel::Apply_Saved_Values()
      {"pause", "Pause"},
      {"play", "Play"},
      {"select_all_rows", "Select All Rows"},
+     {"select_all_rows", "System Menu Pops Up"},
      {"stop", "Stop"}};
 
 

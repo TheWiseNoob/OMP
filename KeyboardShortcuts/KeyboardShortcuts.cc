@@ -77,6 +77,8 @@
 
 #include "../GUI/Elements/FileChoosers/FileChoosers.h"
 
+#include "../GUI/Elements/MainMenus/MainMenus.h"
+
 #include "../GUI/Elements/Playlists/Playlists.h"
 
 #include "../GUI/GUI.h"
@@ -340,6 +342,15 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
 
     // 
     playlists() . selected_playlist() . Select_All_Rows();
+
+  }
+
+  // 
+  if(name == config() . get_str("keyboard_shortcuts.keys.system_menu"))
+  { 
+
+    // 
+    main_menus() . system_menu() . menu() . popup_at_pointer(nullptr);
 
   }
 

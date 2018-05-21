@@ -168,7 +168,7 @@ namespace Gtk
 
 }
 
-class MenuBar;
+class MainMenus;
 
 class Metadata;
 
@@ -360,7 +360,7 @@ class GUI : public Parts
     //   None.
     //
     //////////////////////////////////////////////////////////////////////// */
-    void Quit();
+    void Quit(bool release_twice = false);
 
 
 
@@ -490,6 +490,8 @@ class GUI : public Parts
     //////////////////////////////////////////////////////////////////////// */
     FileChoosers& file_choosers();
 
+    MainMenus& main_menus();
+
     /* ////////////////////////////////////////////////////////////////////////
     //
     // Purpose: 
@@ -517,15 +519,6 @@ class GUI : public Parts
   //                               //
 
   public:
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   List of the menubars.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    std::list<MenuBar*>& menubars();
 
     /* ////////////////////////////////////////////////////////////////////////
     //
@@ -590,31 +583,6 @@ class GUI : public Parts
   //         //
   //         //
 
-  //          //
-  // MenuBars /////////////////////////////////////////////////////////////////
-  //          //
-
-  public:
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Sets the variable for disable menubar functions.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   New value for disable_menubar_functions.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    void set_disable_menubar_functions_flag(bool new_setting);
-
-
-
-
-
   //         //
   // Windows //////////////////////////////////////////////////////////////////
   //         //
@@ -647,6 +615,8 @@ class GUI : public Parts
 
     FileChoosers* file_choosers_;
 
+    MainMenus* main_menus_;
+
     Playlists* playlists_;
 
     PlaybackControllers* playback_controllers_;
@@ -665,8 +635,6 @@ class GUI : public Parts
 
     std::list<Artwork*> artworks_;
 
-    std::list<MenuBar*> menubars_;
-
     Seekbar* seekbar_;
 
     std::list<Tagview*> tagviews_;
@@ -684,18 +652,6 @@ class GUI : public Parts
     std::string cover_file_;
 
     std::string default_cover_file_;
-
-
-
-
-
-  //          //
-  // MenuBars /////////////////////////////////////////////////////////////////
-  //          //
-
-  private:
-
-    bool disable_menubar_functions_flag_;
 
 
 
@@ -775,13 +731,13 @@ class GUI : public Parts
 
     bool fullscreen_;
 
-    Gtk::Box* top_box_;
+    Gtk::Box* left_main_content_paned_box_;
 
     Gtk::Box* main_content_page_box_;
 
-    Gtk::Box* left_main_content_paned_box_;
-
     Gtk::Paned* main_content_paned_;
+
+    Gtk::Box* top_box_;
 
 
 
@@ -794,7 +750,6 @@ class GUI : public Parts
   private:
 
     Gtk::Paned* double_playlist_paned_;
-
 
 
 

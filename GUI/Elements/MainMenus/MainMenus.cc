@@ -55,7 +55,7 @@
 //              //
 //              //
 
-#include "About.h"
+#include "MainMenus.h"
 
 
 
@@ -67,7 +67,7 @@
 //                 //
 //                 //
 
-#include "Abouts.h"
+#include "../../../Configuration/Configuration.h"
 
 
 
@@ -79,13 +79,19 @@
 //                 //
 //                 //
 
-#include <gtkmm/frame.h>
 
-#include <gtkmm/image.h>
 
-#include <gtkmm/label.h>
 
-#include <gtkmm/textview.h>
+
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
+
+using namespace std;
 
 
 
@@ -105,81 +111,29 @@
 //             //
 //             //
 
-About::About(Base& base_ref, Abouts& abouts_ref)
+MainMenus::MainMenus(Base& base_ref)
 
 // Inherited Class
 
-: GUIElement(base_ref, abouts_ref())
+: GUIElementList(base_ref)
+
+
+
+// General
+
+, disable_menubar_functions_flag_(false)
+
+, system_menu_(new MainMenu(base_ref, *this, true))
 
 {
 
-  // 
-  abouts_ref() . push_front(this);
+  // Adds the MainMenu to the MainMenus list.
+  (*this)() . push_front(system_menu_);
 
 
 
   // 
-  box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
-
-
-
-  // 
-  auto omp_pixbuf 
-    = Gdk::Pixbuf::create_from_file("/usr/share/pixmaps/OMP_Icon_128.png", 
-                                    128, 128, true);
-
-  // 
-  Gtk::Image* omp_logo = Gtk::manage(new Gtk::Image(omp_pixbuf));
-
-  // 
-  box() . pack_start(*omp_logo, Gtk::PACK_EXPAND_WIDGET);
-
-
-
-  // 
-  Gtk::Label* version_label = Gtk::manage(new Gtk::Label);
-
-  // 
-  version_label -> set_markup("<b>OMP Version 0.0.11 (Pre-Alpha)</b>");
-
-  // 
-  box() . pack_start(*version_label, Gtk::PACK_EXPAND_PADDING);
-
-
-
-  // 
-  Gtk::Frame* contributors_text_view_frame = Gtk::manage(new Gtk::Frame);
-
-  // 
-  Gtk::TextView* contributors_text_view = Gtk::manage(new Gtk::TextView);
-
-  // 
-  contributors_text_view -> set_editable(false);
-
-  // 
-  box() . pack_start(*contributors_text_view_frame, Gtk::PACK_EXPAND_WIDGET);
-
-  // 
-  contributors_text_view_frame -> add(*contributors_text_view);
-
-
-
-  //
-  auto contributors_text_buffer = Gtk::TextBuffer::create();
-
-  // 
-  contributors_text_buffer
-    -> set_text("Contributors:\n\n" \
-                " Lead Developer: \n" \
-                "    DJ Griffin\n\n" \
-                " GIT Contributors: \n" \
-                "    aladar42\n" \
-                "    AxelSilverdew\n" \
-                "    FabioLolix\n" \
-                "    mmetak");
-
-  // 
-  contributors_text_view -> set_buffer(contributors_text_buffer);
+  system_menu_ -> set_gui_elements_it((*this)() . begin());
 
 }
 
@@ -193,8 +147,58 @@ About::About(Base& base_ref, Abouts& abouts_ref)
 //            //
 //            //
 
-
-About::~About()
+MainMenus::~MainMenus()
 {
+
+}
+
+
+
+
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+
+
+
+
+
+//         //
+//         //
+// Getters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+bool MainMenus::disable_menubar_functions_flag()
+{
+
+  return disable_menubar_functions_flag_;
+
+}
+
+MainMenu& MainMenus::system_menu()
+{
+
+  // 
+  return *system_menu_;
+
+}
+
+
+
+
+
+//         //
+//         //
+// Setters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+void MainMenus::set_disable_menubar_functions_flag(bool new_setting)
+{ 
+
+  disable_menubar_functions_flag_ = new_setting; 
 
 }

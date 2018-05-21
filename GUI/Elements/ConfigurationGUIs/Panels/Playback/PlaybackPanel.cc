@@ -40,6 +40,7 @@
 
 
 
+
 //         //
 //         //
 //         //
@@ -66,17 +67,19 @@
 //                 //
 //                 //
 
-#include "../../ConfigurationGUI.h"
-
-#include "../../ConfigurationGUIs.h"
-
 #include "../../../../../Configuration/Configuration.h"
-
-#include "../../../../../GUI/MenuBar.h"
 
 #include "../../../../../GUI/GUI.h"
 
 #include "../../../../../Playback/Playback.h"
+
+#include "../../../MainMenus/MainMenu.h"
+
+#include "../../../MainMenus/MainMenus.h"
+
+#include "../../ConfigurationGUI.h"
+
+#include "../../ConfigurationGUIs.h"
 
 
 
@@ -764,10 +767,10 @@ void PlaybackPanel::On_Looping_Radio_Button_Toggled_Signal()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -793,7 +796,7 @@ void PlaybackPanel::On_Looping_Radio_Button_Toggled_Signal()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 
@@ -857,10 +860,10 @@ void PlaybackPanel::On_Cursor_Follows_Playback_Check_Button_Toggled_Signal()
 
 
   // 
-  gui().set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -870,7 +873,7 @@ void PlaybackPanel::On_Cursor_Follows_Playback_Check_Button_Toggled_Signal()
   }
 
   // 
-  gui().set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
@@ -926,10 +929,10 @@ void PlaybackPanel::On_Playback_Follows_Cursor_Check_Button_Toggled_Signal()
 
 
   // 
-  gui().set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -939,7 +942,7 @@ void PlaybackPanel::On_Playback_Follows_Cursor_Check_Button_Toggled_Signal()
   }
 
   // 
-  gui().set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
@@ -995,10 +998,10 @@ void PlaybackPanel::On_Queue_Check_Button_Toggled_Signal()
 
 
   // 
-  gui().set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -1008,7 +1011,7 @@ void PlaybackPanel::On_Queue_Check_Button_Toggled_Signal()
   }
 
   // 
-  gui().set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
@@ -1059,10 +1062,10 @@ void PlaybackPanel::On_Queue_Saved_Check_Button_Toggled_Signal()
 
 
   // 
-  gui().set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -1072,7 +1075,7 @@ void PlaybackPanel::On_Queue_Saved_Check_Button_Toggled_Signal()
   }
 
   // 
-  gui().set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
@@ -1158,10 +1161,10 @@ void PlaybackPanel::On_Stop_After_Current_Track_Check_Button_Toggled_Signal()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -1171,7 +1174,7 @@ void PlaybackPanel::On_Stop_After_Current_Track_Check_Button_Toggled_Signal()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 

@@ -55,7 +55,7 @@
 //              //
 //              //
 
-#include "MenuBar.h"
+#include "MainMenu.h"
 
 
 
@@ -67,33 +67,37 @@
 //                 //
 //                 //
 
-#include "../Base.h"
+#include "../../../Base.h"
 
-#include "../Configuration/Configuration.h"
+#include "../../../Configuration/Configuration.h"
 
-#include "../Playback/Playback.h"
+#include "../../../Playback/Playback.h"
 
-#include "Elements/ChildWindows/ChildWindow.h"
+#include "../../StatusBar.h"
 
-#include "Elements/Abouts/Abouts.h"
+#include "../ChildWindows/ChildWindow.h"
 
-#include "Elements/ConfigurationGUIs/ConfigurationGUIs.h"
+#include "../Abouts/Abouts.h"
 
-#include "Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.h"
+#include "../ConfigurationGUIs/ConfigurationGUIs.h"
 
-#include "Elements/ConfigurationGUIs/Panels/Playback/PlaybackPanel.h"
+#include "../ConfigurationGUIs/Panels/GUI/GUIPanel.h"
 
-#include "Elements/FileChoosers/FileChoosers.h"
+#include "../ConfigurationGUIs/Panels/Playback/PlaybackPanel.h"
 
-#include "Elements/PlaylistComboBoxes/PlaylistComboBox.h"
+#include "../FileChoosers/FileChoosers.h"
 
-#include "Elements/PlaylistComboBoxes/PlaylistComboBoxes.h"
+#include "../MainMenus/MainMenu.h"
 
-#include "Elements/Playlists/Playlists.h"
+#include "../PlaylistComboBoxes/PlaylistComboBox.h"
 
-#include "GUI.h"
+#include "../PlaylistComboBoxes/PlaylistComboBoxes.h"
 
-#include "StatusBar.h"
+#include "../Playlists/Playlists.h"
+
+#include "../../GUI.h"
+
+#include "MainMenus.h"
 
 
 
@@ -163,34 +167,61 @@ using namespace std;
 //             //
 //             //
 
-MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
+MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
+                   bool normal_menu)
 
 // Inherited Class
 
-: Parts(base_ref)
+: GUIElement(base_ref, main_menus_ref())
 
 
 
 // General
 
+, menu_(Gtk::manage(new Gtk::Menu))
+
 , menu_bar_(Gtk::manage(new Gtk::MenuBar))
 
-, MenuBar_HBox(Gtk::manage(new Gtk::Box))
-
-, MenuBar_VBox(Gtk::manage(new Gtk::Box))
 
 
-// Menus
+// About
 
-, File_Menu(Gtk::manage(new Gtk::Menu))
+, about_menu_(Gtk::manage(new Gtk::Menu))
 
-, Edit_Menu(Gtk::manage(new Gtk::Menu))
+, about_menu_item_(Gtk::manage(new Gtk::MenuItem("_About", true)))
 
-, View_Menu(Gtk::manage(new Gtk::Menu))
+, about_omp_menu_item_(Gtk::manage(new Gtk::MenuItem("_About OMP", true)))
 
-, Library_Menu(Gtk::manage(new Gtk::Menu))
 
-, About_Menu(Gtk::manage(new Gtk::Menu))
+
+// Edit
+
+, configuration_menu_item_
+    (Gtk::manage(new Gtk::MenuItem("_Configuration", true)))
+
+, edit_menu_(Gtk::manage(new Gtk::Menu))
+
+, edit_menu_item_(Gtk::manage(new Gtk::MenuItem("_Edit", true)))
+
+
+
+// File
+
+, add_file_menu_item_(Gtk::manage(new Gtk::MenuItem("_Add File(s)", true)))
+
+, file_menu_(Gtk::manage(new Gtk::Menu))
+
+, file_menu_item_(Gtk::manage(new Gtk::MenuItem("_File", true)))
+
+, quit_menu_item_(Gtk::manage(new Gtk::MenuItem("_Quit OMP", true)))
+
+
+
+// Library
+
+, library_menu_(Gtk::manage(new Gtk::Menu))
+
+, library_menu_item_(Gtk::manage(new Gtk::MenuItem("_Library", true)))
 
 
 
@@ -268,6 +299,10 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 , hide_tabs_check_menu_item_
     (Gtk::manage(new Gtk::CheckMenuItem("Hide _Tabs", true)))
 
+, view_menu_(Gtk::manage(new Gtk::Menu))
+
+, view_menu_item_(Gtk::manage(new Gtk::MenuItem("_View", true)))
+
 {
 
   //         //
@@ -275,16 +310,23 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   //         //
 
   // 
-  MenuBar_HBox -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  box() . set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+
+
 
   // 
-  MenuBar_VBox -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  Gtk::Box* new_vert_box_ptr = Gtk::manage(new Gtk::Box);
 
   // 
-  MenuBar_HBox -> set_center_widget(*MenuBar_VBox);
+  new_vert_box_ptr -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+
+
 
   // 
-  MenuBar_VBox -> set_center_widget(*menu_bar_);
+  box() . set_center_widget(*new_vert_box_ptr);
+
+  // 
+  new_vert_box_ptr -> set_center_widget(*menu_bar_);
 
 
 
@@ -294,135 +336,95 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   //                // 
 
   // 
-  File_MenuItem = Gtk::manage(new Gtk::MenuItem("_File", true));
+  if(normal_menu)
+  {
+
+    // 
+    menu_ -> append(*file_menu_item_);
+  
+    // 
+    menu_ -> append(*edit_menu_item_);
+  
+    // 
+    menu_ -> append(*view_menu_item_);
+  
+    // 
+    menu_ -> append(*playback_menu_item_);
+  
+    // 
+  //  menu_ -> append(*library_menu_item_);
+  
+    // 
+    menu_ -> append(*about_menu_item_);
+
+  }
 
   // 
-  Edit_MenuItem = Gtk::manage(new Gtk::MenuItem("_Edit", true));
+  else
+  {
 
-  // 
-  View_MenuItem = Gtk::manage(new Gtk::MenuItem("_View", true));
+    // 
+    menu_bar_ -> append(*file_menu_item_);
 
-  // 
-  Library_MenuItem = Gtk::manage(new Gtk::MenuItem("_Library", true));
+    // 
+    menu_bar_ -> append(*edit_menu_item_);
 
-  // 
-  About_MenuItem = Gtk::manage(new Gtk::MenuItem("_About", true));
+    // 
+    menu_bar_ -> append(*view_menu_item_);
 
+    // 
+    menu_bar_ -> append(*playback_menu_item_);
 
+    // 
+  //  menu_bar_ -> append(*library_menu_item_);
 
-  // 
-  menu_bar_ -> append(*File_MenuItem);
+    // 
+    menu_bar_ -> append(*about_menu_item_);
 
-  // 
-  menu_bar_ -> append(*Edit_MenuItem);
-
-  // 
-  menu_bar_ -> append(*View_MenuItem);
-
-  // 
-  menu_bar_ -> append(*playback_menu_item_);
-
-  // 
-//  menu_bar_ -> append(*Library_MenuItem);
-
-  // 
-  menu_bar_ -> append(*About_MenuItem);
+  }
 
 
 
   // 
-  File_MenuItem -> set_submenu(*File_Menu);
+  file_menu_item_ -> set_submenu(*file_menu_);
 
   // 
-  Edit_MenuItem -> set_submenu(*Edit_Menu);
+  edit_menu_item_ -> set_submenu(*edit_menu_);
 
   // 
-  View_MenuItem -> set_submenu(*View_Menu);
+  view_menu_item_ -> set_submenu(*view_menu_);
 
   // 
   playback_menu_item_ -> set_submenu(*playback_menu_);
 
   // 
-  Library_MenuItem -> set_submenu(*Library_Menu);
+//  library_menu_item_ -> set_submenu(*library_menu_);
 
   // 
-  About_MenuItem -> set_submenu(*About_Menu);
+  about_menu_item_ -> set_submenu(*about_menu_);
 
 
 
 
 
-  //                //
-  // File MenuItems ///////////////////////////////////////////////////////////
-  //                //
-
-  // 
-  Add_File_MenuItem = Gtk::manage(new Gtk::MenuItem("_Add File(s)", true));
+  //                 //
+  // About MenuItems //////////////////////////////////////////////////////////
+  //                 //
 
   // 
-  Open_File_MenuItem = Gtk::manage(new Gtk::MenuItem("_Open File(s)", true));
-
-  // 
-  Add_Folder_MenuItem = Gtk::manage(new Gtk::MenuItem("_Add Folder(s)", true));
-
-  // 
-  Open_Folder_MenuItem = Gtk::manage(new Gtk::MenuItem("_Open Folder(s)",
-                                                       true));
-
-  // 
-  Quit_MenuItem = Gtk::manage(new Gtk::MenuItem("_Quit OMP", true));
+  about_menu_ -> append(*about_omp_menu_item_);
 
 
 
   // 
-  File_Menu -> append(*Add_File_MenuItem);
-
-  // 
-//  File_Menu -> append(*Open_File_MenuItem);
-
-  // 
-  Open_File_MenuItem -> set_sensitive(false);
-
-  // 
-  File_Menu -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
-
-  // 
-//  File_Menu -> append(*Add_Folder_MenuItem);
-
-  // 
-  Add_Folder_MenuItem -> set_sensitive(false);
-
-  // 
-//  File_Menu -> append(*Open_Folder_MenuItem);
-
-  // 
-  Open_Folder_MenuItem -> set_sensitive(false);
-
-  // 
-  File_Menu -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
-
-  // 
-  File_Menu -> append(*Quit_MenuItem);
+  about_menu_
+    -> set_tooltip_text("Opens a window with some information about OMP.");
 
 
 
   // 
-  Add_File_MenuItem -> set_tooltip_text
-    ("Opens a window that is used to add tracks to the currently active " \
-     "playlist view.");
-
-  //
-  Quit_MenuItem -> set_tooltip_text("Cleanly exits OMP.");
-
-
-
-  // 
-  Quit_MenuItem -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Quit));
-
-  // 
-  Add_File_MenuItem -> signal_activate()
-     . connect(sigc::mem_fun(*this, &MenuBar::Add_File));
+  about_omp_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MainMenu::Open_About));
 
 
 
@@ -433,146 +435,56 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   //                //
 
   // 
-  Cut_MenuItem = Gtk::manage(new Gtk::MenuItem("_Cut", true));
-
-  // 
-  Copy_MenuItem = Gtk::manage(new Gtk::MenuItem("_Copy", true));
-
-  // 
-  Paste_MenuItem = Gtk::manage(new Gtk::MenuItem("_Paste", true));
-
-  // 
-  Remove_MenuItem = Gtk::manage(new Gtk::MenuItem("_Remove", true));
-
-  // 
-  Configuration_MenuItem
-    = Gtk::manage(new Gtk::MenuItem("_Configuration", true));
+  edit_menu_ -> append(*configuration_menu_item_);
 
 
 
   // 
-//  Edit_Menu -> append(*Cut_MenuItem);
-
-  // 
-  Cut_MenuItem -> set_sensitive(false);
-
-  // 
-//  Edit_Menu -> append(*Copy_MenuItem);
-
-  // 
-  Copy_MenuItem -> set_sensitive(false);
-
-  // 
-//  Edit_Menu -> append(*Paste_MenuItem);
-
-  // 
-  Paste_MenuItem -> set_sensitive(false);
-
-  // 
-  Edit_Menu -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
-
-  // 
-//  Edit_Menu -> append(*Remove_MenuItem);
-
-  // 
-  Remove_MenuItem -> set_sensitive(false);
-
-  // 
-  Edit_Menu -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
-
-  // 
-  Edit_Menu -> append(*Configuration_MenuItem);
-
-
-
-  // 
-  Configuration_MenuItem -> set_tooltip_text
+  configuration_menu_item_ -> set_tooltip_text
     ("Opens a window with OMP's configuration GUI.");
 
 
 
   // 
-  Configuration_MenuItem -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Configuration));
+  configuration_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MainMenu::Configuration));
 
 
 
 
 
   //                //
-  // View MenuItems ///////////////////////////////////////////////////////////
+  // File MenuItems ///////////////////////////////////////////////////////////
   //                //
 
   // 
-  View_Menu -> append(*hide_duplicates_check_menu_item_);
+  file_menu_ -> append(*add_file_menu_item_);
 
   // 
-  View_Menu -> append(*hide_header_bar_check_menu_item_);
+  file_menu_ -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
   // 
-  View_Menu -> append(*hide_status_bar_check_menu_item_);
-
-  // 
-  View_Menu -> append(*hide_tabs_check_menu_item_);
+  file_menu_ -> append(*quit_menu_item_);
 
 
 
   // 
-  hide_duplicates_check_menu_item_
-    -> set_active(config() . get("gui.hide_duplicates"));
+  add_file_menu_item_ -> set_tooltip_text
+    ("Opens a window that is used to add tracks to the currently active " \
+     "playlist view.");
 
-  // 
-  hide_header_bar_check_menu_item_
-    -> set_active(config() . get("gui.hide_header_bar"));
-
-  // 
-  hide_status_bar_check_menu_item_
-    -> set_active(config() . get("gui.hide_status_bar"));
-
-  // 
-  hide_tabs_check_menu_item_
-    -> set_active((config() . get("gui.tabs.hide")));
+  //
+  quit_menu_item_ -> set_tooltip_text("Cleanly exits OMP.");
 
 
 
   // 
-  hide_duplicates_check_menu_item_ -> set_tooltip_text
-    ("Hides the duplicate menu bar and playlist combobox under the cover " \
-     "art in the Main Content tab.");
+  quit_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MainMenu::Quit));
 
   // 
-  hide_header_bar_check_menu_item_ -> set_tooltip_text
-    ("Hides the header bar. Requires OMP to be restarted in order to " \
-     "take effect.");
-
-  // 
-  hide_status_bar_check_menu_item_ -> set_tooltip_text
-    ("Hides the status bar at the bottom of the main window.");
-
-  // 
-  hide_tabs_check_menu_item_ -> set_tooltip_text
-    ("Hide the tabs of OMP.");
-
-
-
-  // 
-  hide_duplicates_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun
-        (*this, &MenuBar::On_Hide_Duplicates_Check_Menu_Item_Activate_Signal));
-
-  // 
-  hide_header_bar_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun
-        (*this, &MenuBar::On_Hide_Header_Bar_Check_Menu_Item_Activate_Signal));
-
-  // 
-  hide_status_bar_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun
-        (*this, &MenuBar::On_Hide_Status_Bar_Check_Menu_Item_Activate_Signal));
-
-  // 
-  hide_tabs_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Hide_Tabs));
+  add_file_menu_item_ -> signal_activate()
+     . connect(sigc::mem_fun(*this, &MainMenu::Add_File));
 
 
 
@@ -601,7 +513,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   playback_menu_ -> append(*looping_playback_menu_item_);
 
   // 
-  playback_menu_ -> append(*order_playback_menu_item_);
+//  playback_menu_ -> append(*order_playback_menu_item_);
 
 
 
@@ -640,7 +552,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   looping_playback_menu_ -> append(*looping_none_playback_radio_menu_item_);
 
   // 
-  looping_playback_menu_ -> append(*looping_track_playback_radio_menu_item_);
+//  looping_playback_menu_ -> append(*looping_track_playback_radio_menu_item_);
 
   // 
   looping_playback_menu_ -> append(*looping_playlist_playback_radio_menu_item_);
@@ -719,7 +631,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   looping_none_playback_radio_menu_item_ -> signal_toggled()
     . connect(sigc::mem_fun
         (*this, 
-         &MenuBar::On_Looping_Playback_Radio_Menu_Item_Toggled_Signal));
+         &MainMenu::Change_Playback_Looping_Type));
 
 
 
@@ -742,7 +654,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
   playback_menu_ -> append(*queue_saved_playback_check_menu_item_);
 
   // 
-  playback_menu_ -> append(*flush_queue_playback_menu_item_);
+//  playback_menu_ -> append(*flush_queue_playback_menu_item_);
 
 
 
@@ -764,46 +676,81 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
 
   // 
+  looping_playback_menu_item_ -> set_tooltip_text
+    ("A list of options for what type of playback looping is occurring.");
+
+  //
+  looping_none_playback_radio_menu_item_ -> set_tooltip_text
+    ("No looping occurs. Playback will stop if the end of the playlist is " \
+     "reached.");
+
+  //
+  looping_playlist_playback_radio_menu_item_ -> set_tooltip_text
+    ("Playlist looping occurs. Playback will loop to the beginning of the " \
+     "playlist if the end of the playlist is reached.");
+
+
+
+  // 
+  stop_after_current_track_playback_check_menu_item_ -> set_tooltip_text
+    ("Stops playback after the currently playing track has ended.");
+
+  // 
+  playback_follows_cursor_playback_check_menu_item_ -> set_tooltip_text
+    ("Makes playback move to the currently selected track once the " \
+     "current track has finished.");
+
+  // 
+  cursor_follows_playback_playback_check_menu_item_ -> set_tooltip_text
+    ("The cursor automatically moves to the next track once it starts. ");
+
+  //  
+  queue_saved_playback_check_menu_item_ -> set_tooltip_text
+    ("Saves the tracks in the playback track queue when OMP is closed.");
+
+
+
+  // 
   next_playback_menu_item_ -> signal_activate()
     . connect(sigc::mem_fun(playback(), &Playback::Next_Track));
 
   // 
   play_playback_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Play));
+    . connect(sigc::mem_fun(*this, &MainMenu::Play));
 
   // 
   pause_playback_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Pause));
+    . connect(sigc::mem_fun(*this, &MainMenu::Pause));
 
   // 
   stop_playback_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Stop));
+    . connect(sigc::mem_fun(*this, &MainMenu::Stop));
 
 
 
   // 
   stop_after_current_track_playback_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Stop_After_Current_Track));
+    . connect(sigc::mem_fun(*this, &MainMenu::Stop_After_Current_Track));
 
   // 
   cursor_follows_playback_playback_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Cursor_Follows_Playback));
+    . connect(sigc::mem_fun(*this, &MainMenu::Cursor_Follows_Playback));
 
   // 
   playback_follows_cursor_playback_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Playback_Follows_Cursor));
+    . connect(sigc::mem_fun(*this, &MainMenu::Playback_Follows_Cursor));
 
   // 
   queue_playback_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Queue));
+    . connect(sigc::mem_fun(*this, &MainMenu::Queue));
 
   // 
   queue_saved_playback_check_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Queue_Saved));
+    . connect(sigc::mem_fun(*this, &MainMenu::Queue_Saved));
 
   // 
   flush_queue_playback_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Flush_Queue));
+    . connect(sigc::mem_fun(*this, &MainMenu::Flush_Queue));
 
   // 
   flush_queue_playback_menu_item_ -> set_sensitive(false);
@@ -812,55 +759,87 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 
 
 
-  //                 //
-  // About MenuItems //////////////////////////////////////////////////////////
-  //                 //
+  //                //
+  // View MenuItems ///////////////////////////////////////////////////////////
+  //                //
 
   // 
-  Help_MenuItem = Gtk::manage(new Gtk::MenuItem("_Help", true));
+  view_menu_ -> append(*hide_duplicates_check_menu_item_);
 
   // 
-  Help_MenuItem -> set_sensitive(false);
+  view_menu_ -> append(*hide_header_bar_check_menu_item_);
 
   // 
-//  About_Menu -> append(*Help_MenuItem);
+  view_menu_ -> append(*hide_status_bar_check_menu_item_);
+
+  // 
+  view_menu_ -> append(*hide_tabs_check_menu_item_);
 
 
 
   // 
-  About_Base_MenuItem
-    = Gtk::manage(new Gtk::MenuItem("_About OMP", true));
+  hide_duplicates_check_menu_item_
+    -> set_active(config() . get("gui.hide_duplicates"));
 
   // 
-  About_Menu -> append(*About_Base_MenuItem);
+  hide_header_bar_check_menu_item_
+    -> set_active(config() . get("gui.hide_header_bar"));
 
   // 
-  About_Menu -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+  hide_status_bar_check_menu_item_
+    -> set_active(config() . get("gui.hide_status_bar"));
 
   // 
-  About_Base_MenuItem -> signal_activate()
-    . connect(sigc::mem_fun(*this, &MenuBar::Open_About));
+  hide_tabs_check_menu_item_
+    -> set_active((config() . get("gui.tabs.hide")));
+
+
+
+  // 
+  hide_duplicates_check_menu_item_ -> set_tooltip_text
+    ("Hides the duplicate menu bar and playlist combobox under the cover " \
+     "art in the Main Content tab.");
+
+  // 
+  hide_header_bar_check_menu_item_ -> set_tooltip_text
+    ("Hides the header bar. Requires OMP to be restarted in order to " \
+     "take effect.");
+
+  // 
+  hide_status_bar_check_menu_item_ -> set_tooltip_text
+    ("Hides the status bar at the bottom of the main window.");
+
+  // 
+  hide_tabs_check_menu_item_ -> set_tooltip_text
+    ("Hide the tabs of OMP.");
+
+
+
+  // 
+  hide_duplicates_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun
+        (*this, &MainMenu::Hide_Duplicates));
+
+  // 
+  hide_header_bar_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun
+        (*this, &MainMenu::Hide_Header_Bar));
+
+  // 
+  hide_status_bar_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun
+        (*this, &MainMenu::Hide_Status_Bar));
+
+  // 
+  hide_tabs_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MainMenu::Hide_Tabs));
 
 
 
 
 
-  //                     //
-  // Ending Construction //////////////////////////////////////////////////////
-  //                     //
-
-/* 
-  Gtk::AccelMap::add_entry("<Window>/Edit/Configuration",
-                           GDK_KEY_j, Gdk::CONTROL_MASK);
-
-  Edit_Menu -> set_accel_group(window_ref . get_accel_group());
-
-  Edit_Menu -> set_accel_path("<Window>/Edit");
-
-  menu_bar_ -> accelerate(window_ref);
-*/
-
-
+  // 
+  menu_ -> show_all_children();
 
   // 
   box() . show_all_children();
@@ -875,7 +854,7 @@ MenuBar::MenuBar(Base& base_ref, Gtk::Window& window_ref)
 // About //////////////////////////////////////////////////////////////////////
 //       //
 
-void MenuBar::Open_About()
+void MainMenu::Open_About()
 {
 
   abouts() . Open_About();
@@ -890,7 +869,7 @@ void MenuBar::Open_About()
 // Edit ///////////////////////////////////////////////////////////////////////
 //      //
 
-void MenuBar::Configuration()
+void MainMenu::Configuration()
 {
 
   config_guis() . Open_Configuration();
@@ -905,17 +884,19 @@ void MenuBar::Configuration()
 // File ///////////////////////////////////////////////////////////////////////
 //      //
 
-void MenuBar::Add_File()
+void MainMenu::Add_File()
 {
 
+  // 
   file_choosers() . Add_Files();
 
 }
 
-void MenuBar::Quit()
+void MainMenu::Quit()
 {
 
-  gui().Quit();
+  // 
+  gui() . Quit(true);
 
 }
 
@@ -929,11 +910,11 @@ void MenuBar::Quit()
 
 // Looping
 
-void MenuBar::On_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
+void MainMenu::Change_Playback_Looping_Type()
 {
 
   // 
-  if(gui() . disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   {
 
     // 
@@ -1006,10 +987,10 @@ void MenuBar::On_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -1035,7 +1016,7 @@ void MenuBar::On_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
   } 
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 
@@ -1053,11 +1034,11 @@ void MenuBar::On_Looping_Playback_Radio_Menu_Item_Toggled_Signal()
 
 // Options
 
-void MenuBar::Cursor_Follows_Playback()
+void MainMenu::Cursor_Follows_Playback()
 {
 
   // 
-  if(gui().disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   {
 
     // 
@@ -1098,7 +1079,7 @@ void MenuBar::Cursor_Follows_Playback()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
 
 
@@ -1109,7 +1090,7 @@ void MenuBar::Cursor_Follows_Playback()
   config_guis() . Mark_Unsaved_Changes(false);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -1119,11 +1100,11 @@ void MenuBar::Cursor_Follows_Playback()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
-void MenuBar::Playback_Follows_Cursor()
+void MainMenu::Playback_Follows_Cursor()
 {
 
   //
@@ -1132,7 +1113,7 @@ void MenuBar::Playback_Follows_Cursor()
 
 
   // 
-  if(gui().disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   {
 
     // 
@@ -1173,7 +1154,7 @@ void MenuBar::Playback_Follows_Cursor()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
 
 
@@ -1184,7 +1165,7 @@ void MenuBar::Playback_Follows_Cursor()
   config_guis() . Mark_Unsaved_Changes(false);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -1194,16 +1175,16 @@ void MenuBar::Playback_Follows_Cursor()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 }
 
-void MenuBar::Stop_After_Current_Track()
+void MainMenu::Stop_After_Current_Track()
 {
 
   // 
-  if(gui().disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   {
 
     // 
@@ -1224,10 +1205,10 @@ void MenuBar::Stop_After_Current_Track()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -1237,7 +1218,7 @@ void MenuBar::Stop_After_Current_Track()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 
@@ -1262,7 +1243,7 @@ void MenuBar::Stop_After_Current_Track()
 
 // Queue
 
-void MenuBar::Queue()
+void MainMenu::Queue()
 {
 
   playback() . Reset_Track_Queue();
@@ -1270,7 +1251,7 @@ void MenuBar::Queue()
 
 
   // 
-  if(gui().disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   {
 
     // 
@@ -1311,7 +1292,7 @@ void MenuBar::Queue()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
 
 
@@ -1322,7 +1303,7 @@ void MenuBar::Queue()
   config_guis() . Mark_Unsaved_Changes(false);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -1332,16 +1313,16 @@ void MenuBar::Queue()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 }
 
-void MenuBar::Queue_Saved()
+void MainMenu::Queue_Saved()
 {
 
   // 
-  if(gui().disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   {
 
     // 
@@ -1382,7 +1363,7 @@ void MenuBar::Queue_Saved()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
 
 
@@ -1393,7 +1374,7 @@ void MenuBar::Queue_Saved()
   config_guis() . Mark_Unsaved_Changes(false);
 
   // 
-  for(auto menu_bars_it : gui() . menubars())
+  for(auto menu_bars_it : main_menus()())
   { 
 
     // 
@@ -1403,12 +1384,12 @@ void MenuBar::Queue_Saved()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 }
 
-void MenuBar::Flush_Queue()
+void MainMenu::Flush_Queue()
 {
 
   playlists() . Flush_Playback_Queue();
@@ -1419,21 +1400,21 @@ void MenuBar::Flush_Queue()
 
 // State Changers
 
-void MenuBar::Pause()
+void MainMenu::Pause()
 {
 
   playback() . Pause();
 
 }
 
-void MenuBar::Play()
+void MainMenu::Play()
 {
 
   playback() . Play(Gtk::TreeRowReference());
 
 }
 
-void MenuBar::Stop()
+void MainMenu::Stop()
 {
 
   playback().Stop();
@@ -1448,11 +1429,11 @@ void MenuBar::Stop()
 // View ///////////////////////////////////////////////////////////////////////
 //      //
 
-void MenuBar::Hide_Tabs()
+void MainMenu::Hide_Tabs()
 {
 
   // 
-  if(gui() . disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   { 
 
     // 
@@ -1504,10 +1485,10 @@ void MenuBar::Hide_Tabs()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto menubars_it : main_menus()())
   {
 
     // 
@@ -1516,15 +1497,15 @@ void MenuBar::Hide_Tabs()
   } 
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
-void MenuBar::On_Hide_Duplicates_Check_Menu_Item_Activate_Signal()
+void MainMenu::Hide_Duplicates()
 {
 
   // 
-  if(gui().disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   {
 
     return;
@@ -1543,7 +1524,7 @@ void MenuBar::On_Hide_Duplicates_Check_Menu_Item_Activate_Signal()
   {
 
     // 
-    gui() . menubars() . back() -> box() . hide();
+    main_menus()() . back() -> box() . hide();
 
     // 
     playlist_comboboxes()() . back() -> box() . hide();
@@ -1554,7 +1535,7 @@ void MenuBar::On_Hide_Duplicates_Check_Menu_Item_Activate_Signal()
   {
 
     // 
-    gui() . menubars() . back() -> box() . show();
+    main_menus()() . back() -> box() . show();
 
     // 
     playlist_comboboxes()() . back() -> box() . show();
@@ -1595,10 +1576,10 @@ void MenuBar::On_Hide_Duplicates_Check_Menu_Item_Activate_Signal()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto menubars_it : main_menus()())
   {
 
     // 
@@ -1607,15 +1588,15 @@ void MenuBar::On_Hide_Duplicates_Check_Menu_Item_Activate_Signal()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
-void MenuBar::On_Hide_Header_Bar_Check_Menu_Item_Activate_Signal()
+void MainMenu::Hide_Header_Bar()
 {
 
   // 
-  if(gui() . disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   {
 
     return;
@@ -1661,10 +1642,10 @@ void MenuBar::On_Hide_Header_Bar_Check_Menu_Item_Activate_Signal()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto menubars_it : main_menus()())
   {
 
     // 
@@ -1673,15 +1654,15 @@ void MenuBar::On_Hide_Header_Bar_Check_Menu_Item_Activate_Signal()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
-void MenuBar::On_Hide_Status_Bar_Check_Menu_Item_Activate_Signal()
+void MainMenu::Hide_Status_Bar()
 {
 
   // 
-  if(gui().disable_menubar_functions_flag())
+  if(main_menus() . disable_menubar_functions_flag())
   {
 
     // 
@@ -1749,10 +1730,10 @@ void MenuBar::On_Hide_Status_Bar_Check_Menu_Item_Activate_Signal()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto menubars_it : main_menus()())
   {
 
     // 
@@ -1761,7 +1742,7 @@ void MenuBar::On_Hide_Status_Bar_Check_Menu_Item_Activate_Signal()
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
@@ -1776,39 +1757,35 @@ void MenuBar::On_Hide_Status_Bar_Check_Menu_Item_Activate_Signal()
 //         //
 
 //         //
-// General //////////////////////////////////////////////////////////////////
+// Looping ////////////////////////////////////////////////////////////////////
 //         //
 
-Gtk::Box& MenuBar::box()
+Gtk::Menu& MainMenu::menu()
 {
 
-  return *MenuBar_HBox;
+  return *menu_;
 
 }
-
-
-
-
 
 //         //
 // Looping ////////////////////////////////////////////////////////////////////
 //         //
 
-Gtk::RadioMenuItem& MenuBar::looping_none_playback_radio_menu_item()
+Gtk::RadioMenuItem& MainMenu::looping_none_playback_radio_menu_item()
 {
 
   return *looping_none_playback_radio_menu_item_;
 
 }
 
-Gtk::RadioMenuItem& MenuBar::looping_playlist_playback_radio_menu_item()
+Gtk::RadioMenuItem& MainMenu::looping_playlist_playback_radio_menu_item()
 {
 
   return *looping_playlist_playback_radio_menu_item_;
 
 }
 
-Gtk::RadioMenuItem& MenuBar::looping_track_playback_radio_menu_item()
+Gtk::RadioMenuItem& MainMenu::looping_track_playback_radio_menu_item()
 {
 
   return *looping_track_playback_radio_menu_item_;
@@ -1823,35 +1800,35 @@ Gtk::RadioMenuItem& MenuBar::looping_track_playback_radio_menu_item()
 // Playback ///////////////////////////////////////////////////////////////////
 //          //
 
-Gtk::CheckMenuItem& MenuBar::stop_after_current_track_playback_check_menu_item()
+Gtk::CheckMenuItem& MainMenu::stop_after_current_track_playback_check_menu_item()
 {
 
   return *stop_after_current_track_playback_check_menu_item_;
 
 }
 
-Gtk::CheckMenuItem& MenuBar::cursor_follows_playback_playback_check_menu_item()
+Gtk::CheckMenuItem& MainMenu::cursor_follows_playback_playback_check_menu_item()
 {
 
   return *cursor_follows_playback_playback_check_menu_item_;
 
 }
 
-Gtk::CheckMenuItem& MenuBar::playback_follows_cursor_playback_check_menu_item() 
+Gtk::CheckMenuItem& MainMenu::playback_follows_cursor_playback_check_menu_item() 
 {
 
   return *playback_follows_cursor_playback_check_menu_item_;
 
 }
 
-Gtk::CheckMenuItem& MenuBar::queue_playback_check_menu_item() 
+Gtk::CheckMenuItem& MainMenu::queue_playback_check_menu_item() 
 {
 
   return *queue_playback_check_menu_item_;
 
 }
 
-Gtk::CheckMenuItem& MenuBar::queue_saved_playback_check_menu_item() 
+Gtk::CheckMenuItem& MainMenu::queue_saved_playback_check_menu_item() 
 {
 
   return *queue_saved_playback_check_menu_item_;
@@ -1866,28 +1843,28 @@ Gtk::CheckMenuItem& MenuBar::queue_saved_playback_check_menu_item()
 // View ///////////////////////////////////////////////////////////////////////
 //      //
 
-Gtk::CheckMenuItem& MenuBar::hide_duplicates_check_menu_item()
+Gtk::CheckMenuItem& MainMenu::hide_duplicates_check_menu_item()
 {
 
   return *hide_duplicates_check_menu_item_;
 
 }
 
-Gtk::CheckMenuItem& MenuBar::hide_header_bar_check_menu_item()
+Gtk::CheckMenuItem& MainMenu::hide_header_bar_check_menu_item()
 {
 
   return *hide_header_bar_check_menu_item_;
 
 }
 
-Gtk::CheckMenuItem& MenuBar::hide_status_bar_check_menu_item()
+Gtk::CheckMenuItem& MainMenu::hide_status_bar_check_menu_item()
 {
 
   return *hide_status_bar_check_menu_item_;
 
 }
 
-Gtk::CheckMenuItem& MenuBar::hide_tabs_check_menu_item()
+Gtk::CheckMenuItem& MainMenu::hide_tabs_check_menu_item()
 {
 
   return *hide_tabs_check_menu_item_;

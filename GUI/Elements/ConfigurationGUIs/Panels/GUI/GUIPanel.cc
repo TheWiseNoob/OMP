@@ -71,7 +71,9 @@
 
 #include "../../../../../GUI/GUI.h"
 
-#include "../../../../../GUI/MenuBar.h"
+#include "../../../MainMenus/MainMenu.h"
+
+#include "../../../MainMenus/MainMenus.h"
 
 #include "../../../../../GUI/StatusBar.h"
 
@@ -357,7 +359,7 @@ void GUIPanel::Apply_Saved_Values()
   {
 
     // 
-    gui() . menubars() . back() -> box() . hide();
+    main_menus()() . back() -> box() . hide();
 
     // 
     playlist_comboboxes()() . back() -> box() . hide();
@@ -369,7 +371,7 @@ void GUIPanel::Apply_Saved_Values()
   { 
 
     // 
-    gui() . menubars() . back() -> box() . show();
+    main_menus()() . back() -> box() . show();
 
     // 
     playlist_comboboxes()() . back() -> box() . show();
@@ -379,19 +381,19 @@ void GUIPanel::Apply_Saved_Values()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto main_menus_it : main_menus()())
   {
 
     // 
-    menubars_it -> hide_duplicates_check_menu_item() . set_active(active);
+    main_menus_it -> hide_duplicates_check_menu_item() . set_active(active);
 
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 
@@ -412,19 +414,19 @@ void GUIPanel::Apply_Saved_Values()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto main_menus_it : main_menus()())
   {
 
     // 
-    menubars_it -> hide_header_bar_check_menu_item() . set_active(active);
+    main_menus_it -> hide_header_bar_check_menu_item() . set_active(active);
 
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 
@@ -465,19 +467,19 @@ void GUIPanel::Apply_Saved_Values()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto main_menus_it : main_menus()())
   {
 
     // 
-    menubars_it -> hide_status_bar_check_menu_item() . set_active(active);
+    main_menus_it -> hide_status_bar_check_menu_item() . set_active(active);
 
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 
@@ -503,19 +505,19 @@ void GUIPanel::Apply_Saved_Values()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto main_menus_it : main_menus()())
   {
 
     // 
-    menubars_it -> hide_tabs_check_menu_item() . set_active(active);
+    main_menus_it -> hide_tabs_check_menu_item() . set_active(active);
 
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
@@ -558,19 +560,19 @@ void GUIPanel::Hide_Tabs()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto main_menus_it : main_menus()())
   {
 
     // 
-    menubars_it -> hide_tabs_check_menu_item() . set_active(active);
+    main_menus_it -> hide_tabs_check_menu_item() . set_active(active);
 
   } 
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 
@@ -603,7 +605,7 @@ void GUIPanel::On_Hide_Duplicates_Check_Button_Toggled_Signal()
   {
 
     // 
-    gui() . menubars() . back() -> box() . hide();
+    gui() . main_menus()() . back() -> box() . hide();
 
     // 
     playlist_comboboxes()() . back() -> box() . hide();
@@ -614,7 +616,7 @@ void GUIPanel::On_Hide_Duplicates_Check_Button_Toggled_Signal()
   {
 
     // 
-    gui() . menubars() . back() -> box() . show();
+    gui() . main_menus()() . back() -> box() . show();
 
     // 
     playlist_comboboxes()() . back() -> box() . show();
@@ -639,19 +641,19 @@ void GUIPanel::On_Hide_Duplicates_Check_Button_Toggled_Signal()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto main_menus_it : main_menus()())
   {
 
     // 
-    menubars_it -> hide_duplicates_check_menu_item() . set_active(active);
+    main_menus_it -> hide_duplicates_check_menu_item() . set_active(active);
 
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 
@@ -695,19 +697,19 @@ void GUIPanel::On_Hide_Header_Bar_Check_Button_Toggled_Signal()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto main_menus_it : main_menus()())
   {
 
     // 
-    menubars_it -> hide_header_bar_check_menu_item() . set_active(active);
+    main_menus_it -> hide_header_bar_check_menu_item() . set_active(active);
 
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 
@@ -773,19 +775,19 @@ void GUIPanel::On_Hide_Status_Bar_Check_Button_Toggled_Signal()
 
 
   // 
-  gui() . set_disable_menubar_functions_flag(true);
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
-  for(auto menubars_it : gui() . menubars())
+  for(auto main_menus_it : main_menus()())
   {
 
     // 
-    menubars_it -> hide_status_bar_check_menu_item() . set_active(active);
+    main_menus_it -> hide_status_bar_check_menu_item() . set_active(active);
 
   }
 
   // 
-  gui() . set_disable_menubar_functions_flag(false);
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 
 

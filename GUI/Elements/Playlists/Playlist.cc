@@ -781,12 +781,12 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // 
-  bool playlist_active = config() . get(setting_name . c_str());
+  bool playlist_locked = config() . get(setting_name . c_str());
 
 
 
   // 
-  menu_ -> lock_check_menu_item() . set_active(playlist_active);
+  menu_ -> lock_check_menu_item() . set_active(playlist_locked);
 
 
 

@@ -3,6 +3,28 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.11] - May 20th, 2018
+
+### Added
+- A system menu! Right click most parts of OMP to display a system menu! It
+  has the exact options a system menu bar has. You can also press the keyboard
+  shortcut for the system menu. The default is control + m.
+
+### Changed
+- Less space between the seekbar and the next track button.
+- System menubars and the system menu now fully have all of the filler options
+  removed and all have tooltips.
+
+### Fixed
+- No longer possible to delete the Library or Queue playlist using the delete
+  playlist keyboard shortcut.
+- Bug causing the use of the playback track queue to crash OMP when using
+  playback follows cursor has been fixed.
+- The artwork display is now far more stable. Some images uses to vibrate,
+  infinitely attempting to resize. This is fixed.
+
+
+
 ## [0.0.10] - May 6th, 2018
 
 ### Added
@@ -14,12 +36,13 @@ All notable changes to this project will be documented in this file.
   are now designed different. Insensitive entries are used instead of labels.
 - The entry of the playlist combobox of the duplicate content under the album
   art in Main Content now expands.
-- The playback status symbol in the status bar is now and image instead
+- The playback status symbol in the status bar is now an image instead
   of the text symbol for play, pause, or stop.
+- General code clean-up.
 
 ### Fixed
 - Multiple album artists, artists, and genres now display and store properly
-  for normal track files. Tracks with multi-field metadata fields and use a 
+  for normal track files. Tracks with multi-value metadata fields and use a 
   cuesheet are not confirmed working yet. They will be working by the next 
   release.
 - Switching between None and Playlist Repeat while playing or paused no longer

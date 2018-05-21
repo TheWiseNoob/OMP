@@ -75,6 +75,10 @@
 
 #include "../../GUI.h"
 
+#include "../MainMenus/MainMenu.h"
+
+#include "../MainMenus/MainMenus.h"
+
 #include "ChildWindows.h"
 
 
@@ -90,6 +94,8 @@
 #include <gtkmm/applicationwindow.h>
 
 #include <gtkmm/box.h>
+
+#include <gtkmm/menu.h>
 
 #include <iostream>
 
@@ -161,6 +167,10 @@ ChildWindow::ChildWindow
    }
 
 
+
+  // 
+  window_ -> signal_button_press_event()
+    . connect(sigc::mem_fun(*this, &ChildWindow::On_Button_Press_Event));
 
   // 
   window_ -> signal_key_press_event()
@@ -238,6 +248,25 @@ ChildWindow::~ChildWindow()
 // Member Functions ///////////////////////////////////////////////////////////
 //                  //
 //                  //
+
+bool ChildWindow::On_Button_Press_Event(GdkEventButton* event)
+{
+
+  // 
+  if((event -> type == GDK_BUTTON_PRESS) && (event -> button == 3))
+  {
+
+    // 
+    main_menus() . system_menu() . menu() . popup_at_pointer(nullptr);
+
+  }
+
+
+
+  // 
+  return false;
+
+}
 
 bool ChildWindow::On_Key_Press_Event(GdkEventKey* event)
 {

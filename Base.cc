@@ -554,6 +554,10 @@ Base::Base(int argc, char *argv[])
     . add_default("keyboard_shortcuts.keys.select_all_rows", "<Primary>a");
 
   // 
+  config()
+    . add_default("keyboard_shortcuts.keys.system_menu", "<Primary>m");
+
+  // 
   config()  . add_default("keyboard_shortcuts.keys.stop", "q");
 
 

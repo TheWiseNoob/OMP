@@ -49,8 +49,8 @@
 //                    //
 //                    //
 
-#ifndef CHILD_WINDOW_H
-#define CHILD_WINDOW_H
+#ifndef MAIN_MENUS_H
+#define MAIN_MENUS_H
 
 
 
@@ -64,13 +64,15 @@
 //         //
 //         //
 
-//                 //
-//                 //
-// Inherited Class ////////////////////////////////////////////////////////////
-//                 //
-//                 //
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
 
-#include "../../GUIElement.h"
+#include "../../GUIElementList.h"
+
+#include "MainMenu.h"
 
 
 
@@ -81,12 +83,6 @@
 // Outside Headers ////////////////////////////////////////////////////////////
 //                 //
 //                 //
-
-#include <functional>
-
-#include <list>
-
-#include <memory>
 
 
 
@@ -100,51 +96,6 @@
 //                      //
 //                      //
 
-//         //
-//         //
-// Classes ////////////////////////////////////////////////////////////////////
-//         //
-//         //
-
-//                            //
-//                            //
-// Class Forward Declarations /////////////////////////////////////////////////
-//                            //
-//                            //
-
-class ChildWindows;
-
-class Flags;
-
-namespace Gtk
-{
-
-  class ApplicationWindow;
-
-  class Box;
-
-}
-
-class GUI;
-
-
-
-
-
-//                             //
-//                             //
-// Struct Forward Declarations ////////////////////////////////////////////////
-//                             //
-//                             //
-
-struct _GdkEventAny;
-typedef struct _GdkEventAny GdkEventAny;
-
-struct _GdkEventButton;
-typedef struct _GdkEventButton GdkEventButton;
-
-struct _GdkEventKey;
-typedef struct _GdkEventKey GdkEventKey;
 
 
 
@@ -158,8 +109,8 @@ typedef struct _GdkEventKey GdkEventKey;
 //                   //
 //                   //
 
-class ChildWindow : public GUIElement<ChildWindow>
-{ 
+class MainMenus : public GUIElementList<MainMenu>
+{
 
   //             //
   //             //
@@ -169,10 +120,7 @@ class ChildWindow : public GUIElement<ChildWindow>
 
   public:
 
-    ChildWindow
-      (const char* new_title, Base& base_ref, ChildWindows& child_windows_ref,
-       std::function<void(void)> new_child_class_destroy_function,
-       bool set_main_window = false);
+    MainMenus(Base& base);
 
 
 
@@ -186,7 +134,7 @@ class ChildWindow : public GUIElement<ChildWindow>
 
   public:
 
-    virtual ~ChildWindow();
+    virtual ~MainMenus();
 
 
 
@@ -200,28 +148,6 @@ class ChildWindow : public GUIElement<ChildWindow>
 
   public:
 
-    bool On_Button_Press_Event(GdkEventButton* event);
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose: 
-    //
-    //   Called when a keyboard press occurs. Used to assign keyboard 
-    //   shortcuts to various functions.
-    //
-    // 
-    //
-    // Arguments: 
-    //
-    //   event: Holds the event type and GDK window.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    bool On_Key_Press_Event(GdkEventKey* event);
-
-    bool On_Irregular_Quit(GdkEventAny* event);                        
-
-    void Show();
-
 
 
 
@@ -234,11 +160,9 @@ class ChildWindow : public GUIElement<ChildWindow>
 
   public:
 
-    Gtk::Box& box();
+    bool disable_menubar_functions_flag();
 
-    bool fullscreen();
-
-    Gtk::ApplicationWindow& window();
+    MainMenu& system_menu();
 
 
 
@@ -252,11 +176,8 @@ class ChildWindow : public GUIElement<ChildWindow>
 
   public:
 
-    void set_default_size(int width, int height);
+    void set_disable_menubar_functions_flag(bool new_setting);
 
-    void set_fullscreen(bool new_fullscreen);
-
-    void set_title(const char* new_title);
 
 
 
@@ -267,20 +188,12 @@ class ChildWindow : public GUIElement<ChildWindow>
   // Member Variables /////////////////////////////////////////////////////////
   //                  //
   //                  //
+ 
+  bool disable_menubar_functions_flag_;
 
-  private:
+  MainMenu* system_menu_;
 
-    Gtk::Box* box_;
-
-    std::function<void(void)> child_class_destroy_function_;
-
-    bool fullscreen_;
-
-    bool main_window_;
-
-    Gtk::ApplicationWindow* window_;
-
-};
+}; 
 
 
 
@@ -294,4 +207,4 @@ class ChildWindow : public GUIElement<ChildWindow>
 //                  //
 //                  //
 
-#endif
+#endif 

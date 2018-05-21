@@ -401,7 +401,7 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
 
   // 
   pre_amp_sbs_ -> box()
-    . set_tooltip_text("The pre-amp gain amount of tracks with" \
+    . set_tooltip_text("The pre-amp gain amount of tracks with " \
                         "ReplayGain data.");
 
 

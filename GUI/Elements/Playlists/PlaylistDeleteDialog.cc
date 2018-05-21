@@ -299,6 +299,25 @@ void PlaylistDeleteDialog::Run(bool new_delete_playlist_combobox_playlist)
 {
 
   // 
+  Glib::ustring active_playlist_name_str
+    = playlists() . selected_playlist() . active_playlist_name();
+
+
+
+  // 
+  if((active_playlist_name_str == "Library")
+       ||
+     (active_playlist_name_str == "Queue"))
+  {
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
   delete_playlist_combobox_playlist_ = new_delete_playlist_combobox_playlist;
 
 

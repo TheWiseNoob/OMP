@@ -162,7 +162,7 @@ PlaybackController::PlaybackController
 
 
   // Sets the margin on the end of the switcher to 10.
-  playback_buttons_stack_switcher_ -> set_margin_end(10);
+  playback_buttons_stack_switcher_ -> set_margin_end(4);
 
   // Sets the margin on the start of the switcher to 3.
   playback_buttons_stack_switcher_ -> set_margin_start(3);
@@ -172,11 +172,6 @@ PlaybackController::PlaybackController
 
   // Sets the margin on the bottom of the switcher to 3.
   playback_buttons_stack_switcher_ -> set_margin_bottom(3);
-
-
-
-  // 
-  next_button_ -> set_margin_right(10);
 
 
 

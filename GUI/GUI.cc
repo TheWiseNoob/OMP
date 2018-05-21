@@ -91,6 +91,10 @@
 
 #include "Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
+#include "Elements/MainMenus/MainMenu.h"
+
+#include "Elements/MainMenus/MainMenus.h"
+
 #include "Elements/PlaybackControllers/PlaybackController.h"
 
 #include "Elements/PlaybackControllers/PlaybackControllers.h"
@@ -110,8 +114,6 @@
 #include "Elements/FileChoosers/FileChoosers.h"
 
 #include "../KeyboardShortcuts/KeyboardShortcuts.h"
-
-#include "MenuBar.h"
 
 #include "Seekbar.h"
 
@@ -233,6 +235,8 @@ GUI::GUI(Base& base_ref)
 
 , config_guis_(new ConfigurationGUIs(base_ref))
 
+, main_menus_(new MainMenus(base_ref))
+
 , playlists_(new Playlists(base_ref))
 
 , playback_controllers_(new PlaybackControllers(base_ref))
@@ -261,12 +265,6 @@ GUI::GUI(Base& base_ref)
 
 
 
-// MenuBars
-
-, disable_menubar_functions_flag_(false)
-
-
-
 // Status Bar 
 
 , status_bar_(new StatusBar(base_ref))
@@ -290,7 +288,7 @@ GUI::GUI(Base& base_ref)
   //                   //
 
   // Function run when the program closes.
-  std::function<void(void)> temp_func_ptr = std::bind(&GUI::Quit, this);
+  std::function<void(void)> temp_func_ptr = std::bind(&GUI::Quit, this, false);
 
 
 
@@ -502,13 +500,14 @@ GUI::GUI(Base& base_ref)
 
 
 
-  // Header MenuBar Creation //////////////////////////////////////////////////
+  // Header MainMenu Creation //////////////////////////////////////////////////
 
-  // Creates two MenuBar pointers.
-  MenuBar* header_bar_menubar = new MenuBar(base_ref, main_window_ -> window());
+  // Creates two MainMenu pointers.
+  MainMenu* header_bar_menubar
+    = new MainMenu(base_ref, *main_menus_);
 
   // Puts the first menubars in the menubars_ list.
-  menubars_ . push_back(header_bar_menubar);
+  (*main_menus_)() . push_back(header_bar_menubar);
 
   // Adds the menubar to the header.
   header_bar_ -> pack_start(header_bar_menubar -> box());
@@ -516,7 +515,7 @@ GUI::GUI(Base& base_ref)
 
 
   // Adds a playlist combobox from the beginning of the playlist_comboboxes_.
-  header_bar_ -> pack_end((*(playlist_comboboxes()().begin())) -> box());
+  header_bar_ -> pack_end((*(playlist_comboboxes()() . begin())) -> box());
 
 
 
@@ -737,23 +736,24 @@ GUI::GUI(Base& base_ref)
 
 
 
-  // Main Content MenuBar Creation ////////////////////////////////////////////
+  // Main Content MainMenu Creation ////////////////////////////////////////////
 
   // 
   Gtk::Box* duplicates_box = Gtk::manage(new Gtk::Box);
 
-  // Adds a MenuBar to the left pane in Main Content.
+  // Adds a MainMenu to the left pane in Main Content.
   left_main_content_paned_box_ -> pack_end(*duplicates_box, Gtk::PACK_SHRINK);
 
 
 
-  // Creates two MenuBar pointers.
-  MenuBar* main_content_menubar = new MenuBar(base_ref, main_window_ -> window());
+  // Creates two MainMenu pointers.
+  MainMenu* main_content_menubar
+    = new MainMenu(base_ref, *main_menus_);
 
   // Puts the first menubars in the menubars_ list.
-  menubars_ . push_back(main_content_menubar);
+  (*main_menus_)() . push_back(main_content_menubar);
 
-  // Adds a MenuBar to the left pane in Main Content.
+  // Adds a MainMenu to the left pane in Main Content.
   duplicates_box
     -> pack_start(main_content_menubar -> box(), Gtk::PACK_SHRINK);
 
@@ -761,7 +761,7 @@ GUI::GUI(Base& base_ref)
 
   // Main Content Playlist ComboBox Creation //////////////////////////////////
 
-  // Adds a MenuBar to the left pane in Main Content.
+  // Adds a MainMenu to the left pane in Main Content.
   duplicates_box
     -> pack_start(*Gtk::manage(new Gtk::Separator), false, false, 10);
 
@@ -968,7 +968,7 @@ GUI::GUI(Base& base_ref)
   {
 
     // 
-    menubars_ . back() -> box() . hide();
+    (*main_menus_)() . back() -> box() . hide();
 
     // 
     playlist_comboboxes()() . back() -> box() . hide();
@@ -980,7 +980,7 @@ GUI::GUI(Base& base_ref)
   {
 
     // 
-    menubars_ . back() -> box() . show();
+    (*main_menus_)() . back() -> box() . show();
 
     // 
     playlist_comboboxes()() . back() -> box() . show();
@@ -1025,6 +1025,9 @@ GUI::GUI(Base& base_ref)
 
 GUI::~GUI()
 {
+
+  // 
+  delete main_menus_;
 
   // Deletes the instance of the Playlists class.
   delete playlists_;
@@ -1147,10 +1150,6 @@ bool GUI::On_GUI_Window_Signal_Delete_Event(GdkEventAny* event)
 
 
 
-  // Releases the application window.
-  main_window() -> window().get_application() -> release();
-
-
   // Ends the function.
   return true;
 
@@ -1265,16 +1264,11 @@ void GUI::On_Main_Window_Check_Resize_Signal()
 
 }
 
-void GUI::Quit()
+void GUI::Quit(bool release_twice)
 { 
 
   // 
   base() . quitting() = true;
-
-
-
-  // Releases the application window.
-  main_window() -> window().get_application() -> release();
 
 
 
@@ -1301,6 +1295,20 @@ void GUI::Quit()
 
   //
   playlists() . database() . Cleanup_Database();
+
+
+
+  // 
+  if(release_twice)
+  {
+
+    // Releases the application window.
+    main_window() -> window() . get_application() -> release();
+
+  }
+
+  // Releases the application window.
+  main_window() -> window() . get_application() -> release();
 
 }
 
@@ -1475,18 +1483,11 @@ void GUI::Update_Tagview(const char* tag_frame_label_name, Track& new_track)
 // Normal Getters /////////////////////////////////////////////////////////////
 //                //
 
-bool& GUI::disable_menubar_functions_flag()
-{ 
-
-  return disable_menubar_functions_flag_;
-
-}
-
 long long GUI::duration()
 {
 
   // Returns Playback's duration variable.
-  return (base().playback().duration());
+  return playback() . duration();
 
 }
 
@@ -1494,7 +1495,7 @@ long long GUI::position()
 {
 
   // Returns Playback's position variable.
-  return (base().playback().position());
+  return playback() . position();
 
 }
 
@@ -1534,6 +1535,13 @@ FileChoosers& GUI::file_choosers()
 
 }
 
+MainMenus& GUI::main_menus()
+{ 
+
+  return *main_menus_;
+
+}
+
 Playlists& GUI::playlists()
 {
 
@@ -1555,13 +1563,6 @@ PlaylistComboBoxes& GUI::playlist_comboboxes()
 //                               //
 // Future GUIElementList Getters //////////////////////////////////////////////
 //                               //
-
-std::list<MenuBar*>& GUI::menubars()
-{ 
-
-  return menubars_; 
-
-}
 
 Seekbar& GUI::seekbar()
 { 
@@ -1611,26 +1612,5 @@ ChildWindow* GUI::main_window()
 { 
 
   return main_window_;
-
-}
-
-
-
-
-
-//         //
-//         //
-// Setters ////////////////////////////////////////////////////////////////////
-//         //
-//         //
-
-//          //
-// MenuBars ///////////////////////////////////////////////////////////////////
-//          //
-
-void GUI::set_disable_menubar_functions_flag(bool new_setting)
-{ 
-
-  disable_menubar_functions_flag_ = new_setting; 
 
 }

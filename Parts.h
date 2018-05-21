@@ -102,6 +102,8 @@ class GUI;
 
 class KeyboardShortcuts;
 
+class MainMenus;
+
 class Metadata;
 
 class Playback;
@@ -199,6 +201,8 @@ class Parts
 
     virtual KeyboardShortcuts& keyboard_shortcuts() final;
 
+    virtual MainMenus& main_menus();
+
     virtual Metadata& metadata() final;
 
     virtual Playback& playback() final;
@@ -231,7 +235,7 @@ class Parts
 
     bool debug_;
 
-};
+}; 
 
 inline Parts::~Parts()
 {

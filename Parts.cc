@@ -79,6 +79,8 @@
 
 #include "GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h"
 
+#include "GUI/Elements/MainMenus/MainMenus.h"
+
 #include "GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h"
 
 #include "GUI/Elements/Playlists/Playlists.h"
@@ -235,6 +237,13 @@ KeyboardShortcuts& Parts::keyboard_shortcuts()
 {
 
   return base_ . keyboard_shortcuts(); 
+
+} 
+
+MainMenus& Parts::main_menus()
+{ 
+
+  return base_ . gui() . main_menus();
 
 } 
 

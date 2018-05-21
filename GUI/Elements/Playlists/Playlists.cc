@@ -676,6 +676,11 @@ void Playlists::Change_Track()
 
 
 
+  //
+  string filename_str = playlists() . playing_track() . filename() . raw();
+
+
+
   // 
   if(playback() . delete_playback_queue_row())
   {
@@ -759,7 +764,7 @@ void Playlists::Change_Track()
 
 
 
-  // 
+    // 
     if(playing_row_ref())
     {
 
@@ -775,6 +780,27 @@ void Playlists::Change_Track()
 
         //
         set_selected_row_ref(playing_row_ref());
+
+      }
+
+
+
+      //
+      string filename_str = playlists() . playing_track() . filename() . raw();
+
+      // 
+      for(auto playlists_it : (*this)())
+      {
+
+        // 
+        if((playlists_it -> playlist_treestore())
+             == playing_playlist_treestore())
+        {
+
+          // 
+          playlists_it -> filename_label() . set_text(filename_str);
+
+        }
 
       }
 
@@ -808,9 +834,6 @@ void Playlists::Change_Track()
   }
 
 
-
-  //
-  string filename_str = playlists() . playing_track() . filename() . raw();
 
   //
   gui() . Load_Cover_Art(filename_str);
@@ -1570,43 +1593,58 @@ void Playlists::Scroll_To_Row(Gtk::TreeRowReference desired_row_ref)
 void Playlists::Select_Row(Gtk::TreeRowReference desired_row_ref)
 {
 
-
+  // 
   disable_on_selection_changed_ = true;
 
+  // 
   list<Playlist*>::iterator playlists_it = (*this)().begin();
 
+  // 
   Glib::RefPtr<PlaylistTreeStore> row_playlist_treestore
     = Glib::RefPtr<PlaylistTreeStore>::cast_dynamic(desired_row_ref . get_model());
 
 
+
+  // 
   while(playlists_it != ((*this)().end()))
   {
 
+    // 
     if(((*playlists_it) -> playlist_treestore()) == row_playlist_treestore)
     {
 
+      // 
       if(!(desired_row_ref . is_valid()))
       {
 
 
-      }
-      else
-      {
+      } 
 
+      // 
+      else
+      { 
+
+        // 
         (*playlists_it) -> playlist_treeselection() -> unselect_all();
 
+
+
+        // 
         (*playlists_it) -> set_cursor(desired_row_ref . get_path());
 
       }
 
-    }
+    } 
 
+    // 
     playlists_it++;
 
   }
 
-  disable_on_selection_changed_ = false;
 
+
+  // 
+  disable_on_selection_changed_ = false;
 
 }
 

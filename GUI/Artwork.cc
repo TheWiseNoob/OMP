@@ -182,6 +182,9 @@ Artwork::Artwork(Base& base_ref)
   art_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 
   // 
+  inner_art_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+
+  // 
   art_box_ -> set_baseline_position(Gtk::BASELINE_POSITION_BOTTOM);
 
 
@@ -207,17 +210,17 @@ Artwork::Artwork(Base& base_ref)
   inner_art_box_ -> set_vexpand(true);
 
   // 
-  inner_art_box_ -> set_hexpand(true);
+  art_box_ -> set_hexpand(true);
 
 
 
   // 
   current_box_width_
-    = inner_art_box_ -> get_allocation() . get_width();
+    = art_aspect_frame_ -> get_allocation() . get_width();
 
   // 
   current_box_height_
-    = inner_art_box_ -> get_allocation() .  get_height();
+    = art_aspect_frame_ -> get_allocation() .  get_height();
 
   // 
   saved_box_width_ = current_box_width_;
@@ -310,14 +313,6 @@ bool Artwork::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
 
 
-  // 
-  art_aspect_frame_
-    -> set(Gtk::ALIGN_CENTER, Gtk::ALIGN_CENTER,
-           (float(art_pixbuf_ -> get_width())
-              / float(art_pixbuf_ -> get_height())), false);
-
-
-
   // Draw the image in the middle of the drawing area, or (if the image is
   // larger than the drawing area) draw the middle part of the image.
   Gdk::Cairo::set_source_pixbuf(cr, art_pixbuf_, 0, 0);
@@ -376,26 +371,10 @@ void Artwork::Resize_Image()
   {
 
     // 
-    saved_box_width_ = current_box_width_;
-
-    // 
     saved_box_height_ = current_box_height_;
 
-
-
     // 
-    art_pixbuf_
-      = (art_pixbuf_ -> scale_simple(saved_box_width_, saved_box_height_,
-                                     Gdk::INTERP_HYPER));
-
-
-
-    debug("Image scaled!");
-
-
-
-    // 
-    queue_draw();
+    saved_box_width_ = current_box_width_;
 
 
 
@@ -432,11 +411,11 @@ void Artwork::Resize_Image()
 
     // 
     current_box_width_
-      = inner_art_box_ -> get_allocation() . get_width();
+      = art_aspect_frame_ -> get_allocation() . get_width();
 
     // 
     current_box_height_
-      = inner_art_box_ -> get_allocation() . get_height();
+      = art_aspect_frame_ -> get_allocation() . get_height();
 
     // 
     saved_box_width_ = current_box_width_;
@@ -454,6 +433,14 @@ void Artwork::Resize_Image()
     // 
     art_pixbuf_ = Gdk::Pixbuf::create_from_file(cover_file_, saved_box_width_,
                                                saved_box_height_, true);
+
+
+
+    // 
+    art_aspect_frame_
+      -> set(Gtk::ALIGN_CENTER, Gtk::ALIGN_CENTER,
+             (float(art_pixbuf_ -> get_width())
+                / float(art_pixbuf_ -> get_height())), false);
 
 
 
@@ -577,11 +564,11 @@ void Artwork::Resize_Loop()
 
       // 
       current_box_width_
-        = inner_art_box_ -> get_allocation() . get_width();
+        = art_aspect_frame_ -> get_allocation() . get_width();
 
       // 
       current_box_height_
-        = inner_art_box_ -> get_allocation() . get_height();
+        = art_aspect_frame_ -> get_allocation() . get_height();
 
 
 

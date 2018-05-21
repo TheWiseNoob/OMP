@@ -2,10 +2,10 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	ChildWindows.o Configuration.o ConfigurationGUI.o ConfigurationGUIs.o \
 	CueSheet.o DefaultValue.o DefaultValues.o GUI.o GUIPanel.o \
 	Errors.o FailedScrobblesDatabase.o FileChoosers.o FileChooser.o \
-	KeyboardShortcuts.o KeyboardShortcutsPanel.o Main.o MenuBar.o \
-	Metadata.o OutputPanel.o Panel.o ParserAndDecoder.o Parts.o \
-	Playback.o PlaybackController.o PlaybackControllers.o PlaybackPanel.o \
-	Playlist.o PlaylistComboBox.o PlaylistComboBoxes.o \
+	KeyboardShortcuts.o KeyboardShortcutsPanel.o Main.o MainMenu.o \
+	MainMenus.o Metadata.o OutputPanel.o Panel.o ParserAndDecoder.o \
+	Parts.o Playback.o PlaybackController.o PlaybackControllers.o \
+	PlaybackPanel.o Playlist.o PlaylistComboBox.o PlaylistComboBoxes.o \
 	PlaylistCreateDialog.o PlaylistDeleteDialog.o PlaylistMenu.o \
 	PlaylistPanel.o PlaylistTreeStore.o Playlists.o PlaylistsDatabase.o \
 	ReplayGainPanel.o Scrobbling.o ScrobblingPanel.o Seekbar.o \
@@ -70,6 +70,8 @@ Base.o: Base.cc Base.h Configuration/Configuration.h \
 ChildWindow.o: GUI/Elements/ChildWindows/ChildWindow.cc \
 	GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/ChildWindows/ChildWindows.h \
+	GUI/Elements/MainMenus/MainMenu.h \
+	GUI/Elements/MainMenus/MainMenus.h \
 	Parts.h Configuration/Configuration.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	GUI/GUI.h
@@ -169,7 +171,7 @@ FileChoosers.o: GUI/Elements/FileChoosers/FileChoosers.cc \
 GUI.o: Parts.h GUI/GUI.cc GUI/GUI.h Base.h Configuration/Configuration.h \
 	Metadata/Metadata.h Playback/Playback.h Metadata/TimeConversion.h \
 	Metadata/Track.h Scrobbling/Scrobbling.h GUI/Artwork.h \
-	GUI/Elements/**/*.h GUI/StatusBar.h GUI/Tagview.h GUI/MenuBar.h \
+	GUI/Elements/**/*.h GUI/StatusBar.h GUI/Tagview.h \
 	GUI/SpinButtonScale.h GUI/Seekbar.h GUI/Tagview.h \
 	KeyboardShortcuts/KeyboardShortcuts.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/GUI.cc \
@@ -181,7 +183,9 @@ GUIPanel.o: GUI/Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.cc \
 	GUI/Elements/ConfigurationGUIs/Panel.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
-	Configuration/Configuration.h GUI/GUI.h GUI/MenuBar.h GUI/StatusBar.h \
+	Configuration/Configuration.h GUI/GUI.h \
+	GUI/Elements/MainMenus/MainMenu.h \
+	GUI/Elements/MainMenus/MainMenus.h GUI/StatusBar.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
@@ -192,6 +196,7 @@ GUIPanel.o: GUI/Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.cc \
 KeyboardShortcuts.o: Parts.h KeyboardShortcuts/KeyboardShortcuts.h \
 	KeyboardShortcuts/KeyboardShortcuts.cc \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h GUI/GUI.h \
+	GUI/Elements/MainMenus/MainMenus.h \
 	GUI/Elements/Playlists/Playlists.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	KeyboardShortcuts/KeyboardShortcuts.cc \
@@ -212,8 +217,9 @@ KeyboardShortcutsPanel.o: \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread
 
-MenuBar.o: GUI/MenuBar.cc GUI/MenuBar.h Parts.h GUI/GUI.h Base.h \
-	Configuration/Configuration.h Playback/Playback.h \
+MainMenu.o: GUI/Elements/MainMenus/MainMenu.cc \
+	GUI/Elements/MainMenus/MainMenu.h GUI/GUIElement.h Parts.h GUI/GUI.h \
+	Base.h Configuration/Configuration.h Playback/Playback.h \
 	GUI/Elements/ChildWindows/ChildWindow.h GUI/Elements/Abouts/Abouts.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
@@ -223,7 +229,13 @@ MenuBar.o: GUI/MenuBar.cc GUI/MenuBar.h Parts.h GUI/GUI.h Base.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h \
 	GUI/StatusBar.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/MenuBar.cc \
+	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/MainMenus/MainMenu.cc \
+	`pkg-config --cflags --libs gtkmm-3.0` \
+	-pthread -Wno-reorder
+
+MainMenus.o: GUI/Elements/MainMenus/MainMenus.cc \
+	GUI/Elements/MainMenus/MainMenus.h GUI/GUIElementList.h
+	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/MainMenus/MainMenus.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread -Wno-reorder
 
@@ -283,10 +295,11 @@ Playback.o: Parts.h Playback/Playback.cc Playback/Playback.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/Playlists/PlaylistsDatabase.h \
 	GUI/Elements/Playlists/PlaylistColumnRecord.h GUI/GUI.h \
-	GUI/Elements/Playlists/PlaylistTreeStore.h GUI/GUI.h GUI/MenuBar.h \
-	GUI/Seekbar.h GUI/StatusBar.h Metadata/Metadata.h \
-	Scrobbling/Scrobbling.h Metadata/TimeConversion.h Metadata/Track.h \
-	Playback/ParserAndDecoder.h Playback/TrackBin.h 
+	GUI/Elements/Playlists/PlaylistTreeStore.h GUI/GUI.h \
+	GUI/Elements/MainMenus/MainMenu.h \
+	GUI/Elements/MainMenus/MainMenus.h GUI/Seekbar.h GUI/StatusBar.h \
+	Metadata/Metadata.h Scrobbling/Scrobbling.h Metadata/TimeConversion.h \
+	Metadata/Track.h Playback/ParserAndDecoder.h Playback/TrackBin.h 
 	g++ -g -Wno-write-strings -pipe $(CFLAGS) -c Playback/Playback.cc \
 	`pkg-config --cflags --libs gstreamer-1.0` \
 	`pkg-config --cflags --libs glibmm-2.4 giomm-2.4` \
@@ -318,7 +331,8 @@ PlaybackPanel.o: \
 	GUI/Elements/ConfigurationGUIs/Panel.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
-	Configuration/Configuration.h GUI/GUI.h GUI/MenuBar.h \
+	Configuration/Configuration.h GUI/GUI.h \
+	GUI/Elements/MainMenus/MainMenu.h GUI/Elements/MainMenus/MainMenus.h \
 	Playback/Playback.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/Playback/PlaybackPanel.cc \
@@ -481,7 +495,7 @@ SpinButtonScale.o: GUI/SpinButtonScale.cc GUI/SpinButtonScale.h \
 StatusBar.o: Parts.h GUI/StatusBar.h GUI/StatusBar.cc GUI/GUI.cc GUI/GUI.h Base.h Configuration/Configuration.h \
 	Metadata/Metadata.h Playback/Playback.h Metadata/TimeConversion.h \
 	Metadata/Track.h Scrobbling/Scrobbling.h GUI/Artwork.h \
-	GUI/Elements/**/*.h GUI/Tagview.h GUI/MenuBar.h GUI/SpinButtonScale.h \
+	GUI/Elements/**/*.h GUI/Tagview.h GUI/SpinButtonScale.h \
 	GUI/Seekbar.h GUI/Tagview.h KeyboardShortcuts/KeyboardShortcuts.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/StatusBar.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \

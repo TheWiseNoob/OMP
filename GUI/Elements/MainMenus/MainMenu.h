@@ -49,8 +49,8 @@
 //                    //
 //                    //
 
-#ifndef MENUBAR_H
-#define MENUBAR_H
+#ifndef MAIN_MENU_H
+#define MAIN_MENU_H
 
 
 
@@ -70,7 +70,7 @@
 //                   //
 //                   //
 
-#include "../Parts.h"
+#include "../../GUIElement.h"
 
 
 
@@ -122,11 +122,14 @@ namespace Gtk
 }
 
 
+
 // Parts
 
 class Base;
 
 class GUI;
+
+class MainMenus;
 
 
 
@@ -140,8 +143,8 @@ class GUI;
 //                   //
 //                   //
 
-class MenuBar : public Parts
-{
+class MainMenu : public GUIElement<MainMenu>
+{ 
 
   //             //
   //             //
@@ -151,7 +154,8 @@ class MenuBar : public Parts
 
   public:
 
-    MenuBar(Base& base_ref, Gtk::Window& window_ref);
+    MainMenu(Base& base_ref, MainMenus& main_menus_ref, 
+             bool normal_menu = false);
 
 
 
@@ -210,7 +214,7 @@ class MenuBar : public Parts
 
     // Looping
 
-    void On_Looping_Playback_Radio_Menu_Item_Toggled_Signal();
+    void Change_Playback_Looping_Type();
 
 
 
@@ -254,11 +258,11 @@ class MenuBar : public Parts
 
     void Hide_Tabs();
 
-    void On_Hide_Duplicates_Check_Menu_Item_Activate_Signal();
+    void Hide_Duplicates();
 
-    void On_Hide_Status_Bar_Check_Menu_Item_Activate_Signal();
+    void Hide_Status_Bar();
 
-    void On_Hide_Header_Bar_Check_Menu_Item_Activate_Signal();
+    void Hide_Header_Bar();
 
 
 
@@ -276,7 +280,7 @@ class MenuBar : public Parts
 
   public:
 
-    Gtk::Box& box();
+    Gtk::Menu& menu();
 
 
 
@@ -357,13 +361,9 @@ class MenuBar : public Parts
 
   private:
 
+    Gtk::Menu* menu_;
+
     Gtk::MenuBar* menu_bar_;
-
-    std::list<MenuBar*>::iterator menubars_it;
-
-    Gtk::Box* MenuBar_HBox;
-
-    Gtk::Box* MenuBar_VBox;
 
 
 
@@ -376,14 +376,13 @@ class MenuBar : public Parts
   private:
 
     // 
-    Gtk::MenuItem *About_MenuItem;
+    Gtk::Menu* about_menu_;
 
     // 
-    Gtk::Menu* About_Menu;
+    Gtk::MenuItem* about_menu_item_;
 
-    //About MenuItems
-    Gtk::MenuItem *About_Base_MenuItem,
-                  *Help_MenuItem;
+    // 
+    Gtk::MenuItem *about_omp_menu_item_;
 
 
 
@@ -395,16 +394,11 @@ class MenuBar : public Parts
 
   public:
 
-    Gtk::MenuItem *Edit_MenuItem;
-    Gtk::Menu* Edit_Menu;
+    Gtk::MenuItem* configuration_menu_item_;
 
-    //Edit MenuItems
-    Gtk::MenuItem *Cut_MenuItem,
-                  *Copy_MenuItem,
-                  *Paste_MenuItem,
-                  *Remove_MenuItem,
-                  *Configuration_MenuItem;
+    Gtk::Menu* edit_menu_;
 
+    Gtk::MenuItem* edit_menu_item_;
 
 
 
@@ -416,19 +410,13 @@ class MenuBar : public Parts
 
   private:
 
-    Gtk::MenuItem *File_MenuItem;
+    Gtk::MenuItem* add_file_menu_item_;
 
-    Gtk::Menu* File_Menu;
+    Gtk::Menu* file_menu_;
 
-    Gtk::MenuItem* Add_File_MenuItem;
+    Gtk::MenuItem* file_menu_item_;
 
-    Gtk::MenuItem* Open_File_MenuItem;
-
-    Gtk::MenuItem* Add_Folder_MenuItem;
-
-    Gtk::MenuItem* Open_Folder_MenuItem;
-
-    Gtk::MenuItem* Quit_MenuItem;
+    Gtk::MenuItem* quit_menu_item_;
 
 
 
@@ -440,9 +428,9 @@ class MenuBar : public Parts
 
   private:
 
-    Gtk::MenuItem *Library_MenuItem;
+    Gtk::Menu* library_menu_;
 
-    Gtk::Menu* Library_Menu;
+    Gtk::MenuItem* library_menu_item_;
 
 
 
@@ -526,10 +514,6 @@ class MenuBar : public Parts
 
   private:
 
-    Gtk::MenuItem *View_MenuItem;
-
-    Gtk::Menu* View_Menu;
-
     Gtk::CheckMenuItem* hide_duplicates_check_menu_item_;
 
     Gtk::CheckMenuItem* hide_header_bar_check_menu_item_;
@@ -537,6 +521,10 @@ class MenuBar : public Parts
     Gtk::CheckMenuItem* hide_status_bar_check_menu_item_;
 
     Gtk::CheckMenuItem* hide_tabs_check_menu_item_;
+
+    Gtk::Menu* view_menu_;
+
+    Gtk::MenuItem* view_menu_item_;
 
 };
 
