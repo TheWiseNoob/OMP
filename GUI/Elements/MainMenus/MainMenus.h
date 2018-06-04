@@ -148,6 +148,8 @@ class MainMenus : public GUIElementList<MainMenu>
 
   public:
 
+    void Apply_Saved_Values();
+
 
 
 
@@ -189,9 +191,11 @@ class MainMenus : public GUIElementList<MainMenu>
   //                  //
   //                  //
  
-  bool disable_menubar_functions_flag_;
+  private:
 
-  MainMenu* system_menu_;
+    bool disable_menubar_functions_flag_;
+
+    MainMenu* system_menu_;
 
 }; 
 

@@ -127,14 +127,6 @@ MainMenus::MainMenus(Base& base_ref)
 
 {
 
-  // Adds the MainMenu to the MainMenus list.
-  (*this)() . push_front(system_menu_);
-
-
-
-  // 
-  system_menu_ -> set_gui_elements_it((*this)() . begin());
-
 }
 
 
@@ -160,6 +152,20 @@ MainMenus::~MainMenus()
 // Member Functions ///////////////////////////////////////////////////////////
 //                  //
 //                  //
+
+void MainMenus::Apply_Saved_Values()
+{
+
+  // 
+  for(auto main_menus_it : (*this)())
+  {
+
+    // 
+    main_menus_it -> Apply_Saved_Values();
+
+  }
+
+}
 
 
 

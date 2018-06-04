@@ -167,6 +167,18 @@ class MainMenu : public GUIElement<MainMenu>
   //                  //
   //                  //
 
+  //         //
+  // General //////////////////////////////////////////////////////////////////
+  //         //
+
+  public:
+
+    void Apply_Saved_Values();
+
+
+
+
+
   //       //
   // About ////////////////////////////////////////////////////////////////////
   //       //
@@ -174,7 +186,6 @@ class MainMenu : public GUIElement<MainMenu>
   public:
 
     void Open_About();
-
 
 
 
@@ -220,11 +231,15 @@ class MainMenu : public GUIElement<MainMenu>
 
     // Options
 
-    void Stop_After_Current_Track();
-
     void Cursor_Follows_Playback();
 
     void Playback_Follows_Cursor();
+
+    void Selected_Playlist_Only();
+
+    void Start_At_Pregap_Start();
+
+    void Stop_After_Current_Track();
 
 
 
@@ -309,16 +324,22 @@ class MainMenu : public GUIElement<MainMenu>
   public:
 
     // 
-    Gtk::CheckMenuItem& playback_follows_cursor_playback_check_menu_item();
+    Gtk::CheckMenuItem& cursor_follows_playback_playback_check_menu_item();
 
     // 
-    Gtk::CheckMenuItem& cursor_follows_playback_playback_check_menu_item();
+    Gtk::CheckMenuItem& playback_follows_cursor_playback_check_menu_item();
 
     // 
     Gtk::CheckMenuItem& queue_playback_check_menu_item();
 
     // 
     Gtk::CheckMenuItem& queue_saved_playback_check_menu_item();
+
+    // 
+    Gtk::CheckMenuItem& selected_playlist_only_check_menu_item();
+
+    // 
+    Gtk::CheckMenuItem& start_at_pregap_check_menu_item();
 
     // 
     Gtk::CheckMenuItem& stop_after_current_track_playback_check_menu_item();
@@ -450,6 +471,20 @@ class MainMenu : public GUIElement<MainMenu>
 
 
 
+    // Looping
+
+    Gtk::Menu* looping_playback_menu_;
+
+    Gtk::RadioMenuItem* looping_none_playback_radio_menu_item_;
+
+    Gtk::MenuItem* looping_playback_menu_item_;
+
+    Gtk::RadioMenuItem* looping_playlist_playback_radio_menu_item_;
+
+    Gtk::RadioMenuItem* looping_track_playback_radio_menu_item_;
+
+
+
     // Options
 
     Gtk::CheckMenuItem* cursor_follows_playback_playback_check_menu_item_;
@@ -458,39 +493,29 @@ class MainMenu : public GUIElement<MainMenu>
 
     Gtk::CheckMenuItem* playback_follows_cursor_playback_check_menu_item_;
 
-    Gtk::CheckMenuItem* stop_after_current_track_playback_check_menu_item_;
-
     Gtk::CheckMenuItem* queue_playback_check_menu_item_;
 
     Gtk::CheckMenuItem* queue_saved_playback_check_menu_item_;
+
+    Gtk::CheckMenuItem* selected_playlist_only_check_menu_item_;
+
+    Gtk::CheckMenuItem* start_at_pregap_check_menu_item_;
+
+    Gtk::CheckMenuItem* stop_after_current_track_playback_check_menu_item_;
 
 
 
     // Order
 
-    Gtk::MenuItem* order_playback_menu_item_;
+    Gtk::RadioMenuItem* order_normal_playback_radio_menu_item_;
 
     Gtk::Menu* order_playback_menu_;
 
-    Gtk::RadioMenuItem* order_normal_playback_radio_menu_item_;
+    Gtk::MenuItem* order_playback_menu_item_;
 
     Gtk::RadioMenuItem* order_random_tracks_playback_radio_menu_item_;
 
     Gtk::RadioMenuItem* order_shuffle_tracks_playback_radio_menu_item_;
-
-
-
-    // Looping
-
-    Gtk::MenuItem* looping_playback_menu_item_;
-
-    Gtk::Menu* looping_playback_menu_;
-
-    Gtk::RadioMenuItem* looping_none_playback_radio_menu_item_;
-
-    Gtk::RadioMenuItem* looping_playlist_playback_radio_menu_item_;
-
-    Gtk::RadioMenuItem* looping_track_playback_radio_menu_item_;
 
 
 

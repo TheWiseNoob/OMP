@@ -140,22 +140,14 @@ ChildWindows::~ChildWindows()
 //                  //
 //                  //
 
-ChildWindow* ChildWindows::Create_New_Window
+ChildWindow* ChildWindows::Create
   (const char* window_name, std::function<void(void)> temp_destroy_func_ptr)
 {
 
   // Creates a window for the new ConfigGUI.
   ChildWindow* new_window
     = new ChildWindow(window_name, base(), windows(),
-                   temp_destroy_func_ptr);
-
-
-
-  // Adds the new window to the windows_ list.
-  windows()() . push_back(new_window);
-
-  // Sets the location of the new window in the windows_ list.
-  new_window -> set_gui_elements_it(windows()() . begin());
+                      temp_destroy_func_ptr);
 
 
 

@@ -23,8 +23,6 @@
 //
 //  Libraries used by OMP:
 //
-//    - boost: http://www.boost.org/
-//
 //    - clastfm: http://liblastfm.sourceforge.net/ 
 //
 //    - gstreamer: https://gstreamer.freedesktop.org/ 
@@ -197,6 +195,7 @@ class PlaybackPanel : public Panel
 
     void On_Stop_After_Current_Track_Check_Button_Toggled_Signal();
 
+    void Selected_Playlist_Only();
 
 
 
@@ -240,6 +239,9 @@ class PlaybackPanel : public Panel
 
     // 
     Gtk::CheckButton& queue_saved_check_button();
+
+    // 
+    Gtk::CheckButton& selected_playlist_only_check_button();
 
     // 
     Gtk::CheckButton& start_at_pregap_check_button();
@@ -325,11 +327,14 @@ class PlaybackPanel : public Panel
     //
     Gtk::CheckButton* queue_saved_check_button_;
 
-    //
-    Gtk::CheckButton* stop_after_current_track_check_button_;
+    // 
+    Gtk::CheckButton* selected_playlist_only_check_button_;
 
     //
     Gtk::CheckButton* start_at_pregap_check_button_;
+
+    //
+    Gtk::CheckButton* stop_after_current_track_check_button_;
 
 
 

@@ -114,7 +114,8 @@ ConfigurationGUIs.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/ChildWindows/ChildWindows.h \
 	GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanelColumnRecord.h \
-	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanelColumnRecord.h
+	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanelColumnRecord.h \
+/	GUI/Elements/MainMenus/MainMenus.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`

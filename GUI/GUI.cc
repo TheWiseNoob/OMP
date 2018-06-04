@@ -305,14 +305,6 @@ GUI::GUI(Base& base_ref)
 
 
 
-  // Adds the main window to the windows data structure. 
-  (*windows_)() . push_front(main_window_);
-
-  // Sets the list location of the window for easy access.
-  main_window() -> set_gui_elements_it((*windows_)() . begin());
-
-
-
   // Overrides the default event signal handler.
   main_window() -> window() . add_events(Gdk::KEY_PRESS_MASK);
 
@@ -457,7 +449,7 @@ GUI::GUI(Base& base_ref)
     header_bar_ -> set_subtitle("");
 
     // Adds the header bar to the main window.
-    main_window() -> window().set_titlebar(*header_bar_);
+    main_window() -> window() . set_titlebar(*header_bar_);
 
     // Displays the close button on the header bar.
     header_bar_ -> set_show_close_button();
@@ -514,8 +506,14 @@ GUI::GUI(Base& base_ref)
 
 
 
+  // 
+  PlaylistComboBox* header_bar_playlist_combobox_ptr
+    = new PlaylistComboBox(base_ref, *playlist_comboboxes_);
+
+  
+
   // Adds a playlist combobox from the beginning of the playlist_comboboxes_.
-  header_bar_ -> pack_end((*(playlist_comboboxes()() . begin())) -> box());
+  header_bar_ -> pack_end(header_bar_playlist_combobox_ptr -> box());
 
 
 
@@ -767,27 +765,31 @@ GUI::GUI(Base& base_ref)
 
 
 
+  // 
+  PlaylistComboBox* duplicates_playlist_combobox_ptr
+    = new PlaylistComboBox(base_ref, *playlist_comboboxes_);
+
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  duplicates_box -> pack_end(((*(playlist_comboboxes()().rbegin())) -> box()), 
+  duplicates_box -> pack_end(duplicates_playlist_combobox_ptr -> box(), 
                              true, true, 0);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  (*(playlist_comboboxes()().rbegin())) -> box() . set_hexpand(true);
+  duplicates_playlist_combobox_ptr -> box() . set_hexpand(true);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  (*(playlist_comboboxes()().rbegin())) -> playlist_combobox_entry() . set_hexpand(true);
+  duplicates_playlist_combobox_ptr -> playlist_combobox_entry() . set_hexpand(true);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  (*(playlist_comboboxes()().rbegin())) -> playlist_combobox() . set_hexpand(true);
+  duplicates_playlist_combobox_ptr -> playlist_combobox() . set_hexpand(true);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  (*(playlist_comboboxes()().rbegin())) -> box() . set_hexpand_set(true);
+  duplicates_playlist_combobox_ptr -> box() . set_hexpand_set(true);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  (*(playlist_comboboxes()().rbegin())) -> playlist_combobox_entry() . set_hexpand_set(true);
+  duplicates_playlist_combobox_ptr -> playlist_combobox_entry() . set_hexpand_set(true);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  (*(playlist_comboboxes()().rbegin())) -> playlist_combobox() . set_hexpand_set(true);
+  duplicates_playlist_combobox_ptr -> playlist_combobox() . set_hexpand_set(true);
 
 
 
@@ -928,11 +930,12 @@ GUI::GUI(Base& base_ref)
   // Creates the label for the configuration notebook page.
   Gtk::Label configuration_page_label("Configuration");
 
-  // Creates a reference to the config_guis' box.
-  Gtk::Box& config_gui_box_ref = (config_guis()().front()) -> box();
+  // 
+  ConfigurationGUI* new_config_gui_ptr
+    = new ConfigurationGUI(base_ref, *config_guis_);
 
   // Appends the ConfigGUI page to the notebook.
-  main_window_notebook_ -> append_page(config_gui_box_ref,
+  main_window_notebook_ -> append_page(new_config_gui_ptr -> box(),
                                        configuration_page_label);
 
 

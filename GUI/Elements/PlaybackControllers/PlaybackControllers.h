@@ -169,11 +169,23 @@ class PlaybackControllers : public GUIElementList<PlaybackController>
   //                  //
   //                  //
 
+  public:
+
+
+
+
+
   //         //
   //         //
   // Getters //////////////////////////////////////////////////////////////////
   //         //
   //         //
+
+  public:
+
+
+
+
 
   //         //
   //         //
@@ -181,11 +193,19 @@ class PlaybackControllers : public GUIElementList<PlaybackController>
   //         //
   //         //
 
+  public:
+
+
+
+
+
   //                  //
   //                  //
   // Member Variables /////////////////////////////////////////////////////////
   //                  //
   //                  //
+
+  private:
 
 };
 

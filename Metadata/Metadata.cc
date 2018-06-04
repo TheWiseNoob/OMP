@@ -156,10 +156,15 @@ using namespace std;
 Metadata::Metadata(Base& base)
 
 // Inherited Class
+
 : Parts(base)
 
+
+
 // Member Variables
+
 , time_converter_(new TimeConversion)
+
 {
 
 } 
@@ -177,6 +182,7 @@ Metadata::Metadata(Base& base)
 Metadata::~Metadata()
 {
 
+  // Deletes the memory for the time conversion class instance.
   delete time_converter_;
 
 }
@@ -197,16 +203,15 @@ Metadata::~Metadata()
 
 bool Metadata::Determine_Codec_If_Supported
   (TagLib::AudioProperties& audio_prop, Track& new_track)
-{
+ {
 
-  // 
+  // Holds the mime type of the track.
   string mime_type;
 
-  // 
+  // Determines the mime type and stores it in mime_type
   Determine_Mime_Type(new_track . filename() . data(), mime_type);
 
-
-
+  // Sets the mime type of the new track.
   new_track . set_mime(mime_type);
 
 
@@ -215,18 +220,18 @@ bool Metadata::Determine_Codec_If_Supported
   if(mime_type == "audio/flac")
   {
 
-    // 
+    // Retrieves the Properties of the new track.
     TagLib::FLAC::Properties& flac_prop_map
       = dynamic_cast<TagLib::FLAC::Properties&>(audio_prop);
 
 
 
-    // 
+    // Stores the determined bit depth.
     new_track . set_bit_depth(flac_prop_map . bitsPerSample());
 
 
 
-    // 
+    // Sets the codec of the new track.
     new_track . set_codec("FLAC");
 
   }
@@ -235,18 +240,18 @@ bool Metadata::Determine_Codec_If_Supported
   else if((mime_type == "audio/x-ape") || (mime_type == "audio/ape"))
   {
 
-    // 
+    // Retrieves the Properties of the new track.
     TagLib::APE::Properties& ape_prop_map
       = dynamic_cast<TagLib::APE::Properties&>(audio_prop);
 
 
 
-    // 
+    // Stores the determined bit depth.
     new_track . set_bit_depth(ape_prop_map . bitsPerSample());
 
 
 
-    // 
+    // Sets the codec of the new track.
     new_track . set_codec("Monkey's Audio");
 
   }
@@ -255,18 +260,18 @@ bool Metadata::Determine_Codec_If_Supported
   else if(mime_type == "audio/x-wavpack")
   {
 
-    // 
+    // Retrieves the Properties of the new track.
     TagLib::WavPack::Properties& wavpack_prop_map
       = dynamic_cast<TagLib::WavPack::Properties&>(audio_prop);
 
 
 
-    // 
+    // Stores the determined bit depth.
     new_track . set_bit_depth(wavpack_prop_map . bitsPerSample());
 
 
 
-    // 
+    // Sets the codec of the new track.
     new_track . set_codec("WavPack");
 
   }
@@ -275,21 +280,23 @@ bool Metadata::Determine_Codec_If_Supported
   else if(mime_type == "audio/mp4")
   { 
 
-    // 
+    // Retrieves the Properties of the new track.
     TagLib::MP4::Properties& mp4_prop_map
       = dynamic_cast<TagLib::MP4::Properties&>(audio_prop);
 
 
 
-    // 
+    // Stores the determined bit depth.
     new_track . set_bit_depth(mp4_prop_map . bitsPerSample());
 
 
 
-    // 
+    // Holds an int that indicates what codec the new track is.
     int codec_int = mp4_prop_map . codec();
 
-    // AAC
+
+
+    // True if the codec is AAC.
     if(codec_int == 1)
     { 
 
@@ -297,60 +304,87 @@ bool Metadata::Determine_Codec_If_Supported
 
 
 
+      // Sets the codec of the new track.
       new_track . set_codec("AAC");
 
     }
 
-    // ALAC
+    // True if the codec is ALAC.
     else if(codec_int == 2)
-    {
+    {  
 
       debug("ALAC");
 
 
 
+      // Sets the codec of the new track.
       new_track . set_codec("ALAC");
 
     }
 
+    // True if no valid codec was determined.
     else
     {
 
+      // A string to hold the error message.
+      string error_message_str = "Failed to identify the codec of ";
+
+      // Adds to the error message.
+      error_message_str += new_track . filename();
+
+      // Adds to the error message.
+      error_message_str += " with the mime type of ";
+
+      // Adds to the error message.
+      error_message_str += new_track . filename();
+
+      // Adds to the error message.
+      error_message_str += ".";
+
+
+
+      // Writes to the error message log.
+      errors() . Write_Error(error_message_str . c_str());
+
+
+
+      // Returns false because a valid codec was unable to be determined.
       return false;
 
-    }
-
-    
+     }
 
   }
 
   // True if the mime type is for mp3.
   else if(mime_type == "audio/mpeg")
-  {
+  { 
 
+    // Sets the codec of the new track.
     new_track . set_codec("MP3");
 
   }
 
   // True if the mime type is for AAC.
   else if(mime_type == "audio/aac")
-  {
+  { 
 
+    // Creates an MP4 File to see if it is pure AAC or in an mp4 container.
     TagLib::MP4::File mp4_file(new_track . filename() . c_str());
 
 
 
-    // 
+    // True if the file is determined to have an mp4 container.
     if(mp4_file .  isValid())
     {
 
+      // Sets the mime type as mp4.
       new_track . set_mime("audio/mp4");
 
     }
 
 
 
-    // 
+    // Sets the codec of the new track.
     new_track . set_codec("AAC");
 
   }
@@ -359,35 +393,71 @@ bool Metadata::Determine_Codec_If_Supported
   else if((mime_type == "audio/ogg") || (mime_type == "audio/oga"))
   { 
 
+    // Creates an Ogg FLAC file to help determine the codec.
     TagLib::Ogg::FLAC::File ogg_flac_file(new_track . filename() . c_str());
-    TagLib::Ogg::Vorbis::File ogg_vorbis_file(new_track . filename() . c_str());
+
+    // Creates an Ogg Vorbis file to help determine the codec.
+    TagLib::Ogg::Vorbis::File ogg_vorbis_file
+      (new_track . filename() . c_str());
 
 
 
+    // True if the file is Ogg FLAC.
     if(ogg_flac_file . isValid())
     {
 
+      // Sets the codec of the new track.
       new_track . set_codec("FLAC");
-   
-      new_track . set_bit_depth(ogg_flac_file . audioProperties() -> bitsPerSample());
+
+
+
+      // Stores the determined bit depth.
+      new_track
+        . set_bit_depth(ogg_flac_file . audioProperties() -> bitsPerSample());
 
     }
 
+    // True if the file is Ogg Vorbis.
     else if(ogg_vorbis_file . isValid())
-    {
+    { 
 
+      // Sets the codec of the new track.
       new_track . set_codec("Vorbis");
 
     } 
 
+    // True if the Ogg file is not a valid codec.
     else
     {
 
+      // A string to hold the error message.
+      string error_message_str = "Failed to identify a valid codec for ";
+
+      // Adds to the error message.
+      error_message_str += new_track . filename();
+
+      // Adds to the error message.
+      error_message_str += " with the container/mime type of ";
+
+      // Adds to the error message.
+      error_message_str += new_track . filename();
+
+      // Adds to the error message.
+      error_message_str += ".";
+
+
+
+      // Writes to the error message log.
+      errors() . Write_Error(error_message_str . c_str());
+
+
+
+      // Returns false because a valid codec was unable to be determined.
       return false;
 
     }
 
-  }
+  } 
 
   // True if the mime type is not of a not supported codec.
   else
@@ -397,14 +467,30 @@ bool Metadata::Determine_Codec_If_Supported
 
 
 
-    // 
+    // A string to hold the error message.
+    string error_message_str = "The mime type of ";
+
+    // Adds to the error message.
+    error_message_str += new_track . filename();
+
+    // Adds to the error message.
+    error_message_str += "is not valid.";
+
+
+
+    // Writes to the error message log.
+    errors() . Write_Error(error_message_str . c_str());
+
+
+
+    // Returns false because a valid codec was unable to be determined.
     return false;
 
-  }
+  } 
 
 
 
-  // 
+  // Indicates the determination of the track's codec was successful.
   return true;
 
 }
@@ -448,7 +534,7 @@ void Metadata::Extract_File_Path
   int end_index;
 
   // Holds the length of the cuesheet's filename.
-  int length = filename.length();
+  int length = filename . length();
 
 
 
@@ -481,10 +567,11 @@ vector<Track*>* Metadata::Filenames_To_Tracks(vector<string>& filenames)
   for(auto it : filenames)
   {
 
-    // 
+    // Skips folders.
     if(it . back() == '/')
     {
 
+      // Continues to the next iteration of the loop.
       continue;
 
     }
@@ -504,7 +591,7 @@ vector<Track*>* Metadata::Filenames_To_Tracks(vector<string>& filenames)
 
 }
 
-std::vector<Track*> *Metadata::Interpret_Cue_Sheet(const std::string& filename)
+std::vector<Track*>* Metadata::Interpret_Cue_Sheet(const std::string& filename)
 {
 
   // Holds the CUE SHEET interpreter created only once using static.
@@ -541,7 +628,7 @@ std::vector<Track*> *Metadata::Interpret_Cue_Sheet(const std::string& filename)
   { 
 
     // Switches through the error types to determine which one occurred.
-    switch(error.code())
+    switch(error . code())
     { 
 
       // True if the conversion between character sets is not supported.
@@ -557,7 +644,7 @@ std::vector<Track*> *Metadata::Interpret_Cue_Sheet(const std::string& filename)
 
       }
 
-      // 
+      // True if the encoding is possibly wrong.
       case Glib::ConvertError::Code::ILLEGAL_SEQUENCE:
       {
 
@@ -575,15 +662,33 @@ std::vector<Track*> *Metadata::Interpret_Cue_Sheet(const std::string& filename)
 
       }
 
+      // 
       default:
-      {
+      { 
 
         debug("Conversion not identified!");
 
 
 
-        // Exits the switch.
-        break;
+        // A string to hold the error message.
+        string error_message_str = "The cue sheet ";
+
+        // Adds to the error message.
+        error_message_str += filename
+
+        // Adds to the error message.
+        error_message_str 
+          += " could not be read! The reason could not be determined.";
+
+
+
+        // Writes to the error message log.
+        errors() . Write_Error(error_message_str . c_str());
+
+
+
+        // Return an new empty Track pointer vector ptr.
+        return new vector<Track*>;
 
       }
 
@@ -651,7 +756,7 @@ void Metadata::Interpret_Multiple_Value_Tag
   (const char* tag_name, TrackType type, TagLib::PropertyMap& prop_map, 
    Track& track, vector<Glib::ustring*>& (Track::*getter)() const,
    void (Track::*setter)(Glib::ustring*), void (Track::*clear)() = NULL)
-{ 
+{
 
   // Checks if that tag provided is present in the metadata.
   if(!(prop_map . contains(TagLib::String(tag_name))))
@@ -765,69 +870,92 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
 
 
-      // 
+      // Stores the mime type of the track.
       string mime_type;
 
-      // 
+      // Determines the mime type of the file.
       Determine_Mime_Type(filename . c_str(), mime_type);
 
-      // 
+
+
+      // True if the mime type and file extension is .aac.
       if(mime_type == "audio/aac")
       {
 
-        // 
+        // Creates an mp4 TagLib File.
         TagLib::MP4::File mp4_file(filename . c_str());
 
 
 
-        //
-        Track* new_track = new Track;
+        // Pointer for the new track file.
+        Track* new_track;
 
-        // Pushes a new empty track into the vector.
-        new_tracks -> push_back(new_track);
 
-  
 
-        // 
+        // If the mp4 file is valid, the aac file has the wrong extension.
         if(mp4_file .  isValid())
         {
 
-          debug("Mislabeled MP4 AAC as AAC");
+          debug("Mislabeled MP4 AAC as AAC (.aac).");
 
 
 
-          delete new_track;
+          // A string to hold the error message.
+          string error_message_str = "The file ";
 
-          new_tracks -> clear();
+          // Adds to the error message.
+          error_message_str += new_track . filename();
 
+          // Adds to the error message.
+          error_message_str
+            += " is labelled as pure AAC, but it is AAC in an mp4 container." \
+               "Rename the extension to .mp4 to make it work.";
+
+
+
+          // Writes to the error message log.
+          errors() . Write_Error(error_message_str . c_str());
+
+
+
+          // Returns the empty Track pointer vector pointer.
           return new_tracks;
 
         }
 
-        //
+        // The file has been determined to be pure AAC.
         else
         {
 
-          // 
+          // Creates a new Track instance.
+          new_track = new Track;
+
+          // Pushes a new empty track into the vector.
+          new_tracks -> push_back(new_track);
+
+  
+
+          // Sets the mime type.
           new_track -> set_mime("audio/aac");
 
-          // 
+          // Sets the codec.
           new_track -> set_codec("AAC");
 
-          // 
+          // Sets the filename.
           new_track -> set_filename(filename);
 
 
 
-          //
+          // Returns the new Track pointer vector pointer.
           return new_tracks;
 
         }
 
       }
 
-    }  
+    } 
 
+    // 
     else
     {
 
@@ -844,7 +972,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
   
   
   
-        // Creates a static cue sheet interpreter so it only needs created once.
+        // Creates a static cuesheet interpreter so it only needs created once.
         static CueSheet cue_sheet_interpreter;
   
   
@@ -899,8 +1027,6 @@ std::vector<Track*> *Metadata::Interpret_Properties
   // True if the filename for a cuesheet file.
   else
   {
-
-
 
     // Sets the TrackType to what the cuesheet interpreter identified.
     type = new_tracks -> front() -> type();
@@ -1210,7 +1336,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
       string error_message_str = new_track . filename();
 
       // 
-      error_message_str += "   failed to open.";
+      error_message_str += " failed to open.";
 
       // 
       errors() . Write_Error(error_message_str . c_str());
@@ -1264,47 +1390,68 @@ std::vector<Track*> *Metadata::Interpret_Properties
   else if(type == TrackType::SINGLE_FILE)
   {
 
+    // 
     string filename = new_tracks -> front() -> filename();
 
 
 
+    // 
     TagLib::FileRef file_ref(filename . c_str()); 
 
-
+    // 
     temp_prop_map = (file_ref.file() -> properties());
-  
-    if((file_ref.audioProperties()) == NULL)
+
+
+
+    //   
+    if((file_ref . audioProperties()) == NULL)
     {
 
       debug("Audioproperties NULL! Unable to open file!");
 
 
 
+      // 
       if(new_tracks != nullptr)
       {
 
+        // 
         for(auto track_it : *new_tracks)
         {
 
+          // 
           delete track_it;
 
         }
 
+
+
+        // 
         new_tracks -> clear();
 
+
+
+        // 
         return new_tracks;
 
-      }
+       }
 
-    } 
+     }
 
+
+
+    // 
     TagLib::AudioProperties &audio_properties = *(file_ref.audioProperties());
 
+    // 
     int bit_rate = audio_properties.bitrate(),
         sample_rate = audio_properties.sampleRate(),
         channels = audio_properties.channels();
 
+    // 
     Track& new_track = *(new_tracks -> front());
+
+
 
     // Determines the codec if supported.
     if(!Determine_Codec_If_Supported(audio_properties, new_track))
@@ -1320,69 +1467,104 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
     }
 
+
+
+    // 
     Glib::ustring codec = new_track . codec(); 
 
+    // 
     Glib::ustring mime = new_track . mime();
 
 
 
+    // 
     for(auto it : *new_tracks)
     {
 
+      // 
       it -> set_bit_rate(bit_rate);
 
+      // 
       it -> set_sample_rate(sample_rate);
 
+      // 
       it -> set_channels(channels);
 
+      // 
       it -> set_codec(codec);
 
+      // 
       it -> set_mime(mime);
 
+      // 
       it -> set_bit_depth(new_track . bit_depth());
 
     }
 
-    // length = Seconds_To_Timeform(audio_properties.length());
 
+
+    // 
     long long file_length
       = audio_properties.lengthInMilliseconds() * 1000000LL;
 
+    // 
     int track_total = (*new_tracks)[0] -> track_total();
 
+    // 
     long long temp_duration = 0LL;
 
+    // 
     for(int i = 0; i < track_total - 1; i++)
     {
 
-      temp_duration = ((*new_tracks)[i] -> end()) - ((*new_tracks)[i] -> start());
+      // 
+      temp_duration
+        = ((*new_tracks)[i] -> end()) - ((*new_tracks)[i] -> start());
 
+      // 
       std::string* time_string_ptr
         = time_converter_ -> Nanoseconds_To_Time_Format(temp_duration);
 
+
+
+      // 
       (*new_tracks)[i] -> set_length(*time_string_ptr);
 
+      // 
       (*new_tracks)[i] -> set_duration(temp_duration);
 
+
+
+      // 
       delete time_string_ptr;
 
     }
 
 
+
+    // 
     temp_duration = file_length - ((*new_tracks)[track_total - 1] -> start());
 
+    // 
     std::string* time_string_ptr
     = time_converter_ -> Nanoseconds_To_Time_Format(temp_duration);
 
+    // 
     (*new_tracks)[track_total - 1] -> set_length(*time_string_ptr);
 
+    // 
     (*new_tracks)[track_total - 1] -> set_duration(temp_duration);
 
+
+
+    // 
     delete time_string_ptr;
 
+
+
+    // 
     for(auto it = temp_prop_map.begin(); it != temp_prop_map.end(); it++)
     {
-
 
       stringstream debug_ss;
 
@@ -1391,10 +1573,15 @@ std::vector<Track*> *Metadata::Interpret_Properties
       debug(debug_ss . str() . c_str());
 
 
-      Glib::ustring tag_name = (it->first).to8Bit(true);
 
+      // 
+      Glib::ustring tag_name = (it -> first) . to8Bit(true);
+
+
+
+      // 
       if(tag_name == "CUESHEET")
-      {
+      { 
 
         debug("single-file Cue track identified");
 

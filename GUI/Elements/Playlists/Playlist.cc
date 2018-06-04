@@ -121,6 +121,10 @@
 
 #include <gtkmm/label.h>
 
+#include <gtkmm/overlay.h>
+
+#include <gtkmm/progressbar.h>
+
 #include <gtkmm/radiomenuitem.h>
 
 #include <gtkmm/scrolledwindow.h>
@@ -200,7 +204,13 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 , filename_label_(Gtk::manage(new Gtk::Label))
 
+, playlist_box_(Gtk::manage(new Gtk::Box))
+
 , playlist_frame_(Gtk::manage(new Gtk::Frame))
+
+, playlist_overlay_(Gtk::manage(new Gtk::Overlay))
+
+, playlist_progress_bar_(Gtk::manage(new Gtk::ProgressBar))
 
 , playlist_scrolled_window_(Gtk::manage(new Gtk::ScrolledWindow))
 
@@ -224,8 +234,11 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 {
 
-  // 
-  playlists_ref() . push_back(this);
+  // Adds the new FileChooser object to the FileChoosers list.
+  playlists_ref() . push_front(this);
+
+  // Adds the new FileChooser's to the iterator to it's it storage variable.
+  set_gui_elements_it(playlists_ref() . begin());
 
 
 
@@ -233,10 +246,42 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
 
   // Puts the playlist_frame_ in the top of the GUIElement box().
-  box() . pack_start(*playlist_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . pack_start(*playlist_overlay_, Gtk::PACK_EXPAND_WIDGET);
+
+
+
+  // 
+  playlist_overlay_ -> add(*playlist_box_);
+
+  // 
+//  playlist_overlay_ -> add_overlay(*playlist_progress_bar_);
+
+
+
+  // 
+  playlist_progress_bar_ -> set_fraction(0.5);
+
+  // 
+  playlist_progress_bar_ -> set_halign(Gtk::ALIGN_CENTER);
+
+  // 
+  playlist_progress_bar_ -> set_valign(Gtk::ALIGN_CENTER);
+
+  //
+//  this -> set_sensitive(false);
+
+
+
+  // Sets the orientation of the playlist_box_ as vertical.
+  playlist_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
 
   // Puts the filename_frame_ in the bottom of the GUIElement box().
-  box() . pack_end(*filename_frame_, Gtk::PACK_SHRINK);
+  playlist_box_ -> pack_start(*playlist_frame_, Gtk::PACK_EXPAND_WIDGET);
+
+  // Puts the filename_frame_ in the bottom of the GUIElement box().
+  playlist_box_ -> pack_end(*filename_frame_, Gtk::PACK_SHRINK);
+
+
 
   // Adds a bottom margin to GUIElement box.
   box() . set_margin_bottom(5);

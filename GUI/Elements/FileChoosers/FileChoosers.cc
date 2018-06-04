@@ -123,7 +123,6 @@ FileChoosers::FileChoosers(Base& base)
 : GUIElementList(base)
 {
 
-
 }
 
 
@@ -170,7 +169,7 @@ void FileChoosers::Add_Files()
   ChildWindow* new_window;
 
   // Creates the new ChildWindow.
-  new_window = windows() . Create_New_Window("Add File(s)", temp_func_ptr);
+  new_window = windows() . Create("Add File(s)", temp_func_ptr);
 
 
 

@@ -180,9 +180,11 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
 , queue_saved_check_button_(Gtk::manage(new Gtk::CheckButton))
 
-, stop_after_current_track_check_button_(Gtk::manage(new Gtk::CheckButton))
+, selected_playlist_only_check_button_(Gtk::manage(new Gtk::CheckButton))
 
 , start_at_pregap_check_button_(Gtk::manage(new Gtk::CheckButton))
+
+, stop_after_current_track_check_button_(Gtk::manage(new Gtk::CheckButton))
 
 
 
@@ -237,9 +239,9 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   looping_box_
     -> pack_start(*none_looping_radio_button_, Gtk::PACK_EXPAND_PADDING);
 
-  // 
-  looping_box_
-    -> pack_start(*track_looping_radio_button_, Gtk::PACK_EXPAND_PADDING);
+//  // 
+//  looping_box_
+//    -> pack_start(*track_looping_radio_button_, Gtk::PACK_EXPAND_PADDING);
 
   // 
   looping_box_
@@ -267,7 +269,19 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
 
   // 
-  looping_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  looping_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+
+
+
+  //
+  none_looping_radio_button_ -> set_tooltip_text
+    ("No looping occurs. Playback will stop if the end of the playlist is " \
+     "reached.");
+
+  //
+  playlist_looping_radio_button_ -> set_tooltip_text
+    ("Playlist looping occurs. Playback will loop to the beginning of the " \
+     "playlist if the end of the playlist is reached.");
 
 
 
@@ -307,27 +321,27 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
 
   // 
-  left_options_box_ -> pack_start(*stop_after_current_track_check_button_,
-                                   Gtk::PACK_EXPAND_PADDING);
+  left_options_box_ -> pack_start(*cursor_follows_playback_check_button_,
+                                  Gtk::PACK_EXPAND_PADDING);
 
   // 
-  left_options_box_ -> pack_start(*cursor_follows_playback_check_button_,
+  left_options_box_ -> pack_start(*selected_playlist_only_check_button_,
                                   Gtk::PACK_EXPAND_PADDING);
 
   // 
   left_options_box_ -> pack_start(*playback_follows_cursor_check_button_,
                                   Gtk::PACK_EXPAND_PADDING);
 
-//  // 
-//  right_options_box_ -> pack_start(*queue_check_button_,
-//                                    Gtk::PACK_EXPAND_PADDING);
+  // 
+  right_options_box_ -> pack_start(*start_at_pregap_check_button_,
+                                   Gtk::PACK_EXPAND_PADDING);
 
   // 
   right_options_box_ -> pack_start(*queue_saved_check_button_,
                                     Gtk::PACK_EXPAND_PADDING);
 
   // 
-  right_options_box_ -> pack_start(*start_at_pregap_check_button_,
+  right_options_box_ -> pack_start(*stop_after_current_track_check_button_,
                                    Gtk::PACK_EXPAND_PADDING);
 
 
@@ -349,11 +363,18 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   // 
   options_box_ -> set_margin_right(3);
 
+  // 
+  selected_playlist_only_check_button_ -> set_margin_left(20);
+
 
 
   // 
   cursor_follows_playback_check_button_
     -> set_label("Cursor Follows Playback");
+
+  // 
+  selected_playlist_only_check_button_
+    -> set_label("Selected Playlist View Only");
 
   // 
   playback_follows_cursor_check_button_
@@ -374,10 +395,17 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
 
 
+  // 
   cursor_follows_playback_check_button_
     -> set_tooltip_text("Makes the playlist cursor follow playback movement " \
                         "if the playing playlist is active.");
 
+  // 
+  selected_playlist_only_check_button_ -> set_tooltip_text
+    ("Only the currently selected playlist view will have its cursor " \
+     "changed to the next track when Cursor Follows Plackback is on.");
+
+  // 
   playback_follows_cursor_check_button_
     -> set_tooltip_text("If a track is selected while this is enabled, " \
                         "playback will move to that track after the current " \
@@ -444,6 +472,10 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
          &PlaybackPanel::On_Queue_Saved_Check_Button_Toggled_Signal));
 
   // 
+  selected_playlist_only_check_button_ -> signal_toggled()
+    . connect(sigc::mem_fun(*this, &PlaybackPanel::Selected_Playlist_Only));
+
+  // 
   start_at_pregap_check_button_ -> signal_toggled()
     . connect(sigc::mem_fun
         (*this, 
@@ -472,8 +504,8 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   //       //
 
   // 
-  looping_and_order_box_
-    -> pack_start(*order_frame_, Gtk::PACK_EXPAND_WIDGET);
+//  looping_and_order_box_
+//    -> pack_start(*order_frame_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
   order_frame_ -> add(*order_box_);
@@ -645,20 +677,6 @@ void PlaybackPanel::Apply_Saved_Values()
 
 
 
-/*  //       //
-  // Queue //
-  //       //
-
-  // 
-  active = config() . get("playback.queue");
-
-  // 
-  queue_check_button_ -> set_active(active);
-*/
-
-
-
-
   //             //
   // Queue Saved //
   //             //
@@ -673,6 +691,21 @@ void PlaybackPanel::Apply_Saved_Values()
 
 
 
+  //                        //
+  // Selected Playlist Only //
+  //                        //
+
+  // 
+  active = config() . get("playback.selected_playlist_only");
+
+  // 
+  selected_playlist_only_check_button_ -> set_active(active);
+
+
+
+
+
+
   //                 //
   // Start At Pregap //
   //                 //
@@ -682,6 +715,18 @@ void PlaybackPanel::Apply_Saved_Values()
 
   // 
   start_at_pregap_check_button_ -> set_active(active);
+
+
+
+  //                    //
+  // Stop After Current //
+  //                    //
+
+  // 
+  active = playback() . stop_after_current_track();
+
+  // 
+  stop_after_current_track_check_button_ -> set_active(active);
 
 }
 
@@ -1126,6 +1171,24 @@ void PlaybackPanel::On_Start_At_Pregap_Check_Button_Toggled_Signal()
 
 
   // 
+  main_menus() . set_disable_menubar_functions_flag(true);
+
+  // 
+  for(auto menu_bars_it : main_menus()())
+  { 
+
+    // 
+    menu_bars_it -> start_at_pregap_check_menu_item()
+      . set_active(active);
+
+  }
+
+  // 
+  main_menus() . set_disable_menubar_functions_flag(false);
+
+
+
+  // 
   playback() . Reset_Track_Queue();
 
 }
@@ -1169,6 +1232,70 @@ void PlaybackPanel::On_Stop_After_Current_Track_Check_Button_Toggled_Signal()
 
     // 
     menu_bars_it -> stop_after_current_track_playback_check_menu_item()
+      . set_active(active);
+
+  }
+
+  // 
+  main_menus() . set_disable_menubar_functions_flag(false);
+
+}
+
+void PlaybackPanel::Selected_Playlist_Only()
+{
+
+  // 
+  if(config_guis() . disable_functions())
+  {
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  bool active = selected_playlist_only_check_button_ -> get_active();
+
+
+
+  // 
+  config() . set("playback.selected_playlist_only", active);
+
+
+
+  // 
+  config_guis() . Mark_Unsaved_Changes(true);
+
+
+
+  // 
+  config_guis() . set_disable_functions(true);
+
+  for(auto config_guis_it : config_guis()())
+  {
+
+    // 
+    config_guis_it -> playback_panel() . selected_playlist_only_check_button()
+      . set_active(active);
+
+  }
+
+  // 
+  config_guis() . set_disable_functions(false);
+
+
+
+  // 
+  main_menus() . set_disable_menubar_functions_flag(true);
+
+  // 
+  for(auto menu_bars_it : main_menus()())
+  { 
+
+    // 
+    menu_bars_it -> selected_playlist_only_check_menu_item()
       . set_active(active);
 
   }
@@ -1241,6 +1368,13 @@ Gtk::CheckButton& PlaybackPanel::queue_saved_check_button()
 {
 
   return *queue_saved_check_button_;
+
+}
+
+Gtk::CheckButton& PlaybackPanel::selected_playlist_only_check_button()
+{ 
+
+  return *selected_playlist_only_check_button_;
 
 }
 

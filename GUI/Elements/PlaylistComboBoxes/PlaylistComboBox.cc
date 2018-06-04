@@ -168,6 +168,16 @@ PlaylistComboBox::PlaylistComboBox
 
 { 
 
+  // 
+  playlist_comboboxes_ref() . push_front(this);
+
+  // Adds the new FileChooser's to the iterator to it's it storage variable.
+  set_gui_elements_it(playlist_comboboxes_ref() . begin());
+
+
+
+
+
   //          //
   // ComboBox /////////////////////////////////////////////////////////////////
   //          //

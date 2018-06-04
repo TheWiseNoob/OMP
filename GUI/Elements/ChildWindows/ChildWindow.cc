@@ -125,11 +125,11 @@ using namespace std;
 //                 //
 //                 //
 
-//             //
-//             //
-// Constructor ////////////////////////////////////////////////////////////////
-//             //
-//             //
+//              //
+//              //
+// Constructors ////////////////////////////////////////////////////////////////
+//              //
+//              //
 
 ChildWindow::ChildWindow
   (const char* new_title, Base& base_ref, ChildWindows& child_windows_ref,
@@ -151,6 +151,14 @@ ChildWindow::ChildWindow
 , window_(new Gtk::ApplicationWindow)
 
 { 
+
+  // 
+  child_windows_ref() . push_front(this);
+
+  // Adds the new FileChooser's to the iterator to it's it storage variable.
+  set_gui_elements_it(child_windows_ref() . begin());
+
+
 
   // 
   main_window_ = make_main_window;
@@ -206,6 +214,18 @@ ChildWindow::ChildWindow
 
   // 
   window_ -> add(*box_);
+
+}
+
+ChildWindow::ChildWindow
+  (const char* window_name, 
+   std::function<void(void)> new_child_class_destroy_function)
+
+: ChildWindow(window_name, base(), windows(), new_child_class_destroy_function)
+
+{
+
+  
 
 }
 

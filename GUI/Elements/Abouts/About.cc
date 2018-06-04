@@ -116,6 +116,11 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   // 
   abouts_ref() . push_front(this);
 
+  // Adds the new FileChooser's to the iterator to it's it storage variable.
+  set_gui_elements_it(abouts_ref() . begin());
+
+
+
 
 
   // 
@@ -140,7 +145,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   Gtk::Label* version_label = Gtk::manage(new Gtk::Label);
 
   // 
-  version_label -> set_markup("<b>OMP Version 0.0.11 (Pre-Alpha)</b>");
+  version_label -> set_markup("<b>OMP Version 0.0.12 (Pre-Alpha)</b>");
 
   // 
   box() . pack_start(*version_label, Gtk::PACK_EXPAND_PADDING);

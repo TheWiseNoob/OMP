@@ -167,9 +167,6 @@ void Abouts::Open_About()
   // Assigns a new ConfigGUI object to the pointer.
   new_about = new About(base(), (*this));
 
-  // Sets the new ConfigGUI's location in ConfigGUIs.
-  new_about -> set_gui_elements_it((*this)() . begin());
-
 
 
   // Binds the ConfigGUI's Destroy function a std::function pointer.
@@ -178,7 +175,7 @@ void Abouts::Open_About()
 
   // Creates of new window using the Create_New_Window function.
   ChildWindow* new_child_window
-    = windows() . Create_New_Window("About OMP", new_destroy_func_ptr);
+    = windows() . Create("About OMP", new_destroy_func_ptr);
 
 
 
@@ -186,11 +183,15 @@ void Abouts::Open_About()
   new_child_window -> box() . pack_start(new_about -> box(),
                                          Gtk::PACK_EXPAND_WIDGET);
 
+
+
   // 
   new_child_window -> window() . set_default_size(300, 400);
 
   // 
   new_child_window -> window() . set_resizable(false);
+
+
 
   // Displays the new window.
   new_child_window -> Show();

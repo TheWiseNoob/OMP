@@ -588,6 +588,9 @@ Base::Base(int argc, char *argv[])
   //
   config() . add_default("playback.volume", 1.000);
 
+  // 
+  config() . add_default("playback.selected_playlist_only", true);
+
   //
   config() . add_default("playback.start_at_pregap", true);
 

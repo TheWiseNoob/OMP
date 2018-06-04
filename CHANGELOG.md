@@ -3,6 +3,27 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.12] - June 3rd, 2018
+
+### Added
+- The Selected Playlist View Only option now allows only the selected Playlist
+  View to have it's next track selected when the track changes and Cursor
+  Follows Playback is on.
+
+### Changed
+- Start At Pregap is also present in the System Menu and Menu Bars now.
+- Double-clicking the Status Bar now only selects the playing track in the
+  selected Playlist View if the playing playlist is active.
+- Triple-clicking the Status Bar will select the playing track in all playlist
+  views with the playing playlist active.
+- Code clean-up.
+
+### Fixed
+- The Undo Changes button in the Configuration GUI did not undo the changes 
+  made to the System Menu and Menu Bars. That has been fixed.
+
+
+
 ## [0.0.11] - May 20th, 2018
 
 ### Added

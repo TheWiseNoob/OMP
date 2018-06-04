@@ -236,7 +236,7 @@ void Errors::Write_Error(const char* error_c_str)
 
   // 
   ChildWindow* errors_window_ptr
-    = windows() . Create_New_Window("Error(s)", nullptr);
+    = windows() . Create("Error(s)", nullptr);
 
 
 

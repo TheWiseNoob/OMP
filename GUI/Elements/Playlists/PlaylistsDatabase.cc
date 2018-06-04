@@ -488,7 +488,7 @@ bool PlaylistsDatabase::Create_Playlist(const char* playlist_name)
 
   // 
   sql += "'("  \
-         "ID                       INT PRIMARY KEY   NOT NULL," \
+         "ID                       REAL PRIMARY KEY   NOT NULL," \
          "ALBUM                    TEXT," \
          "ALBUM_ARTIST             TEXT," \
          "ARTIST                   TEXT," \
@@ -785,16 +785,17 @@ bool PlaylistsDatabase::Delete_Rows
   for(auto it : ids)
   {
 
-  // 
-  sql += "DELETE from '";
+    // 
+    sql += "DELETE from '";
 
-  // 
-  sql += Convert(playlist_name);
+    // 
+    sql += Convert(playlist_name);
 
-  // 
-  sql += "' where ID=";
+    // 
+    sql += "' where ID=";
 
-  sql += to_string(it) + ";";
+    // 
+    sql += to_string(it) + ";";
 
   }
 

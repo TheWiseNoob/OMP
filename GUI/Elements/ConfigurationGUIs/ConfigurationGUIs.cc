@@ -71,11 +71,13 @@
 
 #include "../../../Configuration/Configuration.h"
 
+#include "../../GUI.h"
+
 #include "../ChildWindows/ChildWindow.h"
 
 #include "../ChildWindows/ChildWindows.h"
 
-#include "../../GUI.h"
+#include "../MainMenus/MainMenus.h"
 
 #include "Panels/Artwork/ArtworkPanelColumnRecord.h"
 
@@ -144,17 +146,6 @@ ConfigurationGUIs::ConfigurationGUIs(Base& base)
 , keyboard_shortcuts_liststore_(Gtk::ListStore::create(*keyboard_shortcuts_liststore_column_record_))
 
 {
-
-  // Creates a new ConfigurationGUI.
-  ConfigurationGUI* temp_config_gui = new ConfigurationGUI(base, *this);
-
-  // Adds the ConfigGUI to the gui_elements() list.
-  gui_elements() . push_front(temp_config_gui);
-
-
-
-  // Sets the iterator location inside the gui_elements list.
-  temp_config_gui -> set_gui_elements_it(gui_elements() . begin());
 
 }
 
@@ -260,12 +251,6 @@ void ConfigurationGUIs::Open_Configuration()
   // Assigns a new ConfigGUI object to the pointer.
   new_config_gui = new ConfigurationGUI(base(), (*this));
 
-  // Adds the new ConfigGUI to the ConfigGUIs list.
-  (*this)() . push_front(new_config_gui);
-
-  // Sets the new ConfigGUI's location in ConfigGUIs.
-  new_config_gui -> set_gui_elements_it((*this)() . begin());
-
 
 
   // 
@@ -279,7 +264,7 @@ void ConfigurationGUIs::Open_Configuration()
 
   // Creates of new window using the Create_New_Window function.
   ChildWindow* new_child_window
-    = windows() . Create_New_Window("Configuration", new_destroy_func_ptr);
+    = windows() . Create("Configuration", new_destroy_func_ptr);
 
 
 
@@ -411,6 +396,11 @@ void ConfigurationGUIs::Undo_Changes()
 
   // Applies saved values to all ConfigGUIs.
   Apply_Saved_Values();
+
+
+
+  // 
+  main_menus() . Apply_Saved_Values();
 
 
 

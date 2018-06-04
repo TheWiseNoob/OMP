@@ -41,6 +41,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef GUI_ELEMENT_LIST_H
 #define GUI_ELEMENT_LIST_H
 
@@ -48,8 +56,33 @@
 
 
 
-#include "GUIElement.h"
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Inherited Class ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../Parts.h"
+
+#include "GUIElement.h"
+
+
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 #include <list>
 
@@ -57,15 +90,41 @@
 
 
 
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
 template<class datatype>
 class GUIElementList : public Parts
-{ 
+ { 
+
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
 
   protected:
 
     GUIElementList(Base& base, bool debug = false)
     : Parts(base, debug)
-    {}
+    {
+
+    }
+
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
 
   public:
 
@@ -74,12 +133,27 @@ class GUIElementList : public Parts
 
     }
 
-    virtual std::list<datatype*> &gui_elements() final
-    {
 
-      return gui_elements_;
 
-    }
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+
+
+
+
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
 
     virtual std::list<datatype*> &operator()() final
     {
@@ -88,8 +162,22 @@ class GUIElementList : public Parts
 
     }
     
+    virtual std::list<datatype*> &gui_elements() final
+    {
+
+      return gui_elements_;
+
+    }
 
 
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   private:
 
@@ -100,5 +188,13 @@ class GUIElementList : public Parts
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

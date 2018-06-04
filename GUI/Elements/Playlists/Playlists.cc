@@ -372,12 +372,16 @@ Playlists::Playlists(Base& base_ref)
   // Sets queue_playlist_treestore_ to the new PlaylistTreeStore.
   queue_playlist_treestore_ = playlist_treestores_ . front();
 
+  // 
   auto playlist_treestores_it = playlist_treestores_ . begin();
 
+  // 
   playlist_treestores_it++;
 
+  // 
   library_playlist_treestore_ = *playlist_treestores_it;
 
+  // 
   selected_playlist_treestore_ = *playlist_treestores_it;
 
 }
@@ -769,7 +773,8 @@ void Playlists::Change_Track()
     {
 
       //
-      Select_Row(playing_row_ref());
+      Select_Row(playing_row_ref(), 
+                 bool(config() . get("playback.selected_playlist_only")));
 
 
 
@@ -1547,70 +1552,31 @@ void Playlists::Open_Create_Playlist_Dialog()
 
 } 
 
-void Playlists::Scroll_To_Row(Gtk::TreeRowReference desired_row_ref)
-{
-
-
-  disable_on_selection_changed_ = true;
-
-  list<Playlist*>::iterator playlists_it = (*this)().begin();
-
-  Glib::RefPtr<PlaylistTreeStore> row_playlist_treestore
-    = Glib::RefPtr<PlaylistTreeStore>::cast_dynamic(desired_row_ref . get_model());
-
-
-  while(playlists_it != ((*this)().end()))
-  {
-
-    if(((*playlists_it) -> playlist_treestore()) == row_playlist_treestore)
-    {
-
-      if(!(desired_row_ref . is_valid()))
-      {
-
-
-      }
-      else
-      {
-
-        Gtk::TreePath temp_tree_path(desired_row_ref . get_path());
-
-        (*playlists_it) -> scroll_to_row(temp_tree_path);
-
-      }
-
-    }
-
-    playlists_it++;
-
-  }
-
-  disable_on_selection_changed_ = false;
-
-
-}
-
-void Playlists::Select_Row(Gtk::TreeRowReference desired_row_ref)
+void Playlists::Scroll_To_Row(Gtk::TreeRowReference desired_row_ref,
+                              bool only_use_selected_playlist_view)
 {
 
   // 
   disable_on_selection_changed_ = true;
+
+
 
   // 
   list<Playlist*>::iterator playlists_it = (*this)().begin();
 
   // 
   Glib::RefPtr<PlaylistTreeStore> row_playlist_treestore
-    = Glib::RefPtr<PlaylistTreeStore>::cast_dynamic(desired_row_ref . get_model());
+    = Glib::RefPtr<PlaylistTreeStore>::cast_dynamic
+        (desired_row_ref . get_model());
 
 
 
   // 
-  while(playlists_it != ((*this)().end()))
+  if(only_use_selected_playlist_view)
   {
 
     // 
-    if(((*playlists_it) -> playlist_treestore()) == row_playlist_treestore)
+    if((selected_playlist() . playlist_treestore()) == row_playlist_treestore)
     {
 
       // 
@@ -1625,19 +1591,153 @@ void Playlists::Select_Row(Gtk::TreeRowReference desired_row_ref)
       { 
 
         // 
-        (*playlists_it) -> playlist_treeselection() -> unselect_all();
+        selected_playlist() . scroll_to_row(desired_row_ref . get_path());
+
+       }
+
+     } 
+
+  }
+
+  // 
+  else
+   {
+
+    // 
+    while(playlists_it != ((*this)().end()))
+    {
+  
+      // 
+      if(((*playlists_it) -> playlist_treestore()) == row_playlist_treestore)
+      {
+  
+        // 
+        if(!(desired_row_ref . is_valid()))
+        {
+  
+  
+        } 
+  
+        // 
+        else
+        { 
+  
+          // 
+          (*playlists_it) -> scroll_to_row(desired_row_ref . get_path());
+  
+        }
+  
+      } 
+ 
+
+ 
+      // 
+      playlists_it++;
+  
+    }
+
+  }
+
+
+
+  // 
+  disable_on_selection_changed_ = false;
+
+}
+
+void Playlists::Select_Row(Gtk::TreeRowReference desired_row_ref,
+                           bool only_use_selected_playlist_view)
+{
+
+  // 
+  disable_on_selection_changed_ = true;
+
+
+
+  // 
+  list<Playlist*>::iterator playlists_it = (*this)().begin();
+
+  // 
+  Glib::RefPtr<PlaylistTreeStore> row_playlist_treestore
+    = Glib::RefPtr<PlaylistTreeStore>::cast_dynamic
+        (desired_row_ref . get_model());
+
+
+
+  // 
+  if(only_use_selected_playlist_view)
+  {
+
+    // 
+    if((selected_playlist() . playlist_treestore()) == row_playlist_treestore)
+    {
+
+      // 
+      if(!(desired_row_ref . is_valid()))
+      {
+
+
+      } 
+
+      // 
+      else
+      { 
+
+        // 
+        selected_playlist() . playlist_treeselection() -> unselect_all();
 
 
 
         // 
-        (*playlists_it) -> set_cursor(desired_row_ref . get_path());
+        selected_playlist() . set_cursor(desired_row_ref . get_path());
 
-      }
+       }
 
-    } 
+     } 
+
+  }
+
+  // 
+  else
+   {
 
     // 
-    playlists_it++;
+    while(playlists_it != ((*this)().end()))
+    {
+  
+      // 
+      if(((*playlists_it) -> playlist_treestore()) == row_playlist_treestore)
+      {
+  
+        // 
+        if(!(desired_row_ref . is_valid()))
+        {
+  
+  
+        } 
+  
+        // 
+        else
+        { 
+  
+          // 
+          (*playlists_it) -> playlist_treeselection() -> unselect_all();
+  
+  
+  
+          // 
+          (*playlists_it) -> set_cursor(desired_row_ref . get_path());
+  
+        }
+  
+      } 
+
+
+ 
+      // 
+      playlists_it++;
+  
+    }
 
   }
 

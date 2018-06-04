@@ -125,6 +125,10 @@ namespace Gtk
 
   class Label;
 
+  class Overlay;
+
+  class ProgressBar;
+
   class ScrolledWindow;
 
   class TreeRowReference;
@@ -401,8 +405,17 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
     //
     PlaylistMenu* menu_;
 
+    // 
+    Gtk::Box* playlist_box_;
+
     //
     Gtk::Frame* playlist_frame_;
+
+    // 
+    Gtk::Overlay* playlist_overlay_;
+
+    // 
+    Gtk::ProgressBar* playlist_progress_bar_;
 
     //
     Gtk::ScrolledWindow* playlist_scrolled_window_;

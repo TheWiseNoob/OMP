@@ -87,8 +87,6 @@
 
 #include "../FileChoosers/FileChoosers.h"
 
-#include "../MainMenus/MainMenu.h"
-
 #include "../PlaylistComboBoxes/PlaylistComboBox.h"
 
 #include "../PlaylistComboBoxes/PlaylistComboBoxes.h"
@@ -225,39 +223,23 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 
 
 
-// Playback
+// Playback : General
 
 , playback_menu_(Gtk::manage(new Gtk::Menu))
 
 , playback_menu_item_(Gtk::manage(new Gtk::MenuItem("_Playback", true)))
 
-, next_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Next", true)))
 
-, play_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Play", true)))
 
-, pause_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Pause", true)))
 
-, stop_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Stop", true)))
-
-, order_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("_Order", true)))
-
-, order_playback_menu_(Gtk::manage(new Gtk::Menu))
-
-, looping_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("_Looping", true)))
-
-, looping_playback_menu_(Gtk::manage(new Gtk::Menu))
-
-, order_normal_playback_radio_menu_item_
-    (Gtk::manage(new Gtk::RadioMenuItem("Normal")))
-
-, order_random_tracks_playback_radio_menu_item_
-    (Gtk::manage(new Gtk::RadioMenuItem("Random Tracks")))
-
-, order_shuffle_tracks_playback_radio_menu_item_
-    (Gtk::manage(new Gtk::RadioMenuItem("Shuffle Tracks")))
+// Playback : Looping
 
 , looping_none_playback_radio_menu_item_
     (Gtk::manage(new Gtk::RadioMenuItem("None")))
+
+, looping_playback_menu_(Gtk::manage(new Gtk::Menu))
+
+, looping_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("_Looping", true)))
 
 , looping_playlist_playback_radio_menu_item_
     (Gtk::manage(new Gtk::RadioMenuItem("Repeat Playlist")))
@@ -265,11 +247,15 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 , looping_track_playback_radio_menu_item_
     (Gtk::manage(new Gtk::RadioMenuItem("Repeat Track")))
 
-, stop_after_current_track_playback_check_menu_item_
-    (Gtk::manage(new Gtk::CheckMenuItem("_Stop After Current Track", true)))
+
+
+// Playback : Options
 
 , cursor_follows_playback_playback_check_menu_item_
     (Gtk::manage(new Gtk::CheckMenuItem("_Cursor Follows Playback", true)))
+
+, flush_queue_playback_menu_item_(Gtk::manage(new Gtk::MenuItem
+    ("_Flush Playback Queue", true)))
 
 , playback_follows_cursor_playback_check_menu_item_
     (Gtk::manage(new Gtk::CheckMenuItem("_Playback Follows Cursor", true)))
@@ -280,8 +266,43 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 , queue_saved_playback_check_menu_item_(Gtk::manage(new Gtk::CheckMenuItem
     ("Saved Playback _Queue", true)))
 
-, flush_queue_playback_menu_item_(Gtk::manage(new Gtk::MenuItem
-    ("_Flush Playback Queue", true)))
+, selected_playlist_only_check_menu_item_
+    (Gtk::manage(new Gtk::CheckMenuItem("Selected Playlist View Only", true)))
+
+, start_at_pregap_check_menu_item_
+    (Gtk::manage(new Gtk::CheckMenuItem("Start At Pregap", true)))
+
+, stop_after_current_track_playback_check_menu_item_
+    (Gtk::manage(new Gtk::CheckMenuItem("_Stop After Current Track", true)))
+
+
+
+// Playback : Order
+
+, order_normal_playback_radio_menu_item_
+    (Gtk::manage(new Gtk::RadioMenuItem("Normal")))
+
+, order_playback_menu_(Gtk::manage(new Gtk::Menu))
+
+, order_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("_Order", true)))
+
+, order_random_tracks_playback_radio_menu_item_
+    (Gtk::manage(new Gtk::RadioMenuItem("Random Tracks")))
+
+, order_shuffle_tracks_playback_radio_menu_item_
+    (Gtk::manage(new Gtk::RadioMenuItem("Shuffle Tracks")))
+
+
+
+// Playback : State Changers
+
+, next_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Next", true)))
+
+, pause_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Pause", true)))
+
+, play_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Play", true)))
+
+, stop_playback_menu_item_(Gtk::manage(new Gtk::MenuItem("Stop", true)))
 
 
 
@@ -308,6 +329,16 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
   //         //
   // General //////////////////////////////////////////////////////////////////
   //         //
+
+  // 
+  main_menus_ref() . push_front(this);
+
+  // Adds the new FileChooser's to the iterator to it's it storage variable.
+  set_gui_elements_it(main_menus_ref() . begin());
+
+
+
+
 
   // 
   box() . set_orientation(Gtk::ORIENTATION_HORIZONTAL);
@@ -520,24 +551,6 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
   // 
   stop_after_current_track_playback_check_menu_item_ -> set_active(false);
 
-  // 
-  cursor_follows_playback_playback_check_menu_item_
-    -> set_active(config() . get("playback.cursor_follows_playback"));
-
-  // 
-  playback_follows_cursor_playback_check_menu_item_
-    = Gtk::manage(new Gtk::CheckMenuItem("_Playback Follows Cursor", true));
-
-  // 
-  playback_follows_cursor_playback_check_menu_item_
-    -> set_active(config() . get("playback.playback_follows_cursor"));
-
-
-
-  // 
-  queue_saved_playback_check_menu_item_
-    -> set_active(config() . get("playback.queue_saved"));
-
 
 
   // 
@@ -567,6 +580,28 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 
   // 
   order_playback_menu_ -> append(*order_shuffle_tracks_playback_radio_menu_item_);
+
+
+
+  // 
+  cursor_follows_playback_playback_check_menu_item_
+    -> set_active(config() . get("playback.cursor_follows_playback"));
+
+  // 
+  playback_follows_cursor_playback_check_menu_item_
+    -> set_active(config() . get("playback.playback_follows_cursor"));
+
+  // 
+  queue_saved_playback_check_menu_item_
+    -> set_active(config() . get("playback.queue_saved"));
+
+  // 
+  selected_playlist_only_check_menu_item_
+    -> set_active(config() . get("playback.selected_playlist_only"));
+
+  // 
+  start_at_pregap_check_menu_item_
+    -> set_active(config() . get("playback.start_at_pregap"));
 
 
 
@@ -639,10 +674,13 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
   playback_menu_ -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
   // 
-  playback_menu_ -> append(*stop_after_current_track_playback_check_menu_item_);
+  playback_menu_ -> append(*cursor_follows_playback_playback_check_menu_item_);
 
   // 
-  playback_menu_ -> append(*cursor_follows_playback_playback_check_menu_item_);
+  playback_menu_ -> append(*selected_playlist_only_check_menu_item_);
+
+  // 
+  playback_menu_ -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
   // 
   playback_menu_ -> append(*playback_follows_cursor_playback_check_menu_item_);
@@ -651,7 +689,19 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
   playback_menu_ -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
   // 
+  playback_menu_ -> append(*start_at_pregap_check_menu_item_);
+
+  // 
+  playback_menu_ -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
   playback_menu_ -> append(*queue_saved_playback_check_menu_item_);
+
+  // 
+  playback_menu_ -> append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
+  playback_menu_ -> append(*stop_after_current_track_playback_check_menu_item_);
 
   // 
 //  playback_menu_ -> append(*flush_queue_playback_menu_item_);
@@ -704,9 +754,19 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
   cursor_follows_playback_playback_check_menu_item_ -> set_tooltip_text
     ("The cursor automatically moves to the next track once it starts. ");
 
+  // 
+  selected_playlist_only_check_menu_item_ -> set_tooltip_text
+    ("Only the currently selected playlist view will have its cursor " \
+     "changed to the next track when Cursor Follows Plackback is on.");
+
   //  
   queue_saved_playback_check_menu_item_ -> set_tooltip_text
     ("Saves the tracks in the playback track queue when OMP is closed.");
+
+
+
+  // 
+  selected_playlist_only_check_menu_item_ -> set_margin_left(20);
 
 
 
@@ -727,6 +787,10 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
     . connect(sigc::mem_fun(*this, &MainMenu::Stop));
 
 
+
+  // 
+  start_at_pregap_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MainMenu::Start_At_Pregap_Start));
 
   // 
   stop_after_current_track_playback_check_menu_item_ -> signal_activate()
@@ -753,7 +817,8 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
     . connect(sigc::mem_fun(*this, &MainMenu::Flush_Queue));
 
   // 
-  flush_queue_playback_menu_item_ -> set_sensitive(false);
+  selected_playlist_only_check_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(*this, &MainMenu::Selected_Playlist_Only));
 
 
 
@@ -836,13 +901,101 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 
 
 
-
-
   // 
   menu_ -> show_all_children();
 
   // 
   box() . show_all_children();
+
+}
+
+
+
+
+
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+
+//         //
+// General ////////////////////////////////////////////////////////////////////
+//         //
+
+void MainMenu::Apply_Saved_Values()
+{
+
+  //          //
+  // Playback /////////////////////////////////////////////////////////////////
+  //          //
+
+  // 
+  string looping_type = config() . get("playback.looping");
+
+  // 
+  if(looping_type == "none")
+  {
+
+    // 
+    looping_none_playback_radio_menu_item_ -> set_active(true);
+
+  }
+
+  // 
+  else if(looping_type == "playlist")
+  {
+
+    // 
+    looping_playlist_playback_radio_menu_item_ -> set_active(true);
+
+  }
+
+
+
+  // 
+  cursor_follows_playback_playback_check_menu_item_
+    -> set_active(config() . get("playback.cursor_follows_playback"));
+
+  // 
+  playback_follows_cursor_playback_check_menu_item_
+    -> set_active(config() . get("playback.playback_follows_cursor"));
+
+  // 
+  queue_saved_playback_check_menu_item_
+    -> set_active(config() . get("playback.queue_saved"));
+
+  // 
+  selected_playlist_only_check_menu_item_
+    -> set_active(config() . get("playback.selected_playlist_only"));
+
+  // 
+  start_at_pregap_check_menu_item_
+    -> set_active(config() . get("playback.start_at_pregap"));
+
+
+
+
+
+  //      //
+  // View /////////////////////////////////////////////////////////////////////
+  //      //
+
+  // 
+  hide_duplicates_check_menu_item_
+    -> set_active(config() . get("gui.hide_duplicates"));
+
+  // 
+  hide_header_bar_check_menu_item_
+    -> set_active(config() . get("gui.hide_header_bar"));
+
+  // 
+  hide_status_bar_check_menu_item_
+    -> set_active(config() . get("gui.hide_status_bar"));
+
+  // 
+  hide_tabs_check_menu_item_
+    -> set_active((config() . get("gui.tabs.hide")));
 
 }
 
@@ -1151,18 +1304,16 @@ void MainMenu::Playback_Follows_Cursor()
 
   }
 
-
-
-  // 
-  main_menus() . set_disable_menubar_functions_flag(true);
-
-
-
   // 
   config_guis() . set_disable_functions(false);
 
   // 
   config_guis() . Mark_Unsaved_Changes(false);
+
+
+
+  // 
+  main_menus() . set_disable_menubar_functions_flag(true);
 
   // 
   for(auto menu_bars_it : main_menus()())
@@ -1177,6 +1328,146 @@ void MainMenu::Playback_Follows_Cursor()
   // 
   main_menus() . set_disable_menubar_functions_flag(false);
 
+}
+
+void MainMenu::Selected_Playlist_Only()
+{
+
+  // 
+  if(main_menus() . disable_menubar_functions_flag())
+  {
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  bool active
+    = (selected_playlist_only_check_menu_item_ -> get_active());
+
+
+
+  // 
+  config() . set("playback.selected_playlist_only", active);
+
+
+
+  // 
+  config_guis() . Save_Changes();
+
+
+
+  // 
+  config_guis() . set_disable_functions(true);
+
+  // 
+  for(auto config_guis_it : config_guis()())
+  { 
+
+    // 
+    config_guis_it -> playback_panel() . selected_playlist_only_check_button()
+      . set_active(active);
+
+  }
+
+  // 
+  config_guis() . set_disable_functions(false);
+
+  // 
+  config_guis() . Mark_Unsaved_Changes(false);
+
+
+
+  // 
+  main_menus() . set_disable_menubar_functions_flag(true);
+
+
+
+  // 
+  for(auto menu_bars_it : main_menus()())
+  {  
+
+    // 
+    menu_bars_it -> selected_playlist_only_check_menu_item()
+      . set_active(active);
+
+  }
+
+  // 
+  main_menus() . set_disable_menubar_functions_flag(false);
+
+}
+
+void MainMenu::Start_At_Pregap_Start()
+{
+
+  // 
+  if(main_menus() . disable_menubar_functions_flag())
+  {
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  bool active
+    = (start_at_pregap_check_menu_item_ -> get_active());
+
+
+
+  // 
+  config() . set("playback.start_at_pregap", active);
+
+
+
+  // 
+  config_guis() . Save_Changes();
+
+
+
+  // 
+  config_guis() . set_disable_functions(true);
+
+  for(auto config_guis_it : config_guis()())
+  { 
+
+    // 
+    config_guis_it -> playback_panel() . start_at_pregap_check_button()
+      . set_active(active);
+
+  }
+
+  // 
+  config_guis() . set_disable_functions(false);
+
+  // 
+  config_guis() . Mark_Unsaved_Changes(false);
+
+
+
+  // 
+  main_menus() . set_disable_menubar_functions_flag(true);
+
+
+
+  // 
+  for(auto menu_bars_it : main_menus()())
+  {  
+
+    // 
+    menu_bars_it -> start_at_pregap_check_menu_item()
+      . set_active(active);
+
+  }
+
+  // 
+  main_menus() . set_disable_menubar_functions_flag(false);
 
 }
 
@@ -1229,8 +1520,8 @@ void MainMenu::Stop_After_Current_Track()
   {
 
     // 
-    config_guis_it -> playback_panel() . stop_after_current_track_check_button()
-      . set_active(active);
+    config_guis_it -> playback_panel()
+      . stop_after_current_track_check_button() . set_active(active);
 
   }
 
@@ -1800,13 +2091,6 @@ Gtk::RadioMenuItem& MainMenu::looping_track_playback_radio_menu_item()
 // Playback ///////////////////////////////////////////////////////////////////
 //          //
 
-Gtk::CheckMenuItem& MainMenu::stop_after_current_track_playback_check_menu_item()
-{
-
-  return *stop_after_current_track_playback_check_menu_item_;
-
-}
-
 Gtk::CheckMenuItem& MainMenu::cursor_follows_playback_playback_check_menu_item()
 {
 
@@ -1832,6 +2116,27 @@ Gtk::CheckMenuItem& MainMenu::queue_saved_playback_check_menu_item()
 {
 
   return *queue_saved_playback_check_menu_item_;
+
+}
+
+Gtk::CheckMenuItem& MainMenu::selected_playlist_only_check_menu_item()
+{
+
+  return *selected_playlist_only_check_menu_item_;
+
+}
+
+Gtk::CheckMenuItem& MainMenu::start_at_pregap_check_menu_item()
+{
+
+  return *start_at_pregap_check_menu_item_;
+
+}
+
+Gtk::CheckMenuItem& MainMenu::stop_after_current_track_playback_check_menu_item()
+{
+
+  return *stop_after_current_track_playback_check_menu_item_;
 
 }
 

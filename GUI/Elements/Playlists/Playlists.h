@@ -212,9 +212,11 @@ class Playlists : public GUIElementList<Playlist>
     void Open_Delete_Playlist_Dialog
       (bool delete_playlist_combobox_playlist = false);
 
-    void Scroll_To_Row(Gtk::TreeRowReference desired_row_ref);
+    void Scroll_To_Row(Gtk::TreeRowReference desired_row_ref,
+                       bool only_use_selected_playlist_view = false);
 
-    void Select_Row(Gtk::TreeRowReference desired_row_ref);
+    void Select_Row(Gtk::TreeRowReference desired_row_ref,
+                    bool only_use_selected_playlist_view = false);
 
     void Unselect_Row(Gtk::TreeRowReference desired_row_ref);
 

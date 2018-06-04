@@ -41,55 +41,134 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef GUI_ELEMENT_H
 #define GUI_ELEMENT_H
 
 
 
-//Base Class Headers
+
+
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                 //
+//                 //
+// Inherited Class ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 #include "../Parts.h"
 
 
 
+
+
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../Base.h"
 
 
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 #include <gtkmm/box.h>
 
 
 
 
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
+
 template<class datatype>
 class GUIElement : public Parts 
 { 
 
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
+
   protected:
 
-    GUIElement(Base& base, 
-               typename std::list<datatype*>& new_gui_element_list, bool debug = false)
-    : Parts(base, debug)
-    , gui_element_list_(new_gui_element_list)
-    , box_(Gtk::manage(new Gtk::Box))
-    {
+    GUIElement(Base& base, typename std::list<datatype*>& new_gui_element_list,
+               bool debug = false)
 
-      box_ = Gtk::manage(new Gtk::Box);
+    // 
+
+    : Parts(base, debug)
+
+
+
+    // 
+
+    , box_(Gtk::manage(new Gtk::Box))
+
+    , gui_element_list_(new_gui_element_list)
+
+    { 
 
     }
+
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  protected:
 
     virtual ~GUIElement()
     {
 
       gui_element_list_ . erase(gui_elements_it_);
 
-    }
+     }
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   public:
- 
-  //
-  //Public Member Functions
-  //
 
     virtual void Destroy()
     {
@@ -99,10 +178,17 @@ class GUIElement : public Parts
     }
 
 
-  //
-  //Getters and Setters
-  //
 
+
+
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+ 
     virtual Gtk::Box& box()
     {
 
@@ -117,27 +203,56 @@ class GUIElement : public Parts
 
     }
 
-    virtual void set_gui_elements_it(typename std::list<datatype*>::iterator
-                                       new_gui_elements_it) final
+
+
+
+
+  //         //
+  //         //
+  // Setters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+ 
+    virtual void set_gui_elements_it
+      (typename std::list<datatype*>::iterator new_gui_elements_it) final
     { 
 
       gui_elements_it_ = new_gui_elements_it; 
 
     }
 
-  private:
 
-    typename std::list<datatype*>& gui_element_list_;
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+  
+  private:
 
     Gtk::Box* box_;
 
     typename std::list<datatype*>::iterator gui_elements_it_;
 
+    typename std::list<datatype*>& gui_element_list_;
 
 };
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

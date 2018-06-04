@@ -179,14 +179,6 @@ PlaylistComboBoxes::PlaylistComboBoxes
 
   }
 
-
-
-  // 
-  gui_elements() . push_back(new PlaylistComboBox(base_ref, *this));
-
-  // 
-  gui_elements() . push_back(new PlaylistComboBox(base_ref, *this));
-
 }
 
 

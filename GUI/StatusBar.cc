@@ -631,14 +631,35 @@ bool StatusBar::Status_Bar_Event_Box_Button_Press(GdkEventButton* event)
 
 
   // Is true if the StatusBar was double-clicked.
-  if((event -> type) == GDK_2BUTTON_PRESS)
+  if(((event -> type) == GDK_2BUTTON_PRESS)
+       || ((event -> type) == GDK_3BUTTON_PRESS))
   { 
 
+    // 
+    bool double_button_press = true;
+
+    // 
+    if((event -> type) == GDK_3BUTTON_PRESS)
+    {
+
+      // 
+      double_button_press = false;
+
+    }
+
+
+
     // Selects the playing track.
-    playlists() . Select_Row(playlists() . playing_row_ref());
+    playlists()
+      . Select_Row(playlists() . playing_row_ref(), double_button_press);
+
+
 
     // Scrolls to the playing track.
-    playlists() . Scroll_To_Row(playlists() . playing_row_ref());
+    playlists()
+      . Scroll_To_Row(playlists() . playing_row_ref(), double_button_press);
+
+
 
     // Gets the filename of the playing track.
     string temp_string = playlists() . playing_track() . filename();

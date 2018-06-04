@@ -226,6 +226,15 @@ ConfigurationGUI::ConfigurationGUI
 
 
 
+  // 
+  config_guis_ref() . push_front(this);
+
+  // Adds the new FileChooser's to the iterator to it's it storage variable.
+  set_gui_elements_it(config_guis_ref() . begin());
+
+
+
+
   // Sets the orientation of the GUIElement's box to horizontal.
   box() . set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 

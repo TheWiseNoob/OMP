@@ -161,11 +161,11 @@ typedef struct _GdkEventKey GdkEventKey;
 class ChildWindow : public GUIElement<ChildWindow>
 { 
 
-  //             //
-  //             //
-  // Constructor //////////////////////////////////////////////////////////////
-  //             //
-  //             //
+  //              //
+  //              //
+  // Constructors //////////////////////////////////////////////////////////////
+  //              //
+  //              //
 
   public:
 
@@ -173,6 +173,10 @@ class ChildWindow : public GUIElement<ChildWindow>
       (const char* new_title, Base& base_ref, ChildWindows& child_windows_ref,
        std::function<void(void)> new_child_class_destroy_function,
        bool set_main_window = false);
+
+    ChildWindow
+      (const char* window_name, 
+       std::function<void(void)> new_child_class_destroy_function);
 
 
 

@@ -147,9 +147,10 @@ class ChildWindows : public GUIElementList<ChildWindow>
 
   public:
 
-    ChildWindow* Create_New_Window
+    ChildWindow* Create
       (const char* window_name,
        std::function<void(void)> temp_destroy_func_ptr);
+
 
 
 
