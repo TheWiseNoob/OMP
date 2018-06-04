@@ -674,7 +674,7 @@ std::vector<Track*>* Metadata::Interpret_Cue_Sheet(const std::string& filename)
         string error_message_str = "The cue sheet ";
 
         // Adds to the error message.
-        error_message_str += filename
+        error_message_str += filename;
 
         // Adds to the error message.
         error_message_str 
@@ -904,7 +904,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
           string error_message_str = "The file ";
 
           // Adds to the error message.
-          error_message_str += new_track . filename();
+          error_message_str += new_track -> filename();
 
           // Adds to the error message.
           error_message_str
