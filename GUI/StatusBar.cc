@@ -704,24 +704,6 @@ bool StatusBar::Status_Bar_Event_Box_Button_Press(GdkEventButton* event)
     playlists()() . front() -> Add_Selected_Tracks_Times();
 
 
-    // 
-    for(auto playlists_it : playlists()())
-    {
-
-      // 
-      if(playlists_it -> playlist_treestore()
-           == playlists() . playing_playlist_treestore())
-      {
-
-        // Sets the filename label to the newly selected track.
-        playlists_it -> filename_label()
-          . set_label(playlists() . playing_track() . filename());
-
-      }
-
-    }
-
-
 
     // 
     playlists() . set_selected_row_ref(playlists() . playing_row_ref());

@@ -158,7 +158,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
   std::vector<Glib::ustring*>* genres = nullptr;
 
   // Holds the artists of the release.
-  std::vector<Glib::ustring*>* artists = nullptr;
+  std::vector<Glib::ustring*>* album_artists = nullptr;
 
   // Holds the album name.
   Glib::ustring* album = nullptr;
@@ -224,6 +224,8 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
       Increment_It_To_Next_Line(it, cue_sheet))
   {
 
+    cout << "\n\nChar: " << char(*it) << "\n\n";
+
     // REM top section
     if(*it == 'R')
     {
@@ -255,14 +257,13 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
         //
-        Glib::ustring * genre_ustr = new ustring;
+        Glib::ustring * genre_ustr = nullptr;
 
 
 
         // 
         if(*it == '\"')
         {
-
 
           //
           if(!Advance_It(it, 1, cue_sheet))
@@ -276,19 +277,69 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
           // 
+          genre_ustr = new Glib::ustring;
+
+          // 
+          genres = new vector<Glib::ustring*>;
+
+
+
+          // 
           while((*it != '\"') && (*it != '\r') && (*it != '\n')
                 && (it != cue_sheet -> raw() . end()))
           {
 
+            // 
+            if((*it) == ',')
+            {
+
+              // 
+              genres -> push_back(genre_ustr);
+
+
+
+              // 
+              genre_ustr = new Glib::ustring;
+
+
+
+              //
+              if(!Advance_It(it, 2, cue_sheet))
+              {
+
+                //
+                break;
+
+              }
+
+            }
+
             //
-            genre_ustr -> push_back(char(*it));
+            else
+            {
+
+              //
+              genre_ustr -> push_back(char(*it));
 
 
 
-            //
-            it++;
+              //
+              if(!Advance_It(it, 1, cue_sheet))
+              {
+
+                //
+                break;
+
+              }
+
+            }
 
           }
+
+
+
+          // 
+          genres -> push_back(genre_ustr);
 
         }
 
@@ -314,16 +365,72 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
         else
         {
 
-          Extract_Characters_Until_Line_Break(it, genre_ustr, cue_sheet);
+          // 
+          genre_ustr = new Glib::ustring;
+
+          // 
+          genres = new vector<Glib::ustring*>;
+
+
+
+          // 
+          while((*it != '\r') && (*it != '\n')
+                && (it != cue_sheet -> raw() . end()))
+          {
+
+            // 
+            if((*it) == ',')
+            {
+
+              // 
+              genres -> push_back(genre_ustr);
+
+
+
+              // 
+              genre_ustr = new Glib::ustring;
+
+
+
+              //
+              if(!Advance_It(it, 2, cue_sheet))
+              {
+
+                //
+                break;
+
+              }
+
+            }
+
+            //
+            else
+            {
+
+              //
+              genre_ustr -> push_back(char(*it));
+
+
+
+              //
+              if(!Advance_It(it, 1, cue_sheet))
+              {
+
+                //
+                break;
+
+              }
+
+            }
+
+          }
+
+
+
+          // 
+          genres -> push_back(genre_ustr);
 
         } 
-
-
-        //
-        genres = new vector<ustring*>;
-
-        //
-        genres -> push_back(genre_ustr);
 
       }
 
@@ -348,10 +455,27 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
           //
           if(!Advance_It(it, 4, cue_sheet))
-          {
+          { 
 
             //
             break;
+
+          }
+
+
+
+          // 
+          while(*it == ' ')
+          {
+
+            //
+            if(!Advance_It(it, 1, cue_sheet))
+            { 
+
+              //
+              break;
+
+            }
 
           }
 
@@ -375,17 +499,69 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
           }
 
+          // 
+          else if(*it == '\"')
+          {
+
+            //
+            if(!Advance_It(it, 1, cue_sheet))
+            {
+
+              //
+              break;
+
+            }
 
 
-          //
-          Glib::ustring temp_date;
 
-          //
-          Extract_Characters_Until_Line_Break(it, &temp_date, cue_sheet);
+            //
+            Glib::ustring temp_date;
 
 
 
-          date = stoi(temp_date . raw());
+            // 
+            while((*it != '\"') && (it != (cue_sheet -> raw() . end())))
+            {
+
+              
+
+
+
+              // 
+              temp_date . push_back(*it);
+
+
+
+              // 
+              it++;
+
+            }
+
+
+
+            // 
+            date = stoi(temp_date . raw());
+
+          }
+
+          // 
+          else
+          {
+
+            //
+            Glib::ustring temp_date;
+
+
+
+            //
+            Extract_Characters_Until_Line_Break(it, &temp_date, cue_sheet);
+
+
+
+            // 
+            date = stoi(temp_date . raw());
+
+          }
 
         }
 
@@ -638,7 +814,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
     {
 
       //
-      if(!Advance_It(it, 11, cue_sheet))
+      if(!Advance_It(it, 10, cue_sheet))
       {
 
         //
@@ -649,34 +825,182 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
       //
-      artists = new vector<ustring*>;
-
-      //
-      ustring* artist_ustr = new ustring;
+      Glib::ustring * artist_ustr = nullptr;
 
 
 
-      //
-      while((*it != '\"') && (*it != '\r') && (*it != '\n')
-              && (it != cue_sheet -> raw() . end()))
+      // 
+      if(*it == '\"')
       {
 
         //
-        artist_ustr -> push_back(char(*it));
+        if(!Advance_It(it, 1, cue_sheet))
+        {
+
+          //
+          break;
+
+        }
 
 
 
-        //
-        it++;
+        // 
+        artist_ustr = new Glib::ustring;
+
+        // 
+        album_artists = new vector<Glib::ustring*>;
+
+
+
+        // 
+        while((*it != '\"') && (*it != '\r') && (*it != '\n')
+              && (it != cue_sheet -> raw() . end()))
+        {
+
+          // 
+          if((*it) == ',')
+          {
+
+            // 
+            album_artists -> push_back(artist_ustr);
+
+
+
+            // 
+            artist_ustr = new Glib::ustring;
+
+
+
+            //
+            if(!Advance_It(it, 2, cue_sheet))
+            {
+
+              //
+              break;
+
+            }
+
+          }
+
+          //
+          else
+          {
+
+            //
+            artist_ustr -> push_back(char(*it));
+
+
+
+            //
+            if(!Advance_It(it, 1, cue_sheet))
+            {
+
+              //
+              break;
+
+            }
+
+          }
+
+        }
+
+
+
+        // 
+        album_artists -> push_back(artist_ustr);
 
       }
 
+      // 
+      else if(*it == '\n')
+      {
+
+        // 
+        continue;
+
+      }
+
+      // 
+      else if(*it == '\r')
+      {
+
+        // 
+        continue;
+
+      }
+
+      // 
+      else
+      {
+
+        // 
+        artist_ustr = new Glib::ustring;
+
+        // 
+        album_artists = new vector<Glib::ustring*>;
 
 
-      //
-      artists -> push_back(artist_ustr);
 
-    } 
+        // 
+        while((*it != '\r') && (*it != '\n')
+              && (it != cue_sheet -> raw() . end()))
+        {
+
+          // 
+          if((*it) == ',')
+          {
+
+            // 
+            album_artists -> push_back(artist_ustr);
+
+
+
+            // 
+            artist_ustr = new Glib::ustring;
+
+
+
+            //
+            if(!Advance_It(it, 2, cue_sheet))
+            {
+
+              //
+              break;
+
+            }
+
+          }
+
+          //
+          else
+          {
+
+            //
+            artist_ustr -> push_back(char(*it));
+
+
+
+            //
+            if(!Advance_It(it, 1, cue_sheet))
+            {
+
+              //
+              break;
+
+            }
+
+          }
+
+        }
+
+
+
+        // 
+        album_artists -> push_back(artist_ustr);
+
+      }
+
+    }
 
     //
     else if(*it == 'T')
@@ -928,12 +1252,12 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
 
-          // Album artist
+          // Arists
           if(*it == 'E')
           { 
 
             //
-            if(!Advance_It(it, 10, cue_sheet))
+            if(!Advance_It(it, 9, cue_sheet))
             {
 
               //
@@ -944,35 +1268,188 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
             //
-            ustring* album_artist_ustr = new ustring;
+            Glib::ustring* artist_ustr = nullptr;
 
             // 
-            vector<ustring*>* album_artists_vector = new vector<ustring*>;
+            vector<Glib::ustring*>* artists = nullptr;
 
 
 
-            //
-            while((*it != '\"') && (*it != '\r') && (*it != '\n')
-                    && (it != cue_sheet -> raw() . end()))
+            // 
+            if(*it == '\"')
             {
 
               //
-              album_artist_ustr -> push_back(char(*it));
+              if(!Advance_It(it, 1, cue_sheet))
+              {
+
+                //
+                break;
+
+              }
 
 
 
-              //
-              it++;
+              // 
+              artist_ustr = new Glib::ustring;
+
+              // 
+              artists = new vector<Glib::ustring*>;
+
+
+
+              // 
+              while((*it != '\"') && (*it != '\r') && (*it != '\n')
+                    && (it != cue_sheet -> raw() . end()))
+              {
+
+                // 
+                if((*it) == ',')
+                {
+
+                  // 
+                  artists -> push_back(artist_ustr);
+
+
+
+                  // 
+                  artist_ustr = new Glib::ustring;
+
+
+
+                  //
+                  if(!Advance_It(it, 2, cue_sheet))
+                  {
+
+                    //
+                    break;
+
+                  }
+
+                }
+
+                //
+                else
+                {
+
+                  //
+                  artist_ustr -> push_back(char(*it));
+
+
+
+                  //
+                  if(!Advance_It(it, 1, cue_sheet))
+                  {
+
+                    //
+                    break;
+
+                  }
+
+                }
+
+              }
+
+
+
+              // 
+              artists -> push_back(artist_ustr);
+
+
+
+              // 
+              new_track -> set_artists(artists);
+
+            } 
+
+            // 
+            else if(*it == '\n')
+            {
+
+              // 
+              continue;
 
             }
 
+            // 
+            else if(*it == '\r')
+            {
 
+              // 
+              continue;
+
+            }
 
             // 
-            album_artists_vector -> push_back(album_artist_ustr);
+            else
+            {
 
-            // 
-            new_track -> set_album_artists(album_artists_vector);
+              // 
+              artist_ustr = new Glib::ustring;
+
+              // 
+              artists = new vector<Glib::ustring*>;
+
+
+
+              // 
+              while((*it != '\r') && (*it != '\n')
+                    && (it != cue_sheet -> raw() . end()))
+              {
+
+                // 
+                if((*it) == ',')
+                {
+
+                  // 
+                  artists -> push_back(artist_ustr);
+
+
+
+                  // 
+                  artist_ustr = new Glib::ustring;
+
+
+
+                  //
+                  if(!Advance_It(it, 2, cue_sheet))
+                  {
+
+                    //
+                    break;
+
+                  }
+
+                }
+
+                //
+                else
+                {
+
+                  //
+                  artist_ustr -> push_back(char(*it));
+
+
+
+                  //
+                  if(!Advance_It(it, 1, cue_sheet))
+                  {
+
+                    //
+                    break;
+
+                  }
+
+                }
+
+              }
+
+
+
+              // 
+              artists -> push_back(artist_ustr);
+
+            }
 
           }
 
@@ -1159,21 +1636,180 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
             //
-            Glib::ustring * genre_ustr = new ustring;
-
-            //
-            Extract_Characters_Until_Line_Break(it, genre_ustr, cue_sheet);
+            Glib::ustring * genre_ustr = nullptr;
 
 
-
-            //
-            auto genres_vector = new vector<ustring*>;
 
             // 
-            genres_vector -> push_back(genre_ustr);
+            if(*it == '\"')
+            {
 
-            //
-            new_track -> set_genres(genres_vector);
+              //
+              if(!Advance_It(it, 1, cue_sheet))
+              {
+
+                //
+                break;
+
+              }
+
+
+
+              // 
+              genre_ustr = new Glib::ustring;
+
+              // 
+              genres = new vector<Glib::ustring*>;
+
+
+
+              // 
+              while((*it != '\"') && (*it != '\r') && (*it != '\n')
+                    && (it != cue_sheet -> raw() . end()))
+              {
+
+                // 
+                if((*it) == ',')
+                {
+
+                  // 
+                  genres -> push_back(genre_ustr);
+
+
+
+                  // 
+                  genre_ustr = new Glib::ustring;
+
+
+
+                  //
+                  if(!Advance_It(it, 2, cue_sheet))
+                  {
+
+                    //
+                    break;
+
+                  }
+
+                }
+
+                //
+                else
+                {
+
+                  //
+                  genre_ustr -> push_back(char(*it));
+
+
+
+                  //
+                  if(!Advance_It(it, 1, cue_sheet))
+                  {
+
+                    //
+                    break;
+
+                  }
+
+                }
+
+              }
+
+
+
+              // 
+              genres -> push_back(genre_ustr);
+
+            } 
+
+            // 
+            else if(*it == '\n')
+            {
+
+              // 
+              continue;
+
+            }
+
+            // 
+            else if(*it == '\r')
+            {
+
+              // 
+              continue;
+
+            }
+
+            // 
+            else
+            {
+
+              // 
+              genre_ustr = new Glib::ustring;
+
+              // 
+              genres = new vector<Glib::ustring*>;
+
+
+
+              // 
+              while((*it != '\r') && (*it != '\n')
+                    && (it != cue_sheet -> raw() . end()))
+              {
+
+                // 
+                if((*it) == ',')
+                {
+
+                  // 
+                  genres -> push_back(genre_ustr);
+
+
+
+                  // 
+                  genre_ustr = new Glib::ustring;
+
+
+
+                  //
+                  if(!Advance_It(it, 2, cue_sheet))
+                  {
+
+                    //
+                    break;
+
+                  }
+
+                }
+
+                //
+                else
+                {
+
+                  //
+                  genre_ustr -> push_back(char(*it));
+
+
+
+                  //
+                  if(!Advance_It(it, 1, cue_sheet))
+                  {
+
+                    //
+                    break;
+
+                  }
+
+                }
+
+              }
+
+
+
+              // 
+              genres -> push_back(genre_ustr);
+
+            } 
 
           }
 
@@ -1480,21 +2116,28 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
     (*cue_sheet_tracks)[i] -> set_type(type);
 
-    if(artists != nullptr)
+    if(album_artists != nullptr)
     {
 
-      auto artists_copy = new vector<Glib::ustring*>;
+      // 
+      auto album_artists_copy = new vector<Glib::ustring*>;
 
-      for(auto it : *artists)
+
+
+      // 
+      for(auto it : *album_artists)
       {
 
-        artists_copy -> push_back(new Glib::ustring(*it));
+        album_artists_copy -> push_back(new Glib::ustring(*it));
 
        }
 
-      (*cue_sheet_tracks)[i] -> set_artists(artists_copy);
 
-    } 
+
+      // 
+      (*cue_sheet_tracks)[i] -> set_album_artists(album_artists_copy);
+
+    }
 
     if(album != nullptr)
     {
@@ -1506,6 +2149,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
     if(genres != nullptr)
     {
 
+      // 
       auto genres_copy = new vector<Glib::ustring*>;
 
       for(auto it : *genres)
@@ -1611,10 +2255,10 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
   //
-  if(artists != nullptr)
+  if(album_artists != nullptr)
   {
 
-    cue_sheet_tracks -> back() -> set_artists(artists);
+    cue_sheet_tracks -> back() -> set_album_artists(album_artists);
 
   }
 

@@ -70,6 +70,8 @@
 //                 //
 //                 //
 
+#include <atomic>
+
 #include <list>
 
 

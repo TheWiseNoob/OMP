@@ -157,7 +157,7 @@ Metadata::Metadata(Base& base)
 
 // Inherited Class
 
-: Parts(base)
+: Parts(base, true)
 
 
 

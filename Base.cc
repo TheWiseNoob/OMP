@@ -307,7 +307,7 @@ Base::Base(int argc, char *argv[])
     {
 
       // 
-      config() . add_default(column_name_config_str, "Albums Artist(s)");
+      config() . add_default(column_name_config_str, "Album Artist(s)");
 
     }
 

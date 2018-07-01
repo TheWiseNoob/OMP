@@ -188,6 +188,9 @@ class Playlists : public GUIElementList<Playlist>
 
     bool Add_Playlist(const char* name);
 
+    void Append_Rows(Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
+                     bool append_to_database = true);
+
     void Append_Rows(std::vector<Track*>* tracks,
                      Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
                      bool append_to_database = true,
@@ -276,6 +279,10 @@ class Playlists : public GUIElementList<Playlist>
 
     std::atomic<bool>& changing_track();
 
+    std::atomic<int>& current_track_int();
+
+    std::atomic<bool>& database_extraction_complete();
+
     bool disable_on_selection_changed();
 
     bool drag_occurring();
@@ -283,6 +290,10 @@ class Playlists : public GUIElementList<Playlist>
     bool inserting();
 
     std::atomic<bool>& new_selection();
+
+    std::atomic<bool>& rebuild_databases();
+
+    std::atomic<bool>& rebuilding_databases();
 
     bool skip_button_press();
 
@@ -479,7 +490,15 @@ class Playlists : public GUIElementList<Playlist>
 
     std::atomic<bool> changing_track_;
 
+    std::atomic<bool> database_extraction_complete_;
+
     bool disable_on_selection_changed_;
+
+  public:
+
+    bool drag_occurred_;
+
+  private:
 
     bool drag_occurring_;
 
@@ -487,11 +506,11 @@ class Playlists : public GUIElementList<Playlist>
 
     std::atomic<bool> new_selection_;
 
+    std::atomic<bool> rebuild_databases_;
+
+    std::atomic<bool> rebuilding_databases_;
+
     bool skip_button_press_;
-
-  public:
-
-    bool drag_occurred_;
 
 
 
@@ -518,6 +537,31 @@ class Playlists : public GUIElementList<Playlist>
   private:
 
     Playlist* selected_playlist_;
+
+
+
+
+
+  //             //
+  // Status Bars //////////////////////////////////////////////////////////////
+  //             //
+
+  private:
+
+    // 
+    std::atomic<int> current_track_int_;
+
+    // 
+    int extracting_playlists_;
+
+    // 
+    std::string playlist_status_str_;
+
+    // 
+    std::mutex playlist_status_str_mutex_;
+
+    // 
+    std::atomic <int> total_tracks_int_;
 
 
 

@@ -87,6 +87,10 @@
 //                 //
 //                 //
 
+#include <glibmm/main.h>
+
+#include <gtkmm/progressbar.h>
+
 #include <iostream>
 
 #include <memory>
@@ -99,7 +103,28 @@
 
 #include <sys/types.h>
 
+#include <thread>
+
 #include <unistd.h>
+
+
+
+
+
+//        //
+//        //
+//        //
+// Macros /////////////////////////////////////////////////////////////////////
+//        //
+//        //
+//        //
+
+namespace sigc
+{ 
+
+  SIGC_FUNCTORS_DEDUCE_RESULT_TYPE_WITH_DECLTYPE
+
+}
 
 
 
@@ -241,9 +266,14 @@ PlaylistsDatabase::~PlaylistsDatabase()
 //                  //
 
 bool PlaylistsDatabase::Add_Tracks
-  (const char* playlist_name,
-   Glib::RefPtr<PlaylistTreeStore> playlist_treestore)
+  (Glib::RefPtr<PlaylistTreeStore> playlist_treestore)
 {
+
+  // 
+  string playlist_name_str = playlist_treestore -> get_name();
+
+  // 
+  const char* playlist_name = playlist_name_str . c_str();
 
   // 
   char* error_message = 0;
@@ -262,6 +292,11 @@ bool PlaylistsDatabase::Add_Tracks
   // 
   for(auto it : playlist_treestore -> children())
   {
+
+    // 
+    playlists() . current_track_int() += 1;
+
+
 
     // 
     Gtk::TreeRow temp_treerow = it;
@@ -382,7 +417,6 @@ bool PlaylistsDatabase::Add_Tracks
     return true;
 
   }
-
 
 
 
@@ -840,7 +874,7 @@ bool PlaylistsDatabase::Delete_Rows
 }
 
 bool PlaylistsDatabase::Extract_Tracks
-  (const char* playlist_name, vector<Track*>* tracks, vector<int>* ids)
+  (Glib::RefPtr<PlaylistTreeStore> playlist_treestore)
 { 
 
   // 
@@ -858,7 +892,7 @@ bool PlaylistsDatabase::Extract_Tracks
   sql = "SELECT * from '";
 
   // 
-  sql += Convert(playlist_name);
+  sql += Convert(playlist_treestore -> get_name());
 
   // 
   sql+= "';";
@@ -866,19 +900,9 @@ bool PlaylistsDatabase::Extract_Tracks
 
 
   // 
-  pair<vector<Track*>*, vector<int>*> tracks_and_ids;
-
-  // 
-  tracks_and_ids . first = tracks;
-
-  // 
-  tracks_and_ids . second = ids;
-
-
-
-  // 
   result_code = sqlite3_exec(database_, sql . c_str(), Extract_Tracks_Callback,
-                             &tracks_and_ids, &error_message);
+                             &(playlist_treestore -> add_track_queue()),
+                             &error_message);
 
 
 
@@ -918,19 +942,16 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 {
 
   // 
-  auto tracks_and_ids_ptr
-    = (pair<vector<Track*>*, vector<int>*>*)(tracks_and_ids_vptr);
-
-  // 
-  auto tracks_ptr = tracks_and_ids_ptr -> first;
-
-  // 
-  auto ids_ptr = tracks_and_ids_ptr -> second;
+  auto ids_and_tracks_ptr
+    = (list<pair<int, shared_ptr<Track>>>*)(tracks_and_ids_vptr);
 
 
 
   // 
-  Track* new_track_ptr = new Track;
+  shared_ptr<Track> new_track_sptr(new Track);
+
+  // 
+  int id = -1;
 
 
 
@@ -943,7 +964,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      ids_ptr -> push_back(atoi(argv[i]));
+      id = atoi(argv[i]);
 
     }
 
@@ -952,7 +973,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_album(argv[i]);
+      new_track_sptr -> set_album(argv[i]);
 
     } 
 
@@ -966,7 +987,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 
 
       // 
-      new_track_ptr -> set_album_artists(new_track_ptr -> Multiple_Values_Tag_Decode(album_artists_ustr));
+      new_track_sptr -> set_album_artists(new_track_sptr -> Multiple_Values_Tag_Decode(album_artists_ustr));
 
     }
 
@@ -980,7 +1001,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 
 
       // 
-      new_track_ptr -> set_artists(new_track_ptr -> Multiple_Values_Tag_Decode(artists_ustr));
+      new_track_sptr -> set_artists(new_track_sptr -> Multiple_Values_Tag_Decode(artists_ustr));
 
     } 
 
@@ -989,7 +1010,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_bit_depth(atoi(argv[i]));
+      new_track_sptr -> set_bit_depth(atoi(argv[i]));
 
     }
 
@@ -998,7 +1019,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_bit_rate(atoi(argv[i]));
+      new_track_sptr -> set_bit_rate(atoi(argv[i]));
 
     }
 
@@ -1007,7 +1028,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_channels(atoi(argv[i]));
+      new_track_sptr -> set_channels(atoi(argv[i]));
 
     }
 
@@ -1016,7 +1037,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_codec(argv[i]);
+      new_track_sptr -> set_codec(argv[i]);
 
     }
 
@@ -1025,7 +1046,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_date(atoi(argv[i]));
+      new_track_sptr -> set_date(atoi(argv[i]));
 
     }
 
@@ -1034,7 +1055,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_duration(atol(argv[i]));
+      new_track_sptr -> set_duration(atol(argv[i]));
 
     }
 
@@ -1043,7 +1064,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_end(atol(argv[i]));
+      new_track_sptr -> set_end(atol(argv[i]));
 
     }
 
@@ -1052,7 +1073,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_filename(argv[i]);
+      new_track_sptr -> set_filename(argv[i]);
 
     }
 
@@ -1066,7 +1087,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 
 
       // 
-      new_track_ptr -> set_genres(new_track_ptr -> Multiple_Values_Tag_Decode(genres_ustr));
+      new_track_sptr -> set_genres(new_track_sptr -> Multiple_Values_Tag_Decode(genres_ustr));
 
     }
 
@@ -1075,7 +1096,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_length(argv[i]);
+      new_track_sptr -> set_length(argv[i]);
 
     }
 
@@ -1084,7 +1105,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_mime(argv[i]);
+      new_track_sptr -> set_mime(argv[i]);
 
     }
 
@@ -1093,7 +1114,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_pregap_start(atol(argv[i]));
+      new_track_sptr -> set_pregap_start(atol(argv[i]));
 
     }
 
@@ -1102,7 +1123,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_replaygain_album_gain(atof(argv[i]));
+      new_track_sptr -> set_replaygain_album_gain(atof(argv[i]));
 
     }
 
@@ -1111,7 +1132,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_replaygain_album_peak(atof(argv[i]));
+      new_track_sptr -> set_replaygain_album_peak(atof(argv[i]));
 
     }
 
@@ -1120,7 +1141,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_replaygain_track_gain(atof(argv[i]));
+      new_track_sptr -> set_replaygain_track_gain(atof(argv[i]));
 
     }
 
@@ -1129,7 +1150,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_replaygain_track_peak(atof(argv[i]));
+      new_track_sptr -> set_replaygain_track_peak(atof(argv[i]));
 
     }
 
@@ -1138,7 +1159,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_sample_rate(atoi(argv[i]));
+      new_track_sptr -> set_sample_rate(atoi(argv[i]));
 
     }
 
@@ -1147,7 +1168,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     { 
 
       // 
-      new_track_ptr -> set_start(atol(argv[i]));
+      new_track_sptr -> set_start(atol(argv[i]));
 
     }
 
@@ -1156,7 +1177,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_title(argv[i]);
+      new_track_sptr -> set_title(argv[i]);
 
     }
 
@@ -1170,7 +1191,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 
 
       // 
-      new_track_ptr -> set_type(type);
+      new_track_sptr -> set_type(type);
 
     }
 
@@ -1179,7 +1200,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_track_number(atoi(argv[i]));
+      new_track_sptr -> set_track_number(atoi(argv[i]));
 
     }
 
@@ -1188,7 +1209,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     {
 
       // 
-      new_track_ptr -> set_track_total(atoi(argv[i]));
+      new_track_sptr -> set_track_total(atoi(argv[i]));
 
     }
 
@@ -1197,7 +1218,7 @@ int PlaylistsDatabase::Extract_Tracks_Callback
 
 
   // 
-  tracks_ptr -> push_back(new_track_ptr);
+  ids_and_tracks_ptr -> push_back(make_pair(id, new_track_sptr));
 
 
 
@@ -1342,6 +1363,695 @@ int PlaylistsDatabase::Playlist_Names_Callback
 
 
   return 0;
+
+}
+
+bool PlaylistsDatabase::Rebuild_Database()
+{
+
+  // 
+  if((!(mutex_ . try_lock())) && (!(playlists() . rebuilding_databases())))
+  {
+
+    // 
+    return false;
+
+  }
+
+
+
+  // 
+  playlists() . rebuilding_databases() = true;
+
+  // 
+  playlists() . rebuild_databases() = false;
+
+
+
+  // 
+  static auto playlist_treestores_it
+    = playlists() . playlist_treestores() . begin();
+
+  // 
+  playlist_treestores_it
+    = playlists() . playlist_treestores() . begin();
+
+  // 
+  while(true)
+  {
+
+    // 
+    if(playlist_treestores_it == (playlists() . playlist_treestores() . end()))
+    {
+
+      // 
+      mutex_ . unlock();
+
+
+
+      // 
+      playlists() . rebuilding_databases() = false;
+
+
+
+      // 
+      return false;
+
+    }
+
+    // 
+    if((*playlist_treestores_it) -> rebuild_database())
+    {
+
+      // 
+      break;
+
+    }
+
+
+
+    // 
+    playlist_treestores_it++;
+
+  }
+
+
+
+  // 
+  static auto playlist_row_it
+    = (*playlist_treestores_it) -> children() . begin();
+
+  // 
+  playlist_row_it = (*playlist_treestores_it) -> children() . begin();
+
+  // 
+  static string sql;
+
+  // 
+  static string sql_part;
+
+  sql_part = "";
+
+  // 
+  static int id;
+
+  // 
+  id = 0;
+
+  // 
+  static int track_total_int;
+
+  // 
+  track_total_int = 0;
+
+  // 
+  static int current_track_int;
+
+  // 
+  current_track_int = 0;
+
+  // 
+  static atomic<bool> database_saving_thread_active = false;
+
+  // 
+  database_saving_thread_active = false;
+
+  // 
+  static atomic<bool> database_saving_thread_finished = false;
+
+  // 
+  database_saving_thread_finished = false;
+
+  // 
+  static double database_saving_pos = 0.00;
+
+  // 
+  database_saving_pos = 0.00;
+
+  // 
+  static bool database_saving_inverted = false;
+
+  database_saving_inverted = false;
+
+  // 
+  static bool database_saving_decreasing = false;
+
+  database_saving_decreasing = false;
+
+
+
+  // 
+  string playlist_name_str = (*playlist_treestores_it) -> get_name();
+
+  // 
+  const char* playlist_name = playlist_name_str . c_str();
+
+  // 
+  Clear_Playlist(playlist_name);
+
+
+
+  // 
+  for(auto playlist_treestore : playlists() . playlist_treestores())
+  {
+
+    // 
+    if(playlist_treestore -> rebuild_database())
+    {
+
+      // 
+      track_total_int += playlist_treestore -> children() . size();
+
+      // 
+      playlist_treestore -> rebuild_scheduled() = true;
+
+      // 
+      playlist_treestore -> restart_changes() = false;
+
+      // 
+      playlist_treestore -> cancel_changes() = false;
+
+    }
+
+  }
+
+
+
+  // 
+  if(track_total_int < 1)
+  {
+
+    // 
+    return false;
+
+  }
+
+
+
+  // 
+  sigc::connection program_conn = Glib::signal_timeout() . connect
+  (
+
+    // 
+    [this]() -> bool
+    {
+
+      // 
+      if(database_saving_thread_active)
+      {
+
+        // 
+        if(database_saving_thread_finished)
+        {
+
+          // 
+          database_saving_thread_active = false;
+
+
+
+          // 
+          for(auto playlists_it : playlists()())
+          {
+
+            // 
+            playlists_it -> progress_bar()
+              . set_text("No Playlist Modifications Occurring");
+
+            // 
+            playlists_it -> progress_bar() . set_fraction(1);
+
+            // 
+            playlists_it -> progress_bar() . set_inverted(false);
+
+          }
+
+
+
+          // 
+          mutex_ . unlock();
+
+
+
+          // 
+          playlists() . rebuilding_databases() = false;
+
+
+
+          // 
+          if(playlists() . rebuild_databases())
+          {
+
+            // 
+            Rebuild_Database();
+
+          }
+
+
+
+          // 
+          return false;
+
+        }
+
+        // 
+        else
+        {
+
+          // 
+          if(database_saving_pos >= double(1.000))
+          {
+
+            //
+            database_saving_inverted = !database_saving_inverted;
+
+
+
+            // 
+            database_saving_decreasing = true;
+
+
+
+            // 
+            database_saving_pos = 1;
+
+          }
+
+          else if(database_saving_pos <= double(0.000))
+          {
+
+            // 
+            database_saving_decreasing = false;
+
+
+
+            // 
+            database_saving_pos = 0;
+
+          }
+
+
+
+          // 
+          for(auto playlists_it : playlists()())
+          {
+
+            // 
+            playlists_it -> progress_bar()
+              . set_inverted(database_saving_inverted);
+
+
+            // 
+            playlists_it -> progress_bar()
+              . set_text("Saving To Playlists Database");
+
+
+
+            // 
+            playlists_it -> progress_bar() . set_fraction(database_saving_pos);
+
+          }
+
+
+
+          // 
+          if(database_saving_decreasing)
+          {
+
+            // 
+            database_saving_pos -= 0.005;
+
+          }
+
+          // 
+          else
+          {
+
+            // 
+            database_saving_pos += 0.005;
+
+          }
+
+
+
+          // 
+          return true;
+
+        }
+
+      }
+
+
+      //  
+      if(base() . quitting())
+      {
+
+        // 
+        mutex_ . unlock();
+
+
+
+        // 
+        playlists() . rebuilding_databases() = false;
+
+
+
+        // 
+        return false;
+
+      }
+
+
+
+      // 
+      if((*playlist_treestores_it) -> pause_changes())
+      {
+
+        // 
+        return true;
+
+      }
+
+      // 
+      if((*playlist_treestores_it) -> restart_changes())
+      {
+
+        // 
+        (*playlist_treestores_it) -> restart_changes() = false;
+
+        // 
+        playlist_row_it = (*playlist_treestores_it) -> children() . begin();
+
+
+
+        // 
+        current_track_int -= id;
+
+
+
+        // 
+        sql_part = "";
+
+        // 
+        id = 0;
+
+
+
+        // 
+        return true;
+
+      }
+
+
+
+      // 
+      if(!playlist_row_it)
+      {
+
+        // 
+        sql += sql_part;
+
+        // 
+        sql_part = "";
+
+
+
+        // 
+        (*playlist_treestores_it) -> rebuild_database() = false;
+
+
+
+        // 
+        playlist_treestores_it++;
+
+
+
+        // 
+        while(true)
+        {
+
+          // 
+          if(playlist_treestores_it
+               == playlists() . playlist_treestores() . end())
+          {
+
+            // 
+            database_saving_thread_active = true;
+
+            // 
+            database_saving_thread_finished = false;
+
+
+
+            // 
+            std::thread database_saving_thread
+            (
+    
+              [this]()
+              {
+
+                // 
+                char* error_message = 0;
+
+                // 
+                int result_code;
+
+
+
+                // 
+                result_code = sqlite3_exec(database_, sql . c_str(), 0,
+                                           0, &error_message);
+
+
+
+                //    
+                if(result_code != SQLITE_OK )
+                {
+
+                  stringstream debug_ss;
+
+                  debug_ss << "SQL error: " << error_message;
+
+                  debug(debug_ss . str() . c_str());
+
+
+
+                  // 
+                  sqlite3_free(error_message);
+
+                }
+
+                //
+                else
+                {
+
+                  // 
+                  sql_part = "";
+
+                  // 
+                  sql = "";
+
+                }
+
+
+
+                // 
+                database_saving_thread_finished = true;
+
+              }
+
+            );
+
+            // 
+            database_saving_thread . detach();
+
+
+
+            // 
+            return true;
+
+          }
+
+          else if(((*playlist_treestores_it) -> rebuild_database())
+                    && ((*playlist_treestores_it) -> rebuild_scheduled()))
+          {
+
+            // 
+            string playlist_name_str = (*playlist_treestores_it) -> get_name();
+
+            // 
+            const char* playlist_name = playlist_name_str . c_str();
+
+            // 
+            Clear_Playlist(playlist_name);
+
+
+
+            // 
+            id = 0;
+
+            // 
+            playlist_row_it = (*playlist_treestores_it) -> children() . begin();
+
+            // 
+            (*playlist_treestores_it) -> rebuild_scheduled() = false;
+
+
+
+
+            // 
+            return true;
+
+          }
+
+
+
+          // 
+          playlist_treestores_it++;
+
+        }
+
+      } 
+
+
+
+      // 
+      string playlist_name_str = (*playlist_treestores_it) -> get_name();
+
+      // 
+      const char* playlist_name = playlist_name_str . c_str();
+
+
+
+      // 
+      Gtk::TreeRow temp_treerow = *playlist_row_it;
+
+      // 
+      shared_ptr<Track> track_sptr
+        = temp_treerow[playlists() . playlist_column_record() . track_col];
+
+
+
+      // 
+      temp_treerow[playlists() . playlist_column_record() . id_] = id;
+
+
+
+      // 
+      Glib::ustring* artists_str_ptr
+        = Multiple_Values_Tag_Encode(track_sptr -> artists());
+
+      // 
+      Glib::ustring* album_artists_str_ptr
+        = Multiple_Values_Tag_Encode(track_sptr -> album_artists());
+
+      // 
+      Glib::ustring* genres_str_ptr
+        = Multiple_Values_Tag_Encode(track_sptr -> genres());
+
+
+
+      // 
+      sql_part += "INSERT INTO '";
+
+      // 
+      sql_part += Convert(playlist_name);
+
+      // 
+      sql_part += "' (ID, ALBUM, ALBUM_ARTIST, ARTIST, BIT_DEPTH, BIT_RATE, CHANNELS, CODEC, " \
+                  "DATE, DURATION, END, FILE_NAME, GENRE, LENGTH_CS, MIME, PREGAP_START," \
+                  "REPLAY_GAIN_ALBUM_GAIN, REPLAY_GAIN_ALBUM_PEAK, " \
+                  "REPLAY_GAIN_TRACK_GAIN, REPLAY_GAIN_TRACK_PEAK, " \
+                  "SAMPLE_RATE, START, TITLE, TRACK_NUMBER, TRACK_TOTAL, " \
+                  "TYPE) " \
+                  "VALUES (" + to_string(id) + ", '"
+                  + Convert(track_sptr -> album()) + "', '"
+                  + Convert(album_artists_str_ptr -> raw()) + "', '"
+                  + Convert(artists_str_ptr -> raw()) + "', "
+                  + to_string(track_sptr -> bit_depth()) + ", "
+                  + to_string(track_sptr -> bit_rate()) + ", "
+                  + to_string(track_sptr -> channels()) + ", '"
+                  + Convert(track_sptr -> codec()) + "', "
+                  + to_string(track_sptr -> date()) + ", "
+                  + to_string(track_sptr -> duration()) + ", "
+                  + to_string(track_sptr -> end()) + ", '"
+                  + Convert(track_sptr -> filename()) + "', '"
+                  + Convert(genres_str_ptr -> raw()) + "', '"
+                  + Convert(track_sptr -> length()) + "', '"
+                  + Convert(track_sptr -> mime()) + "', "
+                  + to_string(track_sptr -> pregap_start()) + ", "
+                  + to_string(track_sptr -> replaygain_album_gain()) + ", "
+                  + to_string(track_sptr -> replaygain_album_peak()) + ", "
+                  + to_string(track_sptr -> replaygain_track_gain()) + ", "
+                  + to_string(track_sptr -> replaygain_track_peak()) + ", "
+                  + to_string(track_sptr -> sample_rate()) + ", "
+                  + to_string(track_sptr -> start()) + ", '"
+                  + Convert(track_sptr -> title()) + "', "
+                  + to_string(track_sptr -> track_number()) + ", "
+                  + to_string(track_sptr -> track_total()) + ", "
+                  + to_string(int(track_sptr -> type())) + ");";
+
+
+
+      // 
+      delete artists_str_ptr;
+
+      // 
+      delete genres_str_ptr;
+
+
+
+      // 
+      id++;
+
+      // 
+      playlist_row_it++;
+
+      // 
+      current_track_int++;
+
+
+      
+      //
+      string playlist_status
+        = "Collecting Track Data For Database Rebuild: "
+        + to_string(current_track_int) + " / " + to_string(track_total_int);
+
+      // 
+      double completion_fraction
+        = current_track_int / double(track_total_int);
+
+
+
+      // 
+      for(auto playlists_it : playlists()())
+      {
+
+        // 
+        playlists_it -> progress_bar() . set_text(playlist_status);
+
+        // 
+        playlists_it -> progress_bar() . set_fraction(completion_fraction);
+
+      }
+
+
+
+      // 
+      return true;
+
+    },
+
+
+
+    // 
+    3, Glib::PRIORITY_HIGH_IDLE
+
+  );
+
+
+
+  // 
+  return false;
 
 }
 

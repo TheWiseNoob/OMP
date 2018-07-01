@@ -41,35 +41,120 @@
 
 
 
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//              //
+//              //
+// Class Header ///////////////////////////////////////////////////////////////
+//              //
+//              //
+
 #include "PlaylistTreeStore.h"
 
 
 
 
 
-#include "PlaylistColumnRecord.h"
-#include "Playlists.h"
+//                 //
+//                 //
+// Program Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
 #include "../../../Base.h"
 
+#include "PlaylistColumnRecord.h"
+
+#include "Playlists.h"
 
 
-#include <iostream>
+
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
 
 #include <gtkmm/treepath.h>
 
+#include <iostream>
+
+#include <memory>
 
 
 
 
-PlaylistTreeStore::PlaylistTreeStore(Base& base, const PlaylistColumnRecord& columns)
+
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
+
+using namespace std;
+
+
+
+
+
+//                 //
+//                 //
+//                 //
+// Class Functions ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+//                 //
+
+//             //
+//             //
+// Constructor ////////////////////////////////////////////////////////////////
+//             //
+//             //
+
+PlaylistTreeStore::PlaylistTreeStore
+  (Base& base, const PlaylistColumnRecord& columns)
+
+// Inhereted Class
+
 : Parts(base)
+
+
+
+// Flags
+
+, deleting_(false)
+
+, pause_changes_(false)
+
+, rebuild_database_(false)
+
+, rebuild_scheduled_(false)
+
+, rebuilding_database_(false)
+
+, restart_changes_(false)
+
 {
 
+  // 
   set_column_types(columns);
 
+  // 
   signal_rows_reordered()
     .connect(sigc::mem_fun(*this, 
                            &PlaylistTreeStore::On_Signal_Rows_Reordered));
+
+  // 
   signal_row_changed()
     .connect(sigc::mem_fun(*this, 
                            &PlaylistTreeStore::On_Signal_Row_Inserted));
@@ -79,6 +164,12 @@ PlaylistTreeStore::PlaylistTreeStore(Base& base, const PlaylistColumnRecord& col
 
 
 
+
+//            //
+//            //
+// Destructor /////////////////////////////////////////////////////////////////
+//            //
+//            //
 
 PlaylistTreeStore::~PlaylistTreeStore()
 {
@@ -91,6 +182,12 @@ PlaylistTreeStore::~PlaylistTreeStore()
 
 
 
+//                  //
+//                  //
+// Member Functions ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+
 Glib::RefPtr<PlaylistTreeStore>
   PlaylistTreeStore::create(Base& base, const PlaylistColumnRecord& columns)
 {
@@ -98,10 +195,6 @@ Glib::RefPtr<PlaylistTreeStore>
   return Glib::RefPtr<PlaylistTreeStore>(new PlaylistTreeStore(base, columns));
 
 }
-
-
-
-
 
 void PlaylistTreeStore::
   On_Signal_Rows_Reordered(const TreeModel::Path& path,
@@ -112,10 +205,6 @@ void PlaylistTreeStore::
 
 }
 
-
-
-
-
 void PlaylistTreeStore::
   On_Signal_Row_Inserted(const TreeModel::Path& path,
                          const TreeModel::iterator& iter)
@@ -124,35 +213,36 @@ void PlaylistTreeStore::
 
 }
 
-
-
-
 bool PlaylistTreeStore::row_drop_possible_vfunc
   (const Gtk::TreeModel::Path& dest,
    const Gtk::SelectionData& selection_data) const
 {
 
+  // 
   std::string path_string = dest.to_string();
 
 
-//  std::cout << "\n\n" << path_string << "\n\n";
 
-
-
+  // 
   if(!dest)
   {
 
-    std::cout << "\n\nDestination does not exist!\n\n";
-
-
+    // 
     return false;
 
   }
- 
- 
-//  std::cout << "\n\nReturning true!\n\n"; 
 
-  
+
+
+  // 
+  return true;
+
+}
+
+bool PlaylistTreeStore::drag_data_received_vfunc
+  (const Gtk::TreeModel::Path& dest,
+   const Gtk::SelectionData& selection_data)
+{
 
   return true;
 
@@ -162,11 +252,72 @@ bool PlaylistTreeStore::row_drop_possible_vfunc
 
 
 
-bool PlaylistTreeStore::drag_data_received_vfunc
-  (const Gtk::TreeModel::Path& dest,
-   const Gtk::SelectionData& selection_data)
+//         //
+//         //
+// Getters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+std::list<std::pair<int, shared_ptr<Track>>>&
+  PlaylistTreeStore::add_track_queue()
 {
 
-  return true;
+  return add_track_queue_;
+
+}
+
+std::atomic<bool>& PlaylistTreeStore::cancel_changes()
+{ 
+
+  return cancel_changes_;
+
+}
+
+std::atomic<bool>& PlaylistTreeStore::deleting()
+{
+
+  return deleting_;
+
+}
+
+std::mutex& PlaylistTreeStore::mutex()
+{
+
+  return mutex_;
+
+}
+
+std::atomic<bool>& PlaylistTreeStore::pause_changes()
+{
+
+  return pause_changes_;
+
+}
+
+std::atomic<bool>& PlaylistTreeStore::rebuild_database()
+{
+
+  return rebuild_database_;
+
+}
+
+std::atomic<bool>& PlaylistTreeStore::rebuild_scheduled()
+{
+
+  return rebuild_scheduled_;
+
+}
+
+std::atomic<bool>& PlaylistTreeStore::rebuilding_database()
+{
+
+  return rebuilding_database_;
+
+}
+
+std::atomic<bool>& PlaylistTreeStore::restart_changes()
+{
+
+  return restart_changes_;
 
 }

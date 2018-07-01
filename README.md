@@ -1,6 +1,6 @@
 ![Logo](/Images/OMP_Icon_128.png?raw=true)
 # OMP : Open Music Player
-#### Version: 0.0.12 : June 3rd, 2018
+#### Version: 0.0.13 : July 1st, 2018
 
 
 
@@ -26,7 +26,7 @@ prevalent music audio file types gaplessly and stores tracks in a database.
 
 ## Next OMP Release
 
-#### Version 0.0.13 : July 1st, 2018
+#### Version 0.0.14 : July 15st, 2018
 
 
 

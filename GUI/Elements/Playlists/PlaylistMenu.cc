@@ -171,7 +171,7 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
 {
 
-//           //
+//          //
 // Playlists ////////////////////////////////////////////////////////////////
 //           //
 
@@ -260,145 +260,145 @@ string playlist_treestore_name = playlist_name;
 
 
 
-// 
-for(auto playlist_treestores_it : playlists_ref . playlist_treestores())
-{ 
+  // 
+  for(auto playlist_treestores_it : playlists_ref . playlist_treestores())
+  {  
 
-// 
-Gtk::RadioMenuItem *playlist_refs_menu_radio_menu_item
-= Gtk::manage(new Gtk::RadioMenuItem
-		  (playlists_menu_radio_button_group()));
+    // 
+    Gtk::RadioMenuItem *playlist_refs_menu_radio_menu_item
+      = Gtk::manage(new Gtk::RadioMenuItem
+                          (playlists_menu_radio_button_group()));
 
-// 
-playlists_menu_radio_menu_items_
-. push_back(playlist_refs_menu_radio_menu_item);
+    // 
+    playlists_menu_radio_menu_items_
+      . push_back(playlist_refs_menu_radio_menu_item);
 
-// 
-playlist_refs_menu_radio_menu_item 
--> set_label(playlist_treestores_it -> get_name()); 
-
-
-
-// 
-if((playlist_treestores_it -> get_name()) == playlist_treestore_name)
-{
-
-// 
-playlist_refs_menu_radio_menu_item -> set_active(true);
-
-// 
-change_playlist_menu_item_
--> set_label("Playlist: " + playlist_treestores_it -> get_name()); 
-
-}
+    // 
+    playlist_refs_menu_radio_menu_item 
+      -> set_label(playlist_treestores_it -> get_name()); 
 
 
 
-// 
-playlists_menu_ -> append(*playlist_refs_menu_radio_menu_item); 
+    // 
+    if((playlist_treestores_it -> get_name()) == playlist_treestore_name)
+    { 
+
+      // 
+      playlist_refs_menu_radio_menu_item -> set_active(true);
+
+      // 
+      change_playlist_menu_item_
+        -> set_label("Playlist: " + playlist_treestores_it -> get_name()); 
+
+    }
 
 
 
-// 
-playlist_refs_menu_radio_menu_item -> signal_activate()
-. connect(sigc::mem_fun(playlist_ref, &Playlist::Change_Playlist));
+    // 
+    playlists_menu_ -> append(*playlist_refs_menu_radio_menu_item); 
 
 
 
-// 
-count++;
-
-}
-
-
-
-// 
-lock_check_menu_item_ -> signal_toggled()
-. connect(sigc::mem_fun(playlist_ref, &Playlist::Lock));
+    // 
+    playlist_refs_menu_radio_menu_item -> signal_activate()
+      . connect(sigc::mem_fun(playlist_ref, &Playlist::Change_Playlist));
 
 
 
+    // 
+    count++;
+
+  }
 
 
-/*
-//          //
-// Metadata /////////////////////////////////////////////////////////////////
-//          //
 
-// 
-append(*Gtk::manage(new Gtk::SeparatorMenuItem));
-
-// 
-append(*edit_menu_item_);
-*/
+  // 
+  lock_check_menu_item_ -> signal_toggled()
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Lock));
 
 
 
 
 
-//       //
-// Queue ////////////////////////////////////////////////////////////////////
-//       //
+  /* 
+  //          //
+  // Metadata /////////////////////////////////////////////////////////////////
+  //          //
 
-// 
-append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+  // 
+  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
-// 
-append(*queue_menu_item_);
-
-
-
-// 
-queue_menu_item_ -> signal_activate()
-. connect(sigc::mem_fun(playlist_ref, &Playlist::Queue_Rows));
+  // 
+  append(*edit_menu_item_);
+  */
 
 
 
 
 
-//         //
-// Editing //////////////////////////////////////////////////////////////////
-//         //
+  //       //
+  // Queue ////////////////////////////////////////////////////////////////////
+  //       //
 
-// 
-append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+  // 
+  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
 
-// 
-append(*cut_menu_item_);
-
-// 
-append(*copy_menu_item_);
-
-// 
-append(*delete_menu_item_);
-
-// 
-append(*paste_menu_item_);
+  // 
+  append(*queue_menu_item_);
 
 
 
-// 
-copy_menu_item_ -> signal_activate()
-. connect(sigc::mem_fun(playlist_ref, &Playlist::Copy_Selected_Rows));
-
-// 
-cut_menu_item_ -> signal_activate()
-. connect(sigc::mem_fun(playlist_ref, &Playlist::Cut_Selected_Rows));
-
-// 
-delete_menu_item_ -> signal_activate()
-. connect(sigc::mem_fun(playlist_ref, &Playlist::Delete_Selected_Rows));
-
-// 
-paste_menu_item_ -> signal_activate()
-. connect(sigc::mem_fun(playlist_ref, &Playlist::Paste_Clipboard_Rows));
+  // 
+  queue_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Queue_Rows));
 
 
 
 
 
-// 
-show_all_children();
+  //         //
+  // Editing //////////////////////////////////////////////////////////////////
+  //         //
+
+  // 
+  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
+  append(*cut_menu_item_);
+
+  // 
+  append(*copy_menu_item_);
+
+  // 
+  append(*delete_menu_item_);
+
+  // 
+  append(*paste_menu_item_);
+
+
+
+  // 
+  copy_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Copy_Selected_Rows));
+
+  // 
+  cut_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Cut_Selected_Rows));
+
+  // 
+  delete_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Delete_Selected_Rows));
+
+  // 
+  paste_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Paste_Clipboard_Rows));
+
+
+
+
+
+  // 
+  show_all_children();
 
 }
 

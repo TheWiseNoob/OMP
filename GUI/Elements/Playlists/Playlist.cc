@@ -127,6 +127,8 @@
 
 #include <gtkmm/radiomenuitem.h>
 
+#include <gtkmm/separator.h>
+
 #include <gtkmm/scrolledwindow.h>
 
 #include <gtkmm/treepath.h>
@@ -198,19 +200,9 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 // GUI Parts
 
-, filename_box_(Gtk::manage(new Gtk::Box))
-
-, filename_frame_(Gtk::manage(new Gtk::Frame))
-
-, filename_label_(Gtk::manage(new Gtk::Label))
-
 , playlist_box_(Gtk::manage(new Gtk::Box))
 
 , playlist_frame_(Gtk::manage(new Gtk::Frame))
-
-, playlist_overlay_(Gtk::manage(new Gtk::Overlay))
-
-, playlist_progress_bar_(Gtk::manage(new Gtk::ProgressBar))
 
 , playlist_scrolled_window_(Gtk::manage(new Gtk::ScrolledWindow))
 
@@ -232,6 +224,18 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 , y_click_(0)
 
+
+
+// Status Bar
+
+, progress_bar_(Gtk::manage(new Gtk::ProgressBar))
+
+, status_box_(Gtk::manage(new Gtk::Box))
+
+, status_frame_(Gtk::manage(new Gtk::Frame))
+
+, name_label_(Gtk::manage(new Gtk::Label("Poop")))
+
 {
 
   // Adds the new FileChooser object to the FileChoosers list.
@@ -246,62 +250,23 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
 
   // Puts the playlist_frame_ in the top of the GUIElement box().
-  box() . pack_start(*playlist_overlay_, Gtk::PACK_EXPAND_WIDGET);
-
-
-
-  // 
-  playlist_overlay_ -> add(*playlist_box_);
-
-  // 
-//  playlist_overlay_ -> add_overlay(*playlist_progress_bar_);
-
-
-
-  // 
-  playlist_progress_bar_ -> set_fraction(0.5);
-
-  // 
-  playlist_progress_bar_ -> set_halign(Gtk::ALIGN_CENTER);
-
-  // 
-  playlist_progress_bar_ -> set_valign(Gtk::ALIGN_CENTER);
-
-  //
-//  this -> set_sensitive(false);
+  box() . pack_start(*playlist_box_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
   // Sets the orientation of the playlist_box_ as vertical.
   playlist_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
 
-  // Puts the filename_frame_ in the bottom of the GUIElement box().
+  // Puts the status_frame_ in the bottom of the GUIElement box().
   playlist_box_ -> pack_start(*playlist_frame_, Gtk::PACK_EXPAND_WIDGET);
 
-  // Puts the filename_frame_ in the bottom of the GUIElement box().
-  playlist_box_ -> pack_end(*filename_frame_, Gtk::PACK_SHRINK);
+  // Puts the status_frame_ in the bottom of the GUIElement box().
+  playlist_box_ -> pack_end(*status_frame_, Gtk::PACK_SHRINK);
 
 
 
   // Adds a bottom margin to GUIElement box.
   box() . set_margin_bottom(5);
-
-
-
-  // Adds the filename_box_ to the filename_frame_.
-  filename_frame_ -> add(*filename_box_);
-
-  // Sets filename_frame_ to expand horizontally.
-  filename_frame_ -> set_hexpand(true);
-
-  // Adds filename_label_ as a center widget in filename_box_.
-  filename_box_ -> set_center_widget(*filename_label_);
-
-  // Sets the filename label to line wrap if not enough room is available.
-  filename_label_ -> set_line_wrap(true);
-
-  // Sets the max lines to wrap before abbreviating with an ellipsis.
-  filename_label_ -> set_lines(2);
 
 
 
@@ -624,7 +589,15 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
 
-    // Callback for when the header is clicked.
+    // 
+    columns_it -> get_button() -> add_events(Gdk::BUTTON_PRESS_MASK);
+
+    // Callback for right when the header is clicked
+    columns_it -> get_button() -> signal_pressed()
+      . connect(sigc::mem_fun(*this,
+                              &Playlist::On_Button_Press_Event_Column_Header));
+
+    // Callback for when after the header is clicked.
     columns_it -> signal_clicked()
                     . connect(sigc::mem_fun(*this, &Playlist::Header_Clicked));
 
@@ -665,7 +638,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
       // Sets the sort column for the column.
       columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . artist_col);
+                                                      . album_artist_col);
 
     }
 
@@ -797,8 +770,8 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // Assigns the TreeView's selection changed function.
-  playlist_treeselection_ -> signal_changed()
-    . connect(sigc::mem_fun(*this, &Playlist::On_Selection_Changed));
+  selection_conn_ = (playlist_treeselection_ -> signal_changed()
+    . connect(sigc::mem_fun(*this, &Playlist::On_Selection_Changed)));
 
 
 
@@ -852,6 +825,82 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   signal_motion_notify_event()
     . connect(sigc::mem_fun(*this, &Playlist::on_motion_notify_event), false);
 
+
+
+
+
+  //            //
+  // Status Bar ///////////////////////////////////////////////////////////////
+  //            //
+
+  // Adds the status_box_ to the status_frame_.
+  status_frame_ -> add(*status_box_);
+
+  // Sets status_frame_ to expand horizontally.
+  status_frame_ -> set_hexpand(true);
+
+
+
+  // 
+  status_box_ -> pack_start(*name_label_, Gtk::PACK_SHRINK);
+
+  // 
+  status_box_ -> pack_start(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
+
+  // 
+  status_box_ -> pack_start(*progress_bar_, Gtk::PACK_EXPAND_WIDGET);
+
+
+
+  // 
+  name_label_ -> set_text(playlist_treestore_name);
+
+
+
+  // 
+  name_label_ -> set_margin_left(3);
+
+  // 
+  name_label_ -> set_margin_right(3);
+
+
+
+  // 
+  progress_bar_ -> set_fraction(0.0);
+
+
+
+  // 
+  progress_bar_ -> set_show_text(true);
+
+
+
+  // 
+  progress_bar_ -> set_valign(Gtk::ALIGN_CENTER);
+
+
+
+  // 
+  progress_bar_ -> set_hexpand(true);
+
+
+
+  // 
+  progress_bar_ -> set_margin_top(3);
+
+  // 
+  progress_bar_ -> set_margin_bottom(3);
+
+  // 
+  progress_bar_ -> set_margin_left(3);
+
+  // 
+  progress_bar_ -> set_margin_right(3);
+
+
+
+  // 
+  progress_bar_ -> set_pulse_step(0.01);
 
 
 
@@ -1440,7 +1489,7 @@ bool Playlist::on_drag_drop
 
     // 
     playlists() . database()
-      . Add_Tracks(playlist_name_str . c_str(), playlists() . selected_playlist_treestore());
+      . Add_Tracks(playlists() . selected_playlist_treestore());
 
   }
 
@@ -1451,7 +1500,7 @@ bool Playlist::on_drag_drop
   playlists() . database() . Clear_Playlist(playlist_name_str . c_str());
 
   // 
-  playlists() . database() . Add_Tracks(playlist_name_str . c_str(), playlist_treestore_);
+  playlists() . database() . Add_Tracks(playlist_treestore_);
 
 
 
@@ -1876,11 +1925,6 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
 
 
-          // Sets the filename label to blank. 
-          filename_label_ -> set_text("");
-
-
-
           // Passes the button event to the normal signal handler.
           return Gtk::TreeView::on_button_press_event(event);
 
@@ -1924,11 +1968,6 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
         // Updates the tagview to nothing selected.
         gui() . Update_Tagview("Selected", playback() . empty_track());
-
-
-
-        // Sets the filename label to blank. 
-        filename_label_ -> set_text("");
 
 
 
@@ -2048,6 +2087,11 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
 }
 
+void Playlist::On_Button_Press_Event_Column_Header()
+{
+
+}
+
 bool Playlist::on_button_release_event(GdkEventButton* event)
 {
 
@@ -2094,7 +2138,7 @@ bool Playlist::on_button_release_event(GdkEventButton* event)
 }
 
 bool Playlist::on_motion_notify_event(GdkEventMotion* motion_event)
-{ 
+{
 
   // 
   bool minimum_dist = false;
@@ -2329,6 +2373,12 @@ void Playlist::Change_Playlist()
   auto playlist_menu_radio_menu_items_it
     = menu_ -> playlists_menu_radio_menu_items() . begin();
 
+
+
+  debug("Before loop");
+
+
+
   // Iterates through the the playlist treestores.
   for(auto playlist_treestores_it
         = playlists() . playlist_treestores() . begin();
@@ -2340,14 +2390,28 @@ void Playlist::Change_Playlist()
     if((*playlist_menu_radio_menu_items_it) -> get_active())
     {
 
+      // 
+      string playlist_name = (*playlist_treestores_it) -> get_name();
+
+
+
       // Sets the current playlist to the label of change_playlist_menu_item.
       menu_ -> change_playlist_menu_item()
-        . set_label("Playlist: " + (*playlist_treestores_it) -> get_name());
+        . set_label("Playlist: " + playlist_name);
+
+
+
+      // 
+      name_label_ -> set_text(playlist_name);
 
 
 
       // Sets the playlist treestore as the current one of the iteration.
       set_playlist_treestore((*playlist_treestores_it));
+
+
+
+      debug("After set_playlist_treestore");
 
 
 
@@ -2363,8 +2427,7 @@ void Playlist::Change_Playlist()
 
 
       // 
-      config()
-        . set(setting_name . c_str(), (*playlist_treestores_it) -> get_name());
+      config() . set(setting_name . c_str(), playlist_name);
 
 
 
@@ -2399,30 +2462,38 @@ void Playlist::Header_Clicked()
   if((playlist_treestore_ == playlists() . selected_playlist_treestore())
        ||
      (playlist_treestore_ == playlists() . playing_playlist_treestore()))
-   {
-  
+  {
+
     // Resets the track queue.
     playback() . Reset_Track_Queue();
 
-  }
+  } 
 
 
 
   // 
-  if((playlist_treestore_ -> children() . size()) > 0)
-   {
+  playlists() . rebuild_databases() = true;
+
+  // 
+  playlist_treestore_ -> rebuild_database() = true;
+
+  // 
+  playlist_treestore_ -> restart_changes() = true;
+
+
+
+  // 
+  if(playlists() . database_extraction_complete())
+  {
 
     // 
-    string playlist_name_str = playlist_treestore_ -> get_name();
+    if(!(playlists() . rebuilding_databases()))
+    {
 
+      // 
+      playlists() . database() . Rebuild_Database();
 
-
-    // 
-    playlists() . database() . Clear_Playlist(playlist_name_str . c_str());
-
-    // 
-    playlists() . database()
-      . Add_Tracks(playlist_name_str . c_str(), playlist_treestore_);
+    }
 
   }
 
@@ -2502,7 +2573,7 @@ void Playlist::On_Selection_Changed()
   }
 
   // True if the playlist is empty or no rows are selected.
-  else if(((playlist_treestore() -> children().size()) == 0)
+  else if(((playlist_treestore() -> children() . size()) == 0)
             ||
           ((playlist_treeselection_ -> count_selected_rows()) == 0))
   {
@@ -2530,11 +2601,6 @@ void Playlist::On_Selection_Changed()
 
     // Sets the selected time label to 0.
     Add_Selected_Tracks_Times();
-
-
-
-    // Sets the filename label as empty.
-    filename_label_ -> set_text("");
 
 
 
@@ -2584,6 +2650,8 @@ void Playlist::On_Selection_Changed()
                                          selected_rows[0]);
 
 
+
+  cout << "\n\nSET SELECTED ROW REF\n\n";
 
   // Sets selected_row_ref to the new selected row. 
   playlists() . set_selected_row_ref(selected_row_ref);
@@ -2667,11 +2735,6 @@ void Playlist::On_Selection_Changed()
 
 
 
-  // Sets the filename label to the newly selected track.
-  filename_label_ -> set_label(new_created_track . filename());
-
-
-
   // Loads cover art for selected track.
   string filename_string = new_created_track.filename();
 
@@ -2691,9 +2754,31 @@ void Playlist::On_Selection_Changed()
 void Playlist::Copy_Selected_Rows()
 {
 
-  // True if the playlist's treestore is empty.
-  if((playlist_treestore() -> children().size()) <= 0)
+  // 
+  static mutex copying_mutex;
+
+
+
+  // 
+  if((!(playlist_treestore_ -> deleting()))
+       && (!(copying_mutex . try_lock())))
   {
+
+    // 
+    return;
+
+  }
+
+
+
+  // True if the playlist's treestore is empty.
+  if((playlist_treestore() -> children() . size()) <= 0)
+  {
+
+    // 
+    copying_mutex . unlock();
+
+
 
     // Exits the function.
     return;
@@ -2705,9 +2790,6 @@ void Playlist::Copy_Selected_Rows()
   // Sets the clipboard event flag as true.
   clipboard_event_ = true;
 
-  // Clears the clipboard.
-  playlists() . clipboard_tracks() . clear();
-
 
 
   // Creates of vector of the paths of all of the selected rows.
@@ -2717,13 +2799,26 @@ void Playlist::Copy_Selected_Rows()
 
 
   // True if there are no selected rows.
-  if((selected_rows.size()) < 1)
+  if((selected_rows . size()) < 1)
   {
+
+    // 
+    copying_mutex . unlock();
+
+    // 
+    clipboard_event_ = false;
+
+
 
     // Exits the function.
     return;
 
   } 
+
+
+
+  // Clears the clipboard.
+  playlists() . clipboard_tracks() . clear();
 
 
 
@@ -2769,7 +2864,7 @@ void Playlist::Copy_Selected_Rows()
   // Sets the clipboard event flag to false.
   clipboard_event_ = false;
 
-} 
+}  
 
 void Playlist::Cut_Selected_Rows()
 {
@@ -2799,10 +2894,26 @@ void Playlist::Delete_Selected_Rows()
 {
 
   // 
-  deleting_ = true;
+  static mutex deleting_rows_mutex;
+
+  // 
+  if((!(deleting_rows_mutex . try_lock()))
+       && (!(playlist_treestore_ -> deleting())))
+  {
+
+    // 
+    return;
+  
+  }
+
+  // 
+  playlist_treestore_ -> deleting() = true;
 
   //
   clipboard_event_ = true;
+
+  // 
+  selection_conn_ . block(true);
 
 
 
@@ -2822,7 +2933,7 @@ void Playlist::Delete_Selected_Rows()
 
   // 
   bool restart_playback_if_queue_not_empty = false;
-  
+
 
 
   //
@@ -2939,11 +3050,6 @@ void Playlist::Delete_Selected_Rows()
 
 
 
-  // Sets the filename label as empty.
-  filename_label_ -> set_text("");
-
-
-
   // 
   if(restart_playback_if_queue_not_empty)
   {
@@ -2982,6 +3088,9 @@ void Playlist::Delete_Selected_Rows()
 
 
 
+  // 
+  selection_conn_ . block(false);
+
   //
   clipboard_event_ = false;
 
@@ -2992,6 +3101,13 @@ void Playlist::Delete_Selected_Rows()
 
 void Playlist::Paste_Clipboard_Rows()
 {
+
+  // 
+  static mutex pasting_mutex;
+
+  // 
+  
+
 
   // 
   if((playlists() . clipboard_tracks() . empty()))
@@ -3013,6 +3129,11 @@ void Playlist::Paste_Clipboard_Rows()
 
   // 
   clipboard_event_ = true;
+
+
+
+  // 
+  selection_conn_ . block(true);
 
 
 
@@ -3039,24 +3160,53 @@ void Playlist::Paste_Clipboard_Rows()
 
 
   // 
-  playback() . Reset_Track_Queue();
+  if((playlist_treestore_ == playlists() . selected_playlist_treestore())
+       ||
+     (playlist_treestore_ == playlists() . playing_playlist_treestore()))
+  {
+
+    // Resets the track queue.
+    playback() . Reset_Track_Queue();
+
+  } 
 
 
 
   // 
-  string playlist_name = playlist_treestore_ -> get_name();
+  playlists() . rebuild_databases() = true;
 
   // 
-  playlists() . database() . Clear_Playlist(playlist_name . c_str());
+  playlist_treestore_ -> rebuild_database() = true;
 
   // 
-  playlists() . database()
-    . Add_Tracks(playlist_name . c_str(), playlist_treestore_);
+  playlist_treestore_ -> restart_changes() = true;
+
+
+
+  // 
+  if(playlists() . database_extraction_complete())
+  {
+
+    // 
+    if(!(playlists() . rebuilding_databases()))
+    {
+
+      // 
+      playlists() . database() . Rebuild_Database();
+
+    }
+
+  }
 
 
 
   // 
   Add_Selected_Tracks_Times();
+
+
+
+  // 
+  selection_conn_ . block(false);
 
 
 
@@ -3102,8 +3252,7 @@ void Playlist::Queue_Rows()
 
 
   // 
-  playlists() . database()
-    . Add_Tracks("Queue", playlists() . queue_playlist_treestore());
+  playlists() . database() . Add_Tracks(playlists() . queue_playlist_treestore());
 
 
 
@@ -3159,13 +3308,6 @@ Glib::ustring Playlist::active_playlist_name()
 {
 
   return playlist_treestore() -> get_name();
-
-}
-
-Gtk::Label& Playlist::filename_label()
-{
-
-  return *filename_label_;
 
 }
 
@@ -3239,6 +3381,28 @@ const char* Playlist::playlist_view_name()
 
 
 
+//            //
+// Status Bar /////////////////////////////////////////////////////////////////
+//            //
+
+Gtk::Label& Playlist::name_label()
+{  
+
+  return *name_label_;
+
+}
+
+Gtk::ProgressBar& Playlist::progress_bar()
+{ 
+
+  return *progress_bar_;
+
+}
+
+
+
+
+
 //         //
 //         //
 // Setters //////////////////////////////////////////////////////////////////
@@ -3250,9 +3414,15 @@ void Playlist::set_playlist_treestore
 {
 
   // 
-  debug("Treestore set");
+  debug("Before treestore set");
 
 
+
+  // 
+  new_treestore -> pause_changes() = true;
+
+  // 
+  new_treestore -> mutex() . lock();
 
 
   // 
@@ -3260,5 +3430,18 @@ void Playlist::set_playlist_treestore
 
   // 
   playlist_treestore_ = new_treestore;
+
+
+
+  // 
+  new_treestore -> mutex() . unlock();
+
+  // 
+  new_treestore -> pause_changes() = false;
+
+
+
+  // 
+  debug("After treestore set");
 
 }

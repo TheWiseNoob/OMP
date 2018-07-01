@@ -2841,7 +2841,7 @@ void Playback::Next_Track()
   {
 
     // Seeks the playing track to the end.
-    Update_Track_Position(duration_);
+    Update_Track_Position(duration_ - 1);
 
   }
 
@@ -2928,24 +2928,8 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
 
 
-  // Ensures the music is not playing while trying to play again. If it is, the
-  // music is first stopped before continuing the play music again.
-  if(Playing())
-  { 
-
-    debug("Already playing!");
-
-
-
-    // Stops the music.
-    Stop();
-
-  }
-
-
-
   // Returns the function if a playback state change is already occurring. 
-  if(playback_state_change_ == true)
+  if(playback_state_change_)
   {
 
     debug("Returning because playback state change is occurring!");
@@ -3007,7 +2991,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
         // Assigns the selected row ref to playing_row_ref.
         playing_row_ref = playlists() . selected_row_ref();
 
-       }
+      }
 
 
 
@@ -3029,6 +3013,61 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
       }
 
+      // 
+      else if(Playing())
+      {
+
+        //
+        playback_state_change_ = false;
+
+
+
+        // 
+        Stop();
+
+
+
+        // 
+        playback_state_change_ = true;
+
+      }
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      if(Playing())
+      {
+
+        // 
+        cout << "\n\nALREADY PLAYING\n\n";
+
+
+
+        // 
+        playback_state_change_ = false;
+
+
+
+        // 
+        cout << "\n\nStopping\n\n";
+
+
+
+        // 
+        Stop();
+
+
+
+        // 
+        playback_state_change_ = true;
+
+
+      }
+ 
     }
 
 

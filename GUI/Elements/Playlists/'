@@ -107,8 +107,6 @@
 //                 //
 //                 //
 
-#include <gtk/gtk.h>
-
 #include <glibmm/main.h>
 
 #include <gtkmm/combobox.h>
@@ -191,10 +189,6 @@ Playlists::Playlists(Base& base_ref)
 
 , new_selection_(false)
 
-, rebuild_databases_(false)
-
-, rebuilding_databases_(false)
-
 , skip_button_press_(false)
 
 
@@ -210,8 +204,6 @@ Playlists::Playlists(Base& base_ref)
 // Status Bars
 
 , current_track_int_(0)
-
-, extracting_playlists_(0)
 
 , playlist_status_str_("")
 
@@ -234,17 +226,6 @@ Playlists::Playlists(Base& base_ref)
 {
 
   debug("Beginning of Playlists constructor!");
-
-
-
-  // 
-  playlist_status_str_mutex_ . lock();
-
-  // 
-  playlist_status_str_ = "Adding Extracted Tracks To Playlists";
-
-  // 
-  playlist_status_str_mutex_ . unlock();
 
 
 
@@ -295,6 +276,14 @@ Playlists::Playlists(Base& base_ref)
 
 
 
+  // 
+  vector<vector<Track*>*>* playlist_tracks = new vector<vector<Track*>*>;
+
+  // 
+  vector<vector<int>>* playlist_row_ids = new vector<vector<int>>;
+
+
+
   // Queue Playlist Creation
   {
 
@@ -309,23 +298,26 @@ Playlists::Playlists(Base& base_ref)
 
 
     // 
-    queue_playlist_treestore_ = playlist_treestores_ . back();
+    queue_playlist_treestore_ = playlist_treestores_ . front();
+
+
+
+    //
+    playlist_tracks -> push_back(new vector<Track*>);
+
+    // 
+    playlist_row_ids -> push_back(vector<int>());
 
 
 
     // 
-    database() . Extract_Tracks(queue_playlist_treestore_);
+    database() . Extract_Tracks("Queue", playlist_tracks -> back(),
+                                &(playlist_row_ids -> back()));
 
 
 
     // 
-    total_tracks_int_ 
-      += (playlist_treestores_ . back() -> add_track_queue() . size());
-
-
-
-    // 
-    extracting_playlists_++;
+    total_tracks_int_ += playlist_tracks -> back() -> size();
 
   }
 
@@ -349,19 +341,22 @@ Playlists::Playlists(Base& base_ref)
 
 
 
-    // 
-    database() . Extract_Tracks(library_playlist_treestore_);
-
-
+    //
+    playlist_tracks -> push_back(new vector<Track*>);
 
     // 
-    total_tracks_int_ 
-      += (playlist_treestores_ . back() -> add_track_queue() . size());
+    playlist_row_ids -> push_back(vector<int>());
 
 
 
     // 
-    extracting_playlists_++;
+    database() . Extract_Tracks("Library", playlist_tracks -> back(),
+                                &(playlist_row_ids -> back()));
+
+
+
+    // 
+    total_tracks_int_ += playlist_tracks -> back() -> size();
 
   }
 
@@ -369,13 +364,12 @@ Playlists::Playlists(Base& base_ref)
 
   // 
   for(auto it : playlist_names)
-   {
+  {
 
     // 
     if((it == "Queue") || (it == "Library"))
     {
 
-      // 
       continue;
 
     }
@@ -392,32 +386,159 @@ Playlists::Playlists(Base& base_ref)
 
 
 
-    // 
-    database() . Extract_Tracks(playlist_treestores_ . back());
-
-
+    //
+    playlist_tracks -> push_back(new vector<Track*>);
 
     // 
-    total_tracks_int_ 
-      += (playlist_treestores_ . back() -> add_track_queue() . size());
+    playlist_row_ids -> push_back(vector<int>());
 
 
 
     // 
-    extracting_playlists_++;
+    database() . Extract_Tracks(it . c_str(),
+                                playlist_tracks -> back(),
+                                &(playlist_row_ids -> back()));
+
+
+
+    // 
+    total_tracks_int_ += playlist_tracks -> back() -> size();
 
   }
 
 
 
   // 
-  for(auto playlist_treestores_it : playlist_treestores())
+  sigc::slot<bool> status_slot 
+    = sigc::bind(sigc::mem_fun(*this, &Playlists::Status_Automation), 0);
+
+  // This is where we connect the slot to the Glib::signal_timeout()
+  sigc::connection seekbar_connection 
+    = Glib::signal_timeout() . connect(status_slot, 20, Glib::PRIORITY_HIGH);
+
+
+
+  // 
+  auto playlist_treestores_it = playlist_treestores_ . begin();
+
+  // 
+  playlist_treestores_it++;
+
+  // 
+  selected_playlist_treestore_ = *playlist_treestores_it;
+
+
+
+  // 
+  thread playlist_loading([&, playlist_names, 
+                           playlist_tracks, playlist_row_ids]()
   {
 
     // 
-    Append_Rows(playlist_treestores_it);
+    auto playlist_treestores_it = playlist_treestores_ . begin();
 
-  }
+    //
+    auto playlist_tracks_it = playlist_tracks -> begin();
+
+    // 
+    auto playlist_row_ids_it = playlist_row_ids -> begin();
+
+
+
+    // Queue Playlist Extraction
+    Append_Rows(*playlist_tracks_it, queue_playlist_treestore_,
+                false, &(*playlist_row_ids_it));
+
+
+
+    // 
+    playlist_treestores_it++;
+
+    //
+    playlist_tracks_it++;
+
+    // 
+    playlist_row_ids_it++;
+
+
+
+    // 
+    Append_Rows(*playlist_tracks_it, library_playlist_treestore_,
+                false, &(*playlist_row_ids_it));
+
+
+
+    // 
+    playlist_treestores_it++;
+
+    //
+    playlist_tracks_it++;
+
+    // 
+    playlist_row_ids_it++;
+
+
+
+    // 
+    while(playlist_treestores_it != playlist_treestores_ . end())
+    { 
+
+      // 
+      if(base() . quitting())
+      {
+
+        // 
+        break;
+
+      }
+
+
+
+      // 
+      string playlist_name = (*playlist_treestores_it) -> get_name();
+
+
+      cout << "\n\nPlaylist name: " << playlist_name << "\n\n";
+
+
+
+      // 
+      if((playlist_name == "Queue") || (playlist_name == "Library"))
+      {
+
+        // 
+        continue;
+
+      }
+
+
+
+      // 
+      Append_Rows(*playlist_tracks_it, *playlist_treestores_it,
+                  false, &(*playlist_row_ids_it));
+
+
+
+      // 
+      playlist_treestores_it++;
+
+      //
+      playlist_tracks_it++;
+
+      // 
+      playlist_row_ids_it++;
+
+    }
+
+
+
+    // 
+    database_extraction_complete_ = true;
+
+  });
+
+  // 
+  playlist_loading . detach();
 
 }
 
@@ -617,167 +738,12 @@ bool Playlists::Add_Playlist(const char* name)
 }
 
 void Playlists::Append_Rows
-  (Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
-   bool append_to_database)
+  (vector<Track*>* tracks, Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
+   bool append_to_database, vector<int>* ids)
 {
 
   // 
-  //  set_inserting(true);
-
-
-
-  // 
-  sigc::connection program_conn = Glib::signal_timeout() . connect
-  (
-
-    // 
-    [this, playlist_treestore]() -> bool
-    { 
-
-      // 
-      if((playlist_treestore -> add_track_queue() . empty()))
-      {
-
-        // 
-        extracting_playlists_--;
-
-
-
-        // 
-        if(extracting_playlists_ <= 0)
-        {
-
-          // 
-          for(auto playlists_it : playlists()())
-          {
-
-            // 
-            playlists_it -> progress_bar()
-              . set_text("No Playlists Modifications Occurring");
-
-            // 
-            playlists_it -> progress_bar() . set_fraction(1);
-
-          }
-
-
-
-          // 
-          database_extraction_complete_ = true;
-
-
-
-          if(rebuild_databases_)
-          {
-
-            // 
-            database() . Rebuild_Database();
-
-          }
-
-        }
-
-
-
-        // 
-        playback() . Reset_Track_Queue();
-
-
-
-        // 
-        return false;
-
-      }
-
-      //  
-      if(base() . quitting())
-      {
-
-        // 
-        return false;
-
-      }
-
-
-
-      // 
-      Gtk::TreeRow row = *(playlist_treestore -> append());
-
-
-
-      // 
-      shared_ptr<Track> new_track_sptr
-        = playlist_treestore -> add_track_queue() . front() . second;
-
-      // 
-      int id = playlist_treestore -> add_track_queue() . front() . first;
-
-      // 
-      playlist_treestore -> add_track_queue() . pop_front();
-
-
-
-      // 
-      Fill_Row(row, new_track_sptr);
-
-
-
-      // 
-      row[playlist_column_record() . id_] = id;
-
-
-
-      // 
-      current_track_int_++;
-
-
-
-      //
-      string playlist_status
-        = "Adding Extracted Tracks To Playlists: "
-        + to_string(current_track_int_) + " / " + to_string(total_tracks_int_);
-
-      // 
-      double completion_fraction
-        = current_track_int_ / double(total_tracks_int_);
-
-
-
-      // 
-      for(auto playlists_it : playlists()())
-      {
-
-        // 
-        playlists_it -> progress_bar() . set_text(playlist_status);
-
-        // 
-        playlists_it -> progress_bar() . set_fraction(completion_fraction);
-
-      }
-
-
-
-      // 
-      return true;
-
-    },
-
-
-
-    // 
-    3, Glib::PRIORITY_HIGH_IDLE
-
-  );
-
-} 
-
-void Playlists::Append_Rows
-  (vector<Track*>* tracks, Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
-   bool append_to_database, vector<int>* ids)
- {
-
-  // 
-  set_inserting(true);
+//  set_inserting(true);
 
 
 
@@ -798,6 +764,42 @@ void Playlists::Append_Rows
   // 
   for(auto it : *tracks)
   { 
+
+    // 
+    if(playlist_treestore -> pause_updates_)
+    {
+
+      // 
+      while(playlist_treestore -> pause_updates_);
+
+
+
+      //    
+      playlist_treestore -> mutex() . lock();
+
+
+
+      // Sets the treestore to be unsorted.
+      playlist_treestore
+        -> set_sort_column(Gtk::TreeSortable::DEFAULT_UNSORTED_COLUMN_ID, 
+                           Gtk::SORT_DESCENDING);
+
+    }
+
+
+
+    //  
+    if(base() . quitting())
+    {
+
+      // 
+      break;
+
+    }
+
+
+
+
 
     // 
     Gtk::TreeRow row = *(playlist_treestore -> append());
@@ -823,6 +825,16 @@ void Playlists::Append_Rows
 
     }
 
+
+
+    //    
+    playlist_treestore -> mutex_ . unlock();
+
+
+
+    // 
+    current_track_int_++;
+
   }
 
 
@@ -845,15 +857,14 @@ void Playlists::Append_Rows
   {
 
     // 
-    string playlist_name_str = playlist_treestore -> get_name();
-
-    // 
-    database() . Clear_Playlist(playlist_name_str . c_str());
+    database() . Clear_Playlist(playlist_treestore -> get_name() . c_str());
 
 
 
     // 
-    database() . Add_Tracks(playlist_treestore);
+    database()
+      . Add_Tracks(playlist_treestore -> get_name() . c_str(),
+                   playlist_treestore);
 
   }
 
@@ -1918,6 +1929,78 @@ void Playlists::Select_Row(Gtk::TreeRowReference desired_row_ref,
 
 }
 
+bool Playlists::Status_Automation(int timeout_int)
+{
+
+  // 
+  if(base() . quitting())
+  {
+
+    // 
+    return false;
+
+  }
+
+  // 
+  else if(current_track_int_ == total_tracks_int_)
+  {
+
+    //
+    for(auto playlists_it : (*this)())
+    {
+
+      // 
+      playlists_it -> progress_bar() . set_fraction(1);
+
+
+
+      //
+      playlists_it -> progress_bar()
+        . set_text("No Playlist Modifications Occuring");
+
+    }
+
+
+
+    // 
+    return false;
+
+  }
+
+
+
+
+  // 
+  double fraction = current_track_int_ / double(total_tracks_int_);
+
+  // 
+  string progress_bar_str
+    = "Adding Extracted Tracks To Playlists: " 
+        + to_string(current_track_int_) + " / " + to_string(total_tracks_int_);
+
+
+
+  //
+  for(auto playlists_it : (*this)())
+  {
+
+    // 
+    playlists_it -> progress_bar() . set_fraction(fraction);
+
+
+
+    // 
+    playlists_it -> progress_bar() . set_text(progress_bar_str);
+
+  }
+
+
+
+  // 
+  return true;
+
+}
+
 void Playlists::Unselect_Row(Gtk::TreeRowReference desired_row_ref)
 {
 
@@ -2036,20 +2119,6 @@ std::atomic<bool>& Playlists::changing_track()
 
 }
 
-std::atomic<int>& Playlists::current_track_int()
-{
-
-  return current_track_int_;
-
-}
-
-std::atomic<bool>& Playlists::database_extraction_complete()
-{
-
-  return database_extraction_complete_;
-
-}
-
 bool Playlists::disable_on_selection_changed()
 {
 
@@ -2075,20 +2144,6 @@ std::atomic<bool>& Playlists::new_selection()
 { 
 
   return new_selection_;
-
-}
-
-std::atomic<bool>& Playlists::rebuild_databases()
-{
-
-  return rebuild_databases_;
-
-}
-
-std::atomic<bool>& Playlists::rebuilding_databases()
-{ 
-
-  return rebuilding_databases_;
 
 }
 

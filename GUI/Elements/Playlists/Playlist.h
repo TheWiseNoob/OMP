@@ -237,6 +237,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     virtual bool on_button_press_event(GdkEventButton *event) override final;
 
+    void On_Button_Press_Event_Column_Header();
+
     virtual bool on_button_release_event(GdkEventButton* event) override final;
 
     virtual bool on_motion_notify_event
@@ -314,8 +316,6 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     Glib::ustring active_playlist_name();
 
-    Gtk::Label& filename_label();
-
     PlaylistMenu& menu();
 
     PlaylistColumnRecord& playlist_column_record();
@@ -328,6 +328,20 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
       playlist_treestore_it();
 
     const char* playlist_view_name();
+
+
+
+
+
+  //            //
+  // Status Bar ///////////////////////////////////////////////////////////////
+  //            //
+
+  public:
+
+    Gtk::Label& name_label();
+
+    Gtk::ProgressBar& progress_bar();
 
 
 
@@ -360,6 +374,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   private:
 
     const char* playlist_view_name_;
+
+    sigc::connection selection_conn_;
 
 
 
@@ -394,15 +410,6 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   private:
 
     //
-    Gtk::Box* filename_box_;
-
-    //
-    Gtk::Frame* filename_frame_;
-
-    //
-    Gtk::Label* filename_label_;
-
-    //
     PlaylistMenu* menu_;
 
     // 
@@ -410,12 +417,6 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     //
     Gtk::Frame* playlist_frame_;
-
-    // 
-    Gtk::Overlay* playlist_overlay_;
-
-    // 
-    Gtk::ProgressBar* playlist_progress_bar_;
 
     //
     Gtk::ScrolledWindow* playlist_scrolled_window_;
@@ -456,6 +457,28 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     //
     int y_click_;
+
+
+
+
+
+  //            //
+  // Status Bar ///////////////////////////////////////////////////////////////
+  //            //
+
+  private:
+
+    // 
+    Gtk::ProgressBar* progress_bar_;
+
+    //
+    Gtk::Box* status_box_;
+
+    //
+    Gtk::Frame* status_frame_;
+
+    // 
+    Gtk::Label* name_label_;
 
 };
 

@@ -648,10 +648,12 @@ std::vector<Glib::ustring*>* Track::Multiple_Values_Tag_Decode
       // 
       auto temp_tags_char_it = tags_char_it;
 
-
-
-
       // 
+      temp_tags_char_it++;
+
+
+
+      // True if a semicolon was escaped.
       if((*temp_tags_char_it) == ';')
       {
 

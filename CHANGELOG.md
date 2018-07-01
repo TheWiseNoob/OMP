@@ -3,6 +3,25 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.13] - July 1st, 2018
+
+### Added
+- Improvements to make OMP more usable with larger playlists/
+- Playlist status bar.
+- Playlist name in the playlist status bar.
+
+### Changed
+- Track filename is no longer shown at the bottom of the playlist.
+
+### Fixed
+- Clicking play a second time on the playing track now restarts the playing or
+  plays a new track if it is not the playing row.
+- Fixed values in the cue sheet with quotes causing parsing issues.
+- Tags with multiple values, like artist, album artists, and genres, were not
+  being read properly.
+
+
+
 ## [0.0.12] - June 3rd, 2018
 
 ### Added

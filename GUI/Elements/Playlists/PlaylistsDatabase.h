@@ -84,6 +84,8 @@
 
 #include <glibmm/refptr.h>
 
+#include <mutex>
+
 #include <string>
 
 #include <vector>
@@ -190,8 +192,7 @@ class PlaylistsDatabase : public Parts
   //                  //
   //                  //
 
-  bool Add_Tracks(const char* playlist_name, 
-                  Glib::RefPtr<PlaylistTreeStore> playlist_treestore);
+  bool Add_Tracks(Glib::RefPtr<PlaylistTreeStore> playlist_treestore);
 
   bool Add_Column
     (const char* playlist_name, const char* column_name, const char* type);
@@ -210,8 +211,7 @@ class PlaylistsDatabase : public Parts
 
   bool Drop_Table(const char* playlist_name);
 
-  bool Extract_Tracks(const char* playlist_name, std::vector<Track*>* tracks,
-                      std::vector<int>* ids);
+  bool Extract_Tracks(Glib::RefPtr<PlaylistTreeStore> playlist_treestore);
 
   static int Extract_Tracks_Callback
     (void* tracks_and_ids_vptr, int argc, char **argv, char **column_name);
@@ -222,6 +222,8 @@ class PlaylistsDatabase : public Parts
 
   static int Playlist_Names_Callback
     (void* names, int argc, char **argv, char **azColName);
+
+  bool Rebuild_Database();
 
   bool Rename_Playlist
     (const char* playlist_name, const char* new_playlist_name);
@@ -247,6 +249,8 @@ class PlaylistsDatabase : public Parts
   //                  //
 
   sqlite3* database_;
+
+  std::mutex mutex_;
 
 };
 

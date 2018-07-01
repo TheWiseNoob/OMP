@@ -41,6 +41,14 @@
 
 
 
+//                    //
+//                    //
+//                    //
+// Header Guard Start /////////////////////////////////////////////////////////
+//                    //
+//                    //
+//                    //
+
 #ifndef PLAYLIST_TREESTORE_H
 #define PLAYLIST_TREESTORE_H
 
@@ -48,60 +56,207 @@
 
 
 
-#include <gtkmm/treestore.h>
+//         //
+//         //
+//         //
+// Headers ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+//         //
+
+//                   //
+//                   //
+// Inherited Headers //////////////////////////////////////////////////////////
+//                   //
+//                   //
+
 #include "../../../Parts.h"
 
+#include <gtkmm/treestore.h>
 
 
 
+
+
+//                 //
+//                 //
+// Outside Headers ////////////////////////////////////////////////////////////
+//                 //
+//                 //
+
+#include <atomic>
+
+#include <mutex>
+
+
+
+
+
+//                      //
+//                      //
+//                      //
+// Forward Declarations ///////////////////////////////////////////////////////
+//                      //
+//                      //
+//                      //
 
 class PlaylistColumnRecord;
 
+class Track;
 
 
 
+
+
+//                   //
+//                   //
+//                   //
+// Class Declaration //////////////////////////////////////////////////////////
+//                   //
+//                   //
+//                   //
 
 class PlaylistTreeStore : public Gtk::TreeStore, public Parts
 {
+
+  //             //
+  //             //
+  // Constructor //////////////////////////////////////////////////////////////
+  //             //
+  //             //
 
   protected:
 
     PlaylistTreeStore(Base& base, 
                       const PlaylistColumnRecord& columns);
 
+
+
+
+
+  //            //
+  //            //
+  // Destructor ///////////////////////////////////////////////////////////////
+  //            //
+  //            //
+
+  protected:
+
     ~PlaylistTreeStore();
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   public:
 
     static Glib::RefPtr<PlaylistTreeStore> 
       create(Base& base, const PlaylistColumnRecord& columns);
 
+    void On_Signal_Row_Inserted(const TreeModel::Path& path,
+                                const TreeModel::iterator& iter);
+
     void On_Signal_Rows_Reordered(const TreeModel::Path& path,
                                   const TreeModel::iterator& iter,
                                   int* new_order);
 
-    void On_Signal_Row_Inserted(const TreeModel::Path& path,
-                                const TreeModel::iterator& iter);
-
   protected:
 
-//    virtual bool drag_data_get_vfunc(const Gtk::TreeModel::Path& dest,
-//                                         const Gtk::SelectionData& selection_data) const;
+    virtual bool row_drop_possible_vfunc
+      (const Gtk::TreeModel::Path& dest,
+       const Gtk::SelectionData& selection_data) const;
 
-    virtual bool row_drop_possible_vfunc(const Gtk::TreeModel::Path& dest,
-                                         const Gtk::SelectionData& selection_data) const;
+    virtual bool drag_data_received_vfunc
+      (const Gtk::TreeModel::Path& dest,
+       const Gtk::SelectionData& selection_data);
 
-    virtual bool drag_data_received_vfunc(const Gtk::TreeModel::Path& dest,
-                                          const Gtk::SelectionData& selection_data);
+
+
+
+
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
+    std::list<std::pair<int, std::shared_ptr<Track>>>& add_track_queue();
+
+    std::atomic<bool>& cancel_changes();
+
+    std::atomic<bool>& deleting();
+
+    std::mutex& mutex();
+
+    std::atomic<bool>& pause_changes();
+
+    std::atomic<bool>& rebuild_database();
+
+    std::atomic<bool>& rebuild_scheduled();
+
+    std::atomic<bool>& rebuilding_database();
+
+    std::atomic<bool>& restart_changes();
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Variables /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
 
   private:
 
+    // 
+    std::list<std::pair<int, std::shared_ptr<Track>>> add_track_queue_;
 
+    // 
+    std::atomic<bool> cancel_changes_;
+
+    // 
+    std::atomic<bool> deleting_;
+
+    // 
+    std::mutex mutex_;
+
+    // 
+    std::atomic<bool> pause_changes_;
+
+    // 
+    std::atomic<bool> rebuild_database_;
+
+    // 
+    std::atomic<bool> rebuild_scheduled_;
+
+    // 
+    std::atomic<bool> rebuilding_database_;
+
+    // 
+    std::atomic<bool> restart_changes_;
 
 };
 
 
 
 
+
+//                  //
+//                  //
+//                  //
+// Header Guard End ///////////////////////////////////////////////////////////
+//                  //
+//                  //
+//                  //
 
 #endif

@@ -765,6 +765,11 @@ void PlaylistComboBox::Playlist_Combo_Box_Entry_Changed()
 
 
       // 
+      playlists_it -> name_label() . set_text(new_name_ustr);
+
+
+
+      // 
       string setting_name = "gui.playlist.view.";
 
       // 
