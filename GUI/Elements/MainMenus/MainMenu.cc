@@ -1815,10 +1815,7 @@ void MainMenu::Hide_Duplicates()
   {
 
     // 
-    main_menus()() . back() -> box() . hide();
-
-    // 
-    playlist_comboboxes()() . back() -> box() . hide();
+    gui() . duplicates_box() . hide();
 
   }
 
@@ -1826,10 +1823,7 @@ void MainMenu::Hide_Duplicates()
   {
 
     // 
-    main_menus()() . back() -> box() . show();
-
-    // 
-    playlist_comboboxes()() . back() -> box() . show();
+    gui() . duplicates_box() . show();
 
   }
 

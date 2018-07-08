@@ -440,6 +440,8 @@ class GUI : public Parts
     //////////////////////////////////////////////////////////////////////// */
     bool& disable_menubar_functions_flag();
 
+    Gtk::Box& duplicates_box();
+
     /* ////////////////////////////////////////////////////////////////////////
     //
     // Purpose: 
@@ -730,6 +732,8 @@ class GUI : public Parts
   private:
 
     bool fullscreen_;
+
+    Gtk::Box* duplicates_box_;
 
     Gtk::Box* left_main_content_paned_box_;
 

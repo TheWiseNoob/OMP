@@ -228,13 +228,15 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 // Status Bar
 
+, name_label_(Gtk::manage(new Gtk::Label("")))
+
 , progress_bar_(Gtk::manage(new Gtk::ProgressBar))
+
+, row_count_label_(Gtk::manage(new Gtk::Label("0")))
 
 , status_box_(Gtk::manage(new Gtk::Box))
 
 , status_frame_(Gtk::manage(new Gtk::Frame))
-
-, name_label_(Gtk::manage(new Gtk::Label("Poop")))
 
 {
 
@@ -850,6 +852,12 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   // 
   status_box_ -> pack_start(*progress_bar_, Gtk::PACK_EXPAND_WIDGET);
 
+  // 
+  status_box_ -> pack_start(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
+
+  // 
+//  status_box_ -> pack_start(*row_count_label_, Gtk::PACK_SHRINK);
+
 
 
   // 
@@ -862,6 +870,14 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
   // 
   name_label_ -> set_margin_right(3);
+
+
+
+  // 
+  row_count_label_ -> set_margin_left(3);
+
+  // 
+  row_count_label_ -> set_margin_right(3);
 
 
 
@@ -3396,6 +3412,13 @@ Gtk::ProgressBar& Playlist::progress_bar()
 { 
 
   return *progress_bar_;
+
+}
+
+Gtk::Label& Playlist::row_count_label()
+{   
+
+  return *row_count_label_;
 
 }
 

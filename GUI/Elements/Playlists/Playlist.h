@@ -343,6 +343,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     Gtk::ProgressBar& progress_bar();
 
+    Gtk::Label& row_count_label();
+
 
 
 
@@ -469,16 +471,19 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   private:
 
     // 
+    Gtk::Label* name_label_;
+
+    // 
     Gtk::ProgressBar* progress_bar_;
 
+    // 
+    Gtk::Label* row_count_label_;
+ 
     //
     Gtk::Box* status_box_;
 
     //
     Gtk::Frame* status_frame_;
-
-    // 
-    Gtk::Label* name_label_;
 
 };
 

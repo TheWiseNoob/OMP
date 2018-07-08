@@ -605,10 +605,7 @@ void GUIPanel::On_Hide_Duplicates_Check_Button_Toggled_Signal()
   {
 
     // 
-    gui() . main_menus()() . back() -> box() . hide();
-
-    // 
-    playlist_comboboxes()() . back() -> box() . hide();
+    gui() . duplicates_box() . hide(); 
 
   }
 
@@ -616,10 +613,7 @@ void GUIPanel::On_Hide_Duplicates_Check_Button_Toggled_Signal()
   {
 
     // 
-    gui() . main_menus()() . back() -> box() . show();
-
-    // 
-    playlist_comboboxes()() . back() -> box() . show();
+    gui() . duplicates_box() . show(); 
 
   }
 

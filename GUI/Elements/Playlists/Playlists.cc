@@ -753,6 +753,18 @@ void Playlists::Append_Rows
         // 
         playlists_it -> progress_bar() . set_fraction(completion_fraction);
 
+
+
+        // 
+        if(playlist_treestore == (playlists_it -> playlist_treestore()))
+        {
+
+          // 
+          playlists_it -> row_count_label()
+            . set_text(to_string(playlist_treestore -> children() . size()));
+
+        }
+
       }
 
 

@@ -249,6 +249,8 @@ GUI::GUI(Base& base_ref)
 
 // Unorganized GUI Parts
 
+, duplicates_box_(Gtk::manage(new Gtk::Box))
+
 , header_bar_(Gtk::manage(new Gtk::HeaderBar))
 
 , left_main_content_paned_box_(Gtk::manage(new Gtk::Box))
@@ -498,9 +500,6 @@ GUI::GUI(Base& base_ref)
   MainMenu* header_bar_menubar
     = new MainMenu(base_ref, *main_menus_);
 
-  // Puts the first menubars in the menubars_ list.
-  (*main_menus_)() . push_back(header_bar_menubar);
-
   // Adds the menubar to the header.
   header_bar_ -> pack_start(header_bar_menubar -> box());
 
@@ -736,11 +735,8 @@ GUI::GUI(Base& base_ref)
 
   // Main Content MainMenu Creation ////////////////////////////////////////////
 
-  // 
-  Gtk::Box* duplicates_box = Gtk::manage(new Gtk::Box);
-
   // Adds a MainMenu to the left pane in Main Content.
-  left_main_content_paned_box_ -> pack_end(*duplicates_box, Gtk::PACK_SHRINK);
+  left_main_content_paned_box_ -> pack_end(*duplicates_box_, Gtk::PACK_SHRINK);
 
 
 
@@ -748,11 +744,10 @@ GUI::GUI(Base& base_ref)
   MainMenu* main_content_menubar
     = new MainMenu(base_ref, *main_menus_);
 
-  // Puts the first menubars in the menubars_ list.
-  (*main_menus_)() . push_back(main_content_menubar);
+
 
   // Adds a MainMenu to the left pane in Main Content.
-  duplicates_box
+  duplicates_box_
     -> pack_start(main_content_menubar -> box(), Gtk::PACK_SHRINK);
 
 
@@ -760,7 +755,7 @@ GUI::GUI(Base& base_ref)
   // Main Content Playlist ComboBox Creation //////////////////////////////////
 
   // Adds a MainMenu to the left pane in Main Content.
-  duplicates_box
+  duplicates_box_
     -> pack_start(*Gtk::manage(new Gtk::Separator), false, false, 10);
 
 
@@ -770,7 +765,7 @@ GUI::GUI(Base& base_ref)
     = new PlaylistComboBox(base_ref, *playlist_comboboxes_);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  duplicates_box -> pack_end(duplicates_playlist_combobox_ptr -> box(), 
+  duplicates_box_ -> pack_end(duplicates_playlist_combobox_ptr -> box(), 
                              true, true, 0);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
@@ -962,7 +957,7 @@ GUI::GUI(Base& base_ref)
   //                       //
 
   // Displays the main window and all of its child objects.
-  main_window() -> window().show_all_children();
+  main_window() -> window() . show_all_children();
 
 
 
@@ -971,10 +966,7 @@ GUI::GUI(Base& base_ref)
   {
 
     // 
-    (*main_menus_)() . back() -> box() . hide();
-
-    // 
-    playlist_comboboxes()() . back() -> box() . hide();
+    duplicates_box_ -> hide();
 
   }
 
@@ -983,10 +975,7 @@ GUI::GUI(Base& base_ref)
   {
 
     // 
-    (*main_menus_)() . back() -> box() . show();
-
-    // 
-    playlist_comboboxes()() . back() -> box() . show();
+    duplicates_box_ -> show();
 
   }
 
@@ -1485,6 +1474,13 @@ void GUI::Update_Tagview(const char* tag_frame_label_name, Track& new_track)
 //                //
 // Normal Getters /////////////////////////////////////////////////////////////
 //                //
+
+Gtk::Box& GUI::duplicates_box()
+{
+
+  return *duplicates_box_;
+
+}
 
 long long GUI::duration()
 {

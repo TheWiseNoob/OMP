@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.13.1] - July 8st, 2018
+
+### Fixed
+- Duplicate Main Menu Bar and Playlist Combobox weren't hiding properly.
+- The Playlist Combobox in the header bar was not present.
+
+
+
 ## [0.0.13] - July 1st, 2018
 
 ### Added
