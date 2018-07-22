@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.14] - July 22nd, 2018
+
+### Added
+- Copying large amounts of tracks no longer locks up OMP.
+- Improvements to pasting tracks, adding new tracks, dragging tracks, and
+  deleting tracks in a large playlist. These improvements are good, but I'm
+  still working on finishing them.
+- Row count in the playlist status bar.
+
+### Fixed
+- Genres and album artists column tabs can now be clicked to sort.
+
+
+
 ## [0.0.13.1] - July 8st, 2018
 
 ### Fixed
@@ -14,7 +28,7 @@ All notable changes to this project will be documented in this file.
 ## [0.0.13] - July 1st, 2018
 
 ### Added
-- Improvements to make OMP more usable with larger playlists/
+- Improvements to make OMP more usable with larger playlists.
 - Playlist status bar.
 - Playlist name in the playlist status bar.
 

@@ -115,6 +115,8 @@
 
 #include <gdkmm/window.h>
 
+#include <glibmm/main.h>
+
 #include <gtkmm/box.h>
 
 #include <gtkmm/frame.h>
@@ -228,9 +230,13 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 // Status Bar
 
+, copy_progress_bar_(new Gtk::ProgressBar)
+
 , name_label_(Gtk::manage(new Gtk::Label("")))
 
 , progress_bar_(Gtk::manage(new Gtk::ProgressBar))
+
+, progress_bars_box_(Gtk::manage(new Gtk::Box))
 
 , row_count_label_(Gtk::manage(new Gtk::Label("0")))
 
@@ -655,7 +661,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
     }
 
     // True if the current column is for the genre tag.
-    else if(columns_it -> get_title() == "Genre")
+    else if(columns_it -> get_title() == "Genre(s)")
     {
 
       // Sets the sort column for the column.
@@ -850,13 +856,26 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   status_box_ -> pack_start(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
 
   // 
-  status_box_ -> pack_start(*progress_bar_, Gtk::PACK_EXPAND_WIDGET);
+  status_box_ -> pack_start(*progress_bars_box_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
   status_box_ -> pack_start(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
 
   // 
-//  status_box_ -> pack_start(*row_count_label_, Gtk::PACK_SHRINK);
+  status_box_ -> pack_start(*row_count_label_, Gtk::PACK_SHRINK);
+
+
+
+  // 
+  progress_bars_box_ -> pack_end(*progress_bar_, Gtk::PACK_SHRINK);
+
+  // 
+  progress_bars_box_ -> pack_end(*copy_progress_bar_, Gtk::PACK_SHRINK);
+
+
+
+  // 
+  progress_bars_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
 
 
 
@@ -882,9 +901,15 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // 
+  copy_progress_bar_ -> set_fraction(0.0);
+
+  // 
   progress_bar_ -> set_fraction(0.0);
 
 
+
+  // 
+  copy_progress_bar_ -> set_show_text(true);
 
   // 
   progress_bar_ -> set_show_text(true);
@@ -892,14 +917,32 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // 
+  copy_progress_bar_ -> set_valign(Gtk::ALIGN_CENTER);
+
+  // 
   progress_bar_ -> set_valign(Gtk::ALIGN_CENTER);
 
 
 
   // 
+  copy_progress_bar_ -> set_hexpand(true);
+
+  // 
   progress_bar_ -> set_hexpand(true);
 
 
+
+  // 
+  copy_progress_bar_ -> set_margin_top(3);
+
+  // 
+  copy_progress_bar_ -> set_margin_bottom(3);
+
+  // 
+  copy_progress_bar_ -> set_margin_left(3);
+
+  // 
+  copy_progress_bar_ -> set_margin_right(3);
 
   // 
   progress_bar_ -> set_margin_top(3);
@@ -948,6 +991,11 @@ Playlist::~Playlist()
 
   // Deletes the PlaylistMenu.
   delete menu_;
+
+
+
+  // 
+  delete copy_progress_bar_;
 
 
 
@@ -1493,30 +1541,16 @@ bool Playlist::on_drag_drop
 
 
   // 
-  if(playlists() . selected_playlist_treestore() != playlist_treestore_)
+  for(auto playlists_it : playlists()())
   {
 
     // 
-    string playlist_name_str
-      = playlists() . selected_playlist_treestore() -> get_name();
+    int size = playlists_it -> playlist_treestore() -> children() . size();
 
     // 
-    playlists() . database() . Clear_Playlist(playlist_name_str . c_str());
-
-    // 
-    playlists() . database()
-      . Add_Tracks(playlists() . selected_playlist_treestore());
+    playlists_it -> row_count_label() . set_text(to_string(size));
 
   }
-
-  // 
-  string playlist_name_str = playlist_treestore_ -> get_name();
-
-  // 
-  playlists() . database() . Clear_Playlist(playlist_name_str . c_str());
-
-  // 
-  playlists() . database() . Add_Tracks(playlist_treestore_);
 
 
 
@@ -1547,6 +1581,45 @@ bool Playlist::on_drag_drop
 
 
   debug("end on_drag_drop");
+
+
+
+  // 
+  playlist_treestore_ -> rebuild_database() = true;
+
+  // 
+  playlist_treestore_ -> restart_changes() = true;
+
+
+
+  // 
+  if(playlists() . selected_playlist_treestore() != playlist_treestore_)
+  {
+
+    // 
+    playlists() . selected_playlist_treestore() -> rebuild_database() = true;
+
+    // 
+    playlists() . selected_playlist_treestore() -> restart_changes() = true;
+
+  }
+
+
+
+  // 
+  if(playlists() . database_extraction_complete())
+  {
+
+    // 
+    if(!(playlists() . rebuilding_databases()))
+    {
+
+      // 
+      playlists() . database() . Rebuild_Database();
+
+    }
+
+  }
 
 
 
@@ -2466,6 +2539,12 @@ void Playlist::Change_Playlist()
 
 
 
+  // Sets the row count of the currently active playlist treestore.
+  row_count_label_
+    -> set_text(to_string(playlist_treestore_ -> children() . size()));
+
+
+
   // Enables the selection changed function.
   playlists() . set_disable_on_selection_changed(false);
 
@@ -2667,8 +2746,6 @@ void Playlist::On_Selection_Changed()
 
 
 
-  cout << "\n\nSET SELECTED ROW REF\n\n";
-
   // Sets selected_row_ref to the new selected row. 
   playlists() . set_selected_row_ref(selected_row_ref);
 
@@ -2755,7 +2832,7 @@ void Playlist::On_Selection_Changed()
   string filename_string = new_created_track.filename();
 
   // Sets the cover art of the selected track.
-  gui().Load_Cover_Art(filename_string);
+  gui() . Load_Cover_Art(filename_string);
 
 }
 
@@ -2767,7 +2844,7 @@ void Playlist::On_Selection_Changed()
 // Row Manipulators ///////////////////////////////////////////////////////////
 //                  //
 
-void Playlist::Copy_Selected_Rows()
+void Playlist::Copy_Selected_Rows(bool cut)
 {
 
   // 
@@ -2783,7 +2860,7 @@ void Playlist::Copy_Selected_Rows()
     // 
     return;
 
-  }
+   }
 
 
 
@@ -2809,8 +2886,21 @@ void Playlist::Copy_Selected_Rows()
 
 
   // Creates of vector of the paths of all of the selected rows.
-  vector<Gtk::TreeModel::Path> selected_rows
-    = playlist_treeselection_ -> get_selected_rows();
+  static vector<Gtk::TreeModel::Path> selected_rows;
+
+  // 
+  selected_rows = playlist_treeselection_ -> get_selected_rows();
+
+  // Gets an iterator to to the beginning of the selected rows.
+  static vector<Gtk::TreeModel::Path>::iterator selected_rows_it;
+
+  // 
+  selected_rows_it = selected_rows . begin();
+
+  // 
+  static int row_count;
+
+  row_count = 1;
 
 
 
@@ -2833,52 +2923,127 @@ void Playlist::Copy_Selected_Rows()
 
 
 
+  // 
+  copy_progress_bar_ -> show_now();
+
+
+
   // Clears the clipboard.
   playlists() . clipboard_tracks() . clear();
 
 
 
-  // Gets an iterator to to the beginning of the selected rows.
-  vector<Gtk::TreeModel::Path>::iterator selected_rows_it
-    = selected_rows . begin();
+  // 
+  sigc::connection program_conn = Glib::signal_timeout() . connect
+  (
 
-  // An iterator used for converting the selected row path to an iterator.
-  Gtk::TreeModel::iterator selected_row_it;
+    // 
+    [this, selected_rows, selected_rows_it, row_count, cut]() -> bool
+    {  
 
-  // Iterates through the selected rows. 
-  while(selected_rows_it != (selected_rows . end()))
-  {
+      // True if there are no selected rows.
+      if(selected_rows_it == (selected_rows . end()))
+      {
 
-    // Creates an iterator to the current selected row.
-    selected_row_it = playlist_treestore() -> get_iter(*(selected_rows_it));
+        // 
+        copying_mutex . unlock();
 
-
-
-    // A new row for holding the dereferenced treestore iterator.
-    Gtk::TreeRow row;
-
-    // Dereferences the treestore iterator into a row.
-    row = *selected_row_it;
+        // 
+        clipboard_event_ = false;
 
 
 
-    // Creates a copy of the current row's Track shared_ptr.
-    shared_ptr<Track> temp_track_sptr = (row[playlist_column_record() . track_col]);
-
-    // Pushes the Track sptr to the back of the clipboard tracks.
-    playlists().clipboard_tracks().push_back(temp_track_sptr);
+        // 
+        copy_progress_bar_ -> hide();
 
 
 
-    // Iterates the selected rows it.
-    selected_rows_it++;
+        if(cut)
+        {
 
-  }
+          // 
+          Delete_Selected_Rows();
+
+        }
 
 
 
-  // Sets the clipboard event flag to false.
-  clipboard_event_ = false;
+        // Exits the function.
+        return false;
+
+      }  
+
+
+
+      // 
+      int count = 0;
+
+
+
+      // Iterates through the selected rows. 
+      while((selected_rows_it != (selected_rows . end())) && (count < 35))
+      { 
+
+        // An iterator used for converting the selected row path to an iterator.
+        Gtk::TreeModel::iterator selected_row_it
+          = playlist_treestore() -> get_iter(*(selected_rows_it));
+
+
+
+        // A new row for holding the dereferenced treestore iterator.
+        Gtk::TreeRow row;
+
+        // Dereferences the treestore iterator into a row.
+        row = *selected_row_it;
+
+
+
+        // Creates a copy of the current row's Track shared_ptr.
+        shared_ptr<Track> temp_track_sptr
+          = (row[playlist_column_record() . track_col]);
+
+        // Pushes the Track sptr to the back of the clipboard tracks.
+        playlists() . clipboard_tracks() . push_back(temp_track_sptr);
+
+
+
+        // Iterates the selected rows it.
+        selected_rows_it++;
+
+        // 
+        count++;
+
+        // 
+        row_count++;
+
+
+
+        // 
+        copy_progress_bar_
+          -> set_fraction(row_count / double(selected_rows . size()));
+
+        string progress_bar_text_str
+          = "Copying: " + to_string(row_count)
+              + " / " + to_string(selected_rows . size());
+
+        // 
+        copy_progress_bar_ -> set_text(progress_bar_text_str);
+
+      }
+
+
+
+      // 
+      return true;
+
+    },
+
+
+
+    // 
+    5, Glib::PRIORITY_HIGH_IDLE
+
+  );
 
 }  
 
@@ -2897,12 +3062,7 @@ void Playlist::Cut_Selected_Rows()
 
 
   // Copies the selected rows.
-  Copy_Selected_Rows();
-
-
-
-  // Deletes the selected rows.
-  Delete_Selected_Rows();
+  Copy_Selected_Rows(true);
 
 }
 
@@ -3099,8 +3259,46 @@ void Playlist::Delete_Selected_Rows()
 
 
 
+  // 
+  for(auto playlists_it : playlists()())
+  {
+
+    // 
+    if(playlist_treestore_ == (playlists_it -> playlist_treestore()))
+    {
+
+      // 
+      playlists_it -> row_count_label()
+        . set_text(to_string(playlist_treestore_ -> children() . size()));
+
+    }
+
+  }
+
+
+
+  // Sets the row count of the currently active playlist treestore.
+  row_count_label_
+    -> set_text(to_string(playlist_treestore_ -> children() . size()));
+
+
+
   // Sets the selected time label to 0.
   Add_Selected_Tracks_Times();
+
+
+
+  // 
+  if(playlist_treestore_ -> rebuilding_database())
+  {
+
+    // 
+    playlist_treestore_ -> rebuild_database() = true;
+
+    // 
+    playlist_treestore_ -> restart_changes() = true;
+
+  }
 
 
 
@@ -3121,8 +3319,6 @@ void Playlist::Paste_Clipboard_Rows()
   // 
   static mutex pasting_mutex;
 
-  // 
-  
 
 
   // 
@@ -3223,6 +3419,12 @@ void Playlist::Paste_Clipboard_Rows()
 
   // 
   selection_conn_ . block(false);
+
+
+
+  // Sets the row count of the currently active playlist treestore.
+  row_count_label_
+    -> set_text(to_string(playlist_treestore_ -> children() . size()));
 
 
 

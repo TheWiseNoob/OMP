@@ -13,7 +13,7 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	Track.o TrackBin.o
 
 CFLAGS = -std=c++17 -Wno-deprecated-declarations -Wno-parentheses -fconcepts \
-	-Wno-catch-value -Wno-return-type
+	-Wno-catch-value -Wno-return-type -Wno-pedantice
 
 DESTDIR = ''
 

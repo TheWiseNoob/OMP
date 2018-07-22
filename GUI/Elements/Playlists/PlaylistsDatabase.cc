@@ -1746,6 +1746,9 @@ bool PlaylistsDatabase::Rebuild_Database()
         // 
         current_track_int -= id;
 
+        // 
+        track_total_int = (*playlist_treestores_it) -> children() . size();
+
 
 
         // 
@@ -1777,6 +1780,9 @@ bool PlaylistsDatabase::Rebuild_Database()
 
         // 
         (*playlist_treestores_it) -> rebuild_database() = false;
+
+        // 
+        (*playlist_treestores_it) -> rebuilding_database() = false;
 
 
 
@@ -1895,6 +1901,8 @@ bool PlaylistsDatabase::Rebuild_Database()
             // 
             (*playlist_treestores_it) -> rebuild_scheduled() = false;
 
+            // 
+            (*playlist_treestores_it) -> rebuilding_database() = false;
 
 
 
@@ -1911,6 +1919,11 @@ bool PlaylistsDatabase::Rebuild_Database()
         }
 
       } 
+
+
+
+      // 
+      (*playlist_treestores_it) -> rebuilding_database() = true;
 
 
 

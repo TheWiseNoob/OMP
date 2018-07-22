@@ -276,7 +276,7 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   public:
 
-    void Copy_Selected_Rows();
+    void Copy_Selected_Rows(bool cut = false);
 
     void Cut_Selected_Rows();
 
@@ -297,8 +297,6 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   //                  //
 
   public:
-
-    bool Is_Playing_Track();
 
     bool Locked();
 
@@ -468,6 +466,11 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   // Status Bar ///////////////////////////////////////////////////////////////
   //            //
 
+  public:
+
+    // 
+    Gtk::ProgressBar* copy_progress_bar_;
+
   private:
 
     // 
@@ -475,6 +478,9 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     // 
     Gtk::ProgressBar* progress_bar_;
+
+    // 
+    Gtk::Box* progress_bars_box_;
 
     // 
     Gtk::Label* row_count_label_;

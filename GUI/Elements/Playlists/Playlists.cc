@@ -786,7 +786,7 @@ void Playlists::Append_Rows
 void Playlists::Append_Rows
   (vector<Track*>* tracks, Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
    bool append_to_database, vector<int>* ids)
- {
+{
 
   // 
   set_inserting(true);
@@ -848,12 +848,42 @@ void Playlists::Append_Rows
 
 
   // 
+  for(auto playlists_it : playlists()())
+  {
+
+    // 
+    if(playlist_treestore == (playlists_it -> playlist_treestore()))
+    {
+
+      // 
+      playlists_it -> row_count_label()
+        . set_text(to_string(playlist_treestore -> children() . size()));
+
+    }
+
+  }
+
+
+
+  // 
   playback() . Reset_Track_Queue();
 
 
 
   // 
-  if(append_to_database)
+  if(playlist_treestore -> rebuilding_database())
+  {
+
+    // 
+    playlist_treestore -> rebuild_database() = true;
+
+    // 
+    playlist_treestore -> restart_changes() = true;
+
+  }
+
+  // 
+  else if(append_to_database)
   {
 
     // 

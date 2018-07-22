@@ -171,92 +171,91 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
 {
 
-//          //
-// Playlists ////////////////////////////////////////////////////////////////
-//           //
+  //          //
+  // Playlists ////////////////////////////////////////////////////////////////
+  //           //
 
-// 
-append(*change_playlist_menu_item_);
+  // 
+  append(*change_playlist_menu_item_);
 
-// 
-append(*add_playlist_menu_item_);
-
-
-
-//
-string menu_item_name_str = "Playlist: ";
-
-// 
-menu_item_name_str += playlist_name;
-
-// 
-change_playlist_menu_item_ -> set_label(menu_item_name_str);
+  // 
+  append(*add_playlist_menu_item_);
 
 
 
+  //
+  string menu_item_name_str = "Playlist: ";
 
-// 
-add_playlist_menu_item_ -> signal_activate()
-. connect(sigc::mem_fun(playlists_ref,
+  // 
+  menu_item_name_str += playlist_name;
+
+  // 
+  change_playlist_menu_item_ -> set_label(menu_item_name_str);
+
+
+
+  // 
+  add_playlist_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playlists_ref,
 		    &Playlists::Open_Create_Playlist_Dialog));
 
-// 
-delete_playlist_menu_item_ -> signal_activate()
-. connect(sigc::bind
-(sigc::mem_fun(playlists_ref,
-	       &Playlists::Open_Delete_Playlist_Dialog), false));
+  // 
+  delete_playlist_menu_item_ -> signal_activate()
+    . connect(sigc::bind
+        (sigc::mem_fun(playlists_ref,
+	               &Playlists::Open_Delete_Playlist_Dialog), false));
 
 
 
-//
-append(*delete_playlist_menu_item_);
+  //
+  append(*delete_playlist_menu_item_);
 
-// 
-append(*lock_check_menu_item_);
-
-
-
-// 
-Gdk::RGBA change_playlist_menu_item_rgba;
-
-// 
-change_playlist_menu_item_rgba . set_rgba(0.0,0.0,0.0,.5);
+  // 
+  append(*lock_check_menu_item_);
 
 
 
-// 
-Pango::FontDescription change_playlist_menu_item_font_description;
+  // 
+  Gdk::RGBA change_playlist_menu_item_rgba;
 
-// 
-change_playlist_menu_item_font_description . set_weight(Pango::WEIGHT_HEAVY);
-
-// 
-change_playlist_menu_item_font_description
-. set_stretch(Pango::STRETCH_ULTRA_EXPANDED);
-
-// 
-change_playlist_menu_item_ 
--> override_background_color(change_playlist_menu_item_rgba, 
-			 Gtk::STATE_FLAG_NORMAL);
-
-// 
-change_playlist_menu_item_ 
--> override_font(change_playlist_menu_item_font_description);
+  // 
+  change_playlist_menu_item_rgba . set_rgba(0.0,0.0,0.0,.5);
 
 
 
-// 
-change_playlist_menu_item_ -> set_submenu(*playlists_menu_);
+  // 
+  Pango::FontDescription change_playlist_menu_item_font_description;
+
+  // 
+  change_playlist_menu_item_font_description . set_weight(Pango::WEIGHT_HEAVY);
+
+  // 
+  change_playlist_menu_item_font_description
+    . set_stretch(Pango::STRETCH_ULTRA_EXPANDED);
+
+  // 
+  change_playlist_menu_item_ 
+    -> override_background_color(change_playlist_menu_item_rgba, 
+                                 Gtk::STATE_FLAG_NORMAL);
+
+  // 
+  change_playlist_menu_item_ 
+    -> override_font(change_playlist_menu_item_font_description);
 
 
 
-// 
-int count = 0;
+  // 
+  change_playlist_menu_item_ -> set_submenu(*playlists_menu_);
 
 
 
-// 
-string playlist_treestore_name = playlist_name;
+  // 
+  int count = 0;
+
+
+
+  // 
+  string playlist_treestore_name = playlist_name;
 
 
 
@@ -379,7 +378,9 @@ string playlist_treestore_name = playlist_name;
 
   // 
   copy_menu_item_ -> signal_activate()
-    . connect(sigc::mem_fun(playlist_ref, &Playlist::Copy_Selected_Rows));
+    . connect(sigc::bind
+        (sigc::mem_fun(playlist_ref,
+	               &Playlist::Copy_Selected_Rows), false));
 
   // 
   cut_menu_item_ -> signal_activate()

@@ -163,6 +163,8 @@
 
 #include <gtkmm/paned.h>
 
+#include <gtkmm/progressbar.h>
+
 #include <gtkmm/scale.h>
 
 #include <gtkmm/separator.h>
@@ -958,6 +960,17 @@ GUI::GUI(Base& base_ref)
 
   // Displays the main window and all of its child objects.
   main_window() -> window() . show_all_children();
+
+
+
+  // 
+  for(auto playlists_it : playlists()())
+  {
+
+    // 
+    playlists_it -> copy_progress_bar_ -> hide();
+
+  }
 
 
 
