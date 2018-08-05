@@ -207,6 +207,12 @@ Artwork::Artwork(Base& base_ref)
 
 
   // 
+  art_aspect_frame_ -> set_tooltip_text
+    ("Displays the artwork of the playing or selected track if available.");
+
+
+
+  // 
   inner_art_box_ -> set_vexpand(true);
 
   // 

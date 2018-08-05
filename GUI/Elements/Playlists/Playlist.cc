@@ -959,6 +959,25 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // 
+  copy_progress_bar_
+    -> set_tooltip_text("Displays the progress of the tracks being copied.");
+
+  // 
+  progress_bar_
+    -> set_tooltip_text("Displays the progress of the action occurring.");
+
+  // 
+  name_label_ -> set_tooltip_text
+    ("Playlist name of the playlist active in the playlist view.");
+
+  // 
+  row_count_label_
+    -> set_tooltip_text("Number of track rows in the active playlist " \
+                        "of the playlist view.");
+
+
+
+  // 
   progress_bar_ -> set_pulse_step(0.01);
 
 
@@ -3336,6 +3355,11 @@ void Playlist::Paste_Clipboard_Rows()
     return;
 
   }
+
+
+
+  // 
+//  if(playlist_treestore_ -> rebuilding_database());
 
 
 

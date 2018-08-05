@@ -451,6 +451,10 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
   about_menu_
     -> set_tooltip_text("Opens a window with some information about OMP.");
 
+  // 
+  about_menu_item_
+    -> set_tooltip_text("Information about OMP and how to use it.");
+
 
 
   // 
@@ -467,6 +471,12 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 
   // 
   edit_menu_ -> append(*configuration_menu_item_);
+
+
+
+  // 
+  edit_menu_item_ -> set_tooltip_text
+    ("Tools for editing with various parts of OMP");
 
 
 
@@ -496,6 +506,12 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 
   // 
   file_menu_ -> append(*quit_menu_item_);
+
+
+
+  //
+  file_menu_item_ -> set_tooltip_text
+    ("File opening tools and the quit button.");
 
 
 
@@ -545,6 +561,12 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 
   // 
 //  playback_menu_ -> append(*order_playback_menu_item_);
+
+
+
+  // 
+  playback_menu_item_
+    -> set_tooltip_text("Playback related settings and tools.");
 
 
 
@@ -839,6 +861,12 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 
   // 
   view_menu_ -> append(*hide_tabs_check_menu_item_);
+
+
+
+  // 
+  view_menu_item_ -> set_tooltip_text
+    ("Settings and tools for modifying aspects of the GUI.");
 
 
 

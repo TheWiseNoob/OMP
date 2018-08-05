@@ -3,6 +3,30 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.15] - August 5th, 2018
+
+### Added
+- Added tooltips to various parts missing them.
+
+  Parts now with tooltips:
+    - copy progress bar 
+    - normal progress bar
+    - row count label
+    - playlist name in the playlist status bar
+    - artwork
+    - tagview data
+    - tagview label
+    - all 5 sections of the main menu bar menu item
+
+### Changed
+- General code clean-up.
+
+### Fixed
+- Tabs now expand to fill empty space.
+- Metadata in the Tagview is now properly centered.
+
+
+
 ## [0.0.14] - July 22nd, 2018
 
 ### Added

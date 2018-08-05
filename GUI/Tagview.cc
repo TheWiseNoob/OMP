@@ -237,6 +237,22 @@ Tagview::Tagview(Base& base_ref)
 
 
   // 
+  tag_frame_ -> set_tooltip_text("Displays various metadata and " \
+                                 "technical details about the active track.");
+
+  // 
+  tag_frame_label_ -> set_tooltip_text
+    ("Displays whether the active track is the selected " \
+     "track, the playing track, or both.");
+
+
+
+  // 
+  tag_labels_box_ -> set_margin_top(10);
+
+
+
+  // 
   tag_label_center_ -> set_text("No track is selected!\n"),
 
 

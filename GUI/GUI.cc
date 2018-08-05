@@ -575,6 +575,9 @@ GUI::GUI(Base& base_ref)
   // 
   Gtk::Label main_content_page_label("Main Content");
 
+  // 
+  main_content_page_label . set_hexpand(true);
+
 
 
   // Sets the orientation of the box containing the Main Content tab's 
@@ -710,8 +713,15 @@ GUI::GUI(Base& base_ref)
   // Makes a reference to the first Artwork instance.
   Gtk::Box* temp_box_ptr = &((*(artworks_.begin())) -> box());
 
+
+
   // 
   Gtk::Label artwork_page_label("Artwork");
+
+  // 
+  artwork_page_label . set_hexpand(true);
+
+
 
   // Adds the Artwork tab with the second Artwork instances.
   main_window_notebook_ -> append_page(*temp_box_ptr, artwork_page_label);
@@ -800,6 +810,10 @@ GUI::GUI(Base& base_ref)
   Gtk::Label playlist_page_label("Full Playlist");
 
   // 
+  playlist_page_label . set_hexpand(true);
+
+
+  // 
   Playlist* full_playlist = new Playlist(base_ref, (*playlists_), "full");
 
   // Adds the Playlist tab to the notebook.
@@ -816,6 +830,8 @@ GUI::GUI(Base& base_ref)
 
   // Creates labels for the four pages in main_content_notebook_.
   Gtk::Label double_playlist_page_label("Double Playlist");
+
+  double_playlist_page_label . set_hexpand(true);
 
 
 
@@ -870,6 +886,8 @@ GUI::GUI(Base& base_ref)
 
   // Creates labels for the four pages in main_content_notebook_.
   Gtk::Label file_chooser_playlist_page_label("File Chooser Playlist");
+
+  file_chooser_playlist_page_label . set_hexpand(true);
 
 
 
@@ -926,6 +944,11 @@ GUI::GUI(Base& base_ref)
 
   // Creates the label for the configuration notebook page.
   Gtk::Label configuration_page_label("Configuration");
+
+  // 
+  configuration_page_label . set_hexpand(true);
+
+
 
   // 
   ConfigurationGUI* new_config_gui_ptr
