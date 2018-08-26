@@ -443,6 +443,7 @@ Playlists.o: GUI/Elements/Playlists/Playlists.cc \
 PlaylistsDatabase.o: GUI/Elements/Playlists/PlaylistsDatabase.cc \
 	GUI/Elements/Playlists/PlaylistsDatabase.h Parts.h \
 	Base.h Metadata/Track.h GUI/Elements/Playlists/PlaylistColumnRecord.h \
+	GUI/Elements/Playlists/Playlist.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h
 	g++ -g -Wall -pipe $(CFLAGS) -c -Wno-write-strings \

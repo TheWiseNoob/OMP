@@ -145,7 +145,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   Gtk::Label* version_label = Gtk::manage(new Gtk::Label);
 
   // 
-  version_label -> set_markup("<b>OMP Version 0.0.15 (Pre-Alpha)</b>");
+  version_label -> set_markup("<b>OMP Version 0.0.16 (Pre-Alpha)</b>");
 
   // 
   box() . pack_start(*version_label, Gtk::PACK_EXPAND_PADDING);

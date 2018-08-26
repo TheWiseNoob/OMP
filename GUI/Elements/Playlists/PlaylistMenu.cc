@@ -319,22 +319,6 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
 
 
-  /* 
-  //          //
-  // Metadata /////////////////////////////////////////////////////////////////
-  //          //
-
-  // 
-  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
-
-  // 
-  append(*edit_menu_item_);
-  */
-
-
-
-
-
   //       //
   // Queue ////////////////////////////////////////////////////////////////////
   //       //
@@ -389,6 +373,10 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
   // 
   delete_menu_item_ -> signal_activate()
     . connect(sigc::mem_fun(playlist_ref, &Playlist::Delete_Selected_Rows));
+
+  // 
+  edit_menu_item_ -> signal_activate()
+    . connect(sigc::mem_fun(playlist_ref, &Playlist::Edit));
 
   // 
   paste_menu_item_ -> signal_activate()

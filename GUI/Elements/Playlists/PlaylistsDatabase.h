@@ -82,6 +82,8 @@
 //                 //
 //                 //
 
+#include <atomic>
+
 #include <glibmm/refptr.h>
 
 #include <mutex>
@@ -192,41 +194,43 @@ class PlaylistsDatabase : public Parts
   //                  //
   //                  //
 
-  bool Add_Tracks(Glib::RefPtr<PlaylistTreeStore> playlist_treestore);
+  public:
 
-  bool Add_Column
-    (const char* playlist_name, const char* column_name, const char* type);
+    bool Add_Tracks(Glib::RefPtr<PlaylistTreeStore> playlist_treestore);
 
-  bool Cleanup_Database();
+    bool Add_Column
+      (const char* playlist_name, const char* column_name, const char* type);
 
-  bool Clear_Playlist(const char* playlist_name);
+    bool Cleanup_Database();
 
-  std::string Convert(std::string raw_str);
+    bool Clear_Playlist(const char* playlist_name);
 
-  bool Create_Playlist(const char* playlist_name);
+    std::string Convert(std::string raw_str);
 
-  bool Delete_Playlist(const char* playlist_name);
+    bool Create_Playlist(const char* playlist_name);
 
-  bool Delete_Rows(const char* playlist_name, std::vector<int> ids);
+    bool Delete_Playlist(const char* playlist_name);
 
-  bool Drop_Table(const char* playlist_name);
+    bool Delete_Rows(const char* playlist_name, std::vector<int> ids);
 
-  bool Extract_Tracks(Glib::RefPtr<PlaylistTreeStore> playlist_treestore);
+    bool Drop_Table(const char* playlist_name);
 
-  static int Extract_Tracks_Callback
-    (void* tracks_and_ids_vptr, int argc, char **argv, char **column_name);
+    bool Extract_Tracks(Glib::RefPtr<PlaylistTreeStore> playlist_treestore);
 
-  Glib::ustring* Multiple_Values_Tag_Encode(std::vector<Glib::ustring*>& tag);
+    static int Extract_Tracks_Callback
+      (void* tracks_and_ids_vptr, int argc, char **argv, char **column_name);
 
-  bool Playlist_Names(std::vector<std::string>& playlist_names);
+    Glib::ustring* Multiple_Values_Tag_Encode(std::vector<Glib::ustring*>& tag);
 
-  static int Playlist_Names_Callback
-    (void* names, int argc, char **argv, char **azColName);
+    bool Playlist_Names(std::vector<std::string>& playlist_names);
 
-  bool Rebuild_Database();
+    static int Playlist_Names_Callback
+      (void* names, int argc, char **argv, char **azColName);
 
-  bool Rename_Playlist
-    (const char* playlist_name, const char* new_playlist_name);
+    bool Rebuild_Database();
+
+    bool Rename_Playlist
+      (const char* playlist_name, const char* new_playlist_name);
 
 
 
@@ -238,6 +242,10 @@ class PlaylistsDatabase : public Parts
   //         //
   //         //
 
+  public:
+
+    std::atomic<bool>& quit_rebuilding();
+  
 
 
 
@@ -248,9 +256,13 @@ class PlaylistsDatabase : public Parts
   //                  //
   //                  //
 
-  sqlite3* database_;
+  private:
 
-  std::mutex mutex_;
+    sqlite3* database_;
+
+    std::mutex mutex_;
+
+    std::atomic<bool> quit_rebuilding_;
 
 };
 

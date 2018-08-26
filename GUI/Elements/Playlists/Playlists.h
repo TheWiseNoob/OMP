@@ -285,8 +285,6 @@ class Playlists : public GUIElementList<Playlist>
 
     bool disable_on_selection_changed();
 
-    bool drag_occurring();
-
     bool inserting();
 
     std::atomic<bool>& new_selection();
@@ -388,8 +386,6 @@ class Playlists : public GUIElementList<Playlist>
   public:
 
     void set_disable_on_selection_changed(bool new_value);
-
-    void set_drag_occurring(bool new_value);
 
     void set_inserting(bool new_value);
 
@@ -499,8 +495,6 @@ class Playlists : public GUIElementList<Playlist>
     bool drag_occurred_;
 
   private:
-
-    bool drag_occurring_;
 
     bool inserting_;
 

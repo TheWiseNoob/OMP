@@ -164,6 +164,12 @@ PlaylistsDatabase::PlaylistsDatabase(Base& base_ref)
 
 : Parts(base_ref)
 
+
+
+// General
+
+, quit_rebuilding_(false)
+
 {
 
   // 
@@ -1702,13 +1708,19 @@ bool PlaylistsDatabase::Rebuild_Database()
 
 
       //  
-      if(base() . quitting())
+      if(base() . quitting() || quit_rebuilding_)
       {
 
         // 
         mutex_ . unlock();
 
 
+
+        // 
+        (*playlist_treestores_it) -> rebuild_database() = true;
+
+        // 
+        quit_rebuilding_ = false;
 
         // 
         playlists() . rebuilding_databases() = false;
@@ -2134,3 +2146,21 @@ bool PlaylistsDatabase::Rename_Playlist
   }
 
 }    
+
+
+
+
+
+//         //
+//         //
+// Getters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+std::atomic<bool>& PlaylistsDatabase::quit_rebuilding()
+{
+
+  // 
+  return quit_rebuilding_;
+
+}

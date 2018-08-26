@@ -134,6 +134,10 @@ PlaylistTreeStore::PlaylistTreeStore
 
 , deleting_(false)
 
+, drag_occurring_(false)
+
+, pause_appending_(false)
+
 , pause_changes_(false)
 
 , rebuild_database_(false)
@@ -219,9 +223,14 @@ bool PlaylistTreeStore::row_drop_possible_vfunc
 {
 
   // 
-  std::string path_string = dest.to_string();
+  return true;
 
+} 
 
+bool PlaylistTreeStore::drag_data_received_vfunc
+  (const Gtk::TreeModel::Path& dest,
+   const Gtk::SelectionData& selection_data)
+{
 
   // 
   if(!dest)
@@ -232,18 +241,9 @@ bool PlaylistTreeStore::row_drop_possible_vfunc
 
   }
 
-
+  
 
   // 
-  return true;
-
-}
-
-bool PlaylistTreeStore::drag_data_received_vfunc
-  (const Gtk::TreeModel::Path& dest,
-   const Gtk::SelectionData& selection_data)
-{
-
   return true;
 
 }
@@ -280,10 +280,38 @@ std::atomic<bool>& PlaylistTreeStore::deleting()
 
 }
 
+std::atomic<bool>& PlaylistTreeStore::drag_occurring()
+{
+
+  return drag_occurring_;
+
+}
+
 std::mutex& PlaylistTreeStore::mutex()
 {
 
   return mutex_;
+
+}
+
+Gtk::TreeRowReference& PlaylistTreeStore::new_rows_end_ref()
+{
+
+  return new_rows_end_ref_;
+
+}
+
+Gtk::TreeRowReference& PlaylistTreeStore::new_rows_start_it()
+{
+
+  return new_rows_start_it_;
+
+}
+
+std::atomic<bool>& PlaylistTreeStore::pause_appending()
+{ 
+
+  return pause_appending_;
 
 }
 

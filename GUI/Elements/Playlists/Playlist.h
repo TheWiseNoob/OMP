@@ -131,6 +131,8 @@ namespace Gtk
 
   class ScrolledWindow;
 
+  class TreePath;
+
   class TreeRowReference;
 
   class TreeSelection;
@@ -222,8 +224,11 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
       (const Glib::RefPtr<Gdk::DragContext>& context, int x, int y,
        guint time) override final;
 
-    virtual void on_drag_end
-      (const Glib::RefPtr< Gdk::DragContext >& context) override final;
+    bool on_drag_failed
+      (const Glib::RefPtr< Gdk::DragContext>& context, Gtk::DragResult result);
+
+    void on_drag_end
+      (const Glib::RefPtr< Gdk::DragContext>& context);
 
 
 
@@ -281,6 +286,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
     void Cut_Selected_Rows();
 
     void Delete_Selected_Rows();
+
+    void Edit();
 
     void Paste_Clipboard_Rows();
 
@@ -375,7 +382,28 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     const char* playlist_view_name_;
 
+  public:
+
     sigc::connection selection_conn_;
+
+    // 
+    Gtk::TreePath* right_click_row_tree_path_;
+
+    // Will hold a pointer to the column of the row the mouse is over.
+    Gtk::TreeViewColumn* right_click_row_column_;
+
+    // 
+    int right_click_x_cell_;
+
+    // 
+    int right_click_y_cell_;
+
+    // 
+    int right_click_x_;
+
+    // 
+    int right_click_y_;
+
 
 
 
@@ -392,9 +420,6 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     //
     std::atomic<bool> constructed_;
-
-    //
-    std::atomic<bool> deleting_;
 
     //
     std::atomic<bool> selecting_flag_;

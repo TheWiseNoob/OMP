@@ -86,6 +86,8 @@
 
 #include <atomic>
 
+#include <gtkmm/treerowreference.h>
+
 #include <mutex>
 
 
@@ -194,7 +196,15 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
 
     std::atomic<bool>& deleting();
 
+    std::atomic<bool>& drag_occurring();
+
     std::mutex& mutex();
+
+    Gtk::TreeRowReference& new_rows_end_ref();
+
+    Gtk::TreeRowReference& new_rows_start_it();
+
+    std::atomic<bool>& pause_appending();
 
     std::atomic<bool>& pause_changes();
 
@@ -228,7 +238,19 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
     std::atomic<bool> deleting_;
 
     // 
+    std::atomic<bool> drag_occurring_;
+
+    // 
     std::mutex mutex_;
+
+    // 
+    Gtk::TreeRowReference new_rows_end_ref_;
+
+    // 
+    Gtk::TreeRowReference new_rows_start_it_;
+
+    // 
+    std::atomic<bool> pause_appending_;
 
     // 
     std::atomic<bool> pause_changes_;

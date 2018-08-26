@@ -185,8 +185,6 @@ Playlists::Playlists(Base& base_ref)
 
 , drag_occurred_(false)
 
-, drag_occurring_(false)
-
 , inserting_(false)
 
 , new_selection_(false)
@@ -622,11 +620,6 @@ void Playlists::Append_Rows
 {
 
   // 
-  //  set_inserting(true);
-
-
-
-  // 
   sigc::connection program_conn = Glib::signal_timeout() . connect
   (
 
@@ -635,7 +628,16 @@ void Playlists::Append_Rows
     { 
 
       // 
-      if((playlist_treestore -> add_track_queue() . empty()))
+      if(playlist_treestore -> pause_appending())
+      {
+
+        // 
+        return true;
+
+      }
+
+      // 
+      else if((playlist_treestore -> add_track_queue() . empty()))
       {
 
         // 
@@ -688,6 +690,8 @@ void Playlists::Append_Rows
         return false;
 
       }
+
+
 
       //  
       if(base() . quitting())
@@ -746,6 +750,15 @@ void Playlists::Append_Rows
       // 
       for(auto playlists_it : playlists()())
       {
+
+        // 
+        if(playlists_it -> playlist_treestore() -> pause_appending())
+        {
+
+          // 
+          continue;
+
+        }
 
         // 
         playlists_it -> progress_bar() . set_text(playlist_status);
@@ -2099,13 +2112,6 @@ bool Playlists::disable_on_selection_changed()
 
 }
 
-bool Playlists::drag_occurring()
-{
-
-  return drag_occurring_;
-
-}
-
 bool Playlists::inserting()
 {
 
@@ -2421,13 +2427,6 @@ void Playlists::set_disable_on_selection_changed(bool new_value)
 {
 
   disable_on_selection_changed_ = new_value;
-
-}
-
-void Playlists::set_drag_occurring(bool new_value)
-{
-
-  drag_occurring_ = new_value;
 
 }
 

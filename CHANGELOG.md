@@ -3,6 +3,20 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.16] - August 26th, 2018
+
+### Added
+- Improvements for larger playlists with cutting, deleting, and dragging
+  operations.
+
+### Changed
+- General code clean-up.
+
+### Fixed
+- Deleting no longer stops working.
+
+
+
 ## [0.0.15] - August 5th, 2018
 
 ### Added
