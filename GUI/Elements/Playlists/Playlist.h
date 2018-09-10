@@ -114,6 +114,16 @@ class PlaylistTreeStore;
 
 
 
+// glibmm
+namespace Glib
+{
+
+  class ustring;
+
+}
+
+
+
 // gtkmm
 
 namespace Gtk
@@ -130,8 +140,6 @@ namespace Gtk
   class ProgressBar;
 
   class ScrolledWindow;
-
-  class TreePath;
 
   class TreeRowReference;
 
@@ -269,6 +277,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     void On_Columns_Changed();
 
+    void On_Cursor_Changed();
+
     void On_Selection_Changed();
 
 
@@ -289,6 +299,12 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     void Edit();
 
+    void Editing(Gtk::CellEditable* editable, const Glib::ustring& path);
+
+    void Editing_Canceled();
+
+    void Editing_Finished();
+
     void Paste_Clipboard_Rows();
 
     void Queue_Rows();
@@ -305,6 +321,10 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   public:
 
+    Glib::ustring Active_Column_Name();
+
+    int Find_Column_Position(const char* column_name);
+ 
     bool Locked();
 
 
@@ -380,14 +400,18 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   private:
 
+    bool editing_canceled_;
+
     const char* playlist_view_name_;
 
   public:
 
     sigc::connection selection_conn_;
 
+  private:
+
     // 
-    Gtk::TreePath* right_click_row_tree_path_;
+    Gtk::TreeRowReference* right_click_row_tree_row_ref_;
 
     // Will hold a pointer to the column of the row the mouse is over.
     Gtk::TreeViewColumn* right_click_row_column_;

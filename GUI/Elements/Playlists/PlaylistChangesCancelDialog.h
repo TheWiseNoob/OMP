@@ -49,8 +49,8 @@
 //                    //
 //                    //
 
-#ifndef FILE_CHOOSER_H
-#define FILE_CHOOSER_H
+#ifndef PLAYLIST_CHANGES_CANCEL_DIALOG_H
+#define PLAYLIST_CHANGES_CANCEL_DIALOG_H
 
 
 
@@ -70,7 +70,7 @@
 //                   //
 //                   //
 
-#include "../../GUIElement.h"
+#include "../../../Parts.h"
 
 
 
@@ -84,9 +84,13 @@
 //                      //
 //                      //
 
-class ChildWindow;
+class Base;
 
-class FileChoosers;
+struct _GdkEventAny;
+typedef struct _GdkEventAny GdkEventAny;
+
+struct _GdkEventKey;
+typedef struct _GdkEventKey GdkEventKey;
 
 namespace Gtk
 {
@@ -95,25 +99,15 @@ namespace Gtk
 
   class Button;
 
-  class RadioButton;
+  class Dialog;
 
-  class FileChooserWidget;
+  class Label;
+
+  class InfoBar;
+
+  class Window;
 
 }
-
-
-
-
-
-//                 //
-//                 //
-// Outside Headers ////////////////////////////////////////////////////////////
-//                 //
-//                 //
-
-#include <string>
-
-#include <vector>
 
 
 
@@ -127,8 +121,8 @@ namespace Gtk
 //                   //
 //                   //
 
-class FileChooser : public GUIElement<FileChooser>
-{
+class PlaylistChangesCancelDialog : public Parts
+{ 
 
   //             //
   //             //
@@ -138,7 +132,7 @@ class FileChooser : public GUIElement<FileChooser>
 
   public:
 
-    FileChooser(Base& base_ref, FileChoosers& file_choosers_ref);
+    PlaylistChangesCancelDialog(Base& base_ref);
 
 
 
@@ -152,7 +146,7 @@ class FileChooser : public GUIElement<FileChooser>
 
   public:
 
-    virtual ~FileChooser();
+    virtual ~PlaylistChangesCancelDialog();
 
 
 
@@ -164,19 +158,15 @@ class FileChooser : public GUIElement<FileChooser>
   //                  //
   //                  //
 
-  public:
+  public: 
 
-    void Change_Mode();
+    void On_Changes_Cancel_Playlist_Button_Clicked_Signal();
 
-    void Enable_Cancel_Button(ChildWindow* child_window_ptr);
+    void On_Cancel_Button_Clicked_Signal();
 
-    void On_Current_Folder_Changed_Signal();
+    bool On_Key_Press_Event(GdkEventKey* event);
 
-    void Quit(ChildWindow* child_window_ptr);
-
-    void Selection_Changed();
-
-    void Use_Selected();
+    void Run(bool set_release_twice = false);
 
 
 
@@ -187,15 +177,6 @@ class FileChooser : public GUIElement<FileChooser>
   // Getters //////////////////////////////////////////////////////////////////
   //         //
   //         //
-
-  public:
-
-    Gtk::FileChooserWidget& file_chooser()
-    {
-
-      return *file_chooser_;
-
-    }
 
 
 
@@ -209,21 +190,21 @@ class FileChooser : public GUIElement<FileChooser>
 
   private:
 
-    Gtk::Box* action_box_;
+    Gtk::Box* button_box_;
 
     Gtk::Button* cancel_button_;
 
-    Gtk::FileChooserWidget* file_chooser_;
+    Gtk::Button* delete_playlist_button_;
 
-    std::vector<std::string> filenames_;
+    bool delete_playlist_combobox_playlist_;
 
-    Gtk::RadioButton* file_mode_radio_button_;
+    Gtk::Window* playlist_creation_window_;
 
-    Gtk::RadioButton* folder_mode_radio_button_;
+    Gtk::Box* playlist_creation_window_box_;
 
-    Gtk::Box* mode_box_;
+    Gtk::Label* playlist_prompt_label_;
 
-    Gtk::Button* okay_button_;
+    bool release_twice_;
 
 };
 

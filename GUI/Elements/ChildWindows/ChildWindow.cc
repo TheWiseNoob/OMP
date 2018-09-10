@@ -75,6 +75,8 @@
 
 #include "../../GUI.h"
 
+#include "../Playlists/Playlists.h"
+
 #include "../MainMenus/MainMenu.h"
 
 #include "../MainMenus/MainMenus.h"
@@ -411,12 +413,32 @@ bool ChildWindow::On_Irregular_Quit(GdkEventAny* event)
 
 
 
-
   // 
   if(main_window_)
   {
 
-    base() . quitting() = true;
+    // 
+    if(playlists() . rebuild_databases() || playlists() . rebuilding_databases())
+    {
+
+      // 
+      playlists() . Open_Changes_Cancel_Dialog(true);
+
+
+
+      // 
+      return true;
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      base() . quitting() = true;
+
+    }
 
   }
 

@@ -87,6 +87,8 @@
 
 #include "PlaylistColumnRecord.h"
 
+#include "PlaylistChangesCancelDialog.h"
+
 #include "PlaylistCreateDialog.h"
 
 #include "PlaylistDeleteDialog.h"
@@ -199,6 +201,8 @@ Playlists::Playlists(Base& base_ref)
 
 // Playlist Creation
 
+, playlist_changes_cancel_dialog_(new PlaylistChangesCancelDialog(base_ref))
+
 , playlist_create_dialog_(new PlaylistCreateDialog(base_ref))
 
 , playlist_delete_dialog_(new PlaylistDeleteDialog(base_ref))
@@ -255,10 +259,15 @@ Playlists::Playlists(Base& base_ref)
 
 
   // 
-  list<string> column_names
-    {"track_number", "title", "artists", "album_artists", "album", "genres",
-     "length", "date", "track_total", "bit_rate", "bit_depth", "sample_rate",
-     "channels", "codec", "mime"};
+  list<pair<string, bool>> column_names
+    {{"album", true}, {"album_artists",true}, {"artists", true},
+     {"bit_depth", false}, {"bit_rate", false}, {"channels", false}, 
+     {"codec", false}, {"date", true}, {"disc_number", true},
+     {"disc_total", true}, {"genres", true}, {"length", false},
+     {"mime", false}, {"sample_rate", false}, {"title", true}, 
+     {"track_number", true}, {"track_total", true}};
+
+
 
   // 
   for(auto column_names_it : column_names)
@@ -268,7 +277,7 @@ Playlists::Playlists(Base& base_ref)
     string column_title_config_str = "gui.playlist.columns.";
 
     // 
-    column_title_config_str += column_names_it;
+    column_title_config_str += column_names_it . first;
 
     // 
     column_title_config_str += ".title";
@@ -287,7 +296,10 @@ Playlists::Playlists(Base& base_ref)
     columns_ . back() . title_ = title;
 
     // 
-    columns_ . back() . name_ = column_names_it;
+    columns_ . back() . name_ = column_names_it . first;
+
+    // 
+    columns_ . back() . editable_ = column_names_it . second;
 
   }
 
@@ -1497,6 +1509,37 @@ void Playlists::Delete_Current_Playlist(bool delete_playlist_combobox_playlist)
 
 }
 
+bool Playlists::Editable_Column(const char* column_name)
+{
+
+  // 
+  for(auto column : columns())
+  {
+
+    // 
+    if(column_name == column . name_)
+    {
+
+      // 
+      if(column . editable_)
+      {
+
+        // 
+        return true;
+
+      }
+
+    }
+
+  }
+
+
+
+  // 
+  return false;
+
+}
+
 void Playlists::Fill_Row
   (Gtk::TreeRow& new_tree_row, shared_ptr<Track> new_track_sptr)
 {
@@ -1515,13 +1558,13 @@ void Playlists::Fill_Row
   { 
 
     // 
-    new_tree_row[playlist_column_record().track_num_col]
+    new_tree_row[playlist_column_record() . track_number_]
       = to_string(new_track_sptr -> track_number());
 
   }
 
   // 
-  new_tree_row[playlist_column_record().track_num_int_col]
+  new_tree_row[playlist_column_record() . track_number_int_]
     = new_track_sptr -> track_number();
 
 
@@ -1531,22 +1574,22 @@ void Playlists::Fill_Row
 
   // 
   if(track_total == 0)
-  {
+  { 
 
   }
 
   // 
   else
-  {
+  { 
 
     // 
-    new_tree_row[playlist_column_record().track_total_col]
+    new_tree_row[playlist_column_record() . track_total_]
       = to_string(new_track_sptr -> track_total());
 
   }
 
   // 
-  new_tree_row[playlist_column_record().track_total_int_col]
+  new_tree_row[playlist_column_record() . track_total_int_]
     = new_track_sptr -> track_total();
 
 
@@ -1558,19 +1601,67 @@ void Playlists::Fill_Row
   if(date == 0)
   { 
 
-  }
+  } 
 
   // 
   else
-  {
+  { 
 
     // 
-    new_tree_row[playlist_column_record().date_col] = to_string(date);
+    new_tree_row[playlist_column_record() . date_] = to_string(date);
 
   }
 
   // 
-  new_tree_row[playlist_column_record().date_int_col] = date;
+  new_tree_row[playlist_column_record() . date_int_] = date;
+
+
+
+  //
+  int disc_number = new_track_sptr -> disc_number();
+
+  // 
+  if(disc_number == 0)
+  { 
+
+  } 
+
+  // 
+  else
+  {  
+
+    // 
+    new_tree_row[playlist_column_record() . disc_number_]
+      = to_string(disc_number);
+
+  }
+
+  // 
+  new_tree_row[playlist_column_record() . disc_number_int_] = disc_number;
+
+
+
+  //
+  int disc_total = new_track_sptr -> disc_total();
+
+  // 
+  if(disc_total == 0)
+  { 
+
+  } 
+
+  // 
+  else
+  {  
+
+    // 
+    new_tree_row[playlist_column_record() . disc_total_]
+      = to_string(disc_total);
+
+  }
+
+  // 
+  new_tree_row[playlist_column_record() . disc_total_int_] = disc_total;
 
 
 
@@ -1579,7 +1670,7 @@ void Playlists::Fill_Row
   {
 
     // 
-    new_tree_row[playlist_column_record().title_col]
+    new_tree_row[playlist_column_record() . title_]
       = new_track_sptr -> filename();
 
   }
@@ -1589,7 +1680,7 @@ void Playlists::Fill_Row
   {
 
     // 
-    new_tree_row[playlist_column_record().title_col]
+    new_tree_row[playlist_column_record() . title_]
       = new_track_sptr -> title();
 
   }
@@ -1600,7 +1691,7 @@ void Playlists::Fill_Row
   Glib::ustring* album_artists = new_track_sptr -> album_artists_string();
 
   // 
-  new_tree_row[playlist_column_record().album_artist_col] = *album_artists;
+  new_tree_row[playlist_column_record() . album_artists_] = *album_artists;
 
   // 
   delete album_artists;
@@ -1611,7 +1702,7 @@ void Playlists::Fill_Row
   Glib::ustring* artists = new_track_sptr -> artists_string();
 
   // 
-  new_tree_row[playlist_column_record().artist_col] = *artists;
+  new_tree_row[playlist_column_record() . artists_] = *artists;
 
   // 
   delete artists;
@@ -1619,7 +1710,7 @@ void Playlists::Fill_Row
 
 
   //
-  new_tree_row[playlist_column_record().album_col] = new_track_sptr -> album();
+  new_tree_row[playlist_column_record() . album_] = new_track_sptr -> album();
 
 
 
@@ -1627,7 +1718,7 @@ void Playlists::Fill_Row
   Glib::ustring* genres = new_track_sptr -> genres_string();
 
   // 
-  new_tree_row[playlist_column_record() . genre_col] = *genres;
+  new_tree_row[playlist_column_record() . genres_] = *genres;
 
   // 
   delete genres;
@@ -1635,11 +1726,11 @@ void Playlists::Fill_Row
 
 
   // 
-  new_tree_row[playlist_column_record().length_col]
+  new_tree_row[playlist_column_record().length_]
     = new_track_sptr -> length();
 
   // 
-  new_tree_row[playlist_column_record().filename_col]
+  new_tree_row[playlist_column_record() . filename_]
     = new_track_sptr -> filename();
 
 
@@ -1652,7 +1743,7 @@ void Playlists::Fill_Row
   {
 
     // 
-    new_tree_row[playlist_column_record().bit_depth_col] = "-";
+    new_tree_row[playlist_column_record() . bit_depth_] = "-";
 
   }
 
@@ -1660,7 +1751,7 @@ void Playlists::Fill_Row
   else
   {
 
-    new_tree_row[playlist_column_record().bit_depth_col]
+    new_tree_row[playlist_column_record() . bit_depth_]
       = to_string(new_track_sptr -> bit_depth());
 
   }
@@ -1668,37 +1759,37 @@ void Playlists::Fill_Row
 
 
   // 
-  new_tree_row[playlist_column_record().bit_rate_col]
+  new_tree_row[playlist_column_record(). bit_rate_]
     = new_track_sptr -> bit_rate();
 
 
 
   // 
-  new_tree_row[playlist_column_record().codec_col]
+  new_tree_row[playlist_column_record() . codec_]
     = new_track_sptr -> codec();
 
 
 
   // 
-  new_tree_row[playlist_column_record().mime_col]
+  new_tree_row[playlist_column_record() . mime_]
     = new_track_sptr -> mime();
 
 
 
   // 
-  new_tree_row[playlist_column_record().sample_rate_col]
+  new_tree_row[playlist_column_record() . sample_rate_]
     = new_track_sptr -> sample_rate();
 
 
 
   // 
-  new_tree_row[playlist_column_record() . channels_col]
+  new_tree_row[playlist_column_record() . channels_]
     = new_track_sptr -> channels();
 
 
 
   //
-  new_tree_row[playlist_column_record().track_col] = new_track_sptr;
+  new_tree_row[playlist_column_record() . track_] = new_track_sptr;
 
 }
 
@@ -1731,6 +1822,14 @@ string Playlists::Find_Column_Title(string& column_name)
 { 
 
   // 
+  return Find_Column_Title(column_name . c_str());
+
+}
+
+string Playlists::Find_Column_Title(const char* column_name)
+{ 
+
+  // 
   for(auto columns_it : columns_)
    {
 
@@ -1760,12 +1859,11 @@ void Playlists::Flush_Playback_Queue()
 
 }
 
-void Playlists::Open_Delete_Playlist_Dialog
-  (bool delete_playlist_combobox_playlist)
+void Playlists::Open_Changes_Cancel_Dialog(bool release_twice)
 { 
 
   // 
-  playlist_delete_dialog_ -> Run(delete_playlist_combobox_playlist);
+  playlist_changes_cancel_dialog_ -> Run(release_twice);
 
 } 
 
@@ -1774,6 +1872,15 @@ void Playlists::Open_Create_Playlist_Dialog()
 
   // 
   playlist_create_dialog_ -> Run();
+
+} 
+
+void Playlists::Open_Delete_Playlist_Dialog
+  (bool delete_playlist_combobox_playlist)
+{ 
+
+  // 
+  playlist_delete_dialog_ -> Run(delete_playlist_combobox_playlist);
 
 } 
 
@@ -2226,22 +2333,31 @@ Track& Playlists::queue_track()
 Track& Playlists::selected_track()
 {
 
+  // 
   if(selected_row_ref())
   {
 
+    // 
     Gtk::TreeRow row
-      = *(selected_row_ref() . get_model() -> get_iter(selected_row_ref() . get_path()));
+      = *(selected_row_ref() . get_model()
+            -> get_iter(selected_row_ref() . get_path()));
 
+    // 
     shared_ptr<Track> temp_track_ptr
-      = row[playlist_column_record().track_col];
+      = row[playlist_column_record() . track_];
 
+
+
+    // 
     return *temp_track_ptr;
 
   }
 
+  // 
   else
-  {
+  { 
 
+   // 
    return *empty_track_;
 
   }

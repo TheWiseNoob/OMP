@@ -115,6 +115,7 @@ class PlaylistColumn
   public:
 
     PlaylistColumn()
+    : editable_(false)
     {
 
     }
@@ -147,6 +148,8 @@ class PlaylistColumn
   //                  //
 
   public:
+
+    bool editable_;
 
     std::string name_;
 

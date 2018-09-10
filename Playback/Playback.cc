@@ -2242,7 +2242,7 @@ bool Playback::Fill_Track_Data_Queue()
       // Creates a Track shared_ptr from the next track being prepared
       // for the queue.
       shared_ptr<Track> temp_track_sptr
-        = (current_track_row[playlists() . playlist_column_record() . track_col]);
+        = (current_track_row[playlists() . playlist_column_record() . track_]);
 
       // Adds the shared_ptr<Track> to preparing_tracks_data!
       preparing_tracks_data -> push_back(temp_track_sptr);
@@ -2383,7 +2383,8 @@ bool Playback::Fill_Track_Data_Queue()
         // Creates a Track shared_ptr from the next track being prepared
         // for the queue.
         shared_ptr<Track> temp_track_sptr
-          = (current_track_row[playlists() . playlist_column_record() . track_col]);
+          = (current_track_row
+               [playlists() . playlist_column_record() . track_]);
 
         // Gets a pointer to the Track instance.
         Track* new_track = new Track(*temp_track_sptr);
@@ -3043,17 +3044,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
       {
 
         // 
-        cout << "\n\nALREADY PLAYING\n\n";
-
-
-
-        // 
         playback_state_change_ = false;
-
-
-
-        // 
-        cout << "\n\nStopping\n\n";
 
 
 
@@ -3181,7 +3172,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
     // Makes a new track_sptr and assigns it to a temporary variable. 
     Track* temp_track_ptr
       = new Track(*shared_ptr<Track>
-          ((row[playlists() . playlist_column_record() . track_col])));
+          ((row[playlists() . playlist_column_record() . track_])));
 
 
 

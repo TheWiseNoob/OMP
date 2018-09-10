@@ -427,7 +427,6 @@ void ArtworkPanel::Add_Filename()
   // 
   config_guis() . Mark_Unsaved_Changes(true);
 
-
 }
 
 void ArtworkPanel::Apply_Saved_Values()
@@ -446,6 +445,7 @@ void ArtworkPanel::Apply_Saved_Values()
   Gtk::CellRenderer* filename_row_cell_renderer
     = filename_treeview_ -> get_column_cell_renderer(0);
 
+  // 
   filename_row_cell_renderer -> signal_editing_started()
     . connect(sigc::mem_fun
         (*this, &ArtworkPanel::On_Cell_Renderer_Editing_Started_Signal));

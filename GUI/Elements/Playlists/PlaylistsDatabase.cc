@@ -168,9 +168,11 @@ PlaylistsDatabase::PlaylistsDatabase(Base& base_ref)
 
 // General
 
+, database_ustr_ptr_(new Glib::ustring)
+
 , quit_rebuilding_(false)
 
-{
+ {
 
   // 
   int result_code;
@@ -181,7 +183,7 @@ PlaylistsDatabase::PlaylistsDatabase(Base& base_ref)
   struct passwd *pw = getpwuid(getuid());
 
   // 
-  const char *homedir = pw->pw_dir;
+  const char *homedir = pw -> pw_dir;
 
   // 
   std::string directory_str = homedir;
@@ -196,10 +198,12 @@ PlaylistsDatabase::PlaylistsDatabase(Base& base_ref)
 
   // 
   if(!(stat(directory_str . c_str(),&st) == 0))
-  {
+   {
 
+    // 
     string mkdir_str = "mkdir " + directory_str;
 
+    // 
     system(mkdir_str . c_str());
 
   }
@@ -208,6 +212,9 @@ PlaylistsDatabase::PlaylistsDatabase(Base& base_ref)
 
   // 
   string db_str = directory_str + "/playlists.db";
+
+  // 
+  (*database_ustr_ptr_) = directory_str;
 
 
 
@@ -257,7 +264,13 @@ PlaylistsDatabase::PlaylistsDatabase(Base& base_ref)
 PlaylistsDatabase::~PlaylistsDatabase()
 {
 
+  // 
   sqlite3_close(database_);
+
+
+
+  // 
+  delete database_ustr_ptr_;
 
 }
 
@@ -296,6 +309,14 @@ bool PlaylistsDatabase::Add_Tracks
 
 
   // 
+  Add_Column(playlist_name_str . c_str(), "DISC_NUMBER", "INT");
+
+  // 
+  Add_Column(playlist_name_str . c_str(), "DISC_TOTAL", "INT");
+
+
+
+  // 
   for(auto it : playlist_treestore -> children())
   {
 
@@ -309,7 +330,7 @@ bool PlaylistsDatabase::Add_Tracks
 
     // 
     shared_ptr<Track> track_sptr
-      = temp_treerow[playlists() . playlist_column_record() . track_col];
+      = temp_treerow[playlists() . playlist_column_record() . track_];
 
 
 
@@ -340,11 +361,11 @@ bool PlaylistsDatabase::Add_Tracks
 
     // 
     sql += "' (ID, ALBUM, ALBUM_ARTIST, ARTIST, BIT_DEPTH, BIT_RATE, CHANNELS, CODEC, " \
-           "DATE, DURATION, END, FILE_NAME, GENRE, LENGTH_CS, MIME, PREGAP_START," \
-           "REPLAY_GAIN_ALBUM_GAIN, REPLAY_GAIN_ALBUM_PEAK, " \
-           "REPLAY_GAIN_TRACK_GAIN, REPLAY_GAIN_TRACK_PEAK, " \
-           "SAMPLE_RATE, START, TITLE, TRACK_NUMBER, TRACK_TOTAL, " \
-           "TYPE) " \
+           "DATE, DISC_NUMBER, DISC_TOTAL, DURATION, END, FILE_NAME, GENRE, " \
+           "LENGTH_CS, MIME, PREGAP_START, REPLAY_GAIN_ALBUM_GAIN, " \
+           "REPLAY_GAIN_ALBUM_PEAK, REPLAY_GAIN_TRACK_GAIN, " \
+           "REPLAY_GAIN_TRACK_PEAK, SAMPLE_RATE, START, TITLE, " \
+           "TRACK_NUMBER, TRACK_TOTAL, TYPE) " \
            "VALUES (" + to_string(id) + ", '"
              + Convert(track_sptr -> album()) + "', '"
              + Convert(album_artists_str_ptr -> raw()) + "', '"
@@ -354,6 +375,8 @@ bool PlaylistsDatabase::Add_Tracks
              + to_string(track_sptr -> channels()) + ", '"
              + Convert(track_sptr -> codec()) + "', "
              + to_string(track_sptr -> date()) + ", "
+             + to_string(track_sptr -> disc_number()) + ", "
+             + to_string(track_sptr -> disc_total()) + ", "
              + to_string(track_sptr -> duration()) + ", "
              + to_string(track_sptr -> end()) + ", '"
              + Convert(track_sptr -> filename()) + "', '"
@@ -535,6 +558,8 @@ bool PlaylistsDatabase::Create_Playlist(const char* playlist_name)
          "BIT_DEPTH                INT               NOT NULL," \
          "BIT_RATE                 INT               NOT NULL," \
          "DATE                     INT               NOT NULL," \
+         "DISC_NUMBER              INT               NOT NULL," \
+         "DISC_TOTAL               INT               NOT NULL," \
          "DURATION                 INT               NOT NULL," \
          "CHANNELS                 INT               NOT NULL," \
          "CODEC                    TEXT              NOT NULL," \
@@ -1057,6 +1082,24 @@ int PlaylistsDatabase::Extract_Tracks_Callback
     }
 
     // 
+    else if(strcmp(column_name[i], "DISC_NUMBER") == 0)
+    {
+
+      // 
+      new_track_sptr -> set_disc_number(atoi(argv[i]));
+
+    }
+
+    // 
+    else if(strcmp(column_name[i], "DISC_TOTAL") == 0)
+    {
+
+      // 
+      new_track_sptr -> set_disc_total(atoi(argv[i]));
+
+    }
+
+    // 
     else if(strcmp(column_name[i], "DURATION") == 0)
     {
 
@@ -1381,6 +1424,27 @@ bool PlaylistsDatabase::Rebuild_Database()
 
     // 
     return false;
+
+  }
+
+
+
+  // 
+  while(!(mutex_ . try_lock()))
+  {
+
+    // 
+    string copy_database_str
+      = "cp " + (*database_ustr_ptr_) + "/playlists.db "
+          + (*database_ustr_ptr_) + "/playlists.db.backup";
+
+    // 
+    system(copy_database_str . c_str());
+
+
+
+    // 
+    mutex_ . unlock();  
 
   }
 
@@ -1712,6 +1776,21 @@ bool PlaylistsDatabase::Rebuild_Database()
       {
 
         // 
+        sqlite3_close(database_);
+
+
+
+        // 
+        string copy_database_str
+          = "cp " + (*database_ustr_ptr_) + "/playlists.db.backup "
+              + (*database_ustr_ptr_) + "/playlists.db";
+
+        // 
+        system(copy_database_str . c_str());
+
+
+
+        // 
         mutex_ . unlock();
 
 
@@ -1948,11 +2027,19 @@ bool PlaylistsDatabase::Rebuild_Database()
 
 
       // 
+      Add_Column(playlist_name, "DISC_NUMBER", "INT");
+
+      // 
+      Add_Column(playlist_name, "DISC_TOTAL", "INT");
+
+
+
+      // 
       Gtk::TreeRow temp_treerow = *playlist_row_it;
 
       // 
       shared_ptr<Track> track_sptr
-        = temp_treerow[playlists() . playlist_column_record() . track_col];
+        = temp_treerow[playlists() . playlist_column_record() . track_];
 
 
 
@@ -1983,7 +2070,7 @@ bool PlaylistsDatabase::Rebuild_Database()
 
       // 
       sql_part += "' (ID, ALBUM, ALBUM_ARTIST, ARTIST, BIT_DEPTH, BIT_RATE, CHANNELS, CODEC, " \
-                  "DATE, DURATION, END, FILE_NAME, GENRE, LENGTH_CS, MIME, PREGAP_START," \
+                  "DATE, DISC_NUMBER, DISC_TOTAL, DURATION, END, FILE_NAME, GENRE, LENGTH_CS, MIME, PREGAP_START, " \
                   "REPLAY_GAIN_ALBUM_GAIN, REPLAY_GAIN_ALBUM_PEAK, " \
                   "REPLAY_GAIN_TRACK_GAIN, REPLAY_GAIN_TRACK_PEAK, " \
                   "SAMPLE_RATE, START, TITLE, TRACK_NUMBER, TRACK_TOTAL, " \
@@ -1997,6 +2084,8 @@ bool PlaylistsDatabase::Rebuild_Database()
                   + to_string(track_sptr -> channels()) + ", '"
                   + Convert(track_sptr -> codec()) + "', "
                   + to_string(track_sptr -> date()) + ", "
+                  + to_string(track_sptr -> disc_number()) + ", "
+                  + to_string(track_sptr -> disc_total()) + ", "
                   + to_string(track_sptr -> duration()) + ", "
                   + to_string(track_sptr -> end()) + ", '"
                   + Convert(track_sptr -> filename()) + "', '"

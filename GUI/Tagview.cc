@@ -469,7 +469,7 @@ void Tagview::Update_Tags(const char *new_frame_label_name, Track& new_track)
 
 
     // 
-    if(new_track.Is_Empty())
+    if(new_track . Is_Empty())
     {
 
       //

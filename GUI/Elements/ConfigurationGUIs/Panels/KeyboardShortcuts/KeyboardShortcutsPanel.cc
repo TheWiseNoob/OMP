@@ -340,6 +340,7 @@ void KeyboardShortcutsPanel::Apply_Saved_Values()
      {"copy_rows", "Copy Selected Rows"},
      {"create_playlist", "Create A New Playlist"},
      {"cut_rows", "Cut Selected Rows"},
+     {"edit_row", "Edit Row Metadata"},
      {"delete_playlist", "Delete Active Playlist"},
      {"delete_rows", "Delete Selected Rows"},
      {"next_track", "Next Track"},
@@ -348,7 +349,8 @@ void KeyboardShortcutsPanel::Apply_Saved_Values()
      {"play", "Play"},
      {"select_all_rows", "Select All Rows"},
      {"select_all_rows", "System Menu Pops Up"},
-     {"stop", "Stop"}};
+     {"stop", "Stop"},
+     {"stop_after_current", "Stop After Current Track"}};
 
 
 

@@ -1952,38 +1952,10 @@ void Track::set_disc_number(int new_disc_number)
 
 }
 
-void Track::set_disc_number(const std::string &new_disc_number)
-{
-
-  // 
-  if(!(new_disc_number . empty()))
-  {
-
-    // 
-    disc_number_ = stoi(new_disc_number);
-
-  }
-
-}
-
 void Track::set_disc_total(int new_disc_total)
 { 
 
   disc_total_ = new_disc_total; 
-
-}
-
-void Track::set_disc_total(const std::string &new_disc_total)
-{
-
-  // 
-  if(!(new_disc_total . empty()))
-  {
-
-    // 
-    disc_total_ = stoi(new_disc_total);
-
-  }
 
 }
 

@@ -87,6 +87,10 @@
 
 #include <apeproperties.h>
 
+#include <filesystem>
+
+#include <experimental/filesystem>
+
 #include <fstream>
 
 #include <gio/gio.h>
@@ -200,6 +204,31 @@ Metadata::~Metadata()
 //         //
 // Reading ////////////////////////////////////////////////////////////////////
 //         //
+
+vector<std::string>*
+  Metadata::All_Files_In_All_Folders(std::string& folder_str_ref)
+{
+
+  // 
+  experimental::filesystem::path folder_path;
+
+
+/*
+  // 
+  for(auto file : folder_path)
+  {
+
+    // 
+    cout << "\n\nfile: " << folder_path << file << "\n\n";
+
+  }
+*/
+
+
+  // 
+  return nullptr;
+
+}
 
 bool Metadata::Determine_Codec_If_Supported
   (TagLib::AudioProperties& audio_prop, Track& new_track)
@@ -1230,6 +1259,46 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
       }
 
+      // True if the disc has a disc number.
+      if(temp_prop_map . contains(TagLib::String("DISCNUMBER")))
+      {
+
+        debug("Metadata: Interpret_Properties: NORMAL: DISCNUMBER");
+
+
+
+        //  Saved the value of the tag to a string.
+        string disc_num_str
+          = temp_prop_map[TagLib::String("DISCNUMBER")]
+              . toString() . to8Bit(true);
+
+
+
+        // Sets the disc number of new_disc.
+        new_track . set_disc_number(stoi(disc_num_str));
+
+      }
+
+      // 
+      if(temp_prop_map.contains(TagLib::String("DISCTOTAL")))
+      {
+
+        debug("Metadata: Interpret_Properties: NORMAL: DISCTOTAL");
+
+
+
+        //  Saved the value of the tag to a string.
+        string disc_total_str
+          = temp_prop_map[TagLib::String("DISCTOTAL")]
+              . toString() . to8Bit(true);
+
+
+
+        // Sets the disc total of new_disc.
+        new_track . set_disc_total(stoi(disc_total_str));
+
+      }
+
       // 
       if(temp_prop_map.contains(TagLib::String("DATE")))
       {
@@ -1243,32 +1312,6 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
       }
 
-      // 
-      if(temp_prop_map.contains(TagLib::String("DISCNUMBER")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: DISCNUMBER");
-
-
-
-        // 
-        new_track.set_disc_number(temp_prop_map[TagLib::String("DISCNUMBER")].toString().to8Bit(true));
-
-      }
-
-      // 
-      if(temp_prop_map.contains(TagLib::String("DISCTOTAL")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: DISCTOTAL");
-
-
-
-        // 
-        new_track . set_disc_total(temp_prop_map[TagLib::String("DISCTOTAL")].toString().to8Bit(true));
-
-      }
-    
       // 
       if(temp_prop_map.contains(TagLib::String("REPLAYGAIN_ALBUM_GAIN")))
       {
@@ -1444,9 +1487,9 @@ std::vector<Track*> *Metadata::Interpret_Properties
     TagLib::AudioProperties &audio_properties = *(file_ref.audioProperties());
 
     // 
-    int bit_rate = audio_properties.bitrate(),
-        sample_rate = audio_properties.sampleRate(),
-        channels = audio_properties.channels();
+    int bit_rate = audio_properties . bitrate(),
+        sample_rate = audio_properties . sampleRate(),
+        channels = audio_properties . channels();
 
     // 
     Track& new_track = *(new_tracks -> front());
@@ -1514,6 +1557,44 @@ std::vector<Track*> *Metadata::Interpret_Properties
     long long temp_duration = 0LL;
 
     // 
+    int disc_number = 0;
+
+    // 
+    int disc_total = 0;
+
+
+
+    // 
+    if(temp_prop_map . contains(TagLib::String("DISCNUMBER")))
+    {
+
+      debug("Metadata: Interpret_Properties: NORMAL: DISCNUMBER");
+
+
+
+      // 
+      disc_number = stoi(temp_prop_map[TagLib::String("DISCNUMBER")]
+                                         . toString() . to8Bit(true));
+
+    }
+
+    // 
+    if(temp_prop_map . contains(TagLib::String("DISCTOTAL")))
+    {
+
+      debug("Metadata: Interpret_Properties: NORMAL: DISCTOTAL");
+
+
+
+      // 
+      disc_total = stoi(temp_prop_map[TagLib::String("DISCTOTAL")]
+                                        . toString().to8Bit(true));
+  
+    }
+
+
+
+    // 
     for(int i = 0; i < track_total - 1; i++)
     {
 
@@ -1532,6 +1613,12 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
       // 
       (*new_tracks)[i] -> set_duration(temp_duration);
+
+      // 
+      (*new_tracks)[i] -> set_disc_number(disc_number);
+
+      // 
+      (*new_tracks)[i] -> set_disc_total(disc_total);
 
 
 
@@ -1555,8 +1642,16 @@ std::vector<Track*> *Metadata::Interpret_Properties
     // 
     (*new_tracks)[track_total - 1] -> set_duration(temp_duration);
 
+    // 
+    (*new_tracks)[track_total - 1] -> set_disc_number(disc_number);
+
+    // 
+    (*new_tracks)[track_total - 1] -> set_disc_total(disc_total);
 
 
+
+
+    
     // 
     delete time_string_ptr;
 
@@ -1701,16 +1796,19 @@ std::vector<Track*> *Metadata::Interpret_Properties
                                    &Track::genres, &Track::add_genre, &Track::clear_genres);
       temp_prop_map.erase(TagLib::String("TRACKNUMBER"));
       temp_prop_map.erase(TagLib::String("TRACKTOTAL"));
+
+
+
       if(temp_prop_map.contains(TagLib::String("DISCNUMBER")))
       {
 
-        track_it -> set_disc_number(temp_prop_map[TagLib::String("DISCNUMBER")].toString().to8Bit(true));
+        track_it -> set_disc_number(stoi(temp_prop_map[TagLib::String("DISCNUMBER")].toString().to8Bit(true)));
 
       }
       if(temp_prop_map.contains(TagLib::String("DISCTOTAL")))
       {
 
-        track_it -> set_disc_total(temp_prop_map[TagLib::String("DISCTOTAL")].toString().to8Bit(true));
+        track_it -> set_disc_total(stoi(temp_prop_map[TagLib::String("DISCTOTAL")].toString().to8Bit(true)));
 
       }
 
@@ -1892,41 +1990,540 @@ void Metadata::Print_Properties(const char *filename)
 // Writing ////////////////////////////////////////////////////////////////////
 //         //
 
-bool Metadata::Write_Tag(int argc, char* argv[])
+bool Metadata::Write_Tag(const char* tag_name, shared_ptr<Track> track_sptr)
 {
 
-  char *tag_name = argv[2],
-       *song_filename = argv[argc - 1];
+  // 
+  const char* filename = track_sptr -> filename() . c_str();
 
-  TagLib::FileRef file_ref(song_filename);
 
-  TagLib::PropertyMap temp_prop_map = (file_ref.file() -> properties());
 
-  temp_prop_map.erase(TagLib::String(tag_name));
- 
-  for(int i = 3; i < (argc - 1); i++)
+  // 
+  TagLib::FileRef file_ref(filename);
+
+  // 
+  TagLib::PropertyMap temp_prop_map = (file_ref . file() -> properties());
+
+
+
+  // 
+  string tag_name_str = tag_name;
+
+
+
+  // 
+  if(tag_name_str == "album")
   {
 
-    if(temp_prop_map.insert(TagLib::String(tag_name), 
-                            TagLib::StringList(TagLib::String(argv[i]))))
+    // 
+    temp_prop_map . erase(TagLib::String("ALBUM"));
+
+
+
+    // 
+    TagLib::String tag_str(track_sptr -> album() . raw(), TagLib::String::Type::UTF8);
+
+
+
+    // 
+    if(temp_prop_map . insert(TagLib::String("ALBUM"), tag_str))
     {
 
       debug("Successfully inserted!");
 
     }
+
+    // 
     else
     {
 
       debug("Insertion failed!");
 
+
+
+      // 
+      return false;
+
+    }
+ 
+  } 
+
+  // 
+  else if(tag_name_str == "album_artists")
+  {
+ 
+    // 
+    temp_prop_map . erase(TagLib::String("ALBUMARTIST"));
+
+
+
+    // 
+    for(auto tag_value : track_sptr -> album_artists())
+    { 
+
+      // 
+      TagLib::StringList tag_str_list
+        (TagLib::String(tag_value -> raw(), TagLib::String::Type::UTF8));
+
+
+
+      // 
+      if(temp_prop_map . insert(TagLib::String("ALBUMARTIST"), tag_str_list))
+      {
+
+        debug("Successfully inserted!");
+
+      }
+
+      // 
+      else
+      {
+
+        debug("Insertion failed!");
+
+
+
+        // 
+        return false;
+
+      }
+ 
     }
 
+  } 
+
+  // 
+  else if(tag_name_str == "artists")
+  { 
+
+    // 
+    temp_prop_map . erase(TagLib::String("ARTIST"));
+
+
+
+    // 
+    for(auto tag_value : track_sptr -> artists())
+    { 
+
+      // 
+      TagLib::StringList tag_str_list
+        (TagLib::String(tag_value -> raw(), TagLib::String::Type::UTF8));
+
+
+
+      // 
+      if(temp_prop_map . insert(TagLib::String("ARTIST"), tag_str_list))
+      {
+
+        debug("Successfully inserted!");
+
+      }
+
+      // 
+      else
+      {
+
+        debug("Insertion failed!");
+
+
+
+        // 
+        return false;
+
+      }
+
+    }
+ 
   }
 
-  file_ref.file() -> setProperties(temp_prop_map);
+  // 
+  else if(tag_name_str == "date")
+  {
 
-  file_ref.file() -> save();
+    // 
+    temp_prop_map . erase(TagLib::String("DATE"));
 
+
+
+    // 
+    Glib::ustring tag_str;
+
+    // 
+    if(track_sptr -> date() == 0)
+    {
+
+      tag_str = "";
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      tag_str = to_string(track_sptr -> date());
+
+    }
+
+
+
+    // 
+    TagLib::String taglib_str(tag_str, TagLib::String::Type::UTF8);
+
+
+
+    // 
+    if(temp_prop_map . insert(TagLib::String("DATE"), taglib_str))
+    {
+
+      debug("Successfully inserted!");
+
+    }
+
+    // 
+    else
+    {
+
+      debug("Insertion failed!");
+
+
+
+      // 
+      return false;
+
+    }
+ 
+  }  
+
+  // 
+  else if(tag_name_str == "disc_number")
+  {
+
+    // 
+    temp_prop_map . erase(TagLib::String("DISCNUMBER"));
+
+
+
+    // 
+    Glib::ustring tag_str;
+
+    // 
+    if(track_sptr -> disc_number() <= 0)
+    {
+
+      tag_str = "";
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      tag_str = to_string(track_sptr -> disc_number());
+
+    }
+
+
+
+    // 
+    TagLib::String taglib_str(tag_str, TagLib::String::Type::UTF8);
+
+
+
+    // 
+    if(temp_prop_map . insert(TagLib::String("DISCNUMBER"), taglib_str))
+    {
+
+      debug("Successfully inserted!");
+
+    }
+
+    // 
+    else
+    {
+
+      debug("Insertion failed!");
+
+
+
+      // 
+      return false;
+
+    }
+ 
+  }   
+
+  // 
+  else if(tag_name_str == "disc_total")
+  {
+
+    // 
+    temp_prop_map . erase(TagLib::String("DISCTOTAL"));
+
+
+
+    // 
+    Glib::ustring tag_str;
+
+    // 
+    if(track_sptr -> disc_total() == 0)
+    {
+
+      tag_str = "";
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      tag_str = to_string(track_sptr -> disc_total());
+
+    }
+
+
+
+    // 
+    TagLib::String taglib_str(tag_str, TagLib::String::Type::UTF8);
+
+
+
+    // 
+    if(temp_prop_map . insert(TagLib::String("DISCTOTAL"), taglib_str))
+    {
+
+      debug("Successfully inserted!");
+
+    }
+
+    // 
+    else
+    {
+
+      debug("Insertion failed!");
+
+
+
+      // 
+      return false;
+
+    }
+ 
+  }  
+
+  // 
+  else if(tag_name_str == "genres")
+  { 
+
+    // 
+    temp_prop_map . erase(TagLib::String("GENRE"));
+
+
+
+    // 
+    for(auto tag_value : track_sptr -> genres())
+    { 
+
+      // 
+      TagLib::StringList tag_str_list
+        (TagLib::String(tag_value -> raw(), TagLib::String::Type::UTF8));
+
+
+
+      // 
+      if(temp_prop_map . insert(TagLib::String("GENRE"), tag_str_list))
+      {
+
+        debug("Successfully inserted!");
+
+      }
+
+      // 
+      else
+      {
+
+        debug("Insertion failed!");
+
+
+
+        // 
+        return false;
+
+      }
+ 
+    }
+
+  } 
+
+  // 
+  else if(tag_name_str == "title")
+  { 
+
+    // 
+    temp_prop_map . erase(TagLib::String("TITLE"));
+
+
+
+    // 
+    TagLib::String tag_str(track_sptr -> title() . raw(),
+                           TagLib::String::Type::UTF8);
+
+
+
+    // 
+    if(temp_prop_map . insert(TagLib::String("TITLE"), tag_str))
+    {
+
+      debug("Successfully inserted!");
+
+    }
+
+    // 
+    else
+    {
+
+      debug("Insertion failed!");
+
+
+
+      // 
+      return false;
+
+    }
+ 
+  } 
+
+  // 
+  else if(tag_name_str == "track_number")
+  {
+
+    // 
+    temp_prop_map . erase(TagLib::String("TRACKNUMBER"));
+
+
+
+    // 
+    Glib::ustring tag_str;
+
+    // 
+    if(track_sptr -> track_number() == 0)
+    {
+
+      tag_str = "";
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      tag_str = to_string(track_sptr -> track_number());
+
+    }
+
+
+
+    // 
+    TagLib::String taglib_str(tag_str, TagLib::String::Type::UTF8);
+
+
+
+    // 
+    if(temp_prop_map . insert(TagLib::String("TRACKNUMBER"), taglib_str))
+    {
+
+      debug("Successfully inserted!");
+
+    }
+
+    // 
+    else
+    {
+
+      debug("Insertion failed!");
+
+
+
+      // 
+      return false;
+
+    }
+ 
+  } 
+
+  // 
+  else if(tag_name_str == "track_total")
+  {
+
+    // 
+    temp_prop_map . erase(TagLib::String("TRACKTOTAL"));
+
+
+
+    // 
+    Glib::ustring tag_str;
+
+    // 
+    if(track_sptr -> track_total() == 0)
+    {
+
+      tag_str = "";
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      tag_str = to_string(track_sptr -> track_total());
+
+    }
+
+
+
+    // 
+    TagLib::String taglib_str(tag_str, TagLib::String::Type::UTF8);
+
+
+
+    // 
+    if(temp_prop_map . insert(TagLib::String("TRACKTOTAL"), taglib_str))
+    {
+
+      debug("Successfully inserted!");
+
+    }
+
+    // 
+    else
+    {
+
+      debug("Insertion failed!");
+
+
+
+      // 
+      return false;
+
+    }
+ 
+  } 
+
+
+
+  // 
+  file_ref . file() -> setProperties(temp_prop_map);
+
+  // 
+  file_ref . file() -> save();
+
+
+
+  // 
   return true;
 
 }

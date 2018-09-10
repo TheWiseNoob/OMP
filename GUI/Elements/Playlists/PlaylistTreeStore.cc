@@ -142,6 +142,8 @@ PlaylistTreeStore::PlaylistTreeStore
 
 , rebuild_database_(false)
 
+, rebuild_finished_(true)
+
 , rebuild_scheduled_(false)
 
 , rebuilding_database_(false)

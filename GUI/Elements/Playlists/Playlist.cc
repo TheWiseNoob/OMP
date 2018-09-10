@@ -123,8 +123,6 @@
 
 #include <gtkmm/label.h>
 
-#include <gtkmm/overlay.h>
-
 #include <gtkmm/progressbar.h>
 
 #include <gtkmm/radiomenuitem.h>
@@ -184,9 +182,11 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 // General
 
+, editing_canceled_(false)
+
 , playlist_view_name_(new_playlist_view_name)
 
-, right_click_row_tree_path_(new Gtk::TreePath)
+, right_click_row_tree_row_ref_(new Gtk::TreeRowReference)
 
 
 
@@ -295,7 +295,8 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
   // 
   this -> set_tooltip_text
-    ("- Double left-click to start playback at clicked row.\n\n" \
+    ("- Double left-click quickly (< 0.25s) to start playback at the clicked row.\n\n" \
+     "- Double left-click slowly (> 0.25s and < 0.5s) to edit the clicked metadata field.\n\n" \
      "- Single right-click to open the playlist menu.\n\n" \
      "- Single left-click and hold to drag the selected row or rows.");
 
@@ -389,31 +390,52 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
 
+    // 
+    int column_num = -1;
+
+
+
     //
-    if(column_order_list_it == "track_number")
+    if(column_order_list_it == "album")
     {
 
-      // 
-      new_column
-        = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . track_num_col));
+      // Appends
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("album"),
+         playlists_ref . playlist_column_record() . album_);
 
-      // Appends a track # column.
-      append_column(*new_column);
+
+
+      // 
+      new_column = get_column(column_num - 1);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . album_);
 
     }
 
     //
-    else if(column_order_list_it == "title")
+    else if(column_order_list_it == "album_artists")
     {
 
-      // 
-      new_column
-        = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . title_col));
-
       // Appends
-      append_column(*new_column);
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("album_artists"),
+         playlists_ref . playlist_column_record() . album_artists_);
+
+
+
+      // 
+      new_column = get_column(column_num - 1);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . album_artists_);
 
     }
 
@@ -422,113 +444,20 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
     {
 
       // Appends
-      int column_num = append_column_editable
-        ("Artist(s)", 
-         playlists_ref . playlist_column_record() . artist_col);
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("artists"),
+         playlists_ref . playlist_column_record() . artists_);
 
 
 
       // 
       new_column = get_column(column_num - 1);
 
-    }
 
-    //
-    else if(column_order_list_it == "album_artists")
-    {
 
-      // 
-      new_column
-        = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record()
-                                      . album_artist_col));
-
-      // Appends
-      append_column(*new_column);
-
-    }
-
-    //
-    else if(column_order_list_it == "album")
-    {
-
-      // 
-      new_column
-        = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . album_col));
-
-      // Appends
-      append_column(*new_column);
-
-    }
-
-    //
-    else if(column_order_list_it == "genres")
-    {
-
-      // 
-      new_column
-        = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . genre_col));
-
-      // Appends
-      append_column(*new_column);
-
-    }
-    
-    //
-    else if(column_order_list_it == "length")
-    {
-
-      // 
-      new_column
-        = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . length_col));
-
-      // Appends
-      append_column(*new_column);
-
-    }
-
-    //
-    else if(column_order_list_it == "date")
-    {
-
-      // 
-      new_column
-        = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . date_col));
-
-      // Appends
-      append_column(*new_column);
-
-    }
-
-    //
-    else if(column_order_list_it == "track_total")
-    {
-
-      // 
-      new_column
-        = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . track_total_col));
-
-      // Appends
-      append_column(*new_column);
-
-    }
-    
-    //
-    else if(column_order_list_it == "bit_rate")
-    {
-
-      // 
-      new_column
-        = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . bit_rate_col));
-
-      // Appends
-      append_column(*new_column);
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . artists_);
 
     }
 
@@ -539,24 +468,36 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
       // 
       new_column
         = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . bit_depth_col));
+            (title, playlists_ref . playlist_column_record() . bit_depth_));
 
-      // Appends
+      // Appends a track # column.
       append_column(*new_column);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . bit_depth_);
 
     }
 
     //
-    else if(column_order_list_it == "sample_rate")
+    else if(column_order_list_it == "bit_rate")
     {
 
       // 
       new_column
         = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . sample_rate_col));
+            (title, playlists_ref . playlist_column_record() . bit_rate_));
 
-      // Appends
+      // Appends a track # column.
       append_column(*new_column);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . bit_rate_);
 
     }
 
@@ -567,10 +508,16 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
       // 
       new_column
         = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . channels_col));
+            (title, playlists_ref . playlist_column_record() . channels_));
 
-      // Appends
+      // Appends a track # column.
       append_column(*new_column);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . channels_);
 
     }
 
@@ -581,10 +528,125 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
       // 
       new_column
         = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . codec_col));
+            (title, playlists_ref . playlist_column_record() . codec_));
+
+      // Appends a track # column.
+      append_column(*new_column);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . codec_);
+
+    }
+
+    //
+    else if(column_order_list_it == "date")
+    {
 
       // Appends
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("date"),
+         playlists_ref . playlist_column_record() . date_);
+
+
+
+      // 
+      new_column = get_column(column_num - 1);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . date_);
+
+    } 
+
+    //
+    else if(column_order_list_it == "disc_number")
+    { 
+
+      // Appends
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("disc_number"),
+         playlists_ref . playlist_column_record() . disc_number_);
+
+
+
+      // 
+      new_column = get_column(column_num - 1);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . disc_number_int_);
+
+    }
+
+    //
+    else if(column_order_list_it == "disc_total")
+    { 
+
+      // Appends
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("disc_total"),
+         playlists_ref . playlist_column_record() . disc_total_);
+
+
+
+      // 
+      new_column = get_column(column_num - 1);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . disc_total_int_);
+
+
+    }
+
+    //
+    else if(column_order_list_it == "genres")
+    {
+
+      // Appends
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("genres"),
+         playlists_ref . playlist_column_record() . genres_);
+
+
+
+      // 
+      new_column = get_column(column_num - 1);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . genres_);
+
+    }
+    
+    //
+    else if(column_order_list_it == "length")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . length_));
+
+      // Appends a track # column.
       append_column(*new_column);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . length_);
 
     }
 
@@ -595,17 +657,134 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
       // 
       new_column
         = Gtk::manage(new Gtk::TreeViewColumn
-            (title, playlists_ref . playlist_column_record() . mime_col));
+            (title, playlists_ref . playlist_column_record() . mime_));
 
-      // Appends
+      // Appends a track # column.
       append_column(*new_column);
 
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . mime_);
+
     }
+
+    //
+    else if(column_order_list_it == "sample_rate")
+    {
+
+      // 
+      new_column
+        = Gtk::manage(new Gtk::TreeViewColumn
+            (title, playlists_ref . playlist_column_record() . sample_rate_));
+
+      // Appends a track # column.
+      append_column(*new_column);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . sample_rate_);
+
+    }
+
+    //
+    else if(column_order_list_it == "title")
+    {
+
+      // Appends
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("title"),
+         playlists_ref . playlist_column_record() . title_);
+
+
+
+      // 
+      new_column = get_column(column_num - 1);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . title_);
+
+    }
+
+    //
+    else if(column_order_list_it == "track_number")
+    {
+
+      // Appends
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("track_number"),
+         playlists_ref . playlist_column_record() . track_number_);
+
+
+
+      // 
+      new_column = get_column(column_num - 1);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . track_number_int_);
+
+    }
+
+    //
+    else if(column_order_list_it == "track_total")
+    {
+
+      // Appends
+      column_num = append_column_editable
+        (playlists_ref . Find_Column_Title("track_total"),
+         playlists_ref . playlist_column_record() . track_total_);
+
+
+
+      // 
+      new_column = get_column(column_num - 1);
+
+
+
+      // Sets the sort column for the column.
+      new_column -> set_sort_column(playlists_ref . playlist_column_record()
+                                                      . track_total_int_);
+
+    } 
 
 
 
     // 
     new_column -> set_sizing(Gtk::TREE_VIEW_COLUMN_FIXED);
+
+
+
+    // 
+    const char* column_name = column_order_list_it . c_str();
+
+    // 
+    if(playlists_ref . Editable_Column(column_name))
+    {
+
+      //
+        Gtk::CellRenderer* row_cell_renderer
+          = get_column_cell_renderer(column_num - 1);
+
+
+
+      // 
+      row_cell_renderer -> signal_editing_started()
+        . connect(sigc::mem_fun(*this, &Playlist::Editing));
+
+      // 
+      row_cell_renderer -> signal_editing_canceled()
+        . connect(sigc::mem_fun(*this, &Playlist::Editing_Canceled));
+
+    }
 
 
 
@@ -622,194 +801,30 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
     // 
     new_column -> set_fixed_width(config() . get(column_size_config_str));
 
-  }
 
-
-
-  debug("After columns appended!");
-
-
-
-  // Iterates through the columns to modify settings.
-  for(auto columns_it : get_columns())
-  {
 
     // Makes the current column's headers reorderable.
-    columns_it -> set_reorderable();
+    new_column -> set_reorderable();
 
     // Makes the column header resizeable.
-    columns_it -> set_resizable(true);
+    new_column -> set_resizable(true);
 
 
 
     // 
-    columns_it -> get_button() -> add_events(Gdk::BUTTON_PRESS_MASK);
+    new_column -> get_button() -> add_events(Gdk::BUTTON_PRESS_MASK);
 
     // Callback for right when the header is clicked
-    columns_it -> get_button() -> signal_pressed()
+    new_column -> get_button() -> signal_pressed()
       . connect(sigc::mem_fun(*this,
                               &Playlist::On_Button_Press_Event_Column_Header));
 
     // Callback for when after the header is clicked.
-    columns_it -> signal_clicked()
+    new_column -> signal_clicked()
                     . connect(sigc::mem_fun(*this, &Playlist::Header_Clicked));
-
-
-
-    // True if the current column is track number.
-    if(columns_it -> get_title() == "#")
-    { 
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . track_num_int_col);
-    }
-
-    // True if the current column is for the track number tag.
-    else if(columns_it -> get_title() == "Title")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . title_col);
-
-    }
-
-    // True if the current column is for the artist tag.
-    else if(columns_it -> get_title() == "Artist(s)")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . artist_col);
-
-    }
-
-    // True if the current column is for the album artists tag.
-    else if(columns_it -> get_title() == "Album Artist(s)")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . album_artist_col);
-
-    }
-
-    // True if the current column is for the album tag.
-    else if(columns_it -> get_title() == "Album")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . album_col);
-
-    }
-
-    // True if the current column is for the genre tag.
-    else if(columns_it -> get_title() == "Genre(s)")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . genre_col);
-
-    }
-
-    // True if the current column is for the track length.
-    else if(columns_it -> get_title() == "Length")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . length_col);
-
-    }
-
-    // True if the current column is for the genre tag.
-    else if(columns_it -> get_title() == "Date")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . date_col);
-
-    }
-
-    // True if the current column is for the track total tag.
-    else if(columns_it -> get_title() == "Track Total")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . track_total_int_col);
-
-    }
-
-    // True if the current column is for the bit depth.
-    else if(columns_it -> get_title() == "Bit Depth")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . bit_depth_col);
-
-    }
-
-    // True if the current column is for the bitrate.
-    else if(columns_it -> get_title() == "Bitrate")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . bit_rate_col);
-
-    }
-
-    // True if the current column is for the sample rate.
-    else if(columns_it -> get_title() == "Sample Rate")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . sample_rate_col);
-
-    }
-
-    // True if the current column is for the channel count.
-    else if(columns_it -> get_title() == "Channels")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . channels_col);
-
-    }
-
-    // True if the current column is for the codec.
-    else if(columns_it -> get_title() == "Codec")
-    {
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . codec_col);
-
-    }
-
-    // True if the current column is mime type.
-    else if(columns_it -> get_title() == "Mime")
-    { 
-
-      // Sets the sort column for the column.
-      columns_it -> set_sort_column(playlists_ref . playlist_column_record()
-                                                      . mime_col);
-
-    }
 
   }
 
-
-
-  debug("After column changes!");
 
 
 
@@ -821,6 +836,10 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   debug("After playlist_treesection assignment");
 
 
+
+  // Assigns the TreeView's selection changed function.
+  signal_cursor_changed()
+    . connect(sigc::mem_fun(*this, &Playlist::On_Cursor_Changed));
 
   // Assigns the TreeView's selection changed function.
   selection_conn_ = (playlist_treeselection_ -> signal_changed()
@@ -1053,9 +1072,6 @@ Playlist::~Playlist()
 
 
 
-  // 
-  delete right_click_row_tree_path_;
-
   // Deletes the PlaylistMenu.
   delete menu_;
 
@@ -1065,6 +1081,9 @@ Playlist::~Playlist()
   delete copy_progress_bar_;
 
 
+
+  // 
+  delete right_click_row_tree_row_ref_;
 
   // Deletes the destination tree row ref for drag and drop.
   delete dest_tree_row_ref_;
@@ -1992,7 +2011,7 @@ bool Playlist::on_drag_drop
         // Gets a copy of the row's Track shared_ptr.
         shared_ptr<Track> temp_track
           = (temp_row[playlists() . selected_playlist() 
-                                  . playlist_column_record() . track_col]);
+                                  . playlist_column_record() . track_]);
 
         // Pushes the retrieved Track sptr to the back of
         // selected_tracks_sptrs.
@@ -2292,35 +2311,48 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
       // 
       shared_ptr<Track> row_track_sptr
-        = row[playlist_column_record() . track_col];
+        = row[playlist_column_record() . track_];
+
 
 
       // 
-      if((row_track_sptr -> type()) == TrackType::NORMAL)
+      (*right_click_row_tree_row_ref_)
+        = Gtk::TreeRowReference(playlist_treestore_, row_tree_path);
+
+      // 
+      right_click_row_column_ = row_column;
+
+      //
+      right_click_x_ = x;
+
+      //
+      right_click_y_ = y;
+
+      //
+      right_click_x_cell_ = x_cell;
+
+      //
+      right_click_y_cell_ = y_cell;
+
+
+
+      // 
+      string column_title = row_column -> get_title();
+
+
+
+      // 
+      string column_name
+        = playlists() . Find_Column_Name(column_title);
+
+
+
+      // 
+      if(playlists() . Editable_Column(column_name . c_str()))
       {
 
         // 
-        (*right_click_row_tree_path_) = row_tree_path;
-
-        // 
-        right_click_row_column_ = row_column;
-
-        //
-        right_click_x_ = x;
-
-        //
-        right_click_y_ = y;
-
-        //
-        right_click_x_cell_ = x_cell;
-
-        //
-        right_click_y_cell_ = y_cell;
-
-
-
-        // 
-        if((row_column -> get_title()) == "Artist(s)")
+        if((row_track_sptr -> type()) == TrackType::NORMAL)
         {
 
           // Sets the edit playlist menu item to unclickable.
@@ -2332,8 +2364,23 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
         else
         {
 
-          // Sets the edit playlist menu item to unclickable.
-          menu_ -> edit_menu_item() . set_sensitive(false);
+          // 
+          if((column_name == "disc_total") || (column_name == "disc_number"))
+          {
+
+            // Sets the edit playlist menu item to unclickable.
+            menu_ -> edit_menu_item() . set_sensitive(true);
+
+          }
+
+          // 
+          else
+          {
+
+            // Sets the edit playlist menu item to unclickable.
+            menu_ -> edit_menu_item() . set_sensitive(false);
+
+          }
 
         }
 
@@ -2627,6 +2674,42 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
       else
       {
 
+        // 
+        Gtk::TreeRow row
+          = *(playlist_treestore_ -> get_iter(row_tree_path));
+
+
+
+        // 
+        shared_ptr<Track> row_track_sptr
+          = row[playlist_column_record() . track_];
+
+
+        // 
+        if((row_track_sptr -> type()) == TrackType::NORMAL)
+        {
+
+          // 
+          (*right_click_row_tree_row_ref_)
+            = Gtk::TreeRowReference(playlist_treestore_, row_tree_path);
+
+          // 
+          right_click_row_column_ = row_column;
+
+          //
+          right_click_x_ = x;
+
+          //
+          right_click_y_ = y;
+
+          //
+          right_click_x_cell_ = x_cell;
+
+          //
+          right_click_y_cell_ = y_cell;
+
+        }
+
         // True if the row of the button press is not selected.
         if(!(playlist_treeselection_ -> is_selected(row_tree_path)))
         {
@@ -2646,10 +2729,15 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
 
 
 
-          // Selects the row of the button press.
-          set_cursor(row_tree_path);
-
          }
+
+
+
+        // 
+        grab_focus();
+
+        // Selects the row of the button press.
+        set_cursor(row_tree_path, *row_column);
 
         
 
@@ -2685,6 +2773,55 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
             }
 
 
+            handle_multirow_drag_ = false;
+
+
+
+            // Returns false to not continue the event.
+            return true;
+
+          } 
+
+          // True if the last button press was less than .25 seconds ago.
+          else if(((event -> time) - previous_button_press_event_time_) < 500)
+          {
+
+            debug("Long double click editing.");
+
+
+
+            // Sets the previous button press event time.
+            previous_button_press_event_time_ = event -> time; 
+
+
+
+            // 
+            (*right_click_row_tree_row_ref_)
+              = Gtk::TreeRowReference(playlist_treestore_, row_tree_path);
+
+            // 
+            right_click_row_column_ = row_column;
+
+            //
+            right_click_x_ = x;
+
+            //
+            right_click_y_ = y;
+
+            //
+            right_click_x_cell_ = x_cell;
+
+            //
+            right_click_y_cell_ = y_cell;
+
+
+
+            // 
+            Edit();
+
+
+
+            // 
             handle_multirow_drag_ = false;
 
 
@@ -2770,10 +2907,14 @@ bool Playlist::on_button_release_event(GdkEventButton* event)
 
 
 
+    // 
+    if(((*drag_tree_row_ref_) . get_path()))
+    {
 
+      // Sets the cursor at the row that was selected.
+      set_cursor((*drag_tree_row_ref_) . get_path(), *right_click_row_column_);
 
-    // Sets the cursor at the row that was selected.
-    set_cursor((*drag_tree_row_ref_) . get_path());
+    }
 
   } 
 
@@ -2984,7 +3125,7 @@ void Playlist::Add_Selected_Tracks_Times()
 
       // Makes a copy to the Track sptr of the row.
       shared_ptr<Track> temp_track_sptr
-        = row[playlists() . playlist_column_record() . track_col];
+        = row[playlists() . playlist_column_record() . track_];
 
 
 
@@ -3201,6 +3342,59 @@ void Playlist::Lock()
 
 }
 
+void Playlist::On_Cursor_Changed()
+{
+
+  // Will hold the path of a row. 
+  Gtk::TreePath row_tree_path;
+
+
+
+  // 
+  get_cursor(row_tree_path, right_click_row_column_);
+
+
+
+  if(!row_tree_path)
+  {
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  Gtk::TreeRow row
+    = *(playlist_treestore_ -> get_iter(row_tree_path));
+
+
+
+  // 
+  if(row_tree_path)
+  {
+
+    // 
+    shared_ptr<Track> row_track_sptr
+      = row[playlist_column_record() . track_];
+
+    // 
+    (*right_click_row_tree_row_ref_)
+      = Gtk::TreeRowReference(playlist_treestore_, row_tree_path);
+
+    // 
+    if(!(*right_click_row_tree_row_ref_))
+    {
+
+      return;
+
+    } 
+
+  }
+
+}
+
 void Playlist::On_Selection_Changed()
 {
 
@@ -3393,7 +3587,7 @@ void Playlist::On_Selection_Changed()
 
   // Retrieves a copy of the selected row's track iterator.
   shared_ptr<Track> temp_track_ptr
-      = first_selected_row[playlist_column_record() . track_col];
+      = first_selected_row[playlist_column_record() . track_];
 
 
 
@@ -3406,7 +3600,7 @@ void Playlist::On_Selection_Changed()
 
 
   // Loads cover art for selected track.
-  string filename_string = new_created_track.filename();
+  string filename_string = new_created_track . filename();
 
   // Sets the cover art of the selected track.
   gui() . Load_Cover_Art(filename_string);
@@ -3588,7 +3782,7 @@ void Playlist::Copy_Selected_Rows(bool cut)
 
         // Creates a copy of the current row's Track shared_ptr.
         shared_ptr<Track> temp_track_sptr
-          = (row[playlist_column_record() . track_col]);
+          = (row[playlist_column_record() . track_]);
 
         // Pushes the Track sptr to the back of the clipboard tracks.
         playlists() . clipboard_tracks() . push_back(temp_track_sptr);
@@ -4257,13 +4451,589 @@ void Playlist::Edit()
 {
 
   //
-  Gtk::CellRenderer* artist_row_cell_renderer
-    = get_column_cell_renderer(3);
+  Gtk::CellRenderer* row_cell_renderer
+    = get_column_cell_renderer
+        (Find_Column_Position(Active_Column_Name() . raw() . c_str()));
 
 
 
   // 
-  set_cursor(*right_click_row_tree_path_, *right_click_row_column_, *artist_row_cell_renderer, true);
+  Gtk::TreeIter row_iter
+    = playlist_treestore_
+        -> get_iter(right_click_row_tree_row_ref_ -> get_path());
+
+
+
+  // 
+  Gtk::TreeRow row = *row_iter;
+
+
+
+  // 
+  shared_ptr<Track> track_sptr = row[playlist_column_record() . track_];
+
+
+
+  // 
+  if(track_sptr -> type() == TrackType::NORMAL)
+  {
+
+    // 
+    if(!(playlists() . Editable_Column(Active_Column_Name() . c_str())))
+    {
+
+      // 
+      return;
+
+    }
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    if((Active_Column_Name() == "disc_number")
+         || (Active_Column_Name() == "disc_total"))
+    {
+
+    }
+
+    // 
+    else
+    {
+
+      // 
+      return;
+
+    }
+
+  }
+
+  
+
+  // 
+  if(Active_Column_Name() == "artists")
+  {
+
+    // 
+    int pos = 1;
+
+    // 
+    Glib::ustring artists_ustr;
+
+
+
+    // 
+    for(auto artist : track_sptr -> artists())
+    {
+
+      // 
+      if(pos == 1)
+      {
+
+        // 
+        artists_ustr = *artist;
+
+      }
+
+      // 
+      else
+      { 
+
+        // 
+        artists_ustr += "; " + *artist;
+
+      }
+
+
+
+      // 
+      pos++;
+
+    }
+
+
+
+    // 
+    row[playlist_column_record() . artists_]  = artists_ustr;
+
+  }
+
+  // 
+  else if(Active_Column_Name() == "album_artists")
+  {
+
+    // 
+    int pos = 1;
+
+    // 
+    Glib::ustring album_artists_ustr;
+
+
+
+    // 
+    for(auto album_artist : track_sptr -> album_artists())
+    {
+
+      // 
+      if(pos == 1)
+      {
+
+        // 
+        album_artists_ustr = *album_artist;
+
+      }
+
+      // 
+      else
+      { 
+
+        // 
+        album_artists_ustr += "; " + *album_artist;
+
+      }
+
+
+
+      // 
+      pos++;
+
+    }
+
+
+
+    // 
+    row[playlist_column_record() . album_artists_]  = album_artists_ustr;
+
+  }
+
+  // 
+  else if(Active_Column_Name() == "genres")
+  { 
+
+    // 
+    int pos = 1;
+
+    // 
+    Glib::ustring genres_ustr;
+
+
+
+    // 
+    for(auto genre : track_sptr -> genres())
+    {
+
+      // 
+      if(pos == 1)
+      {
+
+        // 
+        genres_ustr = *genre;
+
+      }
+
+      // 
+      else
+      { 
+
+        // 
+        genres_ustr += "; " + *genre;
+
+      }
+
+
+
+      // 
+      pos++;
+
+    }
+
+
+
+    // 
+    row[playlist_column_record() . genres_]  = genres_ustr;
+
+  }
+
+
+
+  // 
+  set_cursor(right_click_row_tree_row_ref_ -> get_path(),
+             *right_click_row_column_, *row_cell_renderer, true);
+
+}
+
+void Playlist::Editing(Gtk::CellEditable* editable, const Glib::ustring& path)
+{
+
+  // 
+  editable -> signal_editing_done()
+    . connect(sigc::mem_fun
+        (*this, &Playlist::Editing_Finished));
+
+}
+
+void Playlist::Editing_Canceled()
+{
+
+  // 
+  editing_canceled_ = true;
+
+}
+
+void Playlist::Editing_Finished()
+{ 
+
+  // 
+  if(editing_canceled_)
+  {
+
+    // 
+    editing_canceled_ = false;
+
+
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  Gtk::TreeIter row_iter
+    = playlist_treestore_
+        -> get_iter(right_click_row_tree_row_ref_ -> get_path());
+
+
+
+  // 
+  Gtk::TreeRow row = *row_iter;
+
+
+
+  // 
+  shared_ptr<Track> track_sptr = row[playlist_column_record() . track_];
+
+  
+
+  // 
+  if((Active_Column_Name()) == "album")
+  {
+
+    // 
+    Glib::ustring album_ustr = row[playlist_column_record() . album_];
+
+
+
+    // 
+    track_sptr -> set_album(album_ustr);
+
+  }
+
+  // 
+  else if((Active_Column_Name()) == "artists")
+  {
+
+    // 
+    track_sptr -> clear_artists();
+
+
+
+    // 
+    Glib::ustring artists_ustr = row[playlist_column_record() . artists_];
+
+    // 
+    track_sptr
+      -> set_artists(track_sptr -> Multiple_Values_Tag_Decode(artists_ustr));
+
+
+
+    // 
+    Glib::ustring* conv_artist_ustr_ptr = track_sptr -> artists_string();
+
+    // 
+    row[playlist_column_record() . artists_] = *conv_artist_ustr_ptr;
+
+
+
+    // 
+    delete conv_artist_ustr_ptr;
+
+  }
+
+  // 
+  else if((Active_Column_Name()) == "album_artists")
+  {
+
+    // 
+    Glib::ustring album_artists_ustr
+      = row[playlist_column_record() . album_artists_];
+
+    // 
+    track_sptr -> set_album_artists
+      (track_sptr -> Multiple_Values_Tag_Decode(album_artists_ustr));
+
+
+
+    // 
+    Glib::ustring* conv_album_artists_ustr_ptr
+      = track_sptr -> album_artists_string();
+
+    // 
+    row[playlist_column_record() . album_artists_]
+      = *conv_album_artists_ustr_ptr;
+
+
+
+    // 
+    delete conv_album_artists_ustr_ptr;
+
+  }
+
+  // 
+  else if((Active_Column_Name()) == "date")
+  {
+
+    // 
+    Glib::ustring date_ustr
+      = row[playlist_column_record() . date_];
+
+
+
+    // 
+    int date_int = 0;
+
+    // 
+    if(!date_ustr . empty())
+    {
+
+      // 
+      date_int = stoi(date_ustr);
+
+    }
+
+
+
+    // 
+    row[playlist_column_record() . date_int_] = date_int;
+
+
+    // 
+    track_sptr -> set_date(date_int);
+
+  }
+
+  // 
+  else if((Active_Column_Name()) == "disc_number")
+  {
+
+    // 
+    Glib::ustring disc_number_ustr
+      = row[playlist_column_record() . disc_number_];
+
+
+
+    // 
+    int disc_number_int = 0;
+
+    // 
+    if(!disc_number_ustr . empty())
+    {
+
+      // 
+      disc_number_int = stoi(disc_number_ustr);
+
+    }
+
+
+
+    // 
+    row[playlist_column_record() . disc_number_int_] = disc_number_int;
+
+
+    // 
+    track_sptr -> set_disc_number(disc_number_int);
+
+  }
+
+  // 
+  else if((Active_Column_Name()) == "disc_total")
+  {
+
+    // 
+    Glib::ustring disc_total_ustr
+      = row[playlist_column_record() . disc_total_];
+
+
+
+    // 
+    int disc_total_int = 0;
+
+    // 
+    if(!disc_total_ustr . empty())
+    {
+
+      // 
+      disc_total_int = stoi(disc_total_ustr);
+
+    }
+
+
+
+    // 
+    row[playlist_column_record() . disc_total_int_] = disc_total_int;
+
+
+    // 
+    track_sptr -> set_disc_total(disc_total_int);
+
+  }
+
+  // 
+  else if((Active_Column_Name()) == "genres")
+  {
+
+    // 
+    Glib::ustring genres_ustr = row[playlist_column_record() . genres_];
+
+    // 
+    track_sptr -> set_genres
+      (track_sptr -> Multiple_Values_Tag_Decode(genres_ustr));
+
+
+
+    // 
+    Glib::ustring* conv_genres_ustr_ptr = track_sptr -> genres_string();
+
+    // 
+    row[playlist_column_record() . genres_] = *conv_genres_ustr_ptr;
+
+
+
+    // 
+    delete conv_genres_ustr_ptr;
+
+  }
+
+  // 
+  else if((Active_Column_Name()) == "title")
+  {
+
+    // 
+    Glib::ustring title_ustr = row[playlist_column_record() . title_];
+
+
+
+    // 
+    track_sptr -> set_title(title_ustr);
+
+  }
+
+  // 
+  else if((Active_Column_Name()) == "track_number")
+  {
+
+    // 
+    Glib::ustring track_number_ustr
+      = row[playlist_column_record() . track_number_];
+
+
+
+    // 
+    int track_number_int = 0;
+
+    // 
+    if(!track_number_ustr . empty())
+    {
+
+      // 
+      track_number_int = stoi(track_number_ustr);
+
+    }
+
+
+
+    // 
+    row[playlist_column_record() . track_number_int_] = track_number_int;
+
+
+    // 
+    track_sptr -> set_track_number(track_number_int);
+
+  }
+
+  // 
+  else if((Active_Column_Name()) == "track_total")
+  {
+
+    // 
+    Glib::ustring track_total_ustr
+      = row[playlist_column_record() . track_total_];
+
+
+
+    // 
+    int track_total_int = 0;
+
+    // 
+    if(!track_total_ustr . empty())
+    {
+
+      // 
+      track_total_int = stoi(track_total_ustr);
+
+    }
+
+
+
+    // 
+    row[playlist_column_record() . track_total_int_] = track_total_int;
+
+
+
+    // 
+    track_sptr -> set_track_total(track_total_int);
+
+  }
+
+
+
+  // 
+  const char* active_column_name_c_str = Active_Column_Name() . c_str();
+
+  // 
+  metadata() . Write_Tag(active_column_name_c_str, track_sptr);
+
+
+
+  // 
+  playlists() . rebuild_databases() = true;
+
+  // 
+  playlist_treestore_ -> rebuild_database() = true;
+
+  // 
+  playlist_treestore_ -> restart_changes() = true;
+
+
+
+  // 
+  if(playlists() . database_extraction_complete())
+  {
+
+    // 
+    if(!(playlists() . rebuilding_databases()))
+    {
+
+      // 
+      playlists() . database() . Rebuild_Database();
+
+    }
+
+  }
 
 }
 
@@ -4275,6 +5045,7 @@ void Playlist::Paste_Clipboard_Rows()
 
 
 
+  // 
   if(!(pasting_mutex . try_lock()))
   {
 
@@ -4282,6 +5053,23 @@ void Playlist::Paste_Clipboard_Rows()
     return;
 
   }
+
+
+
+  // 
+  if(playlists() . rebuilding_databases())
+  { 
+
+    // 
+    pasting_mutex . unlock();
+
+
+
+    // 
+    return;
+
+  }
+
 
 
   // 
@@ -4525,7 +5313,7 @@ void Playlist::Queue_Rows()
 
     // 
     shared_ptr<Track> row_track_sptr
-      = selected_row[playlist_column_record() . track_col];
+      = selected_row[playlist_column_record() . track_];
 
 
 
@@ -4581,6 +5369,55 @@ void Playlist::Select_All_Rows()
 // State Indicators ///////////////////////////////////////////////////////////
 //                  //
 
+Glib::ustring Playlist::Active_Column_Name()
+{
+
+  // 
+  string column_title = right_click_row_column_ -> get_title();
+
+
+
+  // 
+  return playlists() . Find_Column_Name(column_title);
+
+}
+
+int Playlist::Find_Column_Position(const char* column_name)
+{
+
+  // 
+  int count = 0;
+
+
+
+  // 
+  for(auto column : get_columns())
+  {
+
+    // 
+    if((playlists() . Find_Column_Title(column_name))
+         == (column -> get_title()))
+    {
+
+      // 
+      return count;
+
+    }
+
+
+
+    // 
+    count++;
+
+  }
+
+
+
+  // 
+  return -1;
+
+}
+ 
 bool Playlist::Locked()
 {
 
@@ -4726,11 +5563,22 @@ void Playlist::set_playlist_treestore
   new_treestore -> mutex() . lock();
 
 
+
+  // 
+  selection_conn_ . block(true);
+
+
+
   // 
   this -> set_model(new_treestore);
 
   // 
   playlist_treestore_ = new_treestore;
+
+
+
+  // 
+  selection_conn_ . block(false);
 
 
 

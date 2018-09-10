@@ -224,8 +224,6 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
       Increment_It_To_Next_Line(it, cue_sheet))
   {
 
-    cout << "\n\nChar: " << char(*it) << "\n\n";
-
     // REM top section
     if(*it == 'R')
     {

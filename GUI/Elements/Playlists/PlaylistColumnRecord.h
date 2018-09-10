@@ -109,67 +109,79 @@ class PlaylistColumnRecord : public Gtk::TreeModel::ColumnRecord
     {
 
       // 
-      add(album_col); 
+      add(album_); 
 
       // 
-      add(album_artist_col); 
+      add(album_artists_); 
 
       // 
-      add(artist_col);
+      add(artists_);
 
       // 
-      add(bit_depth_col); 
+      add(bit_depth_); 
 
       // 
-      add(bit_rate_col); 
+      add(bit_rate_); 
 
       // 
-      add(channels_col); 
+      add(channels_); 
 
       // 
-      add(codec_col); 
+      add(codec_); 
 
       // 
-      add(date_col);
+      add(date_);
 
       // 
-      add(date_int_col);
+      add(date_int_);
 
       // 
-      add(filename_col); 
+      add(disc_number_);
+
+      // 
+      add(disc_number_int_);
+
+      // 
+      add(disc_total_);
+
+      // 
+      add(disc_total_int_);
+
+      // 
+      add(filename_); 
 
       //
-      add(genre_col); 
+      add(genres_); 
 
       //
       add(id_); 
 
       //
-      add(length_col);
+      add(length_);
 
       //
-      add(mime_col);
+      add(mime_);
 
       // 
-      add(sample_rate_col); 
+      add(sample_rate_); 
 
       // 
-      add(title_col); 
+      add(title_); 
 
       // 
-      add(track_col);
+      add(track_);
 
       // 
-      add(track_num_col); 
+      add(track_number_); 
 
       // 
-      add(track_total_col); 
+      add(track_total_); 
 
       // 
-      add(track_num_int_col); 
+      add(track_number_int_); 
 
       // 
-      add(track_total_int_col); 
+      add(track_total_int_); 
 
     }
 
@@ -186,67 +198,79 @@ class PlaylistColumnRecord : public Gtk::TreeModel::ColumnRecord
   public:
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> album_col;
+    Gtk::TreeModelColumn<Glib::ustring> album_;
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> album_artist_col;
+    Gtk::TreeModelColumn<Glib::ustring> album_artists_;
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> artist_col;
+    Gtk::TreeModelColumn<Glib::ustring> artists_;
 
     //
-    Gtk::TreeModelColumn<Glib::ustring> bit_depth_col;
+    Gtk::TreeModelColumn<Glib::ustring> bit_depth_;
 
     //
-    Gtk::TreeModelColumn<unsigned int> bit_rate_col;
+    Gtk::TreeModelColumn<unsigned int> bit_rate_;
 
     //
-    Gtk::TreeModelColumn<unsigned int> channels_col;
+    Gtk::TreeModelColumn<unsigned int> channels_;
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> codec_col;
+    Gtk::TreeModelColumn<Glib::ustring> codec_;
 
     //
-    Gtk::TreeModelColumn<Glib::ustring> date_col;
+    Gtk::TreeModelColumn<Glib::ustring> date_;
 
     //
-    Gtk::TreeModelColumn<unsigned int> date_int_col;
+    Gtk::TreeModelColumn<unsigned int> date_int_;
 
     //
-    Gtk::TreeModelColumn<std::string> filename_col;
+    Gtk::TreeModelColumn<Glib::ustring> disc_number_;
+
+    //
+    Gtk::TreeModelColumn<unsigned int> disc_number_int_;
+
+    //
+    Gtk::TreeModelColumn<Glib::ustring> disc_total_;
+
+    //
+    Gtk::TreeModelColumn<unsigned int> disc_total_int_;
+
+    //
+    Gtk::TreeModelColumn<std::string> filename_;
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> genre_col;
+    Gtk::TreeModelColumn<Glib::ustring> genres_;
 
     //
     Gtk::TreeModelColumn<unsigned int> id_;
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> length_col;
+    Gtk::TreeModelColumn<Glib::ustring> length_;
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> mime_col;
+    Gtk::TreeModelColumn<Glib::ustring> mime_;
 
     //
-    Gtk::TreeModelColumn<unsigned int> sample_rate_col;
+    Gtk::TreeModelColumn<unsigned int> sample_rate_;
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> title_col;
+    Gtk::TreeModelColumn<Glib::ustring> title_;
 
     //
-    Gtk::TreeModelColumn<std::shared_ptr<Track>> track_col;
+    Gtk::TreeModelColumn<std::shared_ptr<Track>> track_;
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> track_num_col;
+    Gtk::TreeModelColumn<Glib::ustring> track_number_;
 
     // 
-    Gtk::TreeModelColumn<unsigned int> track_num_int_col;
+    Gtk::TreeModelColumn<unsigned int> track_number_int_;
 
     // 
-    Gtk::TreeModelColumn<Glib::ustring> track_total_col;
+    Gtk::TreeModelColumn<Glib::ustring> track_total_;
 
     // 
-    Gtk::TreeModelColumn<unsigned int> track_total_int_col;
+    Gtk::TreeModelColumn<unsigned int> track_total_int_;
 
 };
 

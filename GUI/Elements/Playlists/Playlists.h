@@ -125,6 +125,8 @@ namespace Gtk
 
 }
 
+class PlaylistChangesCancelDialog;
+
 class PlaylistCreateDialog;
 
 class PlaylistDeleteDialog;
@@ -201,14 +203,20 @@ class Playlists : public GUIElementList<Playlist>
     void Delete_Current_Playlist
       (bool delete_playlist_combobox_playlist = false);
 
+    bool Editable_Column(const char* column_name);
+
     void Fill_Row
       (Gtk::TreeRow& new_tree_row, std::shared_ptr<Track> new_track_sptr);
 
     std::string Find_Column_Name(std::string& column_title);
 
+    std::string Find_Column_Title(const char* column_name);
+
     std::string Find_Column_Title(std::string& column_name);
 
     void Flush_Playback_Queue();
+
+    void Open_Changes_Cancel_Dialog(bool release_twice = false);
 
     void Open_Create_Playlist_Dialog();
 
@@ -515,6 +523,8 @@ class Playlists : public GUIElementList<Playlist>
   //                   //
 
   private:
+
+    PlaylistChangesCancelDialog* playlist_changes_cancel_dialog_;
 
     PlaylistCreateDialog* playlist_create_dialog_;
 

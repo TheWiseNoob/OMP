@@ -210,6 +210,8 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
 
     std::atomic<bool>& rebuild_database();
 
+    std::atomic<bool>& rebuild_finished();
+
     std::atomic<bool>& rebuild_scheduled();
 
     std::atomic<bool>& rebuilding_database();
@@ -257,6 +259,9 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
 
     // 
     std::atomic<bool> rebuild_database_;
+
+    // 
+    std::atomic<bool> rebuild_finished_;
 
     // 
     std::atomic<bool> rebuild_scheduled_;

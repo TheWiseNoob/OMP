@@ -1174,7 +1174,32 @@ bool GUI::On_GUI_Window_Signal_Delete_Event(GdkEventAny* event)
 {
 
   // 
-  base() . quitting() = true;
+  if(playlists() . rebuild_databases() || playlists() . rebuilding_databases())
+  {
+
+    // 
+    main_window() -> Show();
+
+
+
+    // 
+    playlists() . Open_Changes_Cancel_Dialog();
+
+
+
+    // 
+    return true;
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    base() . quitting() = true;
+
+  }
 
 
 
@@ -1296,7 +1321,27 @@ void GUI::Quit(bool release_twice)
 { 
 
   // 
-  base() . quitting() = true;
+  if(playlists() . rebuild_databases() || playlists() . rebuilding_databases())
+  {
+
+    // 
+    playlists() . Open_Changes_Cancel_Dialog(release_twice);
+
+
+
+    // 
+    return;
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    base() . quitting() = true;
+
+  }
 
 
 

@@ -97,6 +97,8 @@
 
 #include <gdk/gdk.h>
 
+#include <gtkmm/checkmenuitem.h>
+
 #include <gtkmm/treerowreference.h>
 
 
@@ -301,6 +303,15 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
+  if(name == config() . get_str("keyboard_shortcuts.keys.edit_row"))
+  {
+
+    // 
+    playlists() . selected_playlist() . Edit();
+
+  }
+
+  // 
   if(name == config() . get_str("keyboard_shortcuts.keys.next_track"))
   {
 
@@ -342,6 +353,21 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
 
     // 
     playlists() . selected_playlist() . Select_All_Rows();
+
+  }
+
+  // 
+  if(name == config() . get_str("keyboard_shortcuts.keys.stop_after_current"))
+  { 
+
+    // 
+    bool active = main_menus() . system_menu()
+      . stop_after_current_track_playback_check_menu_item() . get_active();
+
+    // 
+    main_menus() . system_menu()
+      . stop_after_current_track_playback_check_menu_item()
+          . set_active(!active);
 
   }
 

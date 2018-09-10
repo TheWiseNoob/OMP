@@ -3,6 +3,33 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.17] - September 9th, 2018
+
+### Added
+- Simple meta editing for 10 fields of tracks that don't use a cuesheet.
+  Those fields are artist(s), genre(s), album artist(s), disc number,
+  disc total, track number, track total, title, album, and date.
+  The three fields that allow multiple values can use a semicolon to separate
+  values when editing in order to insert multiple values! The only metadata
+  field for files added using a cue sheet are disc number and disc total.
+  Those metadata fields are written to music file in the DISCNUMBER and
+  DISCTOTAL metadata fields and not the cue sheet.
+- Confirmation dialog for when OMP is closed when the database is still being
+  updated. It will help ensure changes are not lost.
+- Disc number and disc total metadata fields
+- Keyboard shortcuts for stop after current track and editing.
+
+### Changed
+- General code clean-up.
+- Playlists are now backed up to help ensure no losses occur
+  when force closing or something bad happens.
+
+### Fixed
+- Default column sizes now vary in a way that makes sense.
+- Default column order is now logical.
+
+
+
 ## [0.0.16] - August 26th, 2018
 
 ### Added

@@ -175,7 +175,13 @@ FileChooser::FileChooser(Base& base_ref, FileChoosers& file_choosers_ref)
 
 , file_chooser_(new Gtk::FileChooserWidget)
 
-, okay_button_(new Gtk::Button("Add Files"))
+, file_mode_radio_button_(Gtk::manage(new Gtk::RadioButton("File Mode")))
+
+, folder_mode_radio_button_(Gtk::manage(new Gtk::RadioButton("Folder Mode")))
+
+, mode_box_(Gtk::manage(new Gtk::Box))
+
+, okay_button_(new Gtk::Button("Add File(s)"))
 
 {
 
@@ -241,7 +247,38 @@ FileChooser::FileChooser(Base& base_ref, FileChoosers& file_choosers_ref)
 
 
   // 
+//  action_box_ -> pack_start(*mode_box_, true, true, 0);
+
+  // 
   action_box_ -> pack_start(*okay_button_, true, true, 0);
+
+
+
+  // 
+  mode_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+
+
+
+  // 
+  mode_box_ -> pack_start(*file_mode_radio_button_, true, true, 0);
+
+  // 
+  mode_box_ -> pack_start(*folder_mode_radio_button_, true, true, 0);
+
+
+
+  // 
+  file_mode_radio_button_ -> join_group(*folder_mode_radio_button_);
+
+
+
+  // 
+  file_mode_radio_button_ -> set_active(true);
+
+
+
+  // 
+  folder_mode_radio_button_ -> set_margin_right(3);
 
 
 
@@ -257,6 +294,14 @@ FileChooser::FileChooser(Base& base_ref, FileChoosers& file_choosers_ref)
   // 
   file_chooser_ -> signal_file_activated()
     . connect(sigc::mem_fun(*this, &FileChooser::Use_Selected));
+
+  // 
+  file_mode_radio_button_ -> signal_toggled()
+    . connect(sigc::mem_fun(*this, &FileChooser::Change_Mode));
+
+  // 
+  folder_mode_radio_button_ -> signal_toggled()
+    . connect(sigc::mem_fun(*this, &FileChooser::Change_Mode));
 
 
 
@@ -427,6 +472,29 @@ FileChooser::~FileChooser()
 //                  //
 //                  //
 
+void FileChooser::Change_Mode()
+{
+
+  // 
+  if(folder_mode_radio_button_ -> get_active())
+  {
+
+    // 
+    okay_button_ -> set_label("Add Folder");
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    okay_button_ -> set_label("Add File(s)");
+
+  }
+
+}
+
 void FileChooser::Enable_Cancel_Button(ChildWindow* child_window_ptr)
 {
 
@@ -481,10 +549,11 @@ void FileChooser::Use_Selected()
 
 
 
+  // 
   for(auto filenames_it : filenames)
   {
 
-    cout << "\n\nFilename: " << filenames_it << "\n\n";
+//    cout << "\n\nFilename: " << filenames_it << "\n\n";
 
   }
 

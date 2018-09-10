@@ -5,9 +5,10 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	KeyboardShortcuts.o KeyboardShortcutsPanel.o Main.o MainMenu.o \
 	MainMenus.o Metadata.o OutputPanel.o Panel.o ParserAndDecoder.o \
 	Parts.o Playback.o PlaybackController.o PlaybackControllers.o \
-	PlaybackPanel.o Playlist.o PlaylistComboBox.o PlaylistComboBoxes.o \
-	PlaylistCreateDialog.o PlaylistDeleteDialog.o PlaylistMenu.o \
-	PlaylistPanel.o PlaylistTreeStore.o Playlists.o PlaylistsDatabase.o \
+	PlaybackPanel.o Playlist.o PlaylistChangesCancelDialog.o \
+	PlaylistComboBox.o PlaylistComboBoxes.o PlaylistCreateDialog.o \
+	PlaylistDeleteDialog.o PlaylistMenu.o PlaylistPanel.o \
+	PlaylistTreeStore.o Playlists.o PlaylistsDatabase.o \
 	ReplayGainPanel.o Scrobbling.o ScrobblingPanel.o Seekbar.o \
 	SpinButtonScale.o StatusBar.o Tag.o Tagview.o TimeConversion.o \
 	Track.o TrackBin.o
@@ -39,7 +40,7 @@ Abouts.o: GUI/Elements/Abouts/Abouts.cc GUI/Elements/Abouts/Abouts.h \
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Abouts/Abouts.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 
-Artwork.o: GUI/Artwork.cc GUI/Artwork.h Base.h
+Artwork.o: GUI/Artwork.cc GUI/Artwork.h Base.h Configuration/Configuration.h
 	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Artwork.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 	-pthread
@@ -82,7 +83,7 @@ ChildWindow.o: GUI/Elements/ChildWindows/ChildWindow.cc \
 ChildWindows.o: GUI/Elements/ChildWindows/ChildWindows.cc \
 	GUI/Elements/ChildWindows/ChildWindows.h GUI/GUIElementList.h \
 	GUI/Elements/ChildWindows/ChildWindow.h \
-	Base.h Parts.h
+	Base.h Parts.h GUI/Elements/Playlists/Playlists.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	GUI/Elements/ChildWindows/ChildWindows.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
@@ -115,7 +116,7 @@ ConfigurationGUIs.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	GUI/Elements/ChildWindows/ChildWindows.h \
 	GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanelColumnRecord.h \
 	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanelColumnRecord.h \
-/	GUI/Elements/MainMenus/MainMenus.h
+	GUI/Elements/MainMenus/MainMenus.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
@@ -245,7 +246,7 @@ Metadata.o: Metadata/Metadata.h Metadata/Metadata.cc Parts.h \
 	Metadata/TimeConversion.h Metadata/CueSheet.h
 	g++ -g -Wall -pipe $(CFLAGS) -c \
 	Metadata/Metadata.cc \
-	`pkg-config --libs --cflags taglib` \
+	-lstdc++fs `pkg-config --libs --cflags taglib` \
 	`pkg-config --cflags --libs glibmm-2.4 giomm-2.4` \
 	-pthread
 
@@ -380,6 +381,15 @@ PlaylistComboBoxes.o: GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.cc \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
+PlaylistChangesCancelDialog.o: \
+	GUI/Elements/Playlists/PlaylistChangesCancelDialog.cc \
+	GUI/Elements/Playlists/PlaylistChangesCancelDialog.h \
+	Configuration/Configuration.h Parts.h \
+	GUI/Elements/Playlists/Playlists.h GUI/GUI.h Playback/Playback.h
+	g++ -g -Wall -pipe $(CFLAGS) -c \
+	GUI/Elements/Playlists/PlaylistChangesCancelDialog.cc \
+	-pthread `pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
+
 PlaylistCreateDialog.o: GUI/Elements/Playlists/PlaylistCreateDialog.cc \
 	GUI/Elements/Playlists/PlaylistCreateDialog.h \
 	Parts.h GUI/Elements/Playlists/Playlists.h GUI/GUI.h
@@ -428,8 +438,9 @@ Playlists.o: GUI/Elements/Playlists/Playlists.cc \
 	GUI/Elements/Playlists/PlaylistColumn.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h \
 	GUI/Elements/Playlists/PlaylistsDatabase.h \
-	GUI/Elements/Playlists/PlaylistDeleteDialog.h \
+	GUI/Elements/Playlists/PlaylistChangesCancelDialog.h \
 	GUI/Elements/Playlists/PlaylistCreateDialog.h \
+	GUI/Elements/Playlists/PlaylistDeleteDialog.h \
 	GUI/Elements/Playlists/PlaylistColumnRecord.h \
 	GUI/Elements/Playlists/PlaylistMenu.h \
 	GUI/Elements/Playlists/PlaylistsDatabase.h \

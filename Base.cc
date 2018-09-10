@@ -278,9 +278,15 @@ Base::Base(int argc, char *argv[])
 
   // 
   list<string> column_names
-    {"track_number", "title", "artists", "album_artists", "album", "genres",
-     "length", "date", "track_total", "bit_rate", "bit_depth", "sample_rate",
-     "channels", "codec", "mime"};
+    {"album", "album_artists", "artists", "bit_rate", "bit_depth", "channels",
+     "codec", "date", "disc_number", "disc_total", "genres", "mime", "length",
+     "sample_rate", "title", "track_number", "track_total"};
+
+  // 
+  list<string> column_order_names
+    {"track_number", "track_total", "disc_number", "disc_total", "title",
+     "artists", "album_artists", "album", "date", "length", "genres",
+     "bit_rate", "codec", "bit_depth", "channels", "mime", "sample_rate"};
 
 
 
@@ -362,6 +368,24 @@ Base::Base(int argc, char *argv[])
 
       // 
       config() . add_default(column_name_config_str, "Date");
+
+    }
+
+    // 
+    else if(column_names_it == "disc_number")
+    {
+
+      // 
+      config() . add_default(column_name_config_str, "Disc Number");
+
+    }
+
+    // 
+    else if(column_names_it == "disc_total")
+    { 
+
+      // 
+      config() . add_default(column_name_config_str, "Disc Total");
 
     }
 
@@ -464,22 +488,172 @@ Base::Base(int argc, char *argv[])
     playlist_view_config_str = config_str + ".column_order";
 
     // 
-    config() . add_default(playlist_view_config_str, column_names);
+    config() . add_default(playlist_view_config_str, column_order_names);
 
 
 
     // 
-    for(auto column_names_it : column_names)
+    for(auto column_name : column_names)
     {
 
       // 
       string column_position_config_str
-        = config_str + ".columns." + column_names_it + ".size";
+        = config_str + ".columns." + column_name + ".size";
 
 
 
       // 
-      config() . add_default(column_position_config_str, 80);
+      if(column_name == "album")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 167);
+
+      }
+
+      // 
+      else if(column_name == "album_artists")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 122);
+
+      }
+
+      // 
+      else if(column_name == "artists")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 137);
+
+      }
+
+      // 
+      else if(column_name == "bit_rate")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 49);
+
+      }
+
+      // 
+      else if(column_name == "bit_depth")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 32);
+
+      }
+
+      // 
+      else if(column_name == "channels")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 25);
+
+      }
+
+      // 
+      else if(column_name == "codec")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 55);
+
+      }
+
+      // 
+      else if(column_name == "date")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 46);
+
+      }
+
+      // 
+      else if(column_name == "disc_number")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 25);
+
+      }
+
+      // 
+      else if(column_name == "disc_total")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 25);
+
+      }
+
+      // 
+      else if(column_name == "genres")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 438);
+
+      }
+
+      // 
+      else if(column_name == "length")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 80);
+
+      }
+
+      // 
+      else if(column_name == "mime")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 80);
+
+      }
+
+      // 
+      else if(column_name == "sample_rate")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 58);
+
+      }
+
+      // 
+      else if(column_name == "title")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 284);
+
+      }
+
+      // 
+      else if(column_name == "track_number")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 42);
+
+      }
+
+      // 
+      else if(column_name == "track_total")
+      {
+
+        // 
+        config() . add_default(column_position_config_str, 25);
+
+      }
 
     }
 
@@ -531,6 +705,10 @@ Base::Base(int argc, char *argv[])
 
   // 
   config()
+    . add_default("keyboard_shortcuts.keys.edit_row", "e");
+
+  // 
+  config()
     . add_default("keyboard_shortcuts.keys.fullscreen", "F11");
 
   // 
@@ -552,6 +730,10 @@ Base::Base(int argc, char *argv[])
   // 
   config()
     . add_default("keyboard_shortcuts.keys.select_all_rows", "<Primary>a");
+
+  // 
+  config()
+    . add_default("keyboard_shortcuts.keys.stop_after_current", "<Shift>s");
 
   // 
   config()

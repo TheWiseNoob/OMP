@@ -260,6 +260,8 @@ class PlaylistsDatabase : public Parts
 
     sqlite3* database_;
 
+    Glib::ustring* database_ustr_ptr_;
+
     std::mutex mutex_;
 
     std::atomic<bool> quit_rebuilding_;

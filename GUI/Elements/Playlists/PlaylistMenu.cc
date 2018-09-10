@@ -319,6 +319,22 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
 
 
+  /* 
+  //          //
+  // Metadata /////////////////////////////////////////////////////////////////
+  //          //
+
+  // 
+  append(*Gtk::manage(new Gtk::SeparatorMenuItem));
+
+  // 
+  append(*edit_menu_item_);
+  */
+
+
+
+
+
   //       //
   // Queue ////////////////////////////////////////////////////////////////////
   //       //
@@ -354,6 +370,9 @@ PlaylistMenu::PlaylistMenu(Base& base, Playlist& playlist_ref,
 
   // 
   append(*delete_menu_item_);
+
+  // 
+  append(*edit_menu_item_);
 
   // 
   append(*paste_menu_item_);

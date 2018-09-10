@@ -96,6 +96,8 @@
 
 #include <list>
 
+#include <memory>
+
 #include <string>
 
 #include <vector>
@@ -220,6 +222,9 @@ class Metadata : public Parts
 
   public:
 
+    std::vector<std::string>*
+      All_Files_In_All_Folders(std::string& folder_str_ref);
+
     bool Determine_Codec_If_Supported(TagLib::AudioProperties& audio_prop,
                                       Track& new_track);
 
@@ -274,7 +279,8 @@ class Metadata : public Parts
 
   public:
 
-    bool Write_Tag(int argc, char* argv[]); 
+    bool Write_Tag
+           (const char* tag_name, std::shared_ptr<Track> track_sptr);
 
 
 
