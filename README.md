@@ -63,11 +63,13 @@ prevalent music audio file types gaplessly and stores tracks in a database.
   supported by the release of version 0.2 of OMP.
 
 
-  To compile and then install, run the following commands:<br />
+  To compile and then install, run the following commands:
 
-
-  make<br />
-  sudo make install<br />
+```
+meson build --buildtype release
+ninja -C build
+sudo ninja -C build install
+```
 
 
   Once compiled and installed, you can run omp as a command to open it.<br />
