@@ -20,6 +20,9 @@ DESTDIR = ''
 
 all: base 
 
+debug: CXXFLAGS += -g
+debug: base
+
 base: $(OBJS) Makefile 
 	$(CXX) $(CXXFLAGS) -o omp $(OBJS) \
 	`pkg-config --cflags --libs gtkmm-3.0 gstreamer-1.0 taglib` \
