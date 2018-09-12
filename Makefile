@@ -26,7 +26,7 @@ debug: base
 base: $(OBJS) Makefile 
 	$(CXX) $(CXXFLAGS) -o omp $(OBJS) \
 	`pkg-config --cflags --libs gtkmm-3.0 gstreamer-1.0 taglib` \
-	-lclastfm -lconfig++ -l sqlite3
+	-lstdc++fs -lclastfm -lconfig++ -l sqlite3
 
 About.o: GUI/Elements/Abouts/About.cc GUI/Elements/Abouts/About.h \
 	GUI/GUIElement.h GUI/Elements/Abouts/Abouts.h \
