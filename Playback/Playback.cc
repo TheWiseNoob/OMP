@@ -3506,16 +3506,17 @@ void Playback::Stop()
 
 
 
+    // 
     for(auto playlist : playlists()())
     {
 
-            // 
-     playlist -> selection_conn_ . block(true);
+      // 
+      playlist -> selection_conn_ . block(true);
 
-   }
+    }
 
-            // 
-            playlists() . set_disable_on_selection_changed(true);
+    // 
+    playlists() . set_disable_on_selection_changed(true);
 
 
 
@@ -3525,15 +3526,29 @@ void Playback::Stop()
       -> erase(first_in_playback_queue_row_it);
 
 
+
+    // 
     for(auto playlist : playlists()())
     {
 
-            // 
-     playlist -> selection_conn_ . block(false);
+      if(playlist -> playlist_treestore() -> get_name() == "Queue")
+      {
 
-   }
-            // 
-            playlists() . set_disable_on_selection_changed(false);
+        // 
+        playlist -> row_count_label() . set_text
+          (to_string(playlist -> playlist_treestore() -> children() . size()));
+
+      }
+
+
+
+      // 
+      playlist -> selection_conn_ . block(false);
+
+    }
+
+    // 
+    playlists() . set_disable_on_selection_changed(false);
 
 
 

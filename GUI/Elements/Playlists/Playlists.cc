@@ -969,23 +969,18 @@ void Playlists::Change_Track()
 
 
     // 
+    for(auto playlist : playlists()())
+    {
+
+      // 
+      playlist -> selection_conn_ . block(true);
+
+    }
+
+    // 
     playlists() . set_disable_on_selection_changed(true);
 
 
-    // 
-    for(auto it : playlists()())
-    {
-
-
-      if((it -> playlist_treestore()) == (playlists() . queue_playlist_treestore()))
-      {
-
-        //
-        it -> playlist_treeselection() -> set_mode(Gtk::SELECTION_NONE);
-
-      }
-
-    }
 
 
     // 
@@ -993,15 +988,24 @@ void Playlists::Change_Track()
       -> erase(first_in_playback_queue_row_it);
 
 
-    for(auto it : playlists()())
+
+    // 
+    for(auto playlist : playlists()())
     {
 
-      if((it -> playlist_treestore()) == (playlists() . queue_playlist_treestore()))
+      if(playlist -> playlist_treestore() -> get_name() == "Queue")
       {
 
-        it -> playlist_treeselection() -> set_mode(Gtk::SELECTION_MULTIPLE);
+        // 
+        playlist -> row_count_label() . set_text
+          (to_string(playlist -> playlist_treestore() -> children() . size()));
 
       }
+
+
+
+      // 
+      playlist -> selection_conn_ . block(false);
 
     }
 

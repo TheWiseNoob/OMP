@@ -5318,11 +5318,50 @@ void Playlist::Queue_Rows()
 
 
     // 
+    for(auto playlist : playlists()())
+    {
+
+      // 
+      playlist -> selection_conn_ . block(true);
+
+    }
+
+    // 
+    playlists() . set_disable_on_selection_changed(true);
+
+
+
+    // 
     Gtk::TreeRow new_queue_row
       = *(playlists() . queue_playlist_treestore() -> append());
 
     // 
     playlists() . Fill_Row(new_queue_row, row_track_sptr);
+
+
+
+    // 
+    for(auto playlist : playlists()())
+    {
+
+      if(playlist -> playlist_treestore() -> get_name() == "Queue")
+      {
+
+        // 
+        playlist -> row_count_label() . set_text
+          (to_string(playlist -> playlist_treestore() -> children() . size()));
+
+      }
+
+
+
+      // 
+      playlist -> selection_conn_ . block(false);
+
+    }
+
+    // 
+    playlists() . set_disable_on_selection_changed(false);
 
   }
 
