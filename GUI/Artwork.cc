@@ -160,7 +160,7 @@ Artwork::Artwork(Base& base_ref)
 {
 
   // 
-  cover_file_ = "/usr/share/omp/No_Cover.svg";
+  cover_file_ = "/usr/share/OMP/No_Cover.svg";
 
   // 
   saved_cover_file_ = cover_file_;

@@ -366,7 +366,7 @@ GUI::GUI(Base& base_ref)
   vector<Glib::RefPtr<Gdk::Pixbuf>> icon_pixbufs;
 
   // 
-  string icon_16p_filename = "/usr/share/omp/OMP_Icon_16.png";
+  string icon_16p_filename = "/usr/share/OMP/OMP_Icon_16.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_16p_pixbuf
@@ -376,7 +376,7 @@ GUI::GUI(Base& base_ref)
   icon_pixbufs . push_back(icon_16p_pixbuf);
 
   // 
-  string icon_32p_filename = "/usr/share/omp/OMP_Icon_32.png";
+  string icon_32p_filename = "/usr/share/OMP/OMP_Icon_32.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_32p_pixbuf
@@ -386,7 +386,7 @@ GUI::GUI(Base& base_ref)
   icon_pixbufs . push_back(icon_32p_pixbuf);
 
   // 
-  string icon_48p_filename = "/usr/share/omp/OMP_Icon_48.png";
+  string icon_48p_filename = "/usr/share/OMP/OMP_Icon_48.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_48p_pixbuf
@@ -396,7 +396,7 @@ GUI::GUI(Base& base_ref)
   icon_pixbufs . push_back(icon_48p_pixbuf);
 
   // 
-  string icon_64p_filename = "/usr/share/omp/OMP_Icon_64.png";
+  string icon_64p_filename = "/usr/share/OMP/OMP_Icon_64.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_64p_pixbuf
@@ -406,7 +406,7 @@ GUI::GUI(Base& base_ref)
   icon_pixbufs . push_back(icon_64p_pixbuf);
 
   // 
-  string icon_128p_filename = "/usr/share/omp/OMP_Icon_128.png";
+  string icon_128p_filename = "/usr/share/OMP/OMP_Icon_128.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_128p_pixbuf
@@ -678,7 +678,7 @@ GUI::GUI(Base& base_ref)
 
 
   // 
-  cover_file_ = "/usr/share/omp/No_Cover.svg";
+  cover_file_ = "/usr/share/OMP/No_Cover.svg";
 
   // 
   default_cover_file_ = cover_file_;
@@ -690,16 +690,16 @@ GUI::GUI(Base& base_ref)
           *artwork_2;
 
   //Adds the first artwork to artworks_.
-  artworks_.push_back(artwork_1);
+  artworks_ . push_back(artwork_1);
 
   //Adds the second artwork to artworks_.
-  artworks_.push_back(artwork_2);
+  artworks_ . push_back(artwork_2);
 
   // Gets an iterator to the beginning of artworks_.
-  list<Artwork*>::iterator artwork_it = artworks_.begin();
+  list<Artwork*>::iterator artwork_it = artworks_ . begin();
 
   // Creates an Artwork object for each pointer entry in the list.
-  while(artwork_it != artworks_.end())
+  while(artwork_it != artworks_ . end())
   {
 
     // Creates a new Artwork class.
@@ -711,7 +711,7 @@ GUI::GUI(Base& base_ref)
   }
 
   // Makes a reference to the first Artwork instance.
-  Gtk::Box* temp_box_ptr = &((*(artworks_.begin())) -> box());
+  Gtk::Box* temp_box_ptr = &((*(artworks_ . begin())) -> box());
 
 
 
@@ -1505,7 +1505,7 @@ void GUI::Load_Cover_Art(string& filename_ref)
   {
 
     // Sets the iterator's current Artwork image filename to the default.
-    (*artwork_it) -> Set_Image_Filename("/usr/share/omp/No_Cover.svg");
+    (*artwork_it) -> Set_Image_Filename("/usr/share/OMP/No_Cover.svg");
  
     // Increments the iterator.
     artwork_it++;
