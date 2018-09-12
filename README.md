@@ -1,6 +1,6 @@
 ![Logo](/Images/OMP_Icon_128.png?raw=true)
 # OMP : Open Music Player
-#### Version: 0.0.17 : September 9th, 2018
+#### Version: 0.0.16 : September 9th, 2018
 
 
 

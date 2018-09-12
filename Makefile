@@ -13,8 +13,8 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	SpinButtonScale.o StatusBar.o Tag.o Tagview.o TimeConversion.o \
 	Track.o TrackBin.o
 
-CXXFLAGS += -O2 -std=c++17 -Wall -pipe -Wno-deprecated-declarations -Wno-parentheses -fconcepts \
-	-Wno-catch-value -Wno-return-type
+CXXFLAGS += -std=c++17 -Wall -pipe -Wno-deprecated-declarations \
+	-Wno-parentheses -fconcepts -Wno-catch-value -Wno-return-type
 
 DESTDIR = ''
 
@@ -29,8 +29,8 @@ base: $(OBJS) Makefile
 	-lclastfm -lconfig++ -l sqlite3
 
 About.o: GUI/Elements/Abouts/About.cc GUI/Elements/Abouts/About.h \
-	GUI/GUIElement.h GUI/Elements/Abouts/Abouts.h GUI/Elements/ChildWindows/ChildWindow.h \
-	GUI/GUI.h
+	GUI/GUIElement.h GUI/Elements/Abouts/Abouts.h \
+	GUI/Elements/ChildWindows/ChildWindow.h GUI/GUI.h
 	$(CXX) $(CXXFLAGS) -c GUI/Elements/Abouts/About.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 
