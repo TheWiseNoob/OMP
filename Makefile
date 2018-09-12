@@ -13,7 +13,7 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	SpinButtonScale.o StatusBar.o Tag.o Tagview.o TimeConversion.o \
 	Track.o TrackBin.o
 
-CXXFLAGS += -std=c++17 -Wall -pipe -Wno-deprecated-declarations \
+CXXFLAGS += -g -std=c++17 -Wall -pipe -Wno-deprecated-declarations \
 	-Wno-parentheses -fconcepts -Wno-catch-value -Wno-return-type
 
 DESTDIR = ''
@@ -524,10 +524,10 @@ clean:
 
 install:
 	install -Dm0755 omp $(DESTDIR)/usr/bin/omp
-	install -Dm0644 Images/No_Cover.svg $(DESTDIR)/usr/share/pixmaps/No_Cover.png
-	install -Dm0644 Images/OMP_Icon_16.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_16.png
-	install -Dm0644 Images/OMP_Icon_32.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_32.png
-	install -Dm0644 Images/OMP_Icon_48.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_48.png
-	install -Dm0644 Images/OMP_Icon_64.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_64.png
-	install -Dm0644 Images/OMP_Icon_128.png $(DESTDIR)/usr/share/pixmaps/OMP_Icon_128.png
+	install -Dm0644 Images/No_Cover.svg $(DESTDIR)/usr/share/OMP/No_Cover.svg
+	install -Dm0644 Images/OMP_Icon_16.png $(DESTDIR)/usr/share/OMP/OMP_Icon_16.png
+	install -Dm0644 Images/OMP_Icon_32.png $(DESTDIR)/usr/share/OMP/OMP_Icon_32.png
+	install -Dm0644 Images/OMP_Icon_48.png $(DESTDIR)/usr/share/OMP/OMP_Icon_48.png
+	install -Dm0644 Images/OMP_Icon_64.png $(DESTDIR)/usr/share/OMP/OMP_Icon_64.png
+	install -Dm0644 Images/OMP_Icon_128.png $(DESTDIR)/usr/share/OMP/OMP_Icon_128.png
 	install -Dm0644 omp.desktop $(DESTDIR)/usr/share/applications/omp.desktop
