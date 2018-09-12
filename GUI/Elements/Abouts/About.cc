@@ -181,7 +181,9 @@ About::About(Base& base_ref, Abouts& abouts_ref)
                 "    aladar42\n" \
                 "    AxelSilverdew\n" \
                 "    FabioLolix\n" \
-                "    mmetak");
+                "    noahrinehart\n" \
+                "    mmetak\n" \
+                "    mulimoen");
 
   // 
   contributors_text_view -> set_buffer(contributors_text_buffer);
