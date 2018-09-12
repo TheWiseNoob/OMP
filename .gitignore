@@ -1,0 +1,7 @@
+*.swp
+*.swo
+*.un~
+PKGBUILD
+TODO
+*.o
+omp

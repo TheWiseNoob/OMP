@@ -13,37 +13,37 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	SpinButtonScale.o StatusBar.o Tag.o Tagview.o TimeConversion.o \
 	Track.o TrackBin.o
 
-CFLAGS = -std=c++17 -Wno-deprecated-declarations -Wno-parentheses -fconcepts \
-	-Wno-catch-value -Wno-return-type
+CXXFLAGS += -std=c++17 -Wall -pipe -Wno-deprecated-declarations \
+	-Wno-parentheses -fconcepts -Wno-catch-value -Wno-return-type
 
 DESTDIR = ''
 
 all: base 
 
+debug: CXXFLAGS += -g
+debug: base
+
 base: $(OBJS) Makefile 
-	g++ -g -Wall -pipe $(CFLAGS) -o omp $(OBJS) \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	`pkg-config --cflags --libs gstreamer-1.0` \
-	`pkg-config --libs --cflags taglib` \
-	-pthread -lclastfm -lconfig++ -l sqlite3
+	$(CXX) $(CXXFLAGS) -o omp $(OBJS) \
+	`pkg-config --cflags --libs gtkmm-3.0 gstreamer-1.0 taglib` \
+	-lclastfm -lconfig++ -l sqlite3
 
 About.o: GUI/Elements/Abouts/About.cc GUI/Elements/Abouts/About.h \
-	GUI/GUIElement.h GUI/Elements/Abouts/Abouts.h GUI/Elements/ChildWindows/ChildWindow.h \
-	GUI/GUI.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Abouts/About.cc \
+	GUI/GUIElement.h GUI/Elements/Abouts/Abouts.h \
+	GUI/Elements/ChildWindows/ChildWindow.h GUI/GUI.h
+	$(CXX) $(CXXFLAGS) -c GUI/Elements/Abouts/About.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 
 Abouts.o: GUI/Elements/Abouts/Abouts.cc GUI/Elements/Abouts/Abouts.h \
 	GUI/Elements/Abouts/About.h GUI/GUIElementList.h \
 	GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/ChildWindows/ChildWindows.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Abouts/Abouts.cc \
+	$(CXX) $(CXXFLAGS) -c GUI/Elements/Abouts/Abouts.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
 
 Artwork.o: GUI/Artwork.cc GUI/Artwork.h Base.h Configuration/Configuration.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Artwork.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	$(CXX) $(CXXFLAGS) -c GUI/Artwork.cc \
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 ArtworkPanel.o: GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanel.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanel.h \
@@ -52,10 +52,9 @@ ArtworkPanel.o: GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanel.cc \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
 	Configuration/Configuration.h \
 	GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanelColumnRecord.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanel.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 Base.o: Base.cc Base.h Configuration/Configuration.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
@@ -64,9 +63,8 @@ Base.o: Base.cc Base.h Configuration/Configuration.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h \
 	GUI/GUI.h Playback/Playback.h Metadata/Metadata.h \
 	Scrobbling/Scrobbling.h Metadata/TimeConversion.h
-	g++ -g -Wall -pipe $(CFLAGS) -c Base.cc \
-	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4 giomm-2.4` \
-	-pthread
+	$(CXX) $(CXXFLAGS) -c Base.cc \
+	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4 giomm-2.4`
 
 ChildWindow.o: GUI/Elements/ChildWindows/ChildWindow.cc \
 	GUI/Elements/ChildWindows/ChildWindow.h \
@@ -76,21 +74,20 @@ ChildWindow.o: GUI/Elements/ChildWindows/ChildWindow.cc \
 	Parts.h Configuration/Configuration.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	GUI/GUI.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/ChildWindows/ChildWindow.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	$(CXX) $(CXXFLAGS) -c GUI/Elements/ChildWindows/ChildWindow.cc \
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 ChildWindows.o: GUI/Elements/ChildWindows/ChildWindows.cc \
 	GUI/Elements/ChildWindows/ChildWindows.h GUI/GUIElementList.h \
 	GUI/Elements/ChildWindows/ChildWindow.h \
 	Base.h Parts.h GUI/Elements/Playlists/Playlists.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ChildWindows/ChildWindows.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
 Configuration.o: Configuration/Configuration.cc Configuration/Configuration.h \
 	Configuration/DefaultValue.h Configuration/DefaultValues.h
-	g++ -g -Wall -pipe -pthread $(CFLAGS) -c -Wno-unused-variable \
+	$(CXX) $(CXXFLAGS) -c -Wno-unused-variable \
 	Configuration/Configuration.cc \
 	`pkg-config --cflags --libs glibmm-2.4 giomm-2.4`	
 
@@ -102,10 +99,9 @@ ConfigurationGUI.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUI.cc \
 	GUI/SpinButtonScale.h GUI/GUI.h \
 	GUI/Elements/ConfigurationGUIs/PanelTreeViewColumnRecord.h \
 	GUI/Elements/ConfigurationGUIs/Panels/**/*.h 
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 ConfigurationGUIs.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
@@ -117,37 +113,38 @@ ConfigurationGUIs.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanelColumnRecord.h \
 	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanelColumnRecord.h \
 	GUI/Elements/MainMenus/MainMenus.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
 CueSheet.o: Metadata/CueSheet.cc Metadata/CueSheet.h Metadata/Track.h \
 	Metadata/TimeConversion.h
-	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/CueSheet.cc \
-	-pthread `pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
+	$(CXX) $(CXXFLAGS) -c Metadata/CueSheet.cc \
+	`pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
 
 DefaultValue.o: Configuration/DefaultValue.cc Configuration/DefaultValue.h
-	g++ -g -Wall -pipe -pthread $(CFLAGS) -c \
+	$(CXX) -pthread $(CXXFLAGS) -c \
 	Configuration/DefaultValue.cc
 
 DefaultValues.o: Configuration/DefaultValues.cc \
 	Configuration/DefaultValues.h Configuration/DefaultValue.h
-	g++ -g -Wall -pipe -pthread $(CFLAGS) -c \
+	$(CXX) -pthread $(CXXFLAGS) -c \
 	Configuration/DefaultValues.cc
 
 Errors.o: Errors/Errors.cc Errors/Errors.h Parts.h \
 	GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/ChildWindows/ChildWindows.h
-	g++ -g -Wall -pipe -pthread $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	Errors/Errors.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
 FailedScrobblesDatabase.o: Scrobbling/FailedScrobblesDatabase.cc \
 	Scrobbling/FailedScrobblesDatabase.h Parts.h \
 	Base.h Metadata/Track.h
-	g++ -g -Wall -pipe $(CFLAGS) -c -Wno-write-strings \
-	Scrobbling/FailedScrobblesDatabase.cc -l sqlite3 \
-	`pkg-config --cflags --libs gtkmm-3.0`
+	$(CXX) $(CXXFLAGS) -c -Wno-write-strings \
+	Scrobbling/FailedScrobblesDatabase.cc \
+	`pkg-config --cflags --libs gtkmm-3.0` \
+	-l sqlite3 
 
 FileChooser.o: GUI/Elements/FileChoosers/FileChooser.cc \
 	GUI/Elements/FileChoosers/FileChooser.h \
@@ -155,7 +152,7 @@ FileChooser.o: GUI/Elements/FileChoosers/FileChooser.cc \
 	Metadata/Metadata.h GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/Playlists/Playlists.h Base.h \
 	Configuration/Configuration.h Parts.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/FileChoosers/FileChooser.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
@@ -166,7 +163,7 @@ FileChoosers.o: GUI/Elements/FileChoosers/FileChoosers.cc \
 	GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/ChildWindows/ChildWindows.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h Metadata/Metadata.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/FileChoosers/FileChoosers.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 	
@@ -176,9 +173,9 @@ GUI.o: Parts.h GUI/GUI.cc GUI/GUI.h Base.h Configuration/Configuration.h \
 	GUI/Elements/**/*.h GUI/StatusBar.h GUI/Tagview.h \
 	GUI/SpinButtonScale.h GUI/Seekbar.h GUI/Tagview.h \
 	KeyboardShortcuts/KeyboardShortcuts.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/GUI.cc \
+	$(CXX) $(CXXFLAGS) -c GUI/GUI.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread -Wno-reorder
+	-Wno-reorder
 
 GUIPanel.o: GUI/Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.h \
@@ -190,17 +187,16 @@ GUIPanel.o: GUI/Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.cc \
 	GUI/Elements/MainMenus/MainMenus.h GUI/StatusBar.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/GUI/GUIPanel.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 KeyboardShortcuts.o: Parts.h KeyboardShortcuts/KeyboardShortcuts.h \
 	KeyboardShortcuts/KeyboardShortcuts.cc \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h GUI/GUI.h \
 	GUI/Elements/MainMenus/MainMenus.h \
 	GUI/Elements/Playlists/Playlists.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	KeyboardShortcuts/KeyboardShortcuts.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
@@ -214,10 +210,9 @@ KeyboardShortcutsPanel.o: \
 	GUI/Elements/FileChoosers/FileChoosers.h \
 	Configuration/Configuration.h Playback/Playback.h \
 	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanelColumnRecord.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanel.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 MainMenu.o: GUI/Elements/MainMenus/MainMenu.cc \
 	GUI/Elements/MainMenus/MainMenu.h GUI/GUIElement.h Parts.h GUI/GUI.h \
@@ -231,29 +226,28 @@ MainMenu.o: GUI/Elements/MainMenus/MainMenu.cc \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h \
 	GUI/StatusBar.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/MainMenus/MainMenu.cc \
+	$(CXX) $(CXXFLAGS) -c GUI/Elements/MainMenus/MainMenu.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread -Wno-reorder
+	-Wno-reorder
 
 MainMenus.o: GUI/Elements/MainMenus/MainMenus.cc \
 	GUI/Elements/MainMenus/MainMenus.h GUI/GUIElementList.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/MainMenus/MainMenus.cc \
+	$(CXX) $(CXXFLAGS) -c GUI/Elements/MainMenus/MainMenus.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread -Wno-reorder
+	-Wno-reorder
 
 Metadata.o: Metadata/Metadata.h Metadata/Metadata.cc Parts.h \
 	Errors/Errors.h Metadata/TrackType.h Metadata/Track.h \
 	Metadata/TimeConversion.h Metadata/CueSheet.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	Metadata/Metadata.cc \
-	-lstdc++fs `pkg-config --libs --cflags taglib` \
-	`pkg-config --cflags --libs glibmm-2.4 giomm-2.4` \
-	-pthread
+	`pkg-config --libs --cflags taglib  glibmm-2.4 giomm-2.4` \
+	-lstdc++fs \
 
 Main.o: Main.cc Base.h GUI/GUI.h GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/ChildWindows/ChildWindows.h
-	g++ -g -Wall -pipe $(CFLAGS) -c Main.cc \
-	-pthread `pkg-config --cflags --libs gtkmm-3.0`
+	$(CXX) $(CXXFLAGS) -c Main.cc \
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 OutputPanel.o: GUI/Elements/ConfigurationGUIs/Panels/Output/OutputPanel.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/Output/OutputPanel.h \
@@ -262,33 +256,29 @@ OutputPanel.o: GUI/Elements/ConfigurationGUIs/Panels/Output/OutputPanel.cc \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
 	Configuration/Configuration.h GUI/SpinButtonScale.h \
 	Playback/Playback.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/Output/OutputPanel.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 Panel.o: GUI/Elements/ConfigurationGUIs/Panel.cc \
 	GUI/Elements/ConfigurationGUIs/Panel.h \
 	Base.h Configuration/Configuration.h \
 	GUI/GUI.h GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/ConfigurationGUIs/Panel.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	$(CXX) $(CXXFLAGS) -c GUI/Elements/ConfigurationGUIs/Panel.cc \
+	`pkg-config --cflags --libs gtkmm-3.0`
 	
 ParserAndDecoder.o: Playback/ParserAndDecoder.h Playback/ParserAndDecoder.cc \
 	Parts.h Metadata/Track.h
-	g++ -g -Wno-write-strings -pipe $(CFLAGS) -c Playback/ParserAndDecoder.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	`pkg-config --cflags --libs gstreamer-1.0` -pthread
+	$(CXX) -Wno-write-strings $(CXXFLAGS) -c Playback/ParserAndDecoder.cc \
+	`pkg-config --cflags --libs gtkmm-3.0 gstreamer-1.0`
 
 Parts.o: Parts.cc Parts.h Base.h Configuration/Configuration.h \
 	Errors/Errors.h GUI/GUI.h GUI/StatusBar.h Playback/Playback.h \
 	KeyboardShortcuts/KeyboardShortcuts.h \
 	Metadata/Metadata.h GUI/Elements/**/*.h Scrobbling/Scrobbling.h \
 	Metadata/TimeConversion.h
-	g++ -g -Wall -pipe $(CFLAGS) -c Parts.cc \
-	`pkg-config --cflags --libs glibmm-2.4 gtkmm-3.0` \
-	-pthread
+	$(CXX) $(CXXFLAGS) -c Parts.cc \
+	`pkg-config --cflags --libs glibmm-2.4 gtkmm-3.0`
 
 Playback.o: Parts.h Playback/Playback.cc Playback/Playback.h \
 	Base.h Configuration/Configuration.h \
@@ -302,30 +292,25 @@ Playback.o: Parts.h Playback/Playback.cc Playback/Playback.h \
 	GUI/Elements/MainMenus/MainMenus.h GUI/Seekbar.h GUI/StatusBar.h \
 	Metadata/Metadata.h Scrobbling/Scrobbling.h Metadata/TimeConversion.h \
 	Metadata/Track.h Playback/ParserAndDecoder.h Playback/TrackBin.h 
-	g++ -g -Wno-write-strings -pipe $(CFLAGS) -c Playback/Playback.cc \
-	`pkg-config --cflags --libs gstreamer-1.0` \
-	`pkg-config --cflags --libs glibmm-2.4 giomm-2.4` \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	$(CXX) -g -Wno-write-strings -pipe $(CXXFLAGS) -c Playback/Playback.cc \
+	`pkg-config --cflags --libs gstreamer-1.0  glibmm-2.4 giomm-2.4 gtkmm-3.0`
 
 PlaybackController.o: GUI/Elements/PlaybackControllers/PlaybackController.cc \
 	GUI/Elements/PlaybackControllers/PlaybackController.h \
 	GUI/Elements/PlaybackControllers/PlaybackControllers.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/GUIElement.h Playback/Playback.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/PlaybackControllers/PlaybackController.cc \
-	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4`
 
 PlaybackControllers.o: \
 	GUI/Elements/PlaybackControllers/PlaybackControllers.cc \
 	GUI/Elements/PlaybackControllers/PlaybackControllers.h \
 	GUI/GUIElementList.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/PlaybackControllers/PlaybackControllers.cc \
-	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4`
 
 PlaybackPanel.o: \
 	GUI/Elements/ConfigurationGUIs/Panels/Playback/PlaybackPanel.cc \
@@ -336,10 +321,9 @@ PlaybackPanel.o: \
 	Configuration/Configuration.h GUI/GUI.h \
 	GUI/Elements/MainMenus/MainMenu.h GUI/Elements/MainMenus/MainMenus.h \
 	Playback/Playback.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/Playback/PlaybackPanel.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 Playlist.o: GUI/Elements/Playlists/Playlist.cc \
 	GUI/Elements/Playlists/Playlist.h \
@@ -351,8 +335,8 @@ Playlist.o: GUI/Elements/Playlists/Playlist.cc \
 	Metadata/Metadata.h Playback/Playback.h Playback/TrackBin.h \
 	Metadata/Track.h GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
 	GUI/Elements/Playlists/Playlists.h Metadata/TimeConversion.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Playlists/Playlist.cc \
-	-pthread `pkg-config --cflags --libs gtkmm-3.0`
+	$(CXX) $(CXXFLAGS) -c GUI/Elements/Playlists/Playlist.cc \
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 PlaylistComboBox.o: GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.cc \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h GUI/GUIElement.h \
@@ -364,10 +348,9 @@ PlaylistComboBox.o: GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.cc \
 	GUI/Elements/Playlists/PlaylistsDatabase.h \
 	GUI/Elements/Playlists/PlaylistMenu.h \
 	Configuration/Configuration.h GUI/GUI.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 PlaylistComboBoxes.o: GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.cc \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h \
@@ -377,7 +360,7 @@ PlaylistComboBoxes.o: GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.cc \
 	GUI/Elements/Playlists/PlaylistColumnRecord.h \
 	GUI/Elements/Playlists/Playlist.h \
 	GUI/GUI.h GUI/GUIElement.h GUI/GUIElementList.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
@@ -386,30 +369,30 @@ PlaylistChangesCancelDialog.o: \
 	GUI/Elements/Playlists/PlaylistChangesCancelDialog.h \
 	Configuration/Configuration.h Parts.h \
 	GUI/Elements/Playlists/Playlists.h GUI/GUI.h Playback/Playback.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/Playlists/PlaylistChangesCancelDialog.cc \
-	-pthread `pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
+	`pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
 
 PlaylistCreateDialog.o: GUI/Elements/Playlists/PlaylistCreateDialog.cc \
 	GUI/Elements/Playlists/PlaylistCreateDialog.h \
 	Parts.h GUI/Elements/Playlists/Playlists.h GUI/GUI.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/Playlists/PlaylistCreateDialog.cc \
-	-pthread `pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
+	`pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
 
 PlaylistDeleteDialog.o: GUI/Elements/Playlists/PlaylistDeleteDialog.cc \
 	GUI/Elements/Playlists/PlaylistDeleteDialog.h \
 	Parts.h GUI/Elements/Playlists/Playlists.h GUI/GUI.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/Playlists/PlaylistDeleteDialog.cc \
-	-pthread `pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
+	`pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
 
 PlaylistMenu.o: GUI/Elements/Playlists/PlaylistMenu.cc \
 	GUI/Elements/Playlists/PlaylistMenu.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h Parts.h \
 	GUI/Elements/Playlists/Playlist.h GUI/Elements/Playlists/Playlists.h \
 	Playback/Playback.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/Playlists/PlaylistMenu.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
@@ -420,15 +403,14 @@ PlaylistPanel.o: \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
 	Configuration/Configuration.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/Playlist/PlaylistPanel.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 PlaylistTreeStore.o: GUI/Elements/Playlists/PlaylistTreeStore.cc \
 	GUI/Elements/Playlists/PlaylistColumnRecord.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h Parts.h
-	g++ -g -Wall -pipe $(CFLAGS) \
+	$(CXX) $(CXXFLAGS) \
 	-c GUI/Elements/Playlists/PlaylistTreeStore.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
@@ -448,7 +430,7 @@ Playlists.o: GUI/Elements/Playlists/Playlists.cc \
 	GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h \
 	GUI/GUI.h Metadata/Track.h Playback/Playback.h Playback/TrackBin.h \
 	Scrobbling/Scrobbling.h Configuration/Configuration.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Elements/Playlists/Playlists.cc \
+	$(CXX) $(CXXFLAGS) -c GUI/Elements/Playlists/Playlists.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
 PlaylistsDatabase.o: GUI/Elements/Playlists/PlaylistsDatabase.cc \
@@ -457,9 +439,10 @@ PlaylistsDatabase.o: GUI/Elements/Playlists/PlaylistsDatabase.cc \
 	GUI/Elements/Playlists/Playlist.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h
-	g++ -g -Wall -pipe $(CFLAGS) -c -Wno-write-strings \
-	GUI/Elements/Playlists/PlaylistsDatabase.cc -l sqlite3 \
-	`pkg-config --cflags --libs gtkmm-3.0`
+	$(CXX) $(CXXFLAGS) -c -Wno-write-strings \
+	GUI/Elements/Playlists/PlaylistsDatabase.cc \
+	`pkg-config --cflags --libs gtkmm-3.0` \
+	-l sqlite3	
 
 ReplayGainPanel.o: \
 	GUI/Elements/ConfigurationGUIs/Panels/ReplayGain/ReplayGainPanel.cc \
@@ -468,18 +451,17 @@ ReplayGainPanel.o: \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
 	Playback/Playback.h Configuration/Configuration.h
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/ReplayGain/ReplayGainPanel.cc \
-	`pkg-config --cflags --libs gtkmm-3.0 gstreamer-1.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0 gstreamer-1.0`
 
 Scrobbling.o: Scrobbling/Scrobbling.cc Scrobbling/Scrobbling.h \
 	Configuration/Configuration.h Base.h \
 	Playback/Playback.h Metadata/Track.h \
 	Scrobbling/FailedScrobblesDatabase.h
-	g++ -g -Wall -pipe $(CFLAGS) -c Scrobbling/Scrobbling.cc \
+	$(CXX) $(CXXFLAGS) -c Scrobbling/Scrobbling.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
-	-lclastfm -pthread
+	-lclastfm
 
 ScrobblingPanel.o: \
 	GUI/Elements/ConfigurationGUIs/Panels/Scrobbling/ScrobblingPanel.cc \
@@ -488,53 +470,50 @@ ScrobblingPanel.o: \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
 	Scrobbling/Scrobbling.h Scrobbling/FailedScrobblesDatabase.h \
 	Configuration/Configuration.h GUI/SpinButtonScale.h 
-	g++ -g -Wall -pipe $(CFLAGS) -c \
+	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/Panels/Scrobbling/ScrobblingPanel.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	`pkg-config --cflags --libs gtkmm-3.0`
+
 Seekbar.o: GUI/Seekbar.cc GUI/Seekbar.h Playback/Playback.h \
 	Metadata/TimeConversion.h Metadata/Track.h \
 	Configuration/Configuration.h GUI/Elements/Playlists/Playlists.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Seekbar.cc \
-	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4` \
-	-pthread
+	$(CXX) $(CXXFLAGS) -c GUI/Seekbar.cc \
+	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4`
 
 SpinButtonScale.o: GUI/SpinButtonScale.cc GUI/SpinButtonScale.h \
 	GUI/GUI.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/SpinButtonScale.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread
+	$(CXX) $(CXXFLAGS) -c GUI/SpinButtonScale.cc \
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 StatusBar.o: Parts.h GUI/StatusBar.h GUI/StatusBar.cc GUI/GUI.cc GUI/GUI.h Base.h Configuration/Configuration.h \
 	Metadata/Metadata.h Playback/Playback.h Metadata/TimeConversion.h \
 	Metadata/Track.h Scrobbling/Scrobbling.h GUI/Artwork.h \
 	GUI/Elements/**/*.h GUI/Tagview.h GUI/SpinButtonScale.h \
 	GUI/Seekbar.h GUI/Tagview.h KeyboardShortcuts/KeyboardShortcuts.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/StatusBar.cc \
+	$(CXX) $(CXXFLAGS) -c GUI/StatusBar.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread -Wno-reorder
+	-Wno-reorder
 
 Tag.o: Metadata/Tag.cc Metadata/Tag.h
-	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/Tag.cc \
-	-pthread `pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
+	$(CXX) $(CXXFLAGS) -c Metadata/Tag.cc \
+	`pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
 
 Tagview.o: GUI/Tagview.cc GUI/Tagview.h Parts.h GUI/GUI.h Metadata/Track.h
-	g++ -g -Wall -pipe $(CFLAGS) -c GUI/Tagview.cc \
+	$(CXX) $(CXXFLAGS) -c GUI/Tagview.cc \
 	`pkg-config --cflags --libs gtkmm-3.0` \
-	-pthread -Wno-unused-but-set-variable
+	-Wno-unused-but-set-variable
 
 TimeConversion.o: Metadata/TimeConversion.cc Metadata/TimeConversion.h
-	g++ -g -Wall -pipe -pthread $(CFLAGS) -c Metadata/TimeConversion.cc
+	$(CXX) -pthread $(CXXFLAGS) -c Metadata/TimeConversion.cc
 
 Track.o: Metadata/Track.cc Metadata/Track.h Metadata/Tag.h
-	g++ -g -Wall -pipe $(CFLAGS) -c Metadata/Track.cc \
-	-pthread `pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
+	$(CXX) $(CXXFLAGS) -c Metadata/Track.cc \
+	`pkg-config --cflags --libs glibmm-2.4 giomm-2.4`
 
 TrackBin.o: Playback/TrackBin.h Playback/TrackBin.cc Playback/Playback.h \
 	Metadata/Track.h Base.h Parts.h
-	g++ -g -Wall -pipe $(CFLAGS) -c Playback/TrackBin.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` \
-	`pkg-config --cflags --libs gstreamer-1.0` -pthread
+	$(CXX) $(CXXFLAGS) -c Playback/TrackBin.cc \
+	`pkg-config --cflags --libs gtkmm-3.0 gstreamer-1.0`
 
 
 
