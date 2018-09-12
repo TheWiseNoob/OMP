@@ -2968,6 +2968,18 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
       {
 
         // 
+        if(Playing())
+        {
+
+          // 
+          return;
+
+        }
+
+
+
+
+        // 
         queue_track = true;
 
 
@@ -3494,9 +3506,34 @@ void Playback::Stop()
 
 
 
+    for(auto playlist : playlists()())
+    {
+
+            // 
+     playlist -> selection_conn_ . block(true);
+
+   }
+
+            // 
+            playlists() . set_disable_on_selection_changed(true);
+
+
+
+
     // 
     playlists() . queue_playlist_treestore()
       -> erase(first_in_playback_queue_row_it);
+
+
+    for(auto playlist : playlists()())
+    {
+
+            // 
+     playlist -> selection_conn_ . block(false);
+
+   }
+            // 
+            playlists() . set_disable_on_selection_changed(false);
 
 
 
