@@ -130,7 +130,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
 
   // 
   auto omp_pixbuf 
-    = Gdk::Pixbuf::create_from_file("/usr/share/pixmaps/OMP_Icon_128.png", 
+    = Gdk::Pixbuf::create_from_file("/usr/share/OMP/OMP_Icon_128.png", 
                                     128, 128, true);
 
   // 
