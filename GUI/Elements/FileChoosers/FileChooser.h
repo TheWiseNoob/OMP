@@ -95,9 +95,11 @@ namespace Gtk
 
   class Button;
 
-  class RadioButton;
-
   class FileChooserWidget;
+
+  class ProgressBar;
+
+  class RadioButton;
 
 }
 
@@ -138,7 +140,8 @@ class FileChooser : public GUIElement<FileChooser>
 
   public:
 
-    FileChooser(Base& base_ref, FileChoosers& file_choosers_ref);
+    FileChooser(Base& base_ref, FileChoosers& file_choosers_ref,
+                bool appending = true);
 
 
 
@@ -165,8 +168,6 @@ class FileChooser : public GUIElement<FileChooser>
   //                  //
 
   public:
-
-    void Change_Mode();
 
     void Enable_Cancel_Button(ChildWindow* child_window_ptr);
 
@@ -197,6 +198,8 @@ class FileChooser : public GUIElement<FileChooser>
 
     }
 
+    Gtk::Button& okay_button();
+
 
 
 
@@ -217,13 +220,9 @@ class FileChooser : public GUIElement<FileChooser>
 
     std::vector<std::string> filenames_;
 
-    Gtk::RadioButton* file_mode_radio_button_;
-
-    Gtk::RadioButton* folder_mode_radio_button_;
-
-    Gtk::Box* mode_box_;
-
     Gtk::Button* okay_button_;
+
+    Gtk::ProgressBar* progress_bar_;
 
 };
 

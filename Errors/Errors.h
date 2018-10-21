@@ -84,6 +84,8 @@
 
 #include <iosfwd>
 
+#include <string>
+
 
 
 
@@ -200,6 +202,8 @@ class Errors : public Parts
   //                  //
   //                  //
 
+  void Display_Errors();
+
   void Write_Error(const char* error_c_str);
 
 
@@ -225,6 +229,8 @@ class Errors : public Parts
   private:
 
     std::ofstream* errors_log_file_;
+
+    std::string undisplayed_errors_;
    
 };
 

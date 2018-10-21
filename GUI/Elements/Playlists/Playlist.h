@@ -115,6 +115,7 @@ class PlaylistTreeStore;
 
 
 // glibmm
+
 namespace Glib
 {
 
@@ -130,6 +131,8 @@ namespace Gtk
 {
 
   class Box;
+
+  class EventBox;
 
   class Frame;
 
@@ -322,6 +325,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   public:
 
     Glib::ustring Active_Column_Name();
+
+    bool Changes_Occurring();
 
     int Find_Column_Position(const char* column_name);
  
@@ -524,6 +529,9 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     // 
     Gtk::Label* name_label_;
+
+    // 
+    Gtk::EventBox* name_label_event_box_;
 
     // 
     Gtk::ProgressBar* progress_bar_;

@@ -98,6 +98,8 @@
 
 #include <memory>
 
+#include <mutex>
+
 #include <string>
 
 #include <vector>
@@ -222,19 +224,25 @@ class Metadata : public Parts
 
   public:
 
-    std::vector<std::string>*
-      All_Files_In_All_Folders(std::string& folder_str_ref);
+    void All_Files_In_All_Folders
+      (std::string& folder_str_ref, std::vector<std::string>& files,
+       std::string& active_filename_str,
+       std::mutex& active_filename_str_mutex);
 
     bool Determine_Codec_If_Supported(TagLib::AudioProperties& audio_prop,
                                       Track& new_track);
+
+    bool Determine_Mime_If_Supported(std::string& filename);
 
     void Determine_Mime_Type(const char* filename, std::string& mime_type);
 
     void Extract_File_Path(const std::string& filename, 
                            Glib::ustring& file_path);
 
-    std::vector<Track*>*
-      Filenames_To_Tracks(std::vector<std::string>& filenames);
+    std::vector<Track*>* Filenames_To_Tracks
+      (std::vector<std::string>& filenames, std::string& active_filename_str,
+       std::mutex& active_filename_str_mutex,
+       std::atomic<int>& reading_files_count);
 
   private:
 

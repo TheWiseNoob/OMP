@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.18] - October 21st, 2018
+
+### Added
+- Support for mass-adding files without locking up OMP.
+- Support for adding by a folder or folders recursively. That means all music
+  files in all folders will be read.
+
+### Changed
+- General code clean-up.
+- Both files and folders can be added now.
+- Playlists are no longer deletable while changes are occurring to the playlist
+  until a segfault is fixed.
+
+
+
 ## [0.0.17] - September 9th, 2018
 
 ### Added

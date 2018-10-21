@@ -81,6 +81,8 @@
 
 #include "../../Tagview.h"
 
+#include "../FileChoosers/FileChoosers.h"
+
 #include "../PlaylistComboBoxes/PlaylistComboBoxColumnRecord.h"
 
 #include "../PlaylistComboBoxes/PlaylistComboBoxes.h"
@@ -124,6 +126,8 @@
 #include <gtkmm/treerowreference.h>
 
 #include <memory>
+
+#include <thread>
 
 
 
@@ -211,13 +215,9 @@ Playlists::Playlists(Base& base_ref)
 
 // Status Bars
 
-, current_track_int_(0)
-
 , extracting_playlists_(0)
 
 , playlist_status_str_("")
-
-, total_tracks_int_(0)
 
 
 
@@ -329,8 +329,8 @@ Playlists::Playlists(Base& base_ref)
 
 
     // 
-    total_tracks_int_ 
-      += (playlist_treestores_ . back() -> add_track_queue() . size());
+    queue_playlist_treestore_ -> appending_rows_total() 
+      = (playlist_treestores_ . back() -> add_track_queue() . size());
 
 
 
@@ -365,8 +365,8 @@ Playlists::Playlists(Base& base_ref)
 
 
     // 
-    total_tracks_int_ 
-      += (playlist_treestores_ . back() -> add_track_queue() . size());
+    library_playlist_treestore_ -> appending_rows_total()
+      = (playlist_treestores_ . back() -> add_track_queue() . size());
 
 
 
@@ -379,7 +379,7 @@ Playlists::Playlists(Base& base_ref)
 
   // 
   for(auto it : playlist_names)
-   {
+  {
 
     // 
     if((it == "Queue") || (it == "Library"))
@@ -408,8 +408,8 @@ Playlists::Playlists(Base& base_ref)
 
 
     // 
-    total_tracks_int_ 
-      += (playlist_treestores_ . back() -> add_track_queue() . size());
+    playlist_treestores_ . back() -> appending_rows_total() 
+      = (playlist_treestores_ . back() -> add_track_queue() . size());
 
 
 
@@ -425,7 +425,7 @@ Playlists::Playlists(Base& base_ref)
   {
 
     // 
-    Append_Rows(playlist_treestores_it);
+    Append_Rows(playlist_treestores_it, true);
 
   }
 
@@ -612,12 +612,12 @@ bool Playlists::Add_Playlist(const char* name)
     // Makes the new RadioMenuItem visible.
     new_playlists_menu_radio_menu_item -> show();
 
-  }
+  } 
 
 
 
   // 
-  playlist_comboboxes().Add_Playlist(name, playlist_treestores_it);
+  playlist_comboboxes() . Add_Playlist(name, playlist_treestores_it);
 
 
 
@@ -626,17 +626,108 @@ bool Playlists::Add_Playlist(const char* name)
 
 }
 
-void Playlists::Append_Rows
-  (Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
-   bool append_to_database)
+void Playlists::Append_Rows(Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
+                            bool database_extraction)
 {
+
+  // 
+  static mutex append_rows_mutex;
+
+  // 
+  append_rows_mutex . lock();
+
+
+
+  // 
+  if(playlist_treestore -> appending())
+  {
+
+    // 
+    append_rows_mutex . unlock();
+
+
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  if(rebuilding_databases())
+  {
+
+    // 
+    database() . quit_rebuilding() = true;
+
+    // 
+    playlist_treestore -> rebuild_database() = true;
+
+
+
+    // 
+    sigc::connection program_conn = Glib::signal_timeout() . connect
+    (
+
+      // 
+      [this, playlist_treestore]() -> bool
+      { 
+
+        // 
+        if(rebuilding_databases())
+        {
+
+          // 
+          return true;
+
+        }
+
+
+
+        // 
+        Append_Rows(playlist_treestore);
+
+        // 
+        return false;
+
+      },
+
+
+
+      // 
+      3, Glib::PRIORITY_HIGH_IDLE
+
+    );
+
+
+
+    // 
+    append_rows_mutex . unlock();
+
+
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  playlist_treestore -> appending() = true;
+
+  // 
+  append_rows_mutex . unlock();
+
+
 
   // 
   sigc::connection program_conn = Glib::signal_timeout() . connect
   (
 
     // 
-    [this, playlist_treestore]() -> bool
+    [this, playlist_treestore, database_extraction]() -> bool
     { 
 
       // 
@@ -653,34 +744,66 @@ void Playlists::Append_Rows
       {
 
         // 
-        extracting_playlists_--;
+        for(auto playlists_it : playlists()())
+        {
+
+          // 
+          if(playlist_treestore == (playlists_it -> playlist_treestore()))
+          {
+
+              // 
+              playlists_it -> progress_bar()
+                . set_text("No Playlists Modifications Occurring");
+
+              // 
+              playlists_it -> progress_bar() . set_fraction(1);
+
+          }
+
+        }
 
 
 
         // 
-        if(extracting_playlists_ <= 0)
+        if(database_extraction)
         {
 
           // 
-          for(auto playlists_it : playlists()())
-          {
+          extracting_playlists_--;
 
-            // 
-            playlists_it -> progress_bar()
-              . set_text("No Playlists Modifications Occurring");
-
-            // 
-            playlists_it -> progress_bar() . set_fraction(1);
-
-          }
+          // 
+          playlist_treestore -> extraction_complete() = true;
 
 
 
           // 
-          database_extraction_complete_ = true;
+          if(extracting_playlists_ <= 0)
+          {
+
+            // 
+            database_extraction_complete_ = true;
 
 
 
+
+            // 
+            if(rebuild_databases_)
+            {
+
+              // 
+              database() . Rebuild_Database();
+
+            }
+
+          }
+
+        }
+
+        // 
+        else
+        {
+
+          // 
           if(rebuild_databases_)
           {
 
@@ -695,6 +818,37 @@ void Playlists::Append_Rows
 
         // 
         playback() . Reset_Track_Queue();
+
+
+
+        // 
+        playlist_treestore -> appending() = false;
+
+        // 
+        playlist_treestore -> pause_changes() = false;
+
+
+
+        // 
+        for(auto file_chooser : file_choosers()())
+        {
+
+          // 
+          if(playlist_treestore == playlists() . selected_playlist_treestore())
+          {
+
+            //
+            if(!(playlist_treestore -> Changes_Occurring()))
+            {
+
+              // 
+              file_chooser -> okay_button() . set_sensitive(true);
+
+            }
+
+          }
+
+        }
 
 
 
@@ -744,18 +898,20 @@ void Playlists::Append_Rows
 
 
       // 
-      current_track_int_++;
+      (playlist_treestore -> appending_rows_done())++;
 
 
 
       //
       string playlist_status
         = "Adding Extracted Tracks To Playlists: "
-        + to_string(current_track_int_) + " / " + to_string(total_tracks_int_);
+        + to_string(playlist_treestore -> appending_rows_done())
+        + " / " + to_string(playlist_treestore -> appending_rows_total());
 
       // 
       double completion_fraction
-        = current_track_int_ / double(total_tracks_int_);
+        = (playlist_treestore -> appending_rows_done())
+            / double(playlist_treestore -> appending_rows_total());
 
 
 
@@ -773,20 +929,38 @@ void Playlists::Append_Rows
         }
 
         // 
-        playlists_it -> progress_bar() . set_text(playlist_status);
-
-        // 
-        playlists_it -> progress_bar() . set_fraction(completion_fraction);
-
-
-
-        // 
         if(playlist_treestore == (playlists_it -> playlist_treestore()))
         {
 
           // 
           playlists_it -> row_count_label()
             . set_text(to_string(playlist_treestore -> children() . size()));
+
+
+
+          // 
+          playlists_it -> progress_bar() . set_text(playlist_status);
+
+          // 
+          playlists_it -> progress_bar() . set_fraction(completion_fraction);
+
+        }
+
+        else
+        {
+
+          // 
+          if(!(playlists_it -> Changes_Occurring()))
+          {
+
+            // 
+            playlists_it -> progress_bar()
+              . set_text("No Playlists Modifications Occurring");
+
+            // 
+            playlists_it -> progress_bar() . set_fraction(1);
+
+          }
 
         }
 
@@ -807,129 +981,6 @@ void Playlists::Append_Rows
   );
 
 } 
-
-void Playlists::Append_Rows
-  (vector<Track*>* tracks, Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
-   bool append_to_database, vector<int>* ids)
-{
-
-  // 
-  set_inserting(true);
-
-
-
-  // 
-  vector<int>::iterator ids_it;
-
-  // 
-  if(ids != nullptr)
-  {
-
-    // 
-    ids_it = ids -> begin();
-
-  }
-
-
-
-  // 
-  for(auto it : *tracks)
-  { 
-
-    // 
-    Gtk::TreeRow row = *(playlist_treestore -> append());
-
-
-
-    // 
-    Fill_Row(row, shared_ptr<Track>(it));
-
-
-
-    // 
-    if(ids != nullptr)
-    {
-
-      // 
-      row[playlist_column_record() . id_] = *ids_it;
-
-
-
-      // 
-      ids_it++;
-
-    }
-
-  }
-
-
-
-  // 
-  tracks -> clear();
-
-  // 
-  delete tracks;
-
-
-
-  // 
-  for(auto playlists_it : playlists()())
-  {
-
-    // 
-    if(playlist_treestore == (playlists_it -> playlist_treestore()))
-    {
-
-      // 
-      playlists_it -> row_count_label()
-        . set_text(to_string(playlist_treestore -> children() . size()));
-
-    }
-
-  }
-
-
-
-  // 
-  playback() . Reset_Track_Queue();
-
-
-
-  // 
-  if(playlist_treestore -> rebuilding_database())
-  {
-
-    // 
-    playlist_treestore -> rebuild_database() = true;
-
-    // 
-    playlist_treestore -> restart_changes() = true;
-
-  }
-
-  // 
-  else if(append_to_database)
-  {
-
-    // 
-    string playlist_name_str = playlist_treestore -> get_name();
-
-    // 
-    database() . Clear_Playlist(playlist_name_str . c_str());
-
-
-
-    // 
-    database() . Add_Tracks(playlist_treestore);
-
-  }
-
-
-
-  // 
-  set_inserting(false);
-
-}
 
 void Playlists::Change_Track()
 {
@@ -1151,6 +1202,38 @@ void Playlists::Delete_Current_Playlist(bool delete_playlist_combobox_playlist)
 
     // 
     playlist_name = selected_playlist_treestore() -> get_name();
+
+  }
+
+
+
+  // 
+  if(delete_playlist_combobox_playlist)
+  {
+
+    // 
+    if((*(playlist_comboboxes() . active_treestore_it())) -> Changes_Occurring())
+    {
+
+      // 
+      return;
+
+    }
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    if((*(selected_playlist() . playlist_treestore_it())) -> Changes_Occurring())
+    {
+
+      // 
+      return;
+
+    }
 
   }
 
@@ -2199,13 +2282,6 @@ std::atomic<bool>& Playlists::changing_track()
 {
 
   return changing_track_;
-
-}
-
-std::atomic<int>& Playlists::current_track_int()
-{
-
-  return current_track_int_;
 
 }
 

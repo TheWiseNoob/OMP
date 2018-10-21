@@ -172,7 +172,7 @@ PlaylistsDatabase::PlaylistsDatabase(Base& base_ref)
 
 , quit_rebuilding_(false)
 
- {
+  {
 
   // 
   int result_code;
@@ -321,7 +321,7 @@ bool PlaylistsDatabase::Add_Tracks
   {
 
     // 
-    playlists() . current_track_int() += 1;
+    (playlist_treestore -> appending_rows_done()) += 1;
 
 
 
@@ -1547,7 +1547,7 @@ bool PlaylistsDatabase::Rebuild_Database()
   database_saving_thread_active = false;
 
   // 
-  static atomic<bool> database_saving_thread_finished = false;
+  static atomic<bool> database_saving_thread_finished;
 
   // 
   database_saving_thread_finished = false;
@@ -1771,27 +1771,39 @@ bool PlaylistsDatabase::Rebuild_Database()
       }
 
 
+
       //  
       if(base() . quitting() || quit_rebuilding_)
       {
 
         // 
-        sqlite3_close(database_);
+        if(base() . quitting())
+        {
+
+          // 
+          sqlite3_close(database_);
 
 
 
-        // 
-        string copy_database_str
-          = "cp " + (*database_ustr_ptr_) + "/playlists.db.backup "
-              + (*database_ustr_ptr_) + "/playlists.db";
+          // 
+          string copy_database_str
+            = "cp " + (*database_ustr_ptr_) + "/playlists.db.backup "
+                + (*database_ustr_ptr_) + "/playlists.db";
 
-        // 
-        system(copy_database_str . c_str());
+          // 
+          system(copy_database_str . c_str());
+
+        }
 
 
 
         // 
         mutex_ . unlock();
+
+
+
+        // 
+        sql = "";
 
 
 
@@ -1804,6 +1816,17 @@ bool PlaylistsDatabase::Rebuild_Database()
         // 
         playlists() . rebuilding_databases() = false;
 
+        // 
+        database_saving_thread_active = false;
+
+        // 
+        database_saving_thread_finished = false;
+
+
+
+        // 
+        mutex_ . unlock();
+
 
 
         // 
@@ -1814,7 +1837,16 @@ bool PlaylistsDatabase::Rebuild_Database()
 
 
       // 
-      if((*playlist_treestores_it) -> pause_changes())
+      if((*playlist_treestores_it) -> appending())
+      {
+
+        // 
+        return true;
+
+      }
+
+      // 
+      else if((*playlist_treestores_it) -> pause_changes())
       {
 
         // 

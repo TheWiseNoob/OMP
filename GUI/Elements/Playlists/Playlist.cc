@@ -87,6 +87,8 @@
 
 #include "../PlaylistComboBoxes/PlaylistComboBox.h"
 
+#include "../PlaylistComboBoxes/PlaylistComboBoxes.h"
+
 #include "PlaylistColumnRecord.h"
 
 #include "PlaylistMenu.h"
@@ -118,6 +120,8 @@
 #include <glibmm/main.h>
 
 #include <gtkmm/box.h>
+
+#include <gtkmm/eventbox.h>
 
 #include <gtkmm/frame.h>
 
@@ -3716,6 +3720,27 @@ void Playlist::Copy_Selected_Rows(bool cut)
 
 
   // 
+  for(auto playlist_combobox_ptr : (playlist_comboboxes()()))
+  {
+
+    // 
+    playlist_combobox_ptr -> box() . set_sensitive(false);
+
+  }
+
+  // 
+  for(auto playlist_ptr : playlists()())
+  {
+
+    // 
+    playlist_ptr -> menu() . change_playlist_menu_item()
+      . set_sensitive(false);
+
+  }
+
+
+
+  // 
   sigc::connection program_conn = Glib::signal_timeout() . connect
   (
 
@@ -3747,6 +3772,29 @@ void Playlist::Copy_Selected_Rows(bool cut)
           Delete_Selected_Rows();
 
         }
+
+
+
+        // 
+        for(auto playlist_combobox_ptr : playlist_comboboxes()())
+        {
+
+          // 
+          playlist_combobox_ptr -> box() . set_sensitive(true);
+
+        }
+
+        // 
+        for(auto playlist_ptr : playlists()())
+        {
+
+          // 
+          playlist_ptr -> menu() . change_playlist_menu_item()
+            . set_sensitive(true);
+
+        }
+
+
 
 
 
@@ -3811,7 +3859,7 @@ void Playlist::Copy_Selected_Rows(bool cut)
         // 
         copy_progress_bar_ -> set_text(progress_bar_text_str);
 
-      }
+       }
 
 
 
@@ -5073,8 +5121,12 @@ void Playlist::Paste_Clipboard_Rows()
 
 
   // 
-  if((playlists() . clipboard_tracks() . empty())
-       || (!(playlist_treestore_ -> mutex() . try_lock())))
+  auto pasting_playlist_treestore = playlist_treestore_;
+
+
+
+  // 
+  if((playlists() . clipboard_tracks() . empty()))
   {
 
     // 
@@ -5121,7 +5173,7 @@ void Playlist::Paste_Clipboard_Rows()
   (
 
     // 
-    [this]() -> bool
+    [this, pasting_playlist_treestore]() -> bool
     {  
 
       // 
@@ -5143,10 +5195,10 @@ void Playlist::Paste_Clipboard_Rows()
         {
 
           // 
-          if((playlist_treestore_ == playlists() . selected_playlist_treestore())
+          if((pasting_playlist_treestore == playlists() . selected_playlist_treestore())
                ||
-             (playlist_treestore_ == playlists() . playing_playlist_treestore()))
-          {
+             (pasting_playlist_treestore == playlists() . playing_playlist_treestore()))
+          { 
 
             // Resets the track queue.
             playback() . Reset_Track_Queue();
@@ -5159,10 +5211,10 @@ void Playlist::Paste_Clipboard_Rows()
           playlists() . rebuild_databases() = true;
 
           // 
-          playlist_treestore_ -> rebuild_database() = true;
+          pasting_playlist_treestore -> rebuild_database() = true;
 
           // 
-          playlist_treestore_ -> restart_changes() = true;
+          pasting_playlist_treestore -> restart_changes() = true;
 
 
 
@@ -5194,9 +5246,6 @@ void Playlist::Paste_Clipboard_Rows()
 
 
           // 
-          playlist_treestore_ -> mutex() . unlock();
-
-          // 
           pasting_mutex . unlock();
 
           //
@@ -5215,7 +5264,7 @@ void Playlist::Paste_Clipboard_Rows()
         Gtk::TreeRow row;
 
         // 
-        Gtk::TreeIter track_iter = playlist_treestore() -> append();
+        Gtk::TreeIter track_iter = pasting_playlist_treestore -> append();
 
         // 
         row = *track_iter;
@@ -5226,7 +5275,13 @@ void Playlist::Paste_Clipboard_Rows()
 
 
         // 
-        playlist_treeselection_ -> select(row);
+        if(playlist_treestore_ == pasting_playlist_treestore)
+        {
+
+          // 
+          playlist_treeselection_ -> select(row);
+
+        }
 
 
 
@@ -5250,12 +5305,28 @@ void Playlist::Paste_Clipboard_Rows()
         double completion_fraction = track_count / double(total_tracks);
 
 
+
+        // 
+        if(pasting_playlist_treestore != playlist_treestore())
+        {
+
+            // 
+            progress_bar()
+              . set_text("No Playlists Modifications Occurring");
+
+            // 
+            progress_bar() . set_fraction(1);
+
+        }
+
+
+
         // 
         for(auto playlists_it : playlists()())
         {
 
           // 
-          if(playlist_treestore_ == playlists_it -> playlist_treestore())
+          if(pasting_playlist_treestore == playlists_it -> playlist_treestore())
           {
 
             // 
@@ -5268,7 +5339,27 @@ void Playlist::Paste_Clipboard_Rows()
 
             // Sets the row count of the currently active playlist treestore.
             playlists_it -> row_count_label()
-              . set_text(to_string(playlist_treestore_ -> children() . size()));
+              . set_text(to_string(pasting_playlist_treestore -> children() . size()));
+
+          }
+
+          // 
+          else
+          {
+
+            // 
+            if(!(playlists_it -> Changes_Occurring()))
+            {
+
+              // 
+              playlists_it -> progress_bar()
+                . set_text("No Playlists Modifications Occurring");
+
+              // 
+              playlists_it -> progress_bar()
+                . set_fraction(1);
+
+            }
 
           }
 
@@ -5418,6 +5509,61 @@ Glib::ustring Playlist::Active_Column_Name()
 
   // 
   return playlists() . Find_Column_Name(column_title);
+
+}
+
+bool Playlist::Changes_Occurring()
+{
+
+  // 
+  if(playlist_treestore_ -> deleting())
+  {
+
+    // 
+    return true;
+
+  }
+
+  // 
+  else if(playlist_treestore_ -> drag_occurring())
+  {
+
+    // 
+    return true;
+
+  }
+
+  // 
+  else if(!(playlist_treestore_ -> extraction_complete()))
+  {
+
+    // 
+    return true;
+
+  }
+
+  // 
+  else if(playlist_treestore_ -> rebuilding_database())
+  {
+
+    // 
+    return true;
+
+  }
+
+  // 
+  else if(clipboard_event_)
+  {
+
+    // 
+    return true;
+
+  }
+
+
+
+  // 
+  return false;
 
 }
 

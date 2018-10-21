@@ -87,6 +87,8 @@
 
 #include <fstream>
 
+#include <gtkmm/scrolledwindow.h>
+
 #include <gtkmm/textview.h>
 
 #include <iostream>
@@ -181,6 +183,55 @@ Errors::~Errors()
 //                  //
 //                  //
 
+void Errors::Display_Errors()
+{
+
+  // 
+  ChildWindow* errors_window_ptr
+    = windows() . Create("Error(s)", nullptr);
+
+  //
+  Gtk::ScrolledWindow* errors_scrolled_window_ptr
+    = Gtk::manage(new Gtk::ScrolledWindow);
+
+  // 
+  Gtk::TextView* errors_textview_ptr = Gtk::manage(new Gtk::TextView);  
+
+
+
+  // 
+  errors_scrolled_window_ptr -> add(*errors_textview_ptr);
+
+  // 
+  errors_window_ptr -> box()
+    . pack_start(*errors_scrolled_window_ptr, Gtk::PACK_EXPAND_WIDGET);
+
+
+
+  // 
+  errors_textview_ptr -> set_editable(false);
+
+  // 
+  errors_textview_ptr -> get_buffer() -> set_text(undisplayed_errors_);
+
+
+
+  // 
+  if(!(undisplayed_errors_ . empty()))
+  {
+
+    // 
+    errors_window_ptr -> Show();
+
+  }
+
+
+
+  // 
+  undisplayed_errors_ . clear();
+
+}
+
 void Errors::Write_Error(const char* error_c_str)
 {
 
@@ -226,37 +277,16 @@ void Errors::Write_Error(const char* error_c_str)
 
 
   // 
+  undisplayed_errors_ += final_error_str;
+
+
+
+  // 
   (*errors_log_file_) << final_error_str;
 
 
   // 
   errors_log_file_ -> close();
-
-
-
-  // 
-  ChildWindow* errors_window_ptr
-    = windows() . Create("Error(s)", nullptr);
-
-
-
-  // 
-  Gtk::TextView* errors_textview_ptr = Gtk::manage(new Gtk::TextView);  
-
-  // 
-  errors_window_ptr -> box()
-    . pack_start(*errors_textview_ptr, Gtk::PACK_EXPAND_WIDGET);
-
-  // 
-  errors_textview_ptr -> set_editable(false);
-
-  // 
-  errors_textview_ptr -> get_buffer() -> set_text(final_error_str);
-
-
-
-  // 
-  errors_window_ptr -> Show();
 
 }
 

@@ -89,8 +89,6 @@
 
 #include <filesystem>
 
-#include <experimental/filesystem>
-
 #include <fstream>
 
 #include <gio/gio.h>
@@ -205,28 +203,76 @@ Metadata::~Metadata()
 // Reading ////////////////////////////////////////////////////////////////////
 //         //
 
-vector<std::string>*
-  Metadata::All_Files_In_All_Folders(std::string& folder_str_ref)
+void Metadata::All_Files_In_All_Folders
+  (string& folder_str_ref, vector<string>& files,
+   string& active_filename_str, mutex& active_filename_str_mutex)
 {
 
   // 
-  experimental::filesystem::path folder_path;
+  vector<string> unsorted_files;
 
-
-/*
   // 
-  for(auto file : folder_path)
+  filesystem::path folder_path(folder_str_ref);
+
+
+
+  // 
+  auto folder_contents = filesystem::directory_iterator(folder_path);
+
+  // 
+  for(auto file : folder_contents)
   {
 
     // 
-    cout << "\n\nfile: " << folder_path << file << "\n\n";
+    string path_string = file . path() . string();
+
+
+
+    // 
+    unsorted_files . push_back(path_string);
 
   }
-*/
+
 
 
   // 
-  return nullptr;
+  sort(unsorted_files . begin(), unsorted_files . end());
+
+  // 
+  for(auto sorted_file : unsorted_files)
+  {
+
+    // 
+    if(filesystem::is_directory(sorted_file))
+    {
+
+      // 
+      All_Files_In_All_Folders(sorted_file, files, 
+                               active_filename_str, active_filename_str_mutex);
+
+    } 
+
+    // 
+    else
+    {
+
+      // 
+      files . push_back(sorted_file);
+
+
+
+      // 
+      active_filename_str_mutex . lock();
+
+      // 
+      active_filename_str = sorted_file;
+
+      // 
+      active_filename_str_mutex . unlock();
+
+    }
+
+  }
 
 }
 
@@ -503,7 +549,7 @@ bool Metadata::Determine_Codec_If_Supported
     error_message_str += new_track . filename();
 
     // Adds to the error message.
-    error_message_str += "is not valid.";
+    error_message_str += " is not valid.";
 
 
 
@@ -521,6 +567,82 @@ bool Metadata::Determine_Codec_If_Supported
 
   // Indicates the determination of the track's codec was successful.
   return true;
+
+}
+
+bool Metadata::Determine_Mime_If_Supported(string& filename)
+{
+
+  // True if the mime type is for FLAC.
+  if(filename == "audio/flac")
+  {
+
+    // 
+    return true;
+
+  }
+
+  // True if the mime type is for Monkey's audio.
+  else if((filename == "audio/x-ape") || (filename == "audio/ape"))
+  {
+
+    // 
+    return true;
+
+  }
+
+  // True if the mime type is for WavPack.
+  else if(filename == "audio/x-wavpack")
+  {
+
+    // 
+    return true;
+
+  }
+
+  // True if the mime type is for ALAC or AAC.
+  else if(filename == "audio/mp4")
+  {
+
+    // 
+    return true;
+
+  }
+
+  // True if the mime type is for mp3.
+  else if(filename == "audio/mpeg")
+  {
+
+    // 
+    return true;
+
+  }
+
+  // True if the mime type is for AAC.
+  else if(filename == "audio/aac")
+  {
+
+    // 
+    return true;
+
+  }
+
+  // True if the mime type is for ogg.
+  else if((filename == "audio/ogg") || (filename == "audio/oga"))
+  {
+
+    // 
+    return true;
+
+  }
+
+  else
+  {
+
+    // 
+    return false;
+
+  }
 
 }
 
@@ -567,7 +689,7 @@ void Metadata::Extract_File_Path
 
 
 
-  // Finds the index of the the last character of the cuesheet's filepath.
+ // Finds the index of the the last character of the cuesheet's filepath.
   for(end_index = length - 5; filename[end_index] != '/'; end_index--);
 
 
@@ -583,7 +705,9 @@ void Metadata::Extract_File_Path
 
 }
 
-vector<Track*>* Metadata::Filenames_To_Tracks(vector<string>& filenames)
+vector<Track*>* Metadata::Filenames_To_Tracks
+  (vector<string>& filenames, string& active_filename_str,
+   mutex& active_filename_str_mutex, atomic<int>& reading_files_count)
 {
 
   // New-created vector pointer of new-created Track pointers.
@@ -593,11 +717,11 @@ vector<Track*>* Metadata::Filenames_To_Tracks(vector<string>& filenames)
 
   // Iterates through the vector of filenames to create a Track or Tracks for
   // each file.
-  for(auto it : filenames)
+  for(auto filename : filenames)
   {
 
     // Skips folders.
-    if(it . back() == '/')
+    if(filename . back() == '/')
     {
 
       // Continues to the next iteration of the loop.
@@ -607,9 +731,24 @@ vector<Track*>* Metadata::Filenames_To_Tracks(vector<string>& filenames)
 
 
 
+    // 
+    active_filename_str_mutex . lock();
+
+    // 
+    active_filename_str = filename;
+
+    // 
+    active_filename_str_mutex . unlock();
+
+
 
     // Adds all of the created tracks to the single vector created previously.
-    Merge(tracks, Interpret_Metadata(it));
+    Merge(tracks, Interpret_Metadata(filename));
+
+
+
+    // 
+    reading_files_count++;
 
   }
 

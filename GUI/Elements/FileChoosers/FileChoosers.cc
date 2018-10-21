@@ -75,6 +75,10 @@
 
 #include "../ChildWindows/ChildWindows.h"
 
+#include "../Playlists/Playlists.h"
+
+#include "../Playlists/PlaylistTreeStore.h"
+
 
 
 
@@ -153,8 +157,25 @@ FileChoosers::~FileChoosers()
 void FileChoosers::Add_Files()
 {
 
+  // 
+  bool appending = false;
+
+
+
+  // 
+  if(playlists() . selected_playlist_treestore() -> appending())
+  {
+
+    // 
+    appending = true;
+
+  }
+
+
+
   // Creates of new FileChooser pointer.
-  FileChooser* temp_file_chooser = new FileChooser(base(), file_choosers());
+  FileChooser* temp_file_chooser
+    = new FileChooser(base(), file_choosers(), appending);
 
 
 

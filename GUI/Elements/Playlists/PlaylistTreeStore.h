@@ -158,6 +158,8 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
 
   public:
 
+    bool Changes_Occurring();
+
     static Glib::RefPtr<PlaylistTreeStore> 
       create(Base& base, const PlaylistColumnRecord& columns);
 
@@ -192,11 +194,19 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
 
     std::list<std::pair<int, std::shared_ptr<Track>>>& add_track_queue();
 
+    std::atomic<bool>& appending();
+
+    std::atomic<int>& appending_rows_done();
+
+    std::atomic<int>& appending_rows_total();
+
     std::atomic<bool>& cancel_changes();
 
     std::atomic<bool>& deleting();
 
     std::atomic<bool>& drag_occurring();
+
+    std::atomic<bool>& extraction_complete();
 
     std::mutex& mutex();
 
@@ -234,6 +244,15 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
     std::list<std::pair<int, std::shared_ptr<Track>>> add_track_queue_;
 
     // 
+    std::atomic<bool> appending_;
+
+    // 
+    std::atomic<int> appending_rows_done_;
+
+    // 
+    std::atomic<int> appending_rows_total_;
+
+    // 
     std::atomic<bool> cancel_changes_;
 
     // 
@@ -241,6 +260,9 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
 
     // 
     std::atomic<bool> drag_occurring_;
+
+    // 
+    std::atomic<bool> extraction_complete_;
 
     // 
     std::mutex mutex_;

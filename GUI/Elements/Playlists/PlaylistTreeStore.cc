@@ -132,9 +132,17 @@ PlaylistTreeStore::PlaylistTreeStore
 
 // Flags
 
+, appending_(false)
+
+, appending_rows_done_(0)
+
+, appending_rows_total_(0)
+
 , deleting_(false)
 
 , drag_occurring_(false)
+
+, extraction_complete_(false)
 
 , pause_appending_(false)
 
@@ -193,6 +201,49 @@ PlaylistTreeStore::~PlaylistTreeStore()
 // Member Functions ///////////////////////////////////////////////////////////
 //                  //
 //                  //
+
+bool PlaylistTreeStore::Changes_Occurring()
+{
+
+  // 
+  if(appending_)
+  {
+
+  }
+
+  // 
+  else if(deleting_)
+  {
+
+  }
+
+  // 
+  else if(drag_occurring_)
+  {
+
+  }
+
+  // 
+  else if(rebuilding_database_)
+  {
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    return false;
+
+  }
+
+
+
+  // 
+  return true;
+
+}
 
 Glib::RefPtr<PlaylistTreeStore>
   PlaylistTreeStore::create(Base& base, const PlaylistColumnRecord& columns)
@@ -268,6 +319,30 @@ std::list<std::pair<int, shared_ptr<Track>>>&
 
 }
 
+atomic<bool>& PlaylistTreeStore::appending()
+{
+
+  // 
+  return appending_;
+
+}
+
+std::atomic<int>& PlaylistTreeStore::appending_rows_done()
+{
+
+  // 
+  return appending_rows_done_;
+
+}
+
+std::atomic<int>& PlaylistTreeStore::appending_rows_total()
+{
+
+  // 
+  return appending_rows_total_;
+
+}
+
 std::atomic<bool>& PlaylistTreeStore::cancel_changes()
 { 
 
@@ -286,6 +361,13 @@ std::atomic<bool>& PlaylistTreeStore::drag_occurring()
 {
 
   return drag_occurring_;
+
+}
+
+std::atomic<bool>& PlaylistTreeStore::extraction_complete()
+{ 
+
+  return extraction_complete_;
 
 }
 

@@ -191,12 +191,7 @@ class Playlists : public GUIElementList<Playlist>
     bool Add_Playlist(const char* name);
 
     void Append_Rows(Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
-                     bool append_to_database = true);
-
-    void Append_Rows(std::vector<Track*>* tracks,
-                     Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
-                     bool append_to_database = true,
-                     std::vector<int>* ids = nullptr);
+                     bool database_extraction = false);
 
     void Change_Track(); 
 
@@ -286,8 +281,6 @@ class Playlists : public GUIElementList<Playlist>
   public:
 
     std::atomic<bool>& changing_track();
-
-    std::atomic<int>& current_track_int();
 
     std::atomic<bool>& database_extraction_complete();
 
@@ -474,9 +467,9 @@ class Playlists : public GUIElementList<Playlist>
 
 
 
-  //       //
-  // Flags ////////////////////////////////////////////////////////////////////
-  //       //
+  //          //
+  // Datebase ////////////////////////////////////////////////////////////////////
+  //          //
 
   private:
 
@@ -553,9 +546,6 @@ class Playlists : public GUIElementList<Playlist>
   private:
 
     // 
-    std::atomic<int> current_track_int_;
-
-    // 
     int extracting_playlists_;
 
     // 
@@ -563,9 +553,6 @@ class Playlists : public GUIElementList<Playlist>
 
     // 
     std::mutex playlist_status_str_mutex_;
-
-    // 
-    std::atomic <int> total_tracks_int_;
 
 
 
