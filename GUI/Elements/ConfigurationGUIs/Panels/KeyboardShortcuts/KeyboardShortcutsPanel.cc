@@ -347,6 +347,7 @@ void KeyboardShortcutsPanel::Apply_Saved_Values()
      {"paste_rows", "Paste Clipboard Rows"},
      {"pause", "Pause"},
      {"play", "Play"},
+     {"rename_playlist", "Rename Active Playlist"},
      {"select_all_rows", "Select All Rows"},
      {"select_all_rows", "System Menu Pops Up"},
      {"stop", "Stop"},

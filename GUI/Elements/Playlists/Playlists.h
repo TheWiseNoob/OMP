@@ -218,6 +218,9 @@ class Playlists : public GUIElementList<Playlist>
     void Open_Delete_Playlist_Dialog
       (bool delete_playlist_combobox_playlist = false);
 
+    bool Rename_Playlist(Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
+                         std::string& new_playlist_name);
+
     void Scroll_To_Row(Gtk::TreeRowReference desired_row_ref,
                        bool only_use_selected_playlist_view = false);
 

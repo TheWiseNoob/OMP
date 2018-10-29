@@ -55,7 +55,7 @@
 //              //
 //              //
 
-#include "PlaylistCreateDialog.h"
+#include "PlaylistRenameDialog.h"
 
 
 
@@ -74,6 +74,8 @@
 #include "../../GUI.h"
 
 #include "Playlists.h"
+
+#include "PlaylistTreeStore.h"
 
 
 
@@ -131,7 +133,7 @@ using namespace std;
 //             //
 //             //
 
-PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
+PlaylistRenameDialog::PlaylistRenameDialog(Base& base_ref)
 
 // Inherited Class
 
@@ -141,7 +143,7 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
 // General
 
-, add_playlist_button_(Gtk::manage(new Gtk::Button("Create Playlist")))
+, rename_playlist_button_(Gtk::manage(new Gtk::Button("Rename Playlist")))
 
 , button_box_(Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL)))
 
@@ -149,46 +151,52 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
 , info_bar_(Gtk::manage(new Gtk::InfoBar))
 
-, info_bar_label_(Gtk::manage(new Gtk::Label("", 0.5, 0.5)))
+, info_bar_label_(Gtk::manage(new Gtk::Label))
 
-, playlist_creation_window_(new Gtk::Window)
+, playlist_rename_window_(new Gtk::Window)
 
-, playlist_creation_window_box_(Gtk::manage(new Gtk::Box))
+, playlist_rename_window_box_(Gtk::manage(new Gtk::Box))
 
 , playlist_name_entry_(Gtk::manage(new Gtk::Entry))
 
 {
 
   // 
-  playlist_creation_window_ -> add(*playlist_creation_window_box_);
+  playlist_rename_window_ -> add(*playlist_rename_window_box_);
 
 
 
   // 
-  playlist_creation_window_box_
+  playlist_rename_window_box_
     -> pack_start(*info_bar_, Gtk::PACK_SHRINK);
 
   // 
-  playlist_creation_window_box_
+  playlist_rename_window_box_
     -> pack_end(*button_box_, Gtk::PACK_SHRINK);
 
   // 
-  playlist_creation_window_box_
+  playlist_rename_window_box_
     -> pack_end(*playlist_name_entry_, Gtk::PACK_EXPAND_PADDING);
 
 
 
   // 
-  playlist_creation_window_box_ -> set_margin_left(3);
+  playlist_rename_window_box_ -> set_margin_left(3);
 
   // 
-  playlist_creation_window_box_ -> set_margin_right(3);
+  playlist_rename_window_box_ -> set_margin_right(3);
 
   // 
-  playlist_creation_window_box_ -> set_margin_top(3);
+  playlist_rename_window_box_ -> set_margin_top(3);
 
   // 
-  playlist_creation_window_box_ -> set_margin_bottom(3);
+  playlist_rename_window_box_ -> set_margin_bottom(3);
+
+
+
+  // 
+  info_bar_ -> set_hexpand(true);
+
 
 
 
@@ -196,55 +204,52 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
   button_box_ -> pack_start(*cancel_button_, Gtk::PACK_SHRINK);
 
   // 
-  button_box_ -> pack_end(*add_playlist_button_, Gtk::PACK_SHRINK);
+  button_box_ -> pack_end(*rename_playlist_button_, Gtk::PACK_SHRINK);
 
 
 
   // 
-  info_bar_ -> set_center_widget(*info_bar_label_);
+  info_bar_ -> add(*info_bar_label_);
+
+  // 
+  info_bar_label_ -> set_hexpand(true);
+
 
 
   // 
-  playlist_creation_window_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  playlist_rename_window_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
 
 
 
   // 
-  playlist_creation_window_ -> set_position(Gtk::WIN_POS_CENTER);
+  playlist_rename_window_ -> set_position(Gtk::WIN_POS_CENTER);
 
   // 
-  playlist_creation_window_ -> set_size_request(200, 100);
+  playlist_rename_window_ -> set_size_request(200, 100);
 
   // 
-  playlist_creation_window_ -> set_resizable(false);
-
-  // 
-  playlist_creation_window_
-    -> set_title("Create New Playlist");
+  playlist_rename_window_ -> set_resizable(false);
 
 
 
   // 
   playlist_name_entry_ -> signal_activate()
-    . connect(sigc::mem_fun
-        (*this, 
-         &PlaylistCreateDialog::On_Playlist_Name_Entry_Activate_Signal));
+    . connect(sigc::mem_fun(*this, &PlaylistRenameDialog::Rename_Playlist));
 
   // 
-  add_playlist_button_ -> signal_clicked()
-    . connect(sigc::mem_fun
-        (*this, &PlaylistCreateDialog::On_Add_Playlist_Button_Clicked_Signal));
+  rename_playlist_button_ -> signal_clicked()
+    . connect(sigc::mem_fun(*this, &PlaylistRenameDialog::Rename_Playlist));
 
   // 
   cancel_button_ -> signal_clicked()
     . connect(sigc::mem_fun
-        (*this, &PlaylistCreateDialog::On_Cancel_Button_Clicked_Signal));
+        (*this, &PlaylistRenameDialog::On_Cancel_Button_Clicked_Signal));
 
 
 
   //
-  playlist_creation_window_  -> signal_key_press_event()
-    . connect(sigc::mem_fun(*this, &PlaylistCreateDialog::On_Key_Press_Event));
+  playlist_rename_window_  -> signal_key_press_event()
+    . connect(sigc::mem_fun(*this, &PlaylistRenameDialog::On_Key_Press_Event));
 
 }
 
@@ -258,10 +263,10 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 //            //
 //            //
 
-PlaylistCreateDialog::~PlaylistCreateDialog()
+PlaylistRenameDialog::~PlaylistRenameDialog()
 {
 
-  delete playlist_creation_window_;
+  delete playlist_rename_window_;
 
 }
 
@@ -275,81 +280,41 @@ PlaylistCreateDialog::~PlaylistCreateDialog()
 //                  //
 //                  //
 
-void PlaylistCreateDialog::On_Add_Playlist_Button_Clicked_Signal()
-{
-
-  On_Playlist_Name_Entry_Activate_Signal();
-
-}
-
-void PlaylistCreateDialog::On_Cancel_Button_Clicked_Signal()
-{
-
-  playlist_creation_window_ -> hide();
-
-  info_bar_ -> hide();
-
-  playlist_name_entry_ -> set_text("");
-
-}
-
-void PlaylistCreateDialog::On_Playlist_Name_Entry_Activate_Signal()
+void PlaylistRenameDialog::Rename_Playlist()
 {
 
   // 
-  string new_playlist_name = playlist_name_entry_ -> get_text() . c_str();
+  string new_playlist_name = playlist_name_entry_ -> get_text();
+
+  // 
+  string old_playlist_name = playlist_treestore_ -> get_name();
 
 
 
   // 
-  if(new_playlist_name != "")
+  if(old_playlist_name == new_playlist_name)
   {
 
     // 
-    if(playlists() . Add_Playlist(new_playlist_name . c_str()))
-    {
-
-      // 
-      playlist_name_entry_ -> set_text("");
-
-
-
-      // 
-      playlist_creation_window_ -> hide();
-
-    }
-
-    // True if the playlist with that name already exists.
-    else
-    {
-
-      // 
-      string info_bar_label_text = "\"";
-
-      // 
-      info_bar_label_text += new_playlist_name + "\" already exists!";
-
-      // 
-      info_bar_label_ -> set_text(info_bar_label_text); 
-
-
-
-      // 
-      info_bar_label_ -> show();
-
-      // 
-      info_bar_ -> show();
-
-    }
+    info_bar_ -> hide();
 
   }
 
-  // True if no name was put in the entry.
-  else
+  // 
+  else if(playlists() . Rename_Playlist(playlist_treestore_, new_playlist_name))
   {
 
     // 
-    info_bar_label_ -> set_text("No name entered!"); 
+    playlist_rename_window_ -> hide();
+
+  }
+
+  // 
+  else if(new_playlist_name == "")
+  {
+
+    // 
+    info_bar_label_ -> set_text("No name was entered!");
 
 
 
@@ -359,22 +324,61 @@ void PlaylistCreateDialog::On_Playlist_Name_Entry_Activate_Signal()
     // 
     info_bar_ -> show();
 
-  } 
+  }
+
+  // 
+  else
+  {
+
+    // 
+    info_bar_label_ -> set_text("That playlist name is already in use!");
+
+
+
+    // 
+    info_bar_label_ -> show();
+
+    // 
+    info_bar_ -> show();
+
+  }
 
 }
 
-bool PlaylistCreateDialog::On_Key_Press_Event(GdkEventKey* event)
+void PlaylistRenameDialog::On_Cancel_Button_Clicked_Signal()
+{
+
+  // 
+  playlist_rename_window_ -> hide();
+
+  // 
+  info_bar_ -> hide();
+
+
+
+  // 
+  playlist_name_entry_ -> set_text("");
+
+}
+
+bool PlaylistRenameDialog::On_Key_Press_Event(GdkEventKey* event)
 {
 
   // Is true if the escape key is pressed.
   if((event -> keyval == GDK_KEY_Escape))
   {
 
-    playlist_creation_window_ -> hide();
+    // 
+    playlist_rename_window_ -> hide();
 
+    // 
     info_bar_ -> hide();
 
+
+
+    // 
     playlist_name_entry_ -> set_text("");
+
 
 
     // 
@@ -389,15 +393,33 @@ bool PlaylistCreateDialog::On_Key_Press_Event(GdkEventKey* event)
 
 }
 
-void PlaylistCreateDialog::Run()
+void PlaylistRenameDialog::Run()
 {
 
   // 
-  playlist_creation_window_ 
+  playlist_treestore_ = playlists() . selected_playlist_treestore();
+
+
+
+  // 
+  string playlist_name = playlist_treestore_ -> get_name();
+
+  // 
+  if(playlist_name == "Library" || (playlist_name == "Queue"))
+  {
+
+    // 
+    return;
+
+  }
+
+
+  // 
+  playlist_rename_window_ 
     -> set_transient_for(gui() . main_window() -> window());
 
   // 
-  playlist_creation_window_ -> set_modal(true);
+  playlist_rename_window_ -> set_modal(true);
 
 
 
@@ -411,10 +433,10 @@ void PlaylistCreateDialog::Run()
   cancel_button_ -> show();
 
   // 
-  add_playlist_button_ -> show();
+  rename_playlist_button_ -> show();
 
   // 
-  playlist_creation_window_box_ -> show();
+  playlist_rename_window_box_ -> show();
 
 
 
@@ -424,11 +446,24 @@ void PlaylistCreateDialog::Run()
 
 
   // 
-  playlist_creation_window_ -> set_position(Gtk::WIN_POS_CENTER);
+  playlist_rename_window_ -> set_position(Gtk::WIN_POS_CENTER);
 
 
 
   // 
-  playlist_creation_window_ -> show();
+  string playlist_rename_window_title = "Rename Playlist: " + playlist_name;
+
+  // 
+  playlist_rename_window_ -> set_title(playlist_rename_window_title);
+
+
+
+  // 
+  playlist_name_entry_ -> set_text(playlist_name);
+
+
+
+  // 
+  playlist_rename_window_ -> show();
 
 }

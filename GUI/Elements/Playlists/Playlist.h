@@ -110,6 +110,8 @@ class PlaylistColumnRecord;
 
 class PlaylistMenu;
 
+class PlaylistRenameDialog;
+
 class PlaylistTreeStore;
 
 
@@ -284,6 +286,10 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     void On_Selection_Changed();
 
+    void Rename_Playlist();
+
+    bool Rename_Playlist_Double_Click(GdkEventButton* event);
+
 
 
 
@@ -369,6 +375,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   public:
 
+    Gtk::ProgressBar& copy_progress_bar();
+
     Gtk::Label& name_label();
 
     Gtk::ProgressBar& progress_bar();
@@ -405,15 +413,14 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   private:
 
+    // 
     bool editing_canceled_;
 
+    // 
     const char* playlist_view_name_;
 
-  public:
-
-    sigc::connection selection_conn_;
-
-  private:
+    // 
+    PlaylistRenameDialog* rename_playlist_dialog_;
 
     // 
     Gtk::TreeRowReference* right_click_row_tree_row_ref_;
@@ -433,6 +440,9 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
     // 
     int right_click_y_;
 
+  public:
+
+    sigc::connection selection_conn_;
 
 
 
@@ -520,12 +530,10 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   // Status Bar ///////////////////////////////////////////////////////////////
   //            //
 
-  public:
+  private:
 
     // 
     Gtk::ProgressBar* copy_progress_bar_;
-
-  private:
 
     // 
     Gtk::Label* name_label_;

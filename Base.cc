@@ -729,6 +729,10 @@ Base::Base(int argc, char *argv[])
 
   // 
   config()
+    . add_default("keyboard_shortcuts.keys.rename_playlist", "<Primary>r");
+
+  // 
+  config()
     . add_default("keyboard_shortcuts.keys.select_all_rows", "<Primary>a");
 
   // 

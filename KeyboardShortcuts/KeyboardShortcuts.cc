@@ -348,6 +348,15 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   }
 
   // 
+  if(name == config() . get_str("keyboard_shortcuts.keys.rename_playlist"))
+  {
+
+    // 
+    playlists() . selected_playlist() . Rename_Playlist();
+
+  }
+
+  // 
   if(name == config() . get_str("keyboard_shortcuts.keys.select_all_rows"))
   {
 

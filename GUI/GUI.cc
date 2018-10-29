@@ -496,7 +496,7 @@ GUI::GUI(Base& base_ref)
 
 
 
-  // Header MainMenu Creation //////////////////////////////////////////////////
+  // Header MainMenu Creation /////////////////////////////////////////////////
 
   // Creates two MainMenu pointers.
   MainMenu* header_bar_menubar
@@ -644,7 +644,7 @@ GUI::GUI(Base& base_ref)
 
 
 
-  // Tagview Creation ////////////////////////////////////////////////////////////
+  // Tagview Creation /////////////////////////////////////////////////////////
 
   // Creates a temporary pointer object for a new Tagview.
   Tagview *temp_tagview;
@@ -661,7 +661,7 @@ GUI::GUI(Base& base_ref)
 
 
 
-  // Artworks Creation /////////////////////////////////////////////////////////
+  // Artworks Creation ////////////////////////////////////////////////////////
 
   // 
   struct passwd* pw = getpwuid(getuid());
@@ -745,7 +745,7 @@ GUI::GUI(Base& base_ref)
 
 
 
-  // Main Content MainMenu Creation ////////////////////////////////////////////
+  // Main Content MainMenu Creation ///////////////////////////////////////////
 
   // Adds a MainMenu to the left pane in Main Content.
   left_main_content_paned_box_ -> pack_end(*duplicates_box_, Gtk::PACK_SHRINK);
@@ -784,7 +784,8 @@ GUI::GUI(Base& base_ref)
   duplicates_playlist_combobox_ptr -> box() . set_hexpand(true);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  duplicates_playlist_combobox_ptr -> playlist_combobox_entry() . set_hexpand(true);
+  duplicates_playlist_combobox_ptr -> playlist_combobox_entry()
+    . set_hexpand(true);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
   duplicates_playlist_combobox_ptr -> playlist_combobox() . set_hexpand(true);
@@ -793,10 +794,12 @@ GUI::GUI(Base& base_ref)
   duplicates_playlist_combobox_ptr -> box() . set_hexpand_set(true);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  duplicates_playlist_combobox_ptr -> playlist_combobox_entry() . set_hexpand_set(true);
+  duplicates_playlist_combobox_ptr -> playlist_combobox_entry()
+    . set_hexpand_set(true);
 
   // Adds a PlaylistCombobox to the the left pane in Main Content.
-  duplicates_playlist_combobox_ptr -> playlist_combobox() . set_hexpand_set(true);
+  duplicates_playlist_combobox_ptr -> playlist_combobox()
+    . set_hexpand_set(true);
 
 
 
@@ -969,7 +972,8 @@ GUI::GUI(Base& base_ref)
   //                     //
 
   // Adds the status_bar_frame to the bottom of the main_window's box.
-  main_window() -> box() . pack_end(status_bar_ -> status_bar_frame(), Gtk::PACK_SHRINK);
+  main_window() -> box() . pack_end(status_bar_ -> status_bar_frame(),
+                                    Gtk::PACK_SHRINK);
 
 
 
@@ -991,7 +995,7 @@ GUI::GUI(Base& base_ref)
   {
 
     // 
-    playlists_it -> copy_progress_bar_ -> hide();
+    playlists_it -> copy_progress_bar() . hide();
 
   }
 

@@ -93,6 +93,8 @@
 
 #include "PlaylistMenu.h"
 
+#include "PlaylistRenameDialog.h"
+
 #include "Playlists.h"
 
 #include "PlaylistsDatabase.h"
@@ -190,6 +192,8 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 , playlist_view_name_(new_playlist_view_name)
 
+, rename_playlist_dialog_(new PlaylistRenameDialog(base_ref))
+
 , right_click_row_tree_row_ref_(new Gtk::TreeRowReference)
 
 
@@ -236,7 +240,9 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 , copy_progress_bar_(new Gtk::ProgressBar)
 
-, name_label_(Gtk::manage(new Gtk::Label("")))
+, name_label_(Gtk::manage(new Gtk::Label))
+
+, name_label_event_box_(Gtk::manage(new Gtk::EventBox))
 
 , progress_bar_(Gtk::manage(new Gtk::ProgressBar))
 
@@ -918,7 +924,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // 
-  status_box_ -> pack_start(*name_label_, Gtk::PACK_SHRINK);
+  status_box_ -> pack_start(*name_label_event_box_, Gtk::PACK_SHRINK);
 
   // 
   status_box_ -> pack_start(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
@@ -931,6 +937,11 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
   // 
   status_box_ -> pack_start(*row_count_label_, Gtk::PACK_SHRINK);
+
+
+
+  // 
+  name_label_event_box_ -> add(*name_label_);
 
 
 
@@ -953,10 +964,10 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // 
-  name_label_ -> set_margin_left(3);
+  name_label_event_box_ -> set_margin_left(3);
 
   // 
-  name_label_ -> set_margin_right(3);
+  name_label_event_box_ -> set_margin_right(3);
 
 
 
@@ -1035,7 +1046,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
     -> set_tooltip_text("Displays the progress of the action occurring.");
 
   // 
-  name_label_ -> set_tooltip_text
+  name_label_event_box_ -> set_tooltip_text
     ("Playlist name of the playlist active in the playlist view.");
 
   // 
@@ -1047,6 +1058,15 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
   // 
   progress_bar_ -> set_pulse_step(0.01);
+
+
+
+  // 
+  name_label_event_box_ -> set_events(Gdk::BUTTON_PRESS_MASK);
+
+  // Overrides the button press event for the event_box_.
+  name_label_event_box_ -> signal_button_press_event()
+    . connect(sigc::mem_fun(*this, &Playlist::Rename_Playlist_Double_Click));
 
 
 
@@ -3611,6 +3631,28 @@ void Playlist::On_Selection_Changed()
 
 }
 
+void Playlist::Rename_Playlist()
+{
+
+  // 
+  rename_playlist_dialog_ -> Run();
+
+}
+
+bool Playlist::Rename_Playlist_Double_Click(GdkEventButton* event)
+{ 
+
+  // Is true if the StatusBar was double-clicked.
+  if((event -> type) == GDK_2BUTTON_PRESS)
+  {
+
+    // 
+    rename_playlist_dialog_ -> Run();
+
+  }
+
+}
+
 
 
 
@@ -5700,6 +5742,13 @@ const char* Playlist::playlist_view_name()
 //            //
 // Status Bar /////////////////////////////////////////////////////////////////
 //            //
+
+Gtk::ProgressBar& Playlist::copy_progress_bar()
+{
+
+  return *copy_progress_bar_;
+
+}
 
 Gtk::Label& Playlist::name_label()
 {  

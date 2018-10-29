@@ -101,6 +101,8 @@
 
 #include <gtkmm/entry.h>
 
+#include <gtkmm/eventbox.h>
+
 #include <gtkmm/label.h>
 
 #include <gtkmm/radiomenuitem.h>

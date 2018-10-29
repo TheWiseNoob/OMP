@@ -406,6 +406,14 @@ std::atomic<bool>& PlaylistTreeStore::pause_changes()
 
 }
 
+std::list<Gtk::RadioMenuItem*>& PlaylistTreeStore::playlist_radio_menu_items()
+{
+
+  // 
+  return playlist_radio_menu_items_;
+
+}
+
 std::atomic<bool>& PlaylistTreeStore::rebuild_database()
 {
 

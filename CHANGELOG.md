@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.19] - November 4th, 2018
+
+### Added
+- Dialog for renaming a playlist. Useful for when the Playlist ComboBox is not
+  using the same playlist as the active one in the playlist view.
+
+### Changed
+- Playlist create dialog code cleaned up.
+- Better design of playlist create dialog.
+
+
+
 ## [0.0.18] - October 21st, 2018
 
 ### Added

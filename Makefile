@@ -8,10 +8,10 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	PlaybackPanel.o Playlist.o PlaylistChangesCancelDialog.o \
 	PlaylistComboBox.o PlaylistComboBoxes.o PlaylistCreateDialog.o \
 	PlaylistDeleteDialog.o PlaylistMenu.o PlaylistPanel.o \
-	PlaylistTreeStore.o Playlists.o PlaylistsDatabase.o \
-	ReplayGainPanel.o Scrobbling.o ScrobblingPanel.o Seekbar.o \
-	SpinButtonScale.o StatusBar.o Tag.o Tagview.o TimeConversion.o \
-	Track.o TrackBin.o
+	PlaylistRenameDialog.o PlaylistTreeStore.o Playlists.o \
+	PlaylistsDatabase.o ReplayGainPanel.o Scrobbling.o ScrobblingPanel.o \
+	Seekbar.o SpinButtonScale.o StatusBar.o Tag.o Tagview.o \
+	TimeConversion.o Track.o TrackBin.o
 
 CXXFLAGS += -g -std=c++17 -Wall -pipe -Wno-deprecated-declarations \
 	-Wno-parentheses -fconcepts -Wno-catch-value -Wno-return-type
@@ -145,9 +145,10 @@ FailedScrobblesDatabase.o: Scrobbling/FailedScrobblesDatabase.cc \
 
 FileChooser.o: GUI/Elements/FileChoosers/FileChooser.cc \
 	GUI/Elements/FileChoosers/FileChooser.h \
-	GUI/GUIElement.h GUI/Elements/FileChoosers/FileChoosers.h \
+	Errors/Errors.h GUI/GUIElement.h GUI/Elements/FileChoosers/FileChoosers.h \
 	Metadata/Metadata.h GUI/Elements/ChildWindows/ChildWindow.h \
-	GUI/Elements/Playlists/Playlists.h Base.h \
+	GUI/Elements/Playlists/Playlists.h \
+	GUI/Elements/Playlists/PlaylistsDatabase.h Base.h \
 	Configuration/Configuration.h Parts.h
 	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/FileChoosers/FileChooser.cc \
@@ -159,7 +160,8 @@ FileChoosers.o: GUI/Elements/FileChoosers/FileChoosers.cc \
 	Base.h Parts.h GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/ChildWindows/ChildWindows.h \
-	GUI/Elements/Playlists/PlaylistTreeStore.h Metadata/Metadata.h
+	GUI/Elements/Playlists/PlaylistTreeStore.h Metadata/Metadata.h \
+	GUI/Elements/Playlists/Playlists.h
 	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/FileChoosers/FileChoosers.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
@@ -323,15 +325,12 @@ PlaybackPanel.o: \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
 Playlist.o: GUI/Elements/Playlists/Playlist.cc \
-	GUI/Elements/Playlists/Playlist.h \
-	GUI/GUIElement.h Parts.h \
-	GUI/Elements/Playlists/PlaylistTreeStore.h \
-	GUI/Elements/Playlists/PlaylistColumnRecord.h \
-	GUI/Elements/Playlists/PlaylistMenu.h Base.h GUI/GUI.h \
+	GUI/Elements/Playlists/*.h \
+	GUI/GUIElement.h Parts.h Base.h GUI/GUI.h \
 	Configuration/Configuration.h \
 	Metadata/Metadata.h Playback/Playback.h Playback/TrackBin.h \
-	Metadata/Track.h GUI/Elements/PlaylistComboBoxes/PlaylistComboBox.h \
-	GUI/Elements/Playlists/Playlists.h Metadata/TimeConversion.h
+	Metadata/Track.h GUI/Elements/PlaylistComboBoxes/PlaylistComboBoxes.h \
+	Metadata/TimeConversion.h
 	$(CXX) $(CXXFLAGS) -c GUI/Elements/Playlists/Playlist.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
@@ -404,6 +403,14 @@ PlaylistPanel.o: \
 	GUI/Elements/ConfigurationGUIs/Panels/Playlist/PlaylistPanel.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
+PlaylistRenameDialog.o: GUI/Elements/Playlists/PlaylistRenameDialog.cc \
+	GUI/Elements/Playlists/PlaylistRenameDialog.h \
+	Parts.h GUI/Elements/Playlists/Playlists.h \
+	GUI/Elements/Playlists/PlaylistTreeStore.h GUI/GUI.h
+	$(CXX) $(CXXFLAGS) -c \
+	GUI/Elements/Playlists/PlaylistRenameDialog.cc \
+	`pkg-config --cflags --libs gtkmm-3.0 gdk-3.0`
+
 PlaylistTreeStore.o: GUI/Elements/Playlists/PlaylistTreeStore.cc \
 	GUI/Elements/Playlists/PlaylistColumnRecord.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h Parts.h
@@ -413,6 +420,7 @@ PlaylistTreeStore.o: GUI/Elements/Playlists/PlaylistTreeStore.cc \
 
 Playlists.o: GUI/Elements/Playlists/Playlists.cc \
 	GUI/Elements/Playlists/Playlists.h GUI/GUIElementList.h \
+	GUI/Elements/FileChoosers/FileChoosers.h \
 	GUI/Elements/Playlists/Playlist.h Parts.h \
 	GUI/Elements/Playlists/PlaylistColumn.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h \

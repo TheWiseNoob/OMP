@@ -1971,6 +1971,232 @@ void Playlists::Open_Delete_Playlist_Dialog
 
 } 
 
+bool Playlists::Rename_Playlist
+  (Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
+   std::string& new_playlist_name)
+{
+
+  // 
+  playlist_comboboxes() . set_on_playlist_combobox_changed_disabled(true);
+
+
+
+  // 
+  debug("Inside playlist combobox entry changed");
+
+
+
+  // 
+  Glib::ustring old_name_ustr = playlist_treestore -> get_name();
+
+
+
+  // 
+  if(new_playlist_name == "")
+  {
+
+    // 
+    playlist_comboboxes() . set_on_playlist_combobox_changed_disabled(false);
+
+
+
+    // 
+    return false;
+
+  }
+
+
+
+  // 
+  bool result
+    = playlists() . database() . Rename_Playlist(old_name_ustr . c_str(), 
+                                                 new_playlist_name . c_str());
+
+  // 
+  if(!result)
+  {
+
+    // 
+    debug("The playlist was not able to be renamed in the database.");
+
+
+
+    // 
+    playlist_comboboxes() . set_on_playlist_combobox_changed_disabled(false);
+
+
+
+    // 
+    return false;
+
+  }
+
+
+
+  // 
+  if(playlist_treestore == (*(playlist_comboboxes() . active_treestore_it())))
+  {
+
+    // 
+    for(auto playlist_combobox : playlist_comboboxes()())
+    {
+
+      // 
+      playlist_combobox -> playlist_combobox_entry()
+        . set_text(new_playlist_name);
+
+    }
+
+
+
+    // 
+    config() . set("gui.playlist_combobox.active", new_playlist_name);
+
+
+
+    // 
+    Gtk::TreeRow active_row = *(playlist_comboboxes() . active_row_it());
+
+    // 
+    active_row[playlist_comboboxes() . column_record() . name_] = new_playlist_name;
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    auto playlist_comboboxes_treestore = playlist_comboboxes() . treestore();
+
+
+
+    // 
+    for(auto row : playlist_comboboxes_treestore -> children())
+    {
+
+      // 
+      string row_name = Glib::ustring(row[playlist_comboboxes() . column_record() . name_]);
+
+      // 
+      if(row_name == old_name_ustr)
+      {
+
+        // 
+        row[playlist_comboboxes() . column_record() . name_]
+          = new_playlist_name;
+
+
+
+        // 
+        break;
+
+      }
+
+    }
+
+  }
+
+
+
+  // 
+  for(auto playlists_it : playlists()())
+  {
+
+    // 
+    int count = 0;
+
+
+
+    // 
+    if(old_name_ustr == (playlists_it -> active_playlist_name()))
+    {
+
+      // 
+      debug("Setting name of active playlist.");
+
+
+
+      // 
+      playlists_it -> name_label() . set_text(new_playlist_name);
+
+
+
+      // 
+      string setting_name = "gui.playlist.view.";
+
+      // 
+      setting_name += playlists_it -> playlist_view_name();
+
+      // 
+      setting_name += ".active";
+
+
+
+      // 
+      config()  . set(setting_name . c_str(), new_playlist_name);
+
+
+
+      // 
+      config() . write_file();
+
+    }
+
+
+
+    // 
+    for(auto playlists_menu_it 
+         : 
+        playlists_it -> menu() . playlists_menu() . get_children())
+    {
+
+      // 
+      Gtk::RadioMenuItem* playlist_radio_menu_item_ptr
+        = dynamic_cast<Gtk::RadioMenuItem*>(playlists_menu_it);
+
+
+
+      // 
+      string menu_playlist_name
+        = playlist_radio_menu_item_ptr -> get_label();
+
+
+
+      // 
+      if(menu_playlist_name == old_name_ustr)
+      {
+
+        // 
+        playlist_radio_menu_item_ptr -> set_label(new_playlist_name);
+
+        // 
+        playlists_it -> menu() . change_playlist_menu_item()
+          . set_label("Playlist: " + new_playlist_name);
+
+      }
+
+    }
+
+  }
+
+
+
+  // 
+  playlist_treestore -> set_name(new_playlist_name); 
+
+
+
+  // 
+  playlist_comboboxes() . set_on_playlist_combobox_changed_disabled(false);
+
+
+
+  // 
+  return true;
+
+}
+
 void Playlists::Scroll_To_Row(Gtk::TreeRowReference desired_row_ref,
                               bool only_use_selected_playlist_view)
 {

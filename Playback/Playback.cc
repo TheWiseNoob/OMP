@@ -1233,11 +1233,6 @@ std::shared_ptr<TrackBin> Playback::Create_Track_Bin_Sptr
 
 
 
-  // Creates a reference to the new track's mime type.
-  Glib::ustring& mime = new_track -> mime();
-
-
-
   // True if the codec requires both a demuxer has to wait for
   // the pad-added signal to connect the demuxer and decoder.
   if((parser == nullptr) && (demuxer != nullptr))
@@ -3193,6 +3188,14 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
     // Attempts to change the pipeline to the playing state.
     ret = gst_element_set_state (pipeline_, GST_STATE_PAUSED);
+
+
+
+    // 
+    if(ret)
+    {
+
+    }
 
 
 

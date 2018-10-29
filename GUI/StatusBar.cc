@@ -722,7 +722,7 @@ bool StatusBar::Status_Bar_Event_Box_Button_Press(GdkEventButton* event)
 
 }
 
-bool StatusBar::Status_Bar_Event_Box_Button_Release(GdkEventButton *event)
+bool StatusBar::Status_Bar_Event_Box_Button_Release(GdkEventButton* event)
 {
 
   // Makes a new Gdk::RGBA.

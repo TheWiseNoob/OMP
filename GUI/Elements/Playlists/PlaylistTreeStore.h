@@ -102,6 +102,13 @@
 //                      //
 //                      //
 
+namespace Gtk
+{
+
+  class RadioMenuItem;
+
+}
+
 class PlaylistColumnRecord;
 
 class Track;
@@ -218,6 +225,8 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
 
     std::atomic<bool>& pause_changes();
 
+    std::list<Gtk::RadioMenuItem*>& playlist_radio_menu_items();
+
     std::atomic<bool>& rebuild_database();
 
     std::atomic<bool>& rebuild_finished();
@@ -278,6 +287,9 @@ class PlaylistTreeStore : public Gtk::TreeStore, public Parts
 
     // 
     std::atomic<bool> pause_changes_;
+
+    // 
+    std::list<Gtk::RadioMenuItem*> playlist_radio_menu_items_;
 
     // 
     std::atomic<bool> rebuild_database_;
