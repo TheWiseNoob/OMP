@@ -137,6 +137,16 @@ Base::Base(int argc, char *argv[])
 
 { 
 
+  // 
+  for(int i = 0; i < argc; i++)
+  {
+
+//    cout << "\n\nCOMMAND: " << argv[i] << "\n\n";
+
+  }
+
+
+
   //                                           //
   // Finds Home Directory and Config Directory ////////////////////////////////
   //                                           //

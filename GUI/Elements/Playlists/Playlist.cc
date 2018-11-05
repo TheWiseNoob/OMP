@@ -3651,6 +3651,11 @@ bool Playlist::Rename_Playlist_Double_Click(GdkEventButton* event)
 
   }
 
+
+
+  // 
+  return false;
+
 }
 
 
