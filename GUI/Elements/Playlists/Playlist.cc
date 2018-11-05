@@ -1047,7 +1047,8 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
   // 
   name_label_event_box_ -> set_tooltip_text
-    ("Playlist name of the playlist active in the playlist view.");
+    ("Playlist name of the playlist active in the playlist view. " \
+     "Double-click to rename the playlist.");
 
   // 
   row_count_label_
