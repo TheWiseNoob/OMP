@@ -96,7 +96,7 @@ int main (int argc, char *argv[])
   Glib::RefPtr<Gtk::Application> application 
     = Gtk::Application::create
         ("openmusicplayer.com",   // Uncomment this for multiple OMP instances.
-         Gio::APPLICATION_FLAGS_NONE | Gio::APPLICATION_NON_UNIQUE);
+         Gio::APPLICATION_FLAGS_NONE /*| Gio::APPLICATION_NON_UNIQUE*/);
 
 
 
