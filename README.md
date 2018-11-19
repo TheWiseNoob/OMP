@@ -26,7 +26,7 @@ prevalent music audio file types gaplessly and stores tracks in a database.
 
 ## Next OMP Release
 
-#### Version 0.0.20 : November 18th, 2018
+#### Version 0.0.20 : November 25th, 2018
 
 
 
@@ -65,6 +65,7 @@ prevalent music audio file types gaplessly and stores tracks in a database.
 
   To compile and then install, run the following commands:
 
+  
   make<br />
   sudo make install
 
