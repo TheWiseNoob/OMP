@@ -539,4 +539,3 @@ install:
 	install -Dm0644 Images/OMP_Icon_64.png $(DESTDIR)/usr/share/icons/hicolor/64x64/apps/omp.png
 	install -Dm0644 Images/OMP_Icon_128.png $(DESTDIR)/usr/share/icons/hicolor/128x128/apps/omp.png
 	install -Dm0644 omp.desktop $(DESTDIR)/usr/share/applications/omp.desktop
-	gtk-update-icon-cache -f /usr/share/icons/hicolor
