@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.19.1] - November 23rd, 2018
+
+### Fixed
+- Icons improved so they are no longer pixelated.
+
+
+
 ## [0.0.19] - November 4th, 2018
 
 ### Added
