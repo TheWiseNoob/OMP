@@ -54,8 +54,10 @@ ArtworkPanel.o: GUI/Elements/ConfigurationGUIs/Panels/Artwork/ArtworkPanel.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
 Base.o: Base.cc Base.h Configuration/Configuration.h \
+	GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
 	Errors/Errors.h KeyboardShortcuts/KeyboardShortcuts.h \
+	GUI/Elements/FileChoosers/FileChoosers.h \
 	GUI/Elements/Playlists/Playlists.h \
 	GUI/Elements/Playlists/PlaylistTreeStore.h \
 	GUI/GUI.h Playback/Playback.h Metadata/Metadata.h \
@@ -246,7 +248,7 @@ Metadata.o: Metadata/Metadata.h Metadata/Metadata.cc Parts.h \
 Main.o: Main.cc Base.h GUI/GUI.h GUI/Elements/ChildWindows/ChildWindow.h \
 	GUI/Elements/ChildWindows/ChildWindows.h
 	$(CXX) $(CXXFLAGS) -c Main.cc \
-	`pkg-config --cflags --libs gtkmm-3.0`
+	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4`
 
 OutputPanel.o: GUI/Elements/ConfigurationGUIs/Panels/Output/OutputPanel.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/Output/OutputPanel.h \
@@ -530,9 +532,11 @@ clean:
 install:
 	install -Dm0755 omp $(DESTDIR)/usr/bin/omp
 	install -Dm0644 Images/No_Cover.svg $(DESTDIR)/usr/share/OMP/No_Cover.svg
-	install -Dm0644 Images/OMP_Icon_16.png $(DESTDIR)/usr/share/OMP/OMP_Icon_16.png
-	install -Dm0644 Images/OMP_Icon_32.png $(DESTDIR)/usr/share/OMP/OMP_Icon_32.png
-	install -Dm0644 Images/OMP_Icon_48.png $(DESTDIR)/usr/share/OMP/OMP_Icon_48.png
-	install -Dm0644 Images/OMP_Icon_64.png $(DESTDIR)/usr/share/OMP/OMP_Icon_64.png
-	install -Dm0644 Images/OMP_Icon_128.png $(DESTDIR)/usr/share/OMP/OMP_Icon_128.png
+	install -Dm0644 Images/Icon.svg $(DESTDIR)/usr/share/icons/scalable/omp.svg
+	install -Dm0644 Images/OMP_Icon_16.png $(DESTDIR)/usr/share/icons/hicolor/16x16/apps/omp.png
+	install -Dm0644 Images/OMP_Icon_32.png $(DESTDIR)/usr/share/icons/hicolor/32x32/apps/omp.png
+	install -Dm0644 Images/OMP_Icon_48.png $(DESTDIR)/usr/share/icons/hicolor/48x48/apps/omp.png
+	install -Dm0644 Images/OMP_Icon_64.png $(DESTDIR)/usr/share/icons/hicolor/64x64/apps/omp.png
+	install -Dm0644 Images/OMP_Icon_128.png $(DESTDIR)/usr/share/icons/hicolor/128x128/apps/omp.png
 	install -Dm0644 omp.desktop $(DESTDIR)/usr/share/applications/omp.desktop
+	gtk-update-icon-cache -f /usr/share/icons/hicolor
