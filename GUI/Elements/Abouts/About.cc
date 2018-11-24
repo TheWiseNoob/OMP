@@ -130,8 +130,8 @@ About::About(Base& base_ref, Abouts& abouts_ref)
 
   // 
   auto omp_pixbuf 
-    = Gdk::Pixbuf::create_from_file("/usr/share/OMP/OMP_Icon_128.png", 
-                                    128, 128, true);
+    = Gdk::Pixbuf::create_from_file
+        ("/usr/share/icons/hicolor/scalable/apps/omp.svg", 128, 128, true);
 
   // 
   Gtk::Image* omp_logo = Gtk::manage(new Gtk::Image(omp_pixbuf));
