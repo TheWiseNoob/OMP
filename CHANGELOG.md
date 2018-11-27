@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.20] - November 25th, 2018
+
+### Added
+- Files can now be opened via command line.
+
+### Fixed
+- Files open in OMP when opened in a file browser. Before, nothing happened.
+
+
+
 ## [0.0.19.1] - November 23rd, 2018
 
 ### Fixed
