@@ -71,7 +71,11 @@
 
 #include "Errors/Errors.h"
 
+#include "GUI/Elements/ChildWindows/ChildWindow.h"
+
 #include "GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h"
+
+#include "GUI/Elements/FileChoosers/FileChoosers.h"
 
 #include "GUI/Elements/Playlists/Playlists.h"
 
@@ -101,6 +105,16 @@
 
 #include <atomic>
 
+#include <giomm/applicationcommandline.h>
+
+#include <glibmm.h>
+
+#include <gtkmm/applicationwindow.h>
+
+#include <gtkmm/filechooserwidget.h>
+
+#include <gtkmm/messagedialog.h>
+
 #include <pwd.h>
 
 #include <string>
@@ -129,23 +143,16 @@
 //             //
 //             //
 
-Base::Base(int argc, char *argv[])
+Base::Base(int argc, char *argv[],
+           Glib::RefPtr<Gtk::Application> new_application)
 
 // 
 
-: quitting_(false)
+: application_(new_application)
 
-{ 
+, quitting_(false)
 
-  // 
-  for(int i = 0; i < argc; i++)
-  {
-
-//    cout << "\n\nCOMMAND: " << argv[i] << "\n\n";
-
-  }
-
-
+{
 
   //                                           //
   // Finds Home Directory and Config Directory ////////////////////////////////
@@ -869,7 +876,205 @@ Base::Base(int argc, char *argv[])
   // 
   gui_ -> config_guis() . Apply_Saved_Values();
 
+
+
 }
+
+
+
+
+
+//                  //
+//                  //
+// Member Functions /////////////////////////////////////////////////////////
+//                  //
+//                  //
+
+int Base::New_Command
+  (const Glib::RefPtr<Gio::ApplicationCommandLine>& commands)
+{
+
+  // 
+  static mutex command_mutex;
+
+  // 
+  while(!(command_mutex . try_lock()));
+
+
+
+  // 
+  static mutex main_command_mutex;
+
+  // 
+  bool main_command = false;
+
+  // 
+  static vector<string> filenames;
+
+
+
+  // 
+  static chrono::time_point<chrono::system_clock> last_command_time;
+
+  // 
+  static chrono::time_point<chrono::system_clock> new_time;
+
+
+
+  // 
+  if(main_command_mutex . try_lock())
+  {
+
+    // 
+    main_command = true;
+
+  }
+
+
+
+  // 
+  last_command_time = chrono::system_clock::now();
+
+
+
+  // 
+  int argc = 0;
+
+  // 
+  char** argv = commands -> get_arguments(argc);
+
+
+
+  // 
+  for(int i = 1; i < argc; i++)
+  {
+
+    // 
+    filenames . push_back(string(argv[i]));
+
+  }
+
+
+
+  // 
+  if(main_command)
+  {
+
+    // 
+    sigc::connection program_conn = Glib::signal_timeout() . connect
+    (
+
+      // 
+      [this]() -> bool
+      { 
+
+        // 
+        chrono::duration<double> last_command_elapsed_seconds;
+
+
+
+        // 
+        new_time = chrono::system_clock::now();
+
+
+
+        // 
+        last_command_elapsed_seconds = new_time - last_command_time;
+
+
+
+        // 
+        if((last_command_elapsed_seconds . count()) < 0.1)
+        {
+
+          // 
+          return true;
+
+        }
+
+
+
+        // 
+        if(!(filenames . empty()))
+        {
+
+          // 
+          sort(filenames . begin(), filenames . end());
+
+
+
+          // 
+          auto file_chooser = gui_ -> file_choosers() . Create(true, &filenames);
+
+          // 
+          file_chooser -> Use_Selected();
+
+
+
+          // 
+          filenames . clear();
+
+
+
+          // 
+          gui() . main_window() -> window() . grab_focus();
+
+          // 
+          gui() . main_window() -> window() . present();
+
+        }
+
+ 
+
+        // 
+        main_command_mutex . unlock();
+
+
+
+        // 
+        return false;
+
+      },
+
+
+
+      // 
+      3, Glib::PRIORITY_HIGH_IDLE
+
+    );
+
+  }
+
+
+
+  // 
+  application_ -> activate();
+
+
+
+  // 
+  command_mutex . unlock();
+
+
+
+  // 
+  return EXIT_SUCCESS;
+
+}
+
+void Base::OMP_Started()
+{
+
+  // 
+//  application_ -> activate();
+
+
+
+  // 
+ // auto new_file_chooser = gui_ -> file_choosers() . Create(true);
+
+}
+
 
 
 

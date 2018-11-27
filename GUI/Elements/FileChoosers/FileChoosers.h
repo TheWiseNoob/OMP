@@ -125,7 +125,8 @@ class FileChoosers : public GUIElementList<FileChooser>
 
   public:
 
-    void Add_Files();
+    FileChooser* Create(bool hide_file_chooser = false,
+                        std::vector<std::string>* filenames = nullptr);
 
 
 

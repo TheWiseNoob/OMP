@@ -177,8 +177,9 @@ using namespace std;
 //             //
 //             //
 
-FileChooser::FileChooser(Base& base_ref, FileChoosers& file_choosers_ref,
-                         bool appending)
+FileChooser::FileChooser
+  (Base& base_ref, FileChoosers& file_choosers_ref,
+   bool appending, bool open_from_command, vector<string>* new_filenames)
 
 // Inherited Class
 
@@ -192,6 +193,8 @@ FileChooser::FileChooser(Base& base_ref, FileChoosers& file_choosers_ref,
 
 , cancel_button_(Gtk::manage(new Gtk::Button("Cancel")))
 
+, close_upon_used_(open_from_command)
+
 , file_chooser_(Gtk::manage(new Gtk::FileChooserWidget))
 
 , okay_button_(new Gtk::Button("Add Selected"))
@@ -199,6 +202,16 @@ FileChooser::FileChooser(Base& base_ref, FileChoosers& file_choosers_ref,
 , progress_bar_(new Gtk::ProgressBar())
 
 {
+
+  if(new_filenames != nullptr)
+  {
+
+    // 
+    filenames_ = *new_filenames;
+
+  }
+
+
 
   // Adds the new FileChooser object to the FileChoosers list.
   file_choosers_ref() . push_front(this);
@@ -211,8 +224,16 @@ FileChooser::FileChooser(Base& base_ref, FileChoosers& file_choosers_ref,
   // 
   box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
 
+
+
   // 
-  box() . pack_start(*file_chooser_, Gtk::PACK_EXPAND_WIDGET);
+  if(!open_from_command)
+  {
+
+    // 
+    box() . pack_start(*file_chooser_, Gtk::PACK_EXPAND_WIDGET);
+
+  }
 
   // 
   box() . pack_start(*progress_bar_, Gtk::PACK_SHRINK);
@@ -502,7 +523,7 @@ void FileChooser::Enable_Cancel_Button(ChildWindow* child_window_ptr)
     . connect(sigc::bind(sigc::mem_fun
         (*this, &FileChooser::Quit), child_window_ptr));
 
-}
+ }
 
 void FileChooser::On_Current_Folder_Changed_Signal()
 {
@@ -542,7 +563,22 @@ void FileChooser::Use_Selected()
   static vector<string> selected_filenames;
 
   // 
-  selected_filenames = file_chooser_ -> get_filenames();
+  if(filenames_ . empty())
+  {
+
+    // 
+    selected_filenames = file_chooser_ -> get_filenames();
+
+  }
+
+  // 
+  else
+  {
+
+    // 
+    selected_filenames = filenames_;
+
+  }
 
 
 
@@ -952,6 +988,17 @@ void FileChooser::Use_Selected()
 
 
         // 
+        if(close_upon_used_)
+        {
+
+          // 
+          Quit(child_window_);
+
+        }
+
+
+
+        // 
         return false;
 
       }
@@ -966,6 +1013,7 @@ void FileChooser::Use_Selected()
       // 
       file_reading_thread -> join();
 
+      // 
       delete file_reading_thread;
 
 
@@ -1053,5 +1101,23 @@ Gtk::Button& FileChooser::okay_button()
 {
 
   return *okay_button_;
+
+}
+
+
+
+
+
+//         //
+//         //
+// Setters ////////////////////////////////////////////////////////////////////
+//         //
+//         //
+
+void FileChooser::set_child_window(ChildWindow* new_child_window)
+{
+
+  // 
+  child_window_ = new_child_window;
 
 }

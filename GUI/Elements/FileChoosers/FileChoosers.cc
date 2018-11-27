@@ -89,6 +89,10 @@
 //                 //
 //                 //
 
+#include <chrono>
+
+#include <gtkmm/applicationwindow.h>
+
 #include <memory>
 
 
@@ -154,7 +158,8 @@ FileChoosers::~FileChoosers()
 //                  //
 //                  //
 
-void FileChoosers::Add_Files()
+FileChooser* FileChoosers::Create
+  (bool hide_file_chooser, vector<string>* filenames)
 {
 
   // 
@@ -175,7 +180,8 @@ void FileChoosers::Add_Files()
 
   // Creates of new FileChooser pointer.
   FileChooser* temp_file_chooser
-    = new FileChooser(base(), file_choosers(), appending);
+    = new FileChooser(base(), file_choosers(), appending,
+                      hide_file_chooser, filenames);
 
 
 
@@ -194,6 +200,25 @@ void FileChoosers::Add_Files()
 
 
 
+  // 
+  temp_file_chooser -> set_child_window(new_window);
+
+
+
+  // 
+  if(hide_file_chooser)
+  {
+
+    // 
+    new_window -> window() . set_default_size(650, 32);
+
+    // 
+    new_window -> window() . set_size_request(650, 32);
+
+  }
+
+
+
   // Adds a cancel button to the FileChooser window.
   temp_file_chooser -> Enable_Cancel_Button(new_window);
 
@@ -207,5 +232,10 @@ void FileChoosers::Add_Files()
 
   // Displays the new ChildWindow and its contents.
   new_window -> Show();
+
+
+
+  // 
+  return temp_file_chooser;
 
 }

@@ -140,8 +140,10 @@ class FileChooser : public GUIElement<FileChooser>
 
   public:
 
-    FileChooser(Base& base_ref, FileChoosers& file_choosers_ref,
-                bool appending = true);
+    FileChooser
+      (Base& base_ref, FileChoosers& file_choosers_ref, bool appending = true,
+       bool open_from_command = false,
+       std::vector<std::string>* new_filenames = nullptr);
 
 
 
@@ -204,6 +206,20 @@ class FileChooser : public GUIElement<FileChooser>
 
 
 
+  //         //
+  //         //
+  // Getters //////////////////////////////////////////////////////////////////
+  //         //
+  //         //
+
+  public:
+
+    void set_child_window(ChildWindow* new_child_window);
+
+
+
+
+
   //                  //
   //                  //
   // Member Variables /////////////////////////////////////////////////////////
@@ -215,6 +231,10 @@ class FileChooser : public GUIElement<FileChooser>
     Gtk::Box* action_box_;
 
     Gtk::Button* cancel_button_;
+
+    ChildWindow* child_window_;
+
+    bool close_upon_used_;
 
     Gtk::FileChooserWidget* file_chooser_;
 
