@@ -72,6 +72,8 @@
 
 #include <atomic>
 
+#include <glibmm/refptr.h>
+
 
 
 
@@ -88,7 +90,21 @@ class Configuration;
 
 class Errors;
 
+namespace Gio
+{
+
+  class ApplicationCommandLine;
+
+}
+
 class GUI;
+
+namespace Gtk
+{
+
+  class Application;
+
+}
 
 class KeyboardShortcuts;
 
@@ -123,7 +139,8 @@ class Base
 
   public:
 
-    Base(int argc, char* argv[]);
+    Base(int argc, char* argv[],
+         Glib::RefPtr<Gtk::Application> new_application);
 
 
 
@@ -138,6 +155,22 @@ class Base
   public:
 
     ~Base();
+
+
+
+
+
+  //                  //
+  //                  //
+  // Member Functions /////////////////////////////////////////////////////////
+  //                  //
+  //                  //
+
+  public:
+
+    int New_Command(const Glib::RefPtr<Gio::ApplicationCommandLine>& commands);
+
+    void OMP_Started();
 
 
 
@@ -182,6 +215,9 @@ class Base
   //                  //
 
   private:
+
+    // 
+    Glib::RefPtr<Gtk::Application> application_;
 
     // 
     Configuration* config_;
