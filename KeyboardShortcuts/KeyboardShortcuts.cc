@@ -229,7 +229,7 @@ bool KeyboardShortcuts::On_Key_Press_Event(GdkEventKey* event)
   {
 
     // Calls the function for opening a new ConfigurationGUI window.
-    file_choosers() . Add_Files();
+    file_choosers() . Create();
 
   }
 

@@ -1069,7 +1069,7 @@ void MainMenu::Add_File()
 {
 
   // 
-  file_choosers() . Add_Files();
+  file_choosers() . Create();
 
 }
 

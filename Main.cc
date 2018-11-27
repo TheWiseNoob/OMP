@@ -71,11 +71,17 @@
 //                 //
 //                 //
 
+#include <glibmm.h>
+
+#include <gtkmm.h>
+
 #include <gtkmm/application.h>
 
 #include <gtkmm/applicationwindow.h>
 
 #include <glibmm/refptr.h>
+
+#include <iostream>
 
 
 
@@ -95,13 +101,23 @@ int main (int argc, char *argv[])
   // Created the Gtk::Application instance that is OMP's GUI.
   Glib::RefPtr<Gtk::Application> application 
     = Gtk::Application::create
-        ("openmusicplayer.com",   // Uncomment this for multiple OMP instances.
-         Gio::APPLICATION_FLAGS_NONE /*| Gio::APPLICATION_NON_UNIQUE*/);
+        ("openmusicplayer.com",    // Uncomment this for multiple OMP instances.
+         Gio::APPLICATION_HANDLES_COMMAND_LINE /*| Gio::APPLICATION_NON_UNIQUE*/);
 
 
 
   // The base class of OMP.
-  Base base(argc, argv);
+  Base base(argc, argv, application);
+
+
+
+  // 
+  application -> signal_command_line()
+    . connect(sigc::mem_fun(base, &Base::New_Command), false);
+
+  // 
+  application -> signal_startup()
+    . connect(sigc::mem_fun(base, &Base::OMP_Started));
 
 
 
@@ -111,6 +127,7 @@ int main (int argc, char *argv[])
 
 
   // Shows the window and returns when it is closed.
-  return application -> run(base . gui() . windows()() . front() -> window());
+  return application -> run
+    (base . gui() . windows()() . front() -> window(), argc, argv);
 
-} 
+}
