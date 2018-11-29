@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.20.1] - November 29th, 2018
+
+### Fixed
+- Multi-row drag and drop is no longer broken.
+
+
+
 ## [0.0.20] - November 25th, 2018
 
 ### Added
