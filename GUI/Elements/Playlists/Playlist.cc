@@ -2762,7 +2762,7 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
         grab_focus();
 
         // Selects the row of the button press.
-        set_cursor(row_tree_path, *row_column);
+//        set_cursor(row_tree_path, *row_column);
 
         
 
