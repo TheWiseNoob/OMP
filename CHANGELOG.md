@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.0.21] - November 29th, 2018
+
+### Added
+- Load default value of a single keyboard shortcut.
+- Clear the value of a keyboard shortcut.
+
+
+
 ## [0.0.20.1] - November 29th, 2018
 
 ### Fixed

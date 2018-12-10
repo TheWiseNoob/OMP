@@ -556,25 +556,35 @@ void Scrobbling::Scrobble(Track temp_track,
 void Scrobbling::Scrobble_Playing_Track_Lastfm()
 {
 
+  // 
   scrobbling_loop_paused_ = false;
 
+  // 
   restart_ = true;
 
+  // 
   sigc::connection program_conn = Glib::signal_timeout().connect
   (
 
+    // 
     [this]() -> bool
     {
 
-
+      // 
       static chrono::time_point<chrono::system_clock> start;
 
+      // 
       static chrono::time_point<chrono::system_clock> end;
 
+      // 
       static long long saved_elapsed_nanoseconds = 0LL;
 
+      // 
       long long total_elapsed_nanoseconds = 0LL;
 
+
+
+      // 
       if(scrobbling_loop_paused_)
       {
 
@@ -659,16 +669,25 @@ void Scrobbling::Scrobble_Playing_Track_Lastfm()
 
       }
 
+
+
+      // 
       end = chrono::system_clock::now();
 
+
+
+      // 
       chrono::duration<double> elapsed_seconds;
 
+      // 
       elapsed_seconds = end - start;
 
+      // 
       total_elapsed_nanoseconds 
         = saved_elapsed_nanoseconds 
             + (1000000000LL * (elapsed_seconds.count()));
 
+      // 
       int calculated_percent 
         = (int(100 * (total_elapsed_nanoseconds / double(playback().Duration()))));
 
@@ -711,11 +730,11 @@ void Scrobbling::Scrobble_Playing_Track_Lastfm()
 
       }
 
-    }, 
-    100 
+     }, 100 
 
   );
   
+
 
   debug("Scrobbling playing track end!");
 

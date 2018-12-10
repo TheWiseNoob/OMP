@@ -143,7 +143,9 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 
 
 
-// Keyboard Shortcuts Key Display
+// General 
+
+, clear_key_button_(Gtk::manage(new Gtk::Button("Clear Key")))
 
 , keyboard_shortcuts_display_box_(Gtk::manage(new Gtk::Box))
 
@@ -152,6 +154,8 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 , keyboard_shortcuts_key_label_(Gtk::manage(new Gtk::Label("None")))
 
 , keyboard_shortcuts_label_(Gtk::manage(new Gtk::Label()))
+
+, load_default_button_(Gtk::manage(new Gtk::Button("Load Default")))
 
 
 
@@ -260,18 +264,26 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 
 
   // 
-  keyboard_shortcuts_display_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  keyboard_shortcuts_display_box_
+    -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 
 
+
+  // 
+  keyboard_shortcuts_display_box_ -> pack_start(*load_default_button_, 0, 1);
 
   // 
   keyboard_shortcuts_display_box_
     -> set_center_widget(*keyboard_shortcuts_display_inner_box_);
 
+  // 
+  keyboard_shortcuts_display_box_ -> pack_end(*clear_key_button_, 0, 1);
+
 
 
   // 
-  keyboard_shortcuts_display_inner_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  keyboard_shortcuts_display_inner_box_
+    -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 
 
 
@@ -287,6 +299,36 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 
   // 
   keyboard_shortcuts_label_ -> set_markup("<u>Key Press</u>: ");
+
+
+
+  // 
+  load_default_button_ -> set_margin_left(3);
+
+  // 
+  load_default_button_ -> set_margin_right(3);
+
+  // 
+  load_default_button_ -> set_margin_bottom(3);
+
+
+
+  // 
+  clear_key_button_ -> set_margin_left(3);
+
+  // 
+  clear_key_button_ -> set_margin_right(3);
+
+  // 
+  clear_key_button_ -> set_margin_bottom(3);
+
+
+
+  clear_key_button_ -> signal_clicked()
+    . connect(sigc::mem_fun(*this, &KeyboardShortcutsPanel::Clear_Key));
+
+  load_default_button_ -> signal_clicked()
+    . connect(sigc::mem_fun(*this, &KeyboardShortcutsPanel::Load_Default));
 
 
 
@@ -402,6 +444,148 @@ void KeyboardShortcutsPanel::Apply_Saved_Values()
     new_keyboard_shortcuts_row[keyboard_shortcuts_treeview_columnrecord_ -> label_col_] = key_label;
 
   }
+
+}
+
+void KeyboardShortcutsPanel::Clear_Key()
+{
+
+  // 
+  auto keyboard_treeselection
+    = keyboard_shortcuts_treeview_ -> get_selection();
+
+
+
+  // 
+  auto selected_rows = keyboard_treeselection -> get_selected_rows();
+
+
+
+  // 
+  if((selected_rows . size()) < 1)
+  {
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  Gtk::TreeRow key_row
+    = *(keyboard_shortcuts_liststore_ -> get_iter(selected_rows[0]));
+
+
+
+  // 
+  Glib::ustring config_name
+    = key_row[keyboard_shortcuts_treeview_columnrecord_ -> name_col_];
+
+
+
+  // 
+  string final_config_name = "keyboard_shortcuts.keys.";
+
+  // 
+  final_config_name += config_name;
+
+
+
+  // Loads the default value for a specific configuration setting.
+  config() . set(final_config_name . c_str(), "");
+
+  // 
+  config_guis() . Mark_Unsaved_Changes(true);
+
+
+
+  // 
+  key_row[keyboard_shortcuts_treeview_columnrecord_ -> label_col_]
+    = "";
+
+  // 
+  key_row[keyboard_shortcuts_treeview_columnrecord_ -> key_col_]
+    = "";
+
+}
+
+void KeyboardShortcutsPanel::Load_Default()
+{
+
+  // 
+  auto keyboard_treeselection
+    = keyboard_shortcuts_treeview_ -> get_selection();
+
+
+
+  // 
+  auto selected_rows = keyboard_treeselection -> get_selected_rows();
+
+
+
+  if((selected_rows . size()) < 1)
+  {
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  Gtk::TreeRow key_row
+    = *(keyboard_shortcuts_liststore_ -> get_iter(selected_rows[0]));
+
+
+
+  // 
+  Glib::ustring config_name
+    = key_row[keyboard_shortcuts_treeview_columnrecord_ -> name_col_];
+
+
+
+  // 
+  string final_config_name = "keyboard_shortcuts.keys.";
+
+  // 
+  final_config_name += config_name;
+
+
+
+  // Loads the default value for a specific configuration setting.
+  config() . Load_Default_Value(final_config_name . c_str());
+
+  // 
+  config_guis() . Mark_Unsaved_Changes(true);
+
+
+
+  // 
+  string key_name_str = config() . get(final_config_name);
+
+
+
+  // 
+  guint keyval;
+
+  // 
+  GdkModifierType mods;
+
+  // 
+  gtk_accelerator_parse(key_name_str . c_str(), &keyval, &mods);
+
+  // 
+  string key_label = gtk_accelerator_get_label(keyval, mods);
+
+  // 
+  key_row[keyboard_shortcuts_treeview_columnrecord_ -> label_col_]
+    = key_label;
+
+  // 
+  key_row[keyboard_shortcuts_treeview_columnrecord_ -> key_col_]
+    = key_name_str;
 
 }
 

@@ -190,6 +190,8 @@ class Configuration
 
     string get_str(std::string& setting_name);
 
+    void Load_Default_Value(const char* value_name);
+
     void Load_Default_Values();
 
     void output_default_values_size();

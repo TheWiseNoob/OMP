@@ -2,12 +2,11 @@
 Comment=
 Exec=omp %U
 GenericName=Audio Player
-Icon=omp
-MimeType=application/ogg;audio/x-vorbis+ogg;application/x-ogg;audio/mp3;audio/x-mp3;audio/x-flac;audio/mpeg;audio/x-mpeg;audio;audio/mpeg3;audio/ogg;audio/flac;audio/wav;audio/x-oggflac;audio/x-tta
+Icon=com.openmusicplayer.OMP
+MimeType=application/ogg;audio/x-vorbis+ogg;application/x-ogg;audio/mp3;audio/x-mp3;audio/x-flac;audio/mpeg;audio/x-mpeg;audio/mpeg3;audio/ogg;audio/flac;audio/wav;audio/x-oggflac;audio/x-tta
 Name=OMP
 StartupNotify=false
 StartupWMClass=OMP
 Terminal=false
-TerminalOptions=
 Type=Application
 Categories=AudioVideo;Player;Audio;

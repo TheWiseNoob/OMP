@@ -173,6 +173,10 @@ class KeyboardShortcutsPanel : public Panel
 
     virtual void Apply_Saved_Values() final override;
 
+    void Clear_Key();
+
+    void Load_Default();
+
     void Update_Key(const char* name, const char* label);
 
     void Row_Activated(const Gtk::TreePath& path, Gtk::TreeViewColumn* column);
@@ -201,9 +205,11 @@ class KeyboardShortcutsPanel : public Panel
   //                  //
   //                  //
 
-  //                  //
-  // Filename Buttons /////////////////////////////////////////////////////////
-  //                  //
+  //         //
+  // General //////////////////////////////////////////////////////////////////
+  //         //
+
+  Gtk::Button* clear_key_button_;
 
   Gtk::Box* keyboard_shortcuts_display_box_;
 
@@ -213,13 +219,15 @@ class KeyboardShortcutsPanel : public Panel
 
   Gtk::Label* keyboard_shortcuts_label_;
 
+  Gtk::Button* load_default_button_;
 
 
 
 
-  //                   //
-  // Filename TreeView ////////////////////////////////////////////////////////
-  //                   //
+
+  //               //
+  // Keys TreeView ////////////////////////////////////////////////////////////
+  //               //
 
   std::string editing_path_;
 

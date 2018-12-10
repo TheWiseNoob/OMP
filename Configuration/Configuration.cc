@@ -531,6 +531,19 @@ string Configuration::get_str(string& setting_name)
 
 } 
 
+void Configuration::Load_Default_Value(const char* value_name)
+{
+
+  // 
+  string value_name_str = value_name;
+
+
+
+  // 
+  set(value_name, default_values_ . get_str(value_name_str));
+
+}
+
 void Configuration::Load_Default_Values()
 {
 
@@ -544,7 +557,6 @@ void Configuration::Load_Default_Values()
 
   write_file(true);
 
-
 }
 
 void Configuration::output_default_values_size()
@@ -556,7 +568,7 @@ void Configuration::output_default_values_size()
 void Configuration::print_defaults()
 { 
 
-  default_values_.print_defaults();
+  default_values_ . print_defaults();
 
 } 
 
