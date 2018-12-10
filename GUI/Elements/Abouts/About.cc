@@ -131,7 +131,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   // 
   auto omp_pixbuf 
     = Gdk::Pixbuf::create_from_file
-        ("/usr/share/icons/hicolor/scalable/apps/omp.svg", 128, 128, true);
+        ("/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png", 128, 128, true);
 
   // 
   Gtk::Image* omp_logo = Gtk::manage(new Gtk::Image(omp_pixbuf));
@@ -145,7 +145,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   Gtk::Label* version_label = Gtk::manage(new Gtk::Label);
 
   // 
-  version_label -> set_markup("<b>OMP Version 0.0.20.1 (Pre-Alpha)</b>");
+  version_label -> set_markup("<b>OMP Version 0.0.21 (Pre-Alpha)</b>");
 
   // 
   box() . pack_start(*version_label, Gtk::PACK_EXPAND_PADDING);
