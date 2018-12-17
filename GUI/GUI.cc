@@ -1475,7 +1475,7 @@ void GUI::Load_Cover_Art(string& filename_ref)
   {
 
     // Sets the iterator's current Artwork image filename to the default.
-    (*artwork_it) -> Set_Image_Filename("/usr/share/OMP/No_Cover.svg");
+    (*artwork_it) -> Set_Image_Filename("/app/usr/share/OMP/No_Cover.svg");
  
     // Increments the iterator.
     artwork_it++;
