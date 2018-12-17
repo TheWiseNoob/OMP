@@ -326,11 +326,6 @@ GUI::GUI(Base& base_ref)
 
 
 
-  // 
-  main_window() -> window() . set_default_icon_list(icon_pixbufs);
-
-
-
   // Sets the name of the header bar. 
   main_window() -> window() . set_title("OMP");
 
