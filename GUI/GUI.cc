@@ -327,66 +327,6 @@ GUI::GUI(Base& base_ref)
 
 
   // 
-  vector<Glib::RefPtr<Gdk::Pixbuf>> icon_pixbufs;
-
-  // 
-  string icon_16p_filename
-    = "/usr/share/icons/hicolor/16x16/apps/com.openmusicplayer.OMP.png";
-
-  // 
-  Glib::RefPtr<Gdk::Pixbuf> icon_16p_pixbuf
-    = Gdk::Pixbuf::create_from_file(icon_16p_filename);
-
-  // 
-  icon_pixbufs . push_back(icon_16p_pixbuf);
-
-  // 
-  string icon_32p_filename
-    = "/usr/share/icons/hicolor/32x32/apps/com.openmusicplayer.OMP.png";
-
-  // 
-  Glib::RefPtr<Gdk::Pixbuf> icon_32p_pixbuf
-    = Gdk::Pixbuf::create_from_file(icon_32p_filename);
-
-  // 
-  icon_pixbufs . push_back(icon_32p_pixbuf);
-
-  // 
-  string icon_48p_filename
-    = "/usr/share/icons/hicolor/48x48/apps/com.openmusicplayer.OMP.png";
-
-  // 
-  Glib::RefPtr<Gdk::Pixbuf> icon_48p_pixbuf
-    = Gdk::Pixbuf::create_from_file(icon_48p_filename);
-
-  // 
-  icon_pixbufs . push_back(icon_48p_pixbuf);
-
-  // 
-  string icon_64p_filename
-    = "/usr/share/icons/hicolor/64x64/apps/com.openmusicplayer.OMP.png";
-
-  // 
-  Glib::RefPtr<Gdk::Pixbuf> icon_64p_pixbuf
-    = Gdk::Pixbuf::create_from_file(icon_64p_filename);
-
-  // 
-  icon_pixbufs . push_back(icon_64p_pixbuf);
-
-  // 
-  string icon_128p_filename
-    = "/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png";
-
-  // 
-  Glib::RefPtr<Gdk::Pixbuf> icon_128p_pixbuf
-    = Gdk::Pixbuf::create_from_file(icon_128p_filename);
-
-  // 
-  icon_pixbufs . push_back(icon_128p_pixbuf);
-
-  
-
-  // 
   main_window() -> window() . set_default_icon_list(icon_pixbufs);
 
 
