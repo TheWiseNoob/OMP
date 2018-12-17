@@ -131,7 +131,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   // 
   auto omp_pixbuf 
     = Gdk::Pixbuf::create_from_file
-        ("/app/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png", 128, 128, true);
+        ("/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png", 128, 128, true);
 
   // 
   Gtk::Image* omp_logo = Gtk::manage(new Gtk::Image(omp_pixbuf));
