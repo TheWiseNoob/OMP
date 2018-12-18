@@ -3474,6 +3474,10 @@ void Playlist::On_Selection_Changed()
           ((playlist_treeselection_ -> count_selected_rows()) == 0))
   {
 
+    debug("Start of if no rows selected.");
+
+
+
     // Makes a new empty TreeRowReference.
     Gtk::TreeRowReference temp_row_ref;
 
@@ -3482,11 +3486,19 @@ void Playlist::On_Selection_Changed()
 
 
 
+    debug("Before cover art set.")
+
+
+
     // Makes an empty string.
     string temp_string = "";
 
     // Sets the cover art to an empty string.
     gui() . Load_Cover_Art(temp_string);
+
+
+
+    debug("After cover art set.");
 
 
 
