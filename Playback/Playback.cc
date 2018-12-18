@@ -3396,7 +3396,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
     // Changes the pipeline's playback state to playing.
     gst_element_set_state(pipeline_, GST_STATE_PLAYING);
-
+/*
     // Waits until the track has finished prerolling.
     while(gst_element_get_state(pipeline_, NULL, NULL, 100) 
           == GST_STATE_CHANGE_ASYNC)
@@ -3405,7 +3405,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
       debug("waiting for seek!");
 
     }
-
+*/
 
 
     // Updates the playback status label.
