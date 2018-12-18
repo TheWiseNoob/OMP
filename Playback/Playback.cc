@@ -3325,7 +3325,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
         return;
   
       }
-/*
+
       // Waits until the track has finished prerolling.
       while(gst_element_get_state(pipeline_, NULL, NULL, 100) 
             == GST_STATE_CHANGE_ASYNC)
@@ -3334,7 +3334,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
         debug("waiting for seek!");
 
       }
-*/
+
 
 
       // Starts queueing more tracks.
