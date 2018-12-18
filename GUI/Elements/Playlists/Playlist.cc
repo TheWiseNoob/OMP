@@ -3486,7 +3486,7 @@ void Playlist::On_Selection_Changed()
 
 
 
-    debug("Before cover art set.")
+    debug("Before cover art set.");
 
 
 
