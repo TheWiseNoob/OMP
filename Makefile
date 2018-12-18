@@ -13,7 +13,7 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	Seekbar.o SpinButtonScale.o StatusBar.o Tag.o Tagview.o \
 	TimeConversion.o Track.o TrackBin.o
 
-CXXFLAGS += -g -DFLAPPAK=$(FLATPAK) -std=c++17 -Wall -pipe -Wno-deprecated-declarations \
+CXXFLAGS += -g -DFLATPAK=$(FLATPAK) -std=c++17 -Wall -pipe -Wno-deprecated-declarations \
 	-Wno-parentheses -fconcepts -Wno-catch-value -Wno-return-type
 
 DESTDIR = ''

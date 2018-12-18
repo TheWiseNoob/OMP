@@ -328,7 +328,7 @@ GUI::GUI(Base& base_ref)
 
 
 
-#if defined(FLATPAK)
+#if (FLATPAK==1)
   string dir_head = "/app";
 
 #else
@@ -1482,7 +1482,7 @@ void GUI::Load_Cover_Art(string& filename_ref)
 
 
 
-#if defined(FLATPAK)
+#if (FLATPAK == 1)
   string dir_head = "/app";
 
 #else
