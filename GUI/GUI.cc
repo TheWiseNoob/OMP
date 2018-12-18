@@ -1401,7 +1401,7 @@ void GUI::Load_Cover_Art(string& filename_ref)
   cout << "\n\n4\n\n";
 
   // Finds the last instance of a forward slash in the filename.
-  for(int i = filename_pos - 1; filename_copy[i] != '/'; i--)
+  for(int i = filename_pos - 1; (filename_copy[i] != '/') && (i > 0); i--)
   {
 
     // The final value is the position of the start of the workign directory.
