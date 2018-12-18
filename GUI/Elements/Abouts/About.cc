@@ -91,20 +91,6 @@
 
 
 
-//            //
-//            //
-//            //
-// Namespaces /////////////////////////////////////////////////////////////////
-//            //
-//            //
-//            //
-
-using namespace std;
-
-
-
-
-
 //                 //
 //                 //
 //                 //
@@ -142,19 +128,13 @@ About::About(Base& base_ref, Abouts& abouts_ref)
 
 
 
-  // 
-  const char *app_dir = getenv("APP_DIR");
+#if (FLATPAK)
+  std::string dir_head = "/app";
 
-  // 
-  string dir_head = "";
+#else
+  std::string dir_head = "";
 
-  // 
-  if(app_dir != NULL)
-  {
-
-    dir_head = app_dir;
-
-  }
+#endif
 
 
 

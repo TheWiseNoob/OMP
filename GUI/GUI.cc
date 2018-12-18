@@ -328,19 +328,13 @@ GUI::GUI(Base& base_ref)
 
 
 
-  // 
-  const char *app_dir = getenv("APP_DIR");
+#if (FLATPAK)
+  string dir_head = "/app";
 
-  // 
+#else
   string dir_head = "";
 
-  // 
-  if(app_dir != NULL)
-  {
-
-    dir_head = app_dir;
-
-  }
+#endif
 
 
 
@@ -350,6 +344,8 @@ GUI::GUI(Base& base_ref)
   // 
   string icon_16p_filename
     = dir_head + "/usr/share/icons/hicolor/16x16/apps/com.openmusicplayer.OMP.png";
+
+  cout << "\n\n16 icon: " << icon_16p_filename << "\n\n";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_16p_pixbuf
@@ -1486,19 +1482,13 @@ void GUI::Load_Cover_Art(string& filename_ref)
 
 
 
-  // 
-  const char *app_dir = getenv("APP_DIR");
+#if (FLATPAK)
+  string dir_head = "/app";
 
-  // 
+#else
   string dir_head = "";
 
-  // 
-  if(app_dir != NULL)
-  {
-
-    dir_head = app_dir;
-
-  }
+#endif
 
 
 

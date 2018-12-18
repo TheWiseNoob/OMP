@@ -159,19 +159,13 @@ Artwork::Artwork(Base& base_ref)
 
 {
 
-  // 
-  const char *app_dir = getenv("APP_DIR");
+#if (FLATPAK)
+  string dir_head = "/app";
 
-  // 
+#else
   string dir_head = "";
 
-  // 
-  if(app_dir != NULL)
-  {
-
-    dir_head = app_dir;
-
-  }
+#endif
 
 
 
