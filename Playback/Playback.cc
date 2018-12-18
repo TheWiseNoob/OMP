@@ -3298,7 +3298,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
     else
     {
   
-      debug("Setting nornal track to playing state!");
+      debug("Setting normal track to playing state!");
 
 
 
@@ -3331,7 +3331,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
             == GST_STATE_CHANGE_ASYNC)
       {
 
-//        debug("waiting for seek!");
+        debug("waiting for seek!");
 
       }
 
