@@ -160,7 +160,23 @@ Artwork::Artwork(Base& base_ref)
 {
 
   // 
-  cover_file_ = "/usr/share/OMP/No_Cover.svg";
+  const char *app_dir = getenv("APP_DIR");
+
+  // 
+  string dir_head = "";
+
+  // 
+  if(app_dir != NULL)
+  {
+
+    dir_head = app_dir;
+
+  }
+
+
+
+  // 
+  cover_file_ = dir_head + "/usr/share/OMP/No_Cover.svg";
 
   // 
   saved_cover_file_ = cover_file_;

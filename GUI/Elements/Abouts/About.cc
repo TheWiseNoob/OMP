@@ -91,6 +91,20 @@
 
 
 
+//            //
+//            //
+//            //
+// Namespaces /////////////////////////////////////////////////////////////////
+//            //
+//            //
+//            //
+
+using namespace std;
+
+
+
+
+
 //                 //
 //                 //
 //                 //
@@ -129,9 +143,25 @@ About::About(Base& base_ref, Abouts& abouts_ref)
 
 
   // 
+  const char *app_dir = getenv("APP_DIR");
+
+  // 
+  string dir_head = "";
+
+  // 
+  if(app_dir != NULL)
+  {
+
+    dir_head = app_dir;
+
+  }
+
+
+
+  // 
   auto omp_pixbuf 
     = Gdk::Pixbuf::create_from_file
-        ("/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png", 128, 128, true);
+        (dir_head + "/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png", 128, 128, true);
 
   // 
   Gtk::Image* omp_logo = Gtk::manage(new Gtk::Image(omp_pixbuf));

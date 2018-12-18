@@ -93,6 +93,8 @@
 //                 //
 //                 //
 
+#include <cstdlib>
+
 #include <fstream>
 
 #include <functional>
@@ -325,12 +327,29 @@ GUI::GUI(Base& base_ref)
   top_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
 
 
+
+  // 
+  const char *app_dir = getenv("APP_DIR");
+
+  // 
+  string dir_head = "";
+
+  // 
+  if(app_dir != NULL)
+  {
+
+    dir_head = app_dir;
+
+  }
+
+
+
   // 
   vector<Glib::RefPtr<Gdk::Pixbuf>> icon_pixbufs;
 
   // 
   string icon_16p_filename
-    = "/usr/share/icons/hicolor/16x16/apps/com.openmusicplayer.OMP.png";
+    = dir_head + "/usr/share/icons/hicolor/16x16/apps/com.openmusicplayer.OMP.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_16p_pixbuf
@@ -341,7 +360,7 @@ GUI::GUI(Base& base_ref)
 
   // 
   string icon_32p_filename
-    = "/usr/share/icons/hicolor/32x32/apps/com.openmusicplayer.OMP.png";
+    = dir_head + "/usr/share/icons/hicolor/32x32/apps/com.openmusicplayer.OMP.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_32p_pixbuf
@@ -352,7 +371,7 @@ GUI::GUI(Base& base_ref)
 
   // 
   string icon_48p_filename
-    = "/usr/share/icons/hicolor/48x48/apps/com.openmusicplayer.OMP.png";
+    = dir_head + "/usr/share/icons/hicolor/48x48/apps/com.openmusicplayer.OMP.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_48p_pixbuf
@@ -363,7 +382,7 @@ GUI::GUI(Base& base_ref)
 
   // 
   string icon_64p_filename
-    = "/usr/share/icons/hicolor/64x64/apps/com.openmusicplayer.OMP.png";
+    = dir_head + "/usr/share/icons/hicolor/64x64/apps/com.openmusicplayer.OMP.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_64p_pixbuf
@@ -374,7 +393,7 @@ GUI::GUI(Base& base_ref)
 
   // 
   string icon_128p_filename
-    = "/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png";
+    = dir_head + "/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_128p_pixbuf
@@ -644,7 +663,7 @@ GUI::GUI(Base& base_ref)
 
 
   // 
-  cover_file_ = "/usr/share/OMP/No_Cover.svg";
+  cover_file_ = dir_head + "/usr/share/OMP/No_Cover.svg";
 
   // 
   default_cover_file_ = cover_file_;
@@ -1467,6 +1486,22 @@ void GUI::Load_Cover_Art(string& filename_ref)
 
 
 
+  // 
+  const char *app_dir = getenv("APP_DIR");
+
+  // 
+  string dir_head = "";
+
+  // 
+  if(app_dir != NULL)
+  {
+
+    dir_head = app_dir;
+
+  }
+
+
+
   // Gets an iterator to the beginning of the artworks_ list.
   list<Artwork*>::iterator artwork_it = artworks_.begin();
 
@@ -1475,7 +1510,7 @@ void GUI::Load_Cover_Art(string& filename_ref)
   {
 
     // Sets the iterator's current Artwork image filename to the default.
-    (*artwork_it) -> Set_Image_Filename("/usr/share/OMP/No_Cover.svg");
+    (*artwork_it) -> Set_Image_Filename(dir_head + "/usr/share/OMP/No_Cover.svg");
  
     // Increments the iterator.
     artwork_it++;
