@@ -159,7 +159,7 @@ Artwork::Artwork(Base& base_ref)
 
 {
 
-#if (FLATPAK)
+#if defined(FLATPAK)
   string dir_head = "/app";
 
 #else

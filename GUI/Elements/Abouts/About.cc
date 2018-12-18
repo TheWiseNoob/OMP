@@ -128,7 +128,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
 
 
 
-#if (FLATPAK)
+#if defined(FLATPAK)
   std::string dir_head = "/app";
 
 #else
