@@ -328,7 +328,7 @@ GUI::GUI(Base& base_ref)
 
 
 
-#if (FLATPAK==1)
+#if FLATPAK==1
   string dir_head = "/app";
 
 #else
@@ -344,8 +344,6 @@ GUI::GUI(Base& base_ref)
   // 
   string icon_16p_filename
     = dir_head + "/usr/share/icons/hicolor/16x16/apps/com.openmusicplayer.OMP.png";
-
-  cout << "\n\n16 icon: " << icon_16p_filename << "\n\n";
 
   // 
   Glib::RefPtr<Gdk::Pixbuf> icon_16p_pixbuf
@@ -1381,15 +1379,26 @@ void GUI::Quit(bool release_twice)
 void GUI::Load_Cover_Art(string& filename_ref)
 {
 
+  cout << "\n\n1\n\n";
+
   // Makes a copy of the song's filename.
   string filename_copy = filename_ref;
+
+
+  cout << "\n\n2\n\n";
 
   // Used to create a copy of the filename's path name.
   string file_folder_path = "";
 
+
+  cout << "\n\n3\n\n";
+
   // Stores the current position in the filename string in order to iterate
   // through it to find the end of the file's path.
   int filename_pos = filename_copy.size() - 1;
+
+
+  cout << "\n\n4\n\n";
 
   // Finds the last instance of a forward slash in the filename.
   for(int i = filename_pos - 1; filename_copy[i] != '/'; i--)
@@ -1399,6 +1408,9 @@ void GUI::Load_Cover_Art(string& filename_ref)
     filename_pos = i;
 
   }
+
+
+  cout << "\n\n5\n\n";
 
   // Stores all of the file path.
   for(int i = 0; i < filename_pos; i++)
@@ -1410,6 +1422,9 @@ void GUI::Load_Cover_Art(string& filename_ref)
   }
 
 
+
+  cout << "\n\n6\n\n";
+
   // 
   list<string> cover_art_filename_str_list;
 
@@ -1417,6 +1432,9 @@ void GUI::Load_Cover_Art(string& filename_ref)
   config() . get_list("gui.artwork.front_names", cover_art_filename_str_list);
 
 
+
+
+  cout << "\n\n7\n\n";
 
   // 
   for(auto filename_it : cover_art_filename_str_list)
@@ -1482,6 +1500,9 @@ void GUI::Load_Cover_Art(string& filename_ref)
 
 
 
+
+  cout << "\n\n8\n\n";
+
 #if (FLATPAK == 1)
   string dir_head = "/app";
 
@@ -1492,12 +1513,18 @@ void GUI::Load_Cover_Art(string& filename_ref)
 
 
 
+
+  cout << "\n\n9\n\n";
+
   // Gets an iterator to the beginning of the artworks_ list.
   list<Artwork*>::iterator artwork_it = artworks_.begin();
 
   // Sets all of the Artworks to the default cover image.
   while(artwork_it != (artworks_.end()))
   {
+
+
+  cout << "\n\n10\n\n";
 
     // Sets the iterator's current Artwork image filename to the default.
     (*artwork_it) -> Set_Image_Filename(dir_head + "/usr/share/OMP/No_Cover.svg");
@@ -1509,6 +1536,9 @@ void GUI::Load_Cover_Art(string& filename_ref)
 
 
   
+
+
+  cout << "\n\n11\n\n";
 
   // Sets cover_file_ to the default cover image.
   cover_file_ = default_cover_file_;
