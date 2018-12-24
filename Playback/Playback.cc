@@ -196,7 +196,7 @@ Playback::Playback(Base& base, int argc, char* argv[])
 
 // Inherited Class
 
-: Parts(base, true)
+: Parts(base)
 
 
 

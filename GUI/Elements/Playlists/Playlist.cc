@@ -182,7 +182,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 // Inherited Class
 
-: GUIElement(base_ref, playlists_ref(), true)
+: GUIElement(base_ref, playlists_ref())
 
 
 
