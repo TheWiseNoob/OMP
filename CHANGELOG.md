@@ -3,7 +3,14 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [0.0.21] - November 29th, 2018
+## [0.0.21.1] - December 24th, 2018
+
+### Added
+- Flatpak support.
+
+
+
+## [0.0.21] - December 9th, 2018
 
 ### Added
 - Load default value of a single keyboard shortcut.

@@ -1,0 +1,303 @@
+{
+
+  "app-id": "com.openmusicplayer.OMP",
+
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "3.30",
+
+  "sdk": "org.gnome.Sdk",
+
+
+  "finish-args":
+  [
+
+    "--socket=x11",
+    "--share=ipc",
+    "--share=network",
+    "--filesystem=host",
+    "--socket=pulseaudio"
+
+  ],
+
+  "build-options" :
+  { 
+
+    "cxxflags": "-g -std=c++17 -lstdc++fs"
+
+   },
+
+  "command": "omp",
+
+  "cleanup": ["/app/include", "/app/lib/pkgconfig", "/app/share/smake", "/app/share/man", "*.a"],
+
+
+
+  "modules":
+  [
+
+    {
+
+      "name": "gst-libav",
+      "cleanup": [ "*" ],
+      "sources":
+      [
+
+        {
+
+          "type": "archive",
+          "url": "https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.14.4.tar.xz",
+          "sha256": "dfd78591901df7853eab7e56a86c34a1b03635da0d3d56b89aa577f1897865da"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "taglib",
+      "cleanup": [ "*" ],
+      "buildsystem": "cmake-ninja",
+      "config-opts": ["-DENABLE_TESTING=OFF" , "-DBUILD_SHARED_LIBS=ON", "-DCMAKE_INSTALL_PREFIX:PATH=/app"],
+      "sources":
+      [
+
+        {
+
+          "type": "git",
+          "url": "https://github.com/taglib/taglib.git",
+          "branch": "v1.11.1",
+          "commit": "e36a9cabb9882e61276161c23834d966d62073b7"       
+  
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "mm-common",
+      "cleanup": [ "*" ],
+      "sources":
+      [
+
+        {
+
+          "type": "archive",
+          "url": "http://ftp.gnome.org/pub/GNOME/sources/mm-common/0.9/mm-common-0.9.12.tar.xz",
+          "sha256": "ceffdcce1e5b52742884c233ec604bf6fded12eea9da077ce7a62c02c87e7c0b"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+  
+      "name": "sigc++",
+      "cleanup": [ "*" ],
+      "config-opts": [ "--disable-documentation" ],
+      "sources":
+      [
+
+        {
+          "type": "archive",
+          "url": "http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.10/libsigc++-2.10.1.tar.xz",
+          "sha256": "c9a25f26178c6cbb147f9904d8c533b5a5c5111a41ac2eb781eb734eea446003"
+ 
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "glibmm",
+      "cleanup": [ "*" ],
+      "config-opts": [ "--disable-documentation" ],
+      "sources":
+      [
+
+        {
+          "type": "archive",
+          "url": "http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.58/glibmm-2.58.0.tar.xz",
+          "sha256": "d34189237b99e88228e6f557f7d6e62f767fe356f395a244f5ad0e486254b645"
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "cairomm",
+      "cleanup": [ "*" ],
+      "config-opts": [ "--disable-documentation" ],
+      "sources":
+      [
+
+        {
+          "type": "archive",
+          "url": "http://ftp.acc.umu.se/pub/GNOME/sources/cairomm/1.12/cairomm-1.12.0.tar.xz",
+          "sha256": "a54ada8394a86182525c0762e6f50db6b9212a2109280d13ec6a0b29bfd1afe6"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "pangomm",
+      "cleanup": [ "*" ],
+      "config-opts": [ "--disable-documentation" ],
+      "sources":
+      [
+
+        {
+
+          "type": "archive",
+          "url": "http://ftp.acc.umu.se/pub/GNOME/sources/pangomm/2.42/pangomm-2.42.0.tar.xz",
+          "sha256": "ca6da067ff93a6445780c0b4b226eb84f484ab104b8391fb744a45cbc7edbf56"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "atkmm",
+      "cleanup": [ "*" ],
+      "config-opts": [ "--disable-documentation" ],
+      "sources":
+      [
+        {
+
+          "type": "archive",
+          "url": "http://ftp.gnome.org/pub/GNOME/sources/atkmm/2.28/atkmm-2.28.0.tar.xz",
+          "sha256": "4c4cfc917fd42d3879ce997b463428d6982affa0fb660cafcc0bc2d9afcedd3a"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "gtkmm",
+      "cleanup": [ "*" ],
+      "config-opts": [ "--disable-documentation" ],
+      "build-options" : { "cxxflags": "-O2 -g -std=c++17" },
+      "sources": 
+      [
+
+        {
+
+          "type": "archive",
+          "url": "http://ftp.acc.umu.se/pub/GNOME/sources/gtkmm/3.24/gtkmm-3.24.0.tar.xz",
+          "sha256": "cf5fc92805e581c8303e08d54519457ba07f15b766e9b1edde4862993ac1aa43"
+
+        }
+
+      ]
+
+    }, 
+
+
+
+    {
+
+      "name": "clastfm",
+      "cleanup": [ "*" ],
+      "build-options" : { "cxxflags": "-O2 -g -std=c++17" },
+      "sources":
+      [
+
+        {
+
+          "type": "git",
+          "url": "git://liblastfm.git.sourceforge.net/gitroot/liblastfm/liblastfm"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "libconfig",
+      "cleanup": [ "*" ],
+      "sources":
+      [
+
+        {
+
+          "type": "archive",
+          "url": "https://hyperrealm.github.io/libconfig/dist/libconfig-1.7.2.tar.gz",
+          "sha256": "7c3c7a9c73ff3302084386e96f903eb62ce06953bb1666235fac74363a16fad9"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "omp",
+      "cleanup": [ "*" ],
+      "buildsystem": "simple",
+      "build-options" : { "cxxflags": "-g -std=c++17 -lstdc++fs -DFLATPAK=$(FLATPAK)", "prefix": "/app" },
+      "build-commands":
+      [
+
+        "make -e FLATPAK=1 -j12",
+        "make DESTDIR=/app install"
+
+      ],
+      "sources":
+      [
+
+        {
+
+          "type": "git",
+          "url": "https://github.com/TheWiseNoob/OMP.git"
+
+        }
+
+      ]
+
+    }
+
+  ]
+
+}

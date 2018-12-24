@@ -1,6 +1,6 @@
 ![Logo](/Images/Icon.png?raw=true)
 # OMP : Open Music Player
-#### Version: 0.0.21 : December 9th, 2018
+#### Version: 0.0.21.1 : December 24th, 2018
 
 
 
