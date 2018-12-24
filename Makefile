@@ -532,12 +532,12 @@ clean:
 
 
 install:
-	install -Dm0755 omp $(DESTDIR)/bin/omp
-	install -Dm0755 Images/No_Cover.svg $(DESTDIR)/usr/share/OMP/No_Cover.svg
-	install -Dm0755 Images/Icon.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/apps/com.openmusicplayer.OMP.svg
-	install -Dm0755 Images/Icon_16.png $(DESTDIR)/usr/share/icons/hicolor/16x16/apps/com.openmusicplayer.OMP.png
-	install -Dm0755 Images/Icon_32.png $(DESTDIR)/usr/share/icons/hicolor/32x32/apps/com.openmusicplayer.OMP.png
-	install -Dm0755 Images/Icon_48.png $(DESTDIR)/usr/share/icons/hicolor/48x48/apps/com.openmusicplayer.OMP.png
-	install -Dm0755 Images/Icon_64.png $(DESTDIR)/usr/share/icons/hicolor/64x64/apps/com.openmusicplayer.OMP.png
-	install -Dm0755 Images/Icon_128.png $(DESTDIR)/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png
+	install -Dm0644 omp $(DESTDIR)/bin/omp
+	install -Dm0644 Images/No_Cover.svg $(DESTDIR)/usr/share/OMP/No_Cover.svg
+	install -Dm0644 Images/Icon.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/apps/com.openmusicplayer.OMP.svg
+	install -Dm0644 Images/Icon_16.png $(DESTDIR)/usr/share/icons/hicolor/16x16/apps/com.openmusicplayer.OMP.png
+	install -Dm0644 Images/Icon_32.png $(DESTDIR)/usr/share/icons/hicolor/32x32/apps/com.openmusicplayer.OMP.png
+	install -Dm0644 Images/Icon_48.png $(DESTDIR)/usr/share/icons/hicolor/48x48/apps/com.openmusicplayer.OMP.png
+	install -Dm0644 Images/Icon_64.png $(DESTDIR)/usr/share/icons/hicolor/64x64/apps/com.openmusicplayer.OMP.png
+	install -Dm0644 Images/Icon_128.png $(DESTDIR)/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png
 	install -Dm0644 omp.desktop $(DESTDIR)/usr/share/applications/com.openmusicplayer.OMP.desktop
