@@ -2,6 +2,7 @@
 <!-- Copyright 2013 First Lastname <your@email.com> -->
 <component type="desktop-application">
   <id>com.openmusicplayer.OMP</id>
+  <metadata_license>MIT</metadata_license>
   <project_license>GPL-3.0+</project_license>
   <name>OMP: Open Music Player</name>
   <summary>Gaplessly plays local music files.</summary>
