@@ -8,6 +8,7 @@
   "sdk": "org.gnome.Sdk",
 
 
+
   "finish-args":
   [
 
@@ -18,13 +19,6 @@
     "--socket=pulseaudio"
 
   ],
-
-  "build-options" :
-  { 
-
-    "cxxflags": "-g -std=c++17 -lstdc++fs"
-
-   },
 
   "command": "omp",
 
@@ -46,6 +40,48 @@
 
           "type": "archive",
           "url": "https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.14.4.tar.xz",
+          "sha256": "dfd78591901df7853eab7e56a86c34a1b03635da0d3d56b89aa577f1897865da"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "gst-plugins-bad",
+      "cleanup": [ "*" ],
+      "sources":
+      [
+
+        {
+
+          "type": "archive",
+          "url": "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.14.4.tar.xz",
+          "sha256": "dfd78591901df7853eab7e56a86c34a1b03635da0d3d56b89aa577f1897865da"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
+      "name": "gst-plugins-ugly",
+      "cleanup": [ "*" ],
+      "sources":
+      [
+
+        {
+
+          "type": "archive",
+          "url": "https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.14.4.tar.xz",
           "sha256": "dfd78591901df7853eab7e56a86c34a1b03635da0d3d56b89aa577f1897865da"
 
         }
@@ -276,11 +312,11 @@
       "name": "omp",
       "cleanup": [ "*" ],
       "buildsystem": "simple",
-      "build-options" : { "cxxflags": "-g -std=c++17 -lstdc++fs -DFLATPAK=$(FLATPAK)", "prefix": "/app" },
+      "build-options" : { "cxxflags": "-DFLATPAK=$(FLATPAK)"},
       "build-commands":
       [
 
-        "make -e FLATPAK=1 -j12",
+        "make -e FLATPAK=1 -j $FLATPAK_BUILDER_N_JOBS",
         "make DESTDIR=/app install"
 
       ],

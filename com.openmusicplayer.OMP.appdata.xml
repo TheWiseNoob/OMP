@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2013 First Lastname <your@email.com> -->
+<component type="desktop-application">
+  <id>com.openmusicplayer.OMP</id>
+  <project_license>GPL-3.0+</project_license>
+  <name>OMP: Open Music Player</name>
+  <summary>Gaplessly plays local music files.</summary>
+
+  <description>
+    <p>
+      OMP is a new open-source music player for Linux that is still in an unstable and unfinished pre-alpha state. OMP is programmed in C++ using gtkmm, GStreamer, TagLib, clastfm, and g++.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">com.openmusicplayer.OMP.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>The options dialog</caption>
+      <image>https://raw.githubusercontent.com/TheWiseNoob/OMP/master/Images/Screenshots/Main.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://www.openmusicplayer.com</url>
+
+  <provides>
+    <binary>omp</binary>
+  </provides>
+
+  <releases>
+    <release version="0.0.21.1" date="20138-12-24">
+      <description>
+        <p>Initial Flatpak support.</p>
+      </description>
+    </release>
+  </releases>
+</component>
