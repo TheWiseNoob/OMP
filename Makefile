@@ -532,7 +532,11 @@ clean:
 
 
 install:
-	install -Dm0755 omp $(DESTDIR)/usr/bin/omp
+	ifeq($(FLATPAK), 1)
+		install -Dm0755 omp $(DESTDIR)/bin/omp
+	else
+		install -Dm0755 omp $(DESTDIR)/usr/bin/omp
+	endif
 	install -Dm0644 Images/No_Cover.svg $(DESTDIR)/usr/share/OMP/No_Cover.svg
 	install -Dm0644 Images/Icon.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/apps/com.openmusicplayer.OMP.svg
 	install -Dm0644 Images/Icon_16.png $(DESTDIR)/usr/share/icons/hicolor/16x16/apps/com.openmusicplayer.OMP.png
