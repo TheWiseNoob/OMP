@@ -16,13 +16,14 @@
     "--share=ipc",
     "--share=network",
     "--filesystem=host",
-    "--socket=pulseaudio"
+    "--socket=pulseaudio",
+    "--socket=wayland"
 
   ],
 
-  "command": "omp",
+  "cleanup": ["/app/include", "/lib/pkgconfig", "/share/cmake", "/share/man", "*.a"],
 
-  "cleanup": ["/app/include", "/app/lib/pkgconfig", "/app/share/smake", "/app/share/man", "*.a"],
+  "command": "omp",
 
 
 
@@ -31,8 +32,27 @@
 
     {
 
+      "name": "gst-plugins-good",
+      "sources":
+      [
+
+        {
+
+          "type": "archive",
+          "url": "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.14.4.tar.xz",
+          "sha256": "5f8b553260cb0aac56890053d8511db1528d53cae10f0287cfce2cb2acc70979"
+
+        }
+
+      ]
+
+    },
+
+
+
+    {
+
       "name": "gst-libav",
-      "cleanup": [ "*" ],
       "sources":
       [
 
@@ -52,29 +72,7 @@
 
     {
 
-      "name": "gst-plugins-bad",
-      "cleanup": [ "*" ],
-      "sources":
-      [
-
-        {
-
-          "type": "archive",
-          "url": "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.14.4.tar.xz",
-          "sha256": "dfd78591901df7853eab7e56a86c34a1b03635da0d3d56b89aa577f1897865da"
-
-        }
-
-      ]
-
-    },
-
-
-
-    {
-
       "name": "gst-plugins-ugly",
-      "cleanup": [ "*" ],
       "sources":
       [
 
@@ -82,7 +80,7 @@
 
           "type": "archive",
           "url": "https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.14.4.tar.xz",
-          "sha256": "dfd78591901df7853eab7e56a86c34a1b03635da0d3d56b89aa577f1897865da"
+          "sha256": "ac02d837f166c35ff6ce0738e281680d0b90052cfb1f0255dcf6aaca5f0f6d23"
 
         }
 
@@ -94,10 +92,47 @@
 
     {
 
+      "name": "gst-plugins-bad",
+      "sources":
+      [
+
+        {
+
+          "type": "archive",
+          "url": "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.14.4.tar.xz",
+          "sha256": "910b4e0e2e897e8b6d06767af1779d70057c309f67292f485ff988d087aa0de5"
+
+        }
+
+      ],
+
+      "modules": [{
+        "name": "faad",
+        "cleanup": [ "/bin", "/include", "/share", "/lib/*.la" ],
+        "config-opts": [ "--disable-static", "--without-drm" ],
+        "post-install": [ "rm /app/lib/libfaad_drm*" ],
+        "sources": [
+          {
+            "type": "archive",
+            "url": "http://downloads.sourceforge.net/sourceforge/faac/faad2-2.8.8.tar.gz",
+            "sha256": "985c3fadb9789d2815e50f4ff714511c79c2710ac27a4aaaf5c0c2662141426d"
+          },
+          {
+            "type": "script",
+            "dest-filename": "autogen.sh",
+            "commands": [ "exec ./bootstrap \"$@\"" ]
+          }
+        ]}
+      ]
+    },
+
+
+
+    {
+
       "name": "taglib",
-      "cleanup": [ "*" ],
       "buildsystem": "cmake-ninja",
-      "config-opts": ["-DENABLE_TESTING=OFF" , "-DBUILD_SHARED_LIBS=ON", "-DCMAKE_INSTALL_PREFIX:PATH=/app"],
+      "config-opts": ["-DENABLE_TESTING=OFF" , "-DBUILD_SHARED_LIBS=ON"],
       "sources":
       [
 
@@ -119,7 +154,6 @@
     {
 
       "name": "mm-common",
-      "cleanup": [ "*" ],
       "sources":
       [
 
@@ -140,7 +174,6 @@
     {
   
       "name": "sigc++",
-      "cleanup": [ "*" ],
       "config-opts": [ "--disable-documentation" ],
       "sources":
       [
@@ -161,7 +194,6 @@
     {
 
       "name": "glibmm",
-      "cleanup": [ "*" ],
       "config-opts": [ "--disable-documentation" ],
       "sources":
       [
@@ -181,7 +213,6 @@
     {
 
       "name": "cairomm",
-      "cleanup": [ "*" ],
       "config-opts": [ "--disable-documentation" ],
       "sources":
       [
@@ -202,7 +233,6 @@
     {
 
       "name": "pangomm",
-      "cleanup": [ "*" ],
       "config-opts": [ "--disable-documentation" ],
       "sources":
       [
@@ -224,7 +254,6 @@
     {
 
       "name": "atkmm",
-      "cleanup": [ "*" ],
       "config-opts": [ "--disable-documentation" ],
       "sources":
       [
@@ -245,9 +274,7 @@
     {
 
       "name": "gtkmm",
-      "cleanup": [ "*" ],
       "config-opts": [ "--disable-documentation" ],
-      "build-options" : { "cxxflags": "-O2 -g -std=c++17" },
       "sources": 
       [
 
@@ -268,8 +295,6 @@
     {
 
       "name": "clastfm",
-      "cleanup": [ "*" ],
-      "build-options" : { "cxxflags": "-O2 -g -std=c++17" },
       "sources":
       [
 
@@ -289,7 +314,6 @@
     {
 
       "name": "libconfig",
-      "cleanup": [ "*" ],
       "sources":
       [
 
@@ -310,14 +334,13 @@
     {
 
       "name": "omp",
-      "cleanup": [ "*" ],
       "buildsystem": "simple",
-      "build-options" : { "cxxflags": "-DFLATPAK=$(FLATPAK)"},
+      "build-options" : { "cxxflags": "-g -std=c++17 -lstdc++fs -DFLATPAK=$(FLATPAK)"},
       "build-commands":
       [
 
         "make -e FLATPAK=1 -j $FLATPAK_BUILDER_N_JOBS",
-        "make DESTDIR=/app install"
+        "make FLATPAK=1 DESTDIR=/app install"
 
       ],
       "sources":
@@ -326,7 +349,8 @@
         {
 
           "type": "git",
-          "url": "https://github.com/TheWiseNoob/OMP.git"
+          "url": "https://github.com/TheWiseNoob/OMP.git",
+          "commit": "f6966070d1afd79ca2897adb64acefeee4a2425c"
 
         }
 
