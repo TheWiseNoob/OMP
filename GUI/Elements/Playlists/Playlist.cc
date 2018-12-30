@@ -1242,16 +1242,21 @@ bool Playlist::on_drag_drop
 
 
 
-      // Prevents a Playback Queue drag from being drug to the top.
-      if((dest_tree_row_ref_ -> get_path())
-           == (playlists() . playing_row_ref() . get_path()))
+      // 
+      if(!(playback() . Stopped()))
       {
 
-        // Ends the drag.
-        return false;
+        // Prevents a Playback Queue drag from being drug to the top.
+        if((dest_tree_row_ref_ -> get_path())
+             == (playlists() . playing_row_ref() . get_path()))
+        {
+
+          // Ends the drag.
+          return false;
+
+        }
 
       }
-
 
     }
 
@@ -2143,7 +2148,7 @@ void Playlist::on_drag_end(const Glib::RefPtr<Gdk::DragContext>& context)
 
 bool Playlist::on_drag_failed(const Glib::RefPtr<Gdk::DragContext>& context,
                               Gtk::DragResult result)
- {
+{
 
   // 
   context -> drag_finish(false, false, 0);
@@ -3240,6 +3245,25 @@ void Playlist::Change_Playlist()
 
       // 
       name_label_ -> set_text(playlist_name);
+
+
+
+      // 
+      if(!(playback() . Stopped()) && (playlist_name == "Queue"))
+      {
+
+        // 
+        playlists() . Queue_Column_Sort(false);
+
+      }
+
+      else
+      {
+
+        // 
+        playlists() . Queue_Column_Sort(true);
+
+      }
 
 
 

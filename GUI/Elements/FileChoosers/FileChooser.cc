@@ -505,6 +505,12 @@ FileChooser::~FileChooser()
 //                  //
 //                  //
 
+void FileChooser::Destroy()
+{
+
+
+}
+
 void FileChooser::Enable_Cancel_Button(ChildWindow* child_window_ptr)
 {
 

@@ -195,6 +195,8 @@ class Playlists : public GUIElementList<Playlist>
 
     void Change_Track(); 
 
+    void Column_Search(bool enable, Playlist& playlist_ref);
+
     void Delete_Current_Playlist
       (bool delete_playlist_combobox_playlist = false);
 
@@ -217,6 +219,9 @@ class Playlists : public GUIElementList<Playlist>
 
     void Open_Delete_Playlist_Dialog
       (bool delete_playlist_combobox_playlist = false);
+
+    void Queue_Column_Sort(bool enable, Playlist* playlist_ptr = nullptr);
+
 
     bool Rename_Playlist(Glib::RefPtr<PlaylistTreeStore> playlist_treestore,
                          std::string& new_playlist_name);

@@ -332,8 +332,6 @@ Playlists::Playlists(Base& base_ref)
     queue_playlist_treestore_ -> appending_rows_total() 
       = (playlist_treestores_ . back() -> add_track_queue() . size());
 
-
-
     // 
     extracting_playlists_++;
 
@@ -1970,6 +1968,72 @@ void Playlists::Open_Delete_Playlist_Dialog
   playlist_delete_dialog_ -> Run(delete_playlist_combobox_playlist);
 
 } 
+
+void Playlists::Queue_Column_Sort(bool enable, Playlist* playlist_ptr)
+{
+
+  // 
+  if(playlist_ptr != nullptr)
+  {
+
+    // Sets the treestore to be unsorted.
+    playlist_ptr -> playlist_treestore()
+      -> set_sort_column(Gtk::TreeSortable::DEFAULT_UNSORTED_COLUMN_ID, 
+                         Gtk::SORT_ASCENDING);
+
+    // 
+    for(auto playlist_column_ptr : playlist_ptr -> get_columns())
+    {
+
+      // 
+      playlist_column_ptr -> set_clickable(enable);
+
+    }
+
+
+
+    // 
+    return;
+
+  }
+
+
+
+  // 
+  for(auto playlist_ptr : playlists()())
+  {
+
+    // 
+    Glib::ustring playlist_name
+      = playlist_ptr -> playlist_treestore() -> get_name();
+
+
+
+    // 
+    if(playlist_name == "Queue")
+    {
+
+      // Sets the treestore to be unsorted.
+      playlist_ptr -> playlist_treestore()
+        -> set_sort_column(Gtk::TreeSortable::DEFAULT_UNSORTED_COLUMN_ID, 
+                           Gtk::SORT_ASCENDING);
+
+
+
+      // 
+      for(auto playlist_column_ptr : playlist_ptr -> get_columns())
+      {
+
+        // 
+        playlist_column_ptr -> set_clickable(enable);
+
+      }
+
+    }    
+
+  }
+
+}
 
 bool Playlists::Rename_Playlist
   (Glib::RefPtr<PlaylistTreeStore> playlist_treestore,

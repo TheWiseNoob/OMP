@@ -171,6 +171,8 @@ class FileChooser : public GUIElement<FileChooser>
 
   public:
 
+    virtual void Destroy();
+
     void Enable_Cancel_Button(ChildWindow* child_window_ptr);
 
     void On_Current_Folder_Changed_Signal();

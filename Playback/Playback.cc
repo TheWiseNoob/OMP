@@ -2945,7 +2945,6 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
 
 
-
   // Starts the music if nothing is paused.
   if(!Paused())
   {
@@ -3207,6 +3206,11 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
     // Adds the new trackbin_sptr to the track queue.
     track_queue_ . push_back(trackbin_sptr);
+
+
+
+    // 
+    playlists() . Queue_Column_Sort(false);
 
 
 
@@ -3614,6 +3618,11 @@ void Playback::Stop()
   // Updates the TagView as not playing.
   gui() . Update_Tagview("Selected", selected_track());
  
+
+
+  // 
+  playlists() . Queue_Column_Sort(true);
+
 
 
   // Updates the playback status label.

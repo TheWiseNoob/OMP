@@ -21,7 +21,16 @@
 
   ],
 
-  "cleanup": ["/app/include", "/lib/pkgconfig", "/share/cmake", "/share/man", "*.a"],
+  "cleanup":
+  [
+
+    "/app/include",
+    "/lib/pkgconfig",
+    "/share/cmake",
+    "/share/man",
+    "*.a"
+
+  ],
 
   "command": "omp",
 
@@ -350,7 +359,8 @@
 
           "type": "git",
           "url": "https://github.com/TheWiseNoob/OMP.git",
-          "commit": "f6966070d1afd79ca2897adb64acefeee4a2425c"
+          "branch": "0.0.22",
+          "commit": "72ecddbe645dd8e7b361daded0ed3fd06f62b309"
 
         }
 
