@@ -242,7 +242,7 @@ class Metadata : public Parts
     std::vector<Track*>* Filenames_To_Tracks
       (std::vector<std::string>& filenames, std::string& active_filename_str,
        std::mutex& active_filename_str_mutex,
-       std::atomic<int>& reading_files_count);
+       std::atomic<int>& reading_files_count, std::atomic<bool>& quitting);
 
   private:
 

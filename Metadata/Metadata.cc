@@ -707,7 +707,8 @@ void Metadata::Extract_File_Path
 
 vector<Track*>* Metadata::Filenames_To_Tracks
   (vector<string>& filenames, string& active_filename_str,
-   mutex& active_filename_str_mutex, atomic<int>& reading_files_count)
+   mutex& active_filename_str_mutex, atomic<int>& reading_files_count,
+   atomic<bool>& quitting)
 {
 
   // New-created vector pointer of new-created Track pointers.
@@ -719,6 +720,16 @@ vector<Track*>* Metadata::Filenames_To_Tracks
   // each file.
   for(auto filename : filenames)
   {
+
+    // 
+    if(quitting)
+    {
+
+      return tracks;
+
+    }
+
+
 
     // Skips folders.
     if(filename . back() == '/')
@@ -1836,14 +1847,6 @@ std::vector<Track*> *Metadata::Interpret_Properties
     // 
     for(auto track_it : *new_tracks)
     {
-
-      stringstream debug_ss;
-
-      debug_ss << "Filename: " << track_it -> filename();
-
-      debug(debug_ss . str() . c_str());
-
-
 
       // 
       TagLib::FileRef file_ref(track_it -> filename().c_str()); 

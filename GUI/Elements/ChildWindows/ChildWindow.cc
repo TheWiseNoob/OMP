@@ -450,6 +450,11 @@ bool ChildWindow::On_Irregular_Quit(GdkEventAny* event)
 
 
   // 
+  delete *gui_elements_it();
+
+
+
+  // 
   return true;
 
 }

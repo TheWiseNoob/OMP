@@ -470,33 +470,32 @@ ConfigurationGUI::ConfigurationGUI
   //       //
 
   // Creates a new GUIPanel.
-  gui_panel_ = Gtk::manage(new GUIPanel(base, *this));
+  gui_panel_ = new GUIPanel(base, *this);
 
   // 
   artwork_panel_
-    = Gtk::manage(new ArtworkPanel(base, *this, &(gui_panel_ -> row()), config_guis_ref . filename_liststore()));
+    = new ArtworkPanel(base, *this, &(gui_panel_ -> row()), config_guis_ref . filename_liststore());
 
   // 
   playlist_panel_
-    = Gtk::manage(new PlaylistPanel(base, *this, &(gui_panel_ -> row())));
+    = new PlaylistPanel(base, *this, &(gui_panel_ -> row()));
 
   // Creates a new .
   keyboard_shortcuts_panel_
-    = Gtk::manage(new KeyboardShortcutsPanel(base, *this, config_guis_ref . keyboard_shortcuts_liststore()));
+    = new KeyboardShortcutsPanel(base, *this, config_guis_ref . keyboard_shortcuts_liststore());
 
   // Creates a new OutputPanel.
-  output_panel_ = Gtk::manage(new OutputPanel(base, *this));
+  output_panel_ = new OutputPanel(base, *this);
 
   // Creates a new PlaybackPanel.
-  playback_panel_ = Gtk::manage(new PlaybackPanel(base, *this));
+  playback_panel_ = new PlaybackPanel(base, *this);
 
   // Creates a new ReplayGainPanel.
   replay_gain_panel_
-    = Gtk::manage(new ReplayGainPanel(base, *this, 
-                                      &(output_panel_ -> row())));
+    = new ReplayGainPanel(base, *this, &(output_panel_ -> row()));
 
   // Creates a new ScrobblingPanel.
-  scrobbling_panel_ = Gtk::manage(new ScrobblingPanel(base, *this));
+  scrobbling_panel_ = new ScrobblingPanel(base, *this);
 
 
 
@@ -515,6 +514,11 @@ ConfigurationGUI::ConfigurationGUI
   // 
   for(auto panel_rows_it : panel_treeview_treestore_ -> children())
   {
+
+    // 
+    bool finished = false;
+
+
 
     // Converts the iterator to a TreePath.
     const Gtk::TreeModel::Path panel_path
@@ -546,7 +550,7 @@ ConfigurationGUI::ConfigurationGUI
 
 
       // 
-      return;
+      break;
 
     }
 
@@ -586,10 +590,24 @@ ConfigurationGUI::ConfigurationGUI
 
 
         // 
-        return;
+        finished = true;
+
+        // 
+        break;
  
       }
-  
+ 
+
+
+      // 
+      if(finished)
+      {
+
+        // 
+        break;
+
+      }
+ 
     }
 
   }
@@ -599,7 +617,7 @@ ConfigurationGUI::ConfigurationGUI
   // Enables ConfigGUI functions.
   config_guis_ref . set_disable_functions(false);
 
- }
+}
 
 
 
@@ -613,6 +631,32 @@ ConfigurationGUI::ConfigurationGUI
 
 ConfigurationGUI::~ConfigurationGUI()
 {
+
+  // 
+  delete gui_panel_;
+
+  // 
+  delete artwork_panel_;
+
+  // 
+  delete playlist_panel_;
+
+  // 
+  delete keyboard_shortcuts_panel_;
+
+  // 
+  delete output_panel_;
+
+  // 
+  delete playback_panel_;
+
+  // 
+  delete replay_gain_panel_;
+
+  // 
+  delete scrobbling_panel_;
+
+
 
   // Destroy the ColumnRecord of the panel TreeView.
   delete panel_treeview_column_record_;

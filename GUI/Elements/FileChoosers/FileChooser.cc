@@ -201,6 +201,10 @@ FileChooser::FileChooser
 
 , progress_bar_(new Gtk::ProgressBar())
 
+, quitting_(false)
+
+, thread_quit_(false)
+
 {
 
   if(new_filenames != nullptr)
@@ -491,8 +495,6 @@ FileChooser::FileChooser
 FileChooser::~FileChooser()
 {
 
-
-
 }
 
 
@@ -508,6 +510,11 @@ FileChooser::~FileChooser()
 void FileChooser::Destroy()
 {
 
+  // 
+  quitting_ = true;
+
+  // 
+  quitting_finished() = false;
 
 }
 
@@ -719,6 +726,22 @@ void FileChooser::Use_Selected()
       {
 
         // 
+        if(quitting_)
+        {
+
+          // 
+          thread_quit_ = true;
+
+
+
+          // 
+          return;
+
+        }
+
+
+
+        // 
         filesystem::path selected_filename_path = selected_filename_it;
 
 
@@ -780,13 +803,29 @@ void FileChooser::Use_Selected()
     // 
     auto track_ptrs_ptr = metadata() . Filenames_To_Tracks
       (all_filenames, active_filename_str,
-       active_filename_str_mutex, reading_files_count);
+       active_filename_str_mutex, reading_files_count, quitting_);
 
 
 
     // 
     for(auto track_ptr : *track_ptrs_ptr)
     { 
+
+      // 
+      if(quitting_)
+      {
+
+        // 
+        delete track_ptr;
+
+
+
+        // 
+        continue;
+
+      }
+
+
 
       // 
       shared_ptr<Track> track_sptr(track_ptr);
@@ -799,6 +838,17 @@ void FileChooser::Use_Selected()
       // 
       selected_playlist_treestore -> add_track_queue()
         . push_back(make_pair(int(id), track_sptr));
+
+    }
+
+
+
+    // 
+    if(quitting_)
+    {
+
+      // 
+      thread_quit_ = false;
 
     }
 
@@ -845,7 +895,41 @@ void FileChooser::Use_Selected()
     { 
 
       // 
-      if(!thread_finished)
+      if(quitting_)
+      {
+
+        // 
+        if(!thread_quit_)
+        {
+
+          // 
+          return true;
+
+        }
+
+        // 
+        else
+        {
+
+          // 
+          quitting_finished() = true;
+
+
+
+          // 
+          delete *gui_elements_it();
+
+
+
+          // 
+          return false;
+
+        }
+
+      }
+
+      // 
+      else if(!thread_finished)
       {
 
         // 

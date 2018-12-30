@@ -113,6 +113,8 @@ namespace Gtk
 //                 //
 //                 //
 
+#include <atomic>
+
 #include <string>
 
 #include <vector>
@@ -245,6 +247,12 @@ class FileChooser : public GUIElement<FileChooser>
     Gtk::Button* okay_button_;
 
     Gtk::ProgressBar* progress_bar_;
+
+    std::atomic<bool> quitting_;
+
+    std::atomic<bool> quitting_finished_;
+
+    std::atomic<bool> thread_quit_;
 
 };
 

@@ -93,6 +93,8 @@
 
 #include <gtkmm/treestore.h>
 
+#include <iostream>
+
 
 
 
@@ -117,7 +119,10 @@ Panel::Panel(Base& base_ref, ConfigurationGUI& config_gui_ref,
 // Inherited Class
 : Parts(base_ref, debug)
 
+
+
 // Other
+
 , config_gui_(config_gui_ref)
 
 {
@@ -164,20 +169,9 @@ Panel::Panel(Base& base_ref, ConfigurationGUI& config_gui_ref,
   }
 
 
+
   // Sets the orientation of the box to vertical.
   set_orientation(Gtk::ORIENTATION_VERTICAL);
-
-
-/*CHILD ROW EXAMPLE
-  row = *(panel_treeview_treestore_ -> append());
-  row[panel_treeview_column_record_.name_] = "Playback";
-  row[panel_treeview_column_record_.type_] = "main";
-
-
-  childrow = *(panel_treeview_treestore_ -> append(row.children()));
-  childrow[panel_treeview_column_record_.name_] = "Output";
-  childrow[panel_treeview_column_record_.type_] = "main";
-*/
 
 }
 
@@ -193,6 +187,8 @@ Panel::Panel(Base& base_ref, ConfigurationGUI& config_gui_ref,
 
 Panel::~Panel()
 {
+
+  cout << "\n\nPanel Deleting\n\n";
 
 }
 

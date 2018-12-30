@@ -94,6 +94,10 @@
 //                 //
 //                 //
 
+#include <atomic>
+
+#include <iostream>
+
 #include <gtkmm/box.h>
 
 
@@ -131,9 +135,11 @@ class GUIElement : public Parts
 
     // 
 
-    , box_(Gtk::manage(new Gtk::Box))
+    , box_(new Gtk::Box)
 
     , gui_element_list_(new_gui_element_list)
+
+    , quitting_finished_(true)
 
     { 
 
@@ -154,9 +160,18 @@ class GUIElement : public Parts
     virtual ~GUIElement()
     {
 
+      std::cout << "\n\nGUIElement Delete\n\n";
+
+
+
       gui_element_list_ . erase(gui_elements_it_);
 
-     }
+
+
+      // 
+      delete box_;
+
+    }
 
 
 
@@ -173,6 +188,19 @@ class GUIElement : public Parts
     virtual void Destroy()
     {
 
+      // 
+      if(!quitting_finished_)
+      {
+
+        // 
+        return;
+
+      }
+
+
+
+
+      // 
       delete *gui_elements_it_;
 
     }
@@ -200,6 +228,13 @@ class GUIElement : public Parts
     { 
 
       return gui_elements_it_; 
+
+    }
+
+    virtual std::atomic<bool>& quitting_finished()
+    {
+
+      return quitting_finished_;
 
     }
 
@@ -240,6 +275,8 @@ class GUIElement : public Parts
     typename std::list<datatype*>::iterator gui_elements_it_;
 
     typename std::list<datatype*>& gui_element_list_;
+
+    std::atomic<bool> quitting_finished_;
 
 };
 
