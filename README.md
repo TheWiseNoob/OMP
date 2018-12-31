@@ -59,11 +59,12 @@ Ogg FLAC, ALAC, APE, and AAC(m4a container).
 #### Method 1: Flatpak
 
   OMP now has Flatpak support! That means any distribution that supports
-  Flatpak is now support on Arch Linux! An official Flathub package will be 
-  provided soon. It is still being worked on for approval from the Flathub
-  maintainers. Look for news about it in the future.
+  Flatpak is now supported by OMP! An official Flathub package will be 
+  provided soon. It is still being worked to meet Flathub's approval standards.
+  More news about it is coming in the near future. Check for mentions about it
+  in the Weekly News Updates on OMP's website at OpenMusicPlayer.com.
 
-  Until then, read [the guide for installing OMP's Flatpak](https://www.openmusicplayer.com/flatpak/ "OMP Flatpak")
+  Until the the official Flathub release, read [the guide for installing OMP's Flatpak](https://www.openmusicplayer.com/flatpak/ "OMP Flatpak")
   at OMP's official website.
   
 
