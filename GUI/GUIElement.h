@@ -96,8 +96,6 @@
 
 #include <atomic>
 
-#include <iostream>
-
 #include <gtkmm/box.h>
 
 
@@ -159,10 +157,6 @@ class GUIElement : public Parts
 
     virtual ~GUIElement()
     {
-
-      std::cout << "\n\nGUIElement Delete\n\n";
-
-
 
       gui_element_list_ . erase(gui_elements_it_);
 

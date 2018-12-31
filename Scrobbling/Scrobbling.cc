@@ -161,7 +161,7 @@ Scrobbling::Scrobbling(Base& base_ref)
 
 // Inherited Class
 
-: Parts(base_ref)
+: Parts(base_ref, true)
 
 
 
@@ -358,6 +358,9 @@ void Scrobbling::Rescrobble_Failed_Scrobbles(shared_ptr<bool> thread_finished)
         album[100],
         artist[100];
 
+        // 
+        Glib::ustring* temp_artists = unscrobbled_tracks_it -> artists_string();
+
 
 
         // 
@@ -365,9 +368,6 @@ void Scrobbling::Rescrobble_Failed_Scrobbles(shared_ptr<bool> thread_finished)
 
         //
         strcpy(album, const_cast<char*>((unscrobbled_tracks_it -> album()) . c_str()));
-
-        // 
-        Glib::ustring* temp_artists = unscrobbled_tracks_it -> artists_string();
 
         // 
         strcpy(artist, const_cast<char*>(temp_artists -> c_str()));
@@ -388,13 +388,15 @@ void Scrobbling::Rescrobble_Failed_Scrobbles(shared_ptr<bool> thread_finished)
         if(result != 0)
         {
 
+          debug("Track failed to scrobble!");
+
         }
 
         // 
         else
         {
 
-          debug("track track scrobbled!!");
+          debug("Track scrobbled!!");
 
 
 
