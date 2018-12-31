@@ -54,7 +54,7 @@ Ogg FLAC, ALAC, APE, and AAC(m4a container).
 
 
 
-### Compile & Install Instructions
+### Install Instructions
 
 #### Method 1: Flatpak
 
@@ -71,9 +71,9 @@ Ogg FLAC, ALAC, APE, and AAC(m4a container).
 
 #### Method 2: Arch User Repository
 
-  You can install OMP via AUR with the official [omp AUR package](https://aur.archlinux.org/packages/omp/)
-  package for the stable build or the [omp-git AUR package](https://aur.archlinux.org/packages/omp-git/)
-  for the latest git build.
+  You can install OMP via AUR with the official [omp](https://aur.archlinux.org/packages/omp/)
+  AUR package for the stable build or the [omp-git](https://aur.archlinux.org/packages/omp-git/)
+  AUR package for the latest git build.
 
   Once compiled and installed, you can run omp as a command to open it.
 
