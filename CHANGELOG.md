@@ -3,10 +3,16 @@ All notable changes to this project will be documented in this file.
 
 
 
-## [0.0.21.1] - December 24th, 2018
+## [0.1] - December 30th, 2018
 
 ### Added
 - Flatpak support.
+
+### Fixed
+- Closing the file browser while it is still reading files no longer causes a
+  crash.
+- Queue tracks can now be moved while OMP is stopped.
+- The queue is no longer sortable while playing or paused.
 
 
 

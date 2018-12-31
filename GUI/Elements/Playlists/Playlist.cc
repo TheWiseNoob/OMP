@@ -2198,7 +2198,7 @@ bool Playlist::on_drag_failed(const Glib::RefPtr<Gdk::DragContext>& context,
 bool Playlist::on_button_press_event(GdkEventButton* event)
 { 
 
-  debug("In button press event");
+  debug("In button press event.");
 
 
 
@@ -2774,7 +2774,7 @@ bool Playlist::on_button_press_event(GdkEventButton* event)
         // Selects the row of the button press.
         playlist_treeselection_ -> select(row_tree_path);
 
-        
+
 
         // Stores a reference to the row being drug.
         *drag_tree_row_ref_

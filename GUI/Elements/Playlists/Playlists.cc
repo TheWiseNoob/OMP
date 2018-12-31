@@ -2168,11 +2168,6 @@ bool Playlists::Rename_Playlist
   {
 
     // 
-    int count = 0;
-
-
-
-    // 
     if(old_name_ustr == (playlists_it -> active_playlist_name()))
     {
 
