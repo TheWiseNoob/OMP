@@ -20,6 +20,8 @@ CXXFLAGS += -g -DFLATPAK=$(FLATPAK) -std=c++17 -Wall -pipe -Wno-deprecated-decla
 
 DESTDIR = ''
 
+
+
 all: base 
 
 base: $(OBJS) Makefile 
