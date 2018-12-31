@@ -90,7 +90,7 @@ Ogg FLAC, ALAC, APE, and AAC(m4a container).
 
   
   ```
-  make<br />
+  make
   sudo make install
   ```
 
