@@ -64,7 +64,7 @@ Ogg FLAC, ALAC, APE, and AAC(m4a container).
   More news about it is coming in the near future. Check for mentions about it
   in the Weekly News Updates on OMP's website at OpenMusicPlayer.com.
 
-  Until the the official Flathub release, read [the guide for installing OMP's Flatpak](https://www.openmusicplayer.com/flatpak/ "OMP Flatpak")
+  Until the official Flathub release, read [the guide for installing OMP's Flatpak](https://www.openmusicplayer.com/flatpak/ "OMP Flatpak")
   at OMP's official website.
   
 
