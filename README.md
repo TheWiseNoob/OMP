@@ -89,8 +89,10 @@ Ogg FLAC, ALAC, APE, and AAC(m4a container).
   containing the source.
 
   
-  'make<br />
-  sudo make install'
+  ```
+  make<br />
+  sudo make install
+  ```
 
   Once compiled and installed, you can run omp as a command to open it.<br />
 
