@@ -16,7 +16,7 @@
 ## About OMP
 
 OMP is an open-source music player being developed for Linux. It is
-programmed in modern C++ and some C using gtkmm3, GStreamer, TagLib, libconfig, 
+programmed in C++ and some C using gtkmm3, GStreamer, TagLib, libconfig, 
 libclastfm, and standard C and C++ libraries. It can play mp3, FLAC, Ogg,
 Ogg FLAC, ALAC, APE, and AAC(m4a container).
 
@@ -58,12 +58,12 @@ Ogg FLAC, ALAC, APE, and AAC(m4a container).
 
 #### Method 1: Flatpak
 
-  OMP now has Flatpak support. That means any distribution that supports
+  OMP now has Flatpak support! That means any distribution that supports
   Flatpak is now support on Arch Linux! An official Flathub package will be 
   provided soon. It is still being worked on for approval from the Flathub
   maintainers. Look for news about it in the future.
 
-  Until then, read [the guide for installing Flatpak at OMP's official website.](https://www.openmusicplayer.com/flatpak/ "OMP Flatpak")
+  Until then, read [the guide for installing OMP's Flatpak at OMP's official website.](https://www.openmusicplayer.com/flatpak/ "OMP Flatpak")
   
 
 
