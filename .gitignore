@@ -5,3 +5,4 @@ PKGBUILD
 TODO
 *.o
 omp
+*.deb
