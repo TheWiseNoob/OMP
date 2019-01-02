@@ -411,7 +411,7 @@ bool Metadata::Determine_Codec_If_Supported
       error_message_str += " with the mime type of ";
 
       // Adds to the error message.
-      error_message_str += new_track . filename();
+      error_message_str += new_track . mime();
 
       // Adds to the error message.
       error_message_str += ".";
@@ -1858,6 +1858,28 @@ std::vector<Track*> *Metadata::Interpret_Properties
       { 
 
         debug("Audioproperties NULL!");
+
+
+
+        // A string to hold the error message.
+        string error_message_str = "Failed to open ";
+
+        // Adds to the error message.
+        error_message_str += track_it -> filename();
+
+        // Adds to the error message.
+        error_message_str += " with the mime type of ";
+
+        // Adds to the error message.
+        error_message_str += track_it -> mime();
+
+        // Adds to the error message.
+        error_message_str += ".";
+
+
+
+        // Writes to the error message log.
+        errors() . Write_Error(error_message_str . c_str());
 
 
 
