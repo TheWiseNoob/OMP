@@ -291,12 +291,6 @@ bool Metadata::Determine_Codec_If_Supported
 
 
 
-  cout << "\n\nFilename: " << new_track . filename() << "\n\n";
-
-
-
-  try{
-
   // True if the mime type is for FLAC.
   if(mime_type == "audio/flac")
   {
@@ -568,20 +562,6 @@ bool Metadata::Determine_Codec_If_Supported
     return false;
 
   } 
-
-  }
-
-  catch(...)
-  {
-
-    cout << "\n\nFilename: " << new_track . filename() << "\n\n";
-
-
-
-    // 
-    return false;
-
-  }
 
 
 
@@ -1869,16 +1849,13 @@ std::vector<Track*> *Metadata::Interpret_Properties
     {
 
       // 
-      TagLib::FileRef file_ref(track_it -> filename().c_str()); 
+      TagLib::FileRef file_ref(track_it -> filename() . c_str()); 
 
-      // 
-      temp_prop_map = (file_ref.file() -> properties());
-  
 
 
       // 
-      if((file_ref.audioProperties()) == NULL)
-      {
+      if((file_ref . audioProperties()) == NULL)
+      { 
 
         debug("Audioproperties NULL!");
 
@@ -1908,9 +1885,12 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
 
       // 
-      TagLib::AudioProperties &audio_properties = *(file_ref.audioProperties());
+      TagLib::AudioProperties &audio_properties
+        = *(file_ref . audioProperties());
 
-    // Determines the codec if supported.
+
+
+      // Determines the codec if supported.
       if(!Determine_Codec_If_Supported(audio_properties, *track_it))
       {
 
@@ -1926,16 +1906,21 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
 
 
-      int bit_rate = audio_properties.bitrate();
+      // 
+      int bit_rate = audio_properties . bitrate();
 
+      // 
+      long long file_length
+        = audio_properties . lengthInMilliseconds() * 1000000LL;
+
+
+
+      // 
       track_it -> set_bit_rate(bit_rate);
 
-      track_it -> set_sample_rate(audio_properties.sampleRate());
+      track_it -> set_sample_rate(audio_properties . sampleRate());
 
-      track_it -> set_channels(audio_properties.channels());
-
-      long long file_length
-        = audio_properties.lengthInMilliseconds() * 1000000LL;
+      track_it -> set_channels(audio_properties . channels());
 
       std::string* time_string_ptr
         = time_converter_ -> Nanoseconds_To_Time_Format(file_length);
@@ -1948,32 +1933,92 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
 
 
+      // 
+      temp_prop_map = (file_ref . file() -> properties());
+  
 
+
+      // 
       Interpret_Single_Value_Tag("TITLE", type, temp_prop_map, *track_it, 
                                  &Track::title, &Track::set_title);
-      Interpret_Multiple_Value_Tag("ARTIST", type, temp_prop_map, *track_it, 
-                                   &Track::artists, &Track::add_artist, &Track::clear_artists);
-      Interpret_Single_Value_Tag("ALBUM", type, temp_prop_map, *track_it, 
-                                 &Track::album, &Track::set_album);
-      Interpret_Multiple_Value_Tag("GENRE", type, temp_prop_map, *track_it, 
-                                   &Track::genres, &Track::add_genre, &Track::clear_genres);
-      temp_prop_map.erase(TagLib::String("TRACKNUMBER"));
-      temp_prop_map.erase(TagLib::String("TRACKTOTAL"));
+
+      // 
+      Interpret_Multiple_Value_Tag
+        ("ARTIST", type, temp_prop_map, *track_it, &Track::artists,
+         &Track::add_artist, &Track::clear_artists);
+
+      // 
+      Interpret_Single_Value_Tag
+        ("ALBUM", type, temp_prop_map, *track_it, 
+         &Track::album, &Track::set_album);
+
+      // 
+      Interpret_Multiple_Value_Tag
+        ("GENRE", type, temp_prop_map, *track_it, 
+        &Track::genres, &Track::add_genre, &Track::clear_genres);
 
 
 
-      if(temp_prop_map.contains(TagLib::String("DISCNUMBER")))
+      // 
+      temp_prop_map . erase(TagLib::String("TRACKNUMBER"));
+
+      // 
+      temp_prop_map . erase(TagLib::String("TRACKTOTAL"));
+
+
+
+      // 
+      if(temp_prop_map . contains(TagLib::String("DISCNUMBER")))
       {
 
-        track_it -> set_disc_number(stoi(temp_prop_map[TagLib::String("DISCNUMBER")].toString().to8Bit(true)));
+        // 
+        try
+        {
+
+          // 
+          int disc_number
+            = stoi(temp_prop_map[TagLib::String("DISCNUMBER")]
+                                   . toString() . to8Bit(true));
+
+
+          // 
+          track_it -> set_disc_number(disc_number);
+
+        }
+
+        // 
+        catch(...)
+        {
+
+        }
 
       }
+
+      // 
       if(temp_prop_map.contains(TagLib::String("DISCTOTAL")))
       {
 
-        track_it -> set_disc_total(stoi(temp_prop_map[TagLib::String("DISCTOTAL")].toString().to8Bit(true)));
+        try
+        {
+
+          // 
+          int disc_total
+            = stoi(temp_prop_map[TagLib::String("DISCTOTAL")]
+                                   . toString() . to8Bit(true));
+
+
+          // 
+          track_it -> set_disc_number(disc_total);
+
+        }
+
+        catch(...)
+        {
+
+        }
 
       }
+
 
     
       //Finds individuals tags for the current track file
@@ -1986,10 +2031,13 @@ std::vector<Track*> *Metadata::Interpret_Properties
    
         debug(debug_ss . str() . c_str());
 
-        track_it 
-          -> tags().push_back(Tag(((it->first).to8Bit(true).c_str()), 
-                                  ((it->second).toString().to8Bit(true))));
-  
+
+
+        // 
+        track_it -> tags() . push_back
+          (Tag(((it -> first) . to8Bit(true) . c_str()), 
+               ((it -> second) . toString() . to8Bit(true))));
+
       }
 
     }
@@ -2012,44 +2060,59 @@ void Metadata::Interpret_Single_Value_Tag
                   void (Track::*setter)(Glib::ustring*))
 { 
 
-  if(!(prop_map.contains(TagLib::String(tag_name))))
+  // 
+  if(!(prop_map . contains(TagLib::String(tag_name))))
   {
 
+    // 
     return;
 
   }
 
+
+
+  // 
   if(type == TrackType::NORMAL)
   {
 
+    // 
     (track.*setter)
     (
 
+      // 
       new Glib::ustring
       (
 
-        prop_map[TagLib::String(tag_name)].toString().to8Bit(true)
+        // 
+        prop_map[TagLib::String(tag_name)] . toString() . to8Bit(true)
 
       )
 
     ); 
 
-    prop_map.erase(TagLib::String(tag_name));
+
+
+    // 
+    prop_map . erase(TagLib::String(tag_name));
 
   }
+
+  // 
   else
   {
 
-    if((track.*getter)().empty())
+    // 
+    if((track.*getter)() . empty())
     {
 
+      // 
       (track.*setter)
       (
 
         new Glib::ustring
         (
 
-          prop_map[TagLib::String(tag_name)].toString().to8Bit(true)
+          prop_map[TagLib::String(tag_name)] . toString() . to8Bit(true)
 
         )
 
@@ -2058,7 +2121,7 @@ void Metadata::Interpret_Single_Value_Tag
 
     }
 
-    prop_map.erase(TagLib::String(tag_name));
+    prop_map . erase(TagLib::String(tag_name));
 
   }
 

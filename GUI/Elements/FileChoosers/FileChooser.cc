@@ -1058,6 +1058,7 @@ void FileChooser::Use_Selected()
 
       }
 
+      // 
       else if(appending)
       {
 
@@ -1114,42 +1115,48 @@ void FileChooser::Use_Selected()
 
 
       // 
-      playlists() . rebuild_databases() = true;
-
-      // 
-      selected_playlist_treestore -> rebuild_database() = true;
-
-      // 
-      selected_playlist_treestore -> restart_changes() = true;
-
-
-
-      // 
-      if(!(playlists() . database_extraction_complete())
-           && !(selected_playlist_treestore -> extraction_complete()))
+      if(new_tracks_size > 0)
       {
 
         // 
-        selected_playlist_treestore -> appending_rows_total()
-          += new_tracks_size;
-
-      }
-
-      // 
-      else
-      {
+        playlists() . rebuild_databases() = true;
 
         // 
-        selected_playlist_treestore -> appending_rows_done() = 0;
+        selected_playlist_treestore -> rebuild_database() = true;
 
         // 
-        selected_playlist_treestore -> appending_rows_total()
-          = int(new_tracks_size);
+        selected_playlist_treestore -> restart_changes() = true;
 
 
 
         // 
-        playlists() . Append_Rows(selected_playlist_treestore);
+        if(!(playlists() . database_extraction_complete())
+             && !(selected_playlist_treestore -> extraction_complete()))
+        {
+
+          // 
+          selected_playlist_treestore -> appending_rows_total()
+            += new_tracks_size;
+
+        }
+
+        // 
+        else
+        {
+
+          // 
+          selected_playlist_treestore -> appending_rows_done() = 0;
+
+          // 
+          selected_playlist_treestore -> appending_rows_total()
+            = int(new_tracks_size);
+
+
+
+          // 
+          playlists() . Append_Rows(selected_playlist_treestore);
+
+        }
 
       }
 
