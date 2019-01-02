@@ -317,6 +317,12 @@ bool Metadata::Determine_Codec_If_Supported
   else if((mime_type == "audio/x-ape") || (mime_type == "audio/ape"))
   {
 
+    cout << "\n\nFilename: " << new_track . filename() << "\n\n";
+
+
+
+
+
     // Retrieves the Properties of the new track.
     TagLib::APE::Properties& ape_prop_map
       = dynamic_cast<TagLib::APE::Properties&>(audio_prop);
