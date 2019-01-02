@@ -291,6 +291,8 @@ bool Metadata::Determine_Codec_If_Supported
 
 
 
+  try{
+
   // True if the mime type is for FLAC.
   if(mime_type == "audio/flac")
   {
@@ -562,6 +564,20 @@ bool Metadata::Determine_Codec_If_Supported
     return false;
 
   } 
+
+  }
+
+  catch(...)
+  {
+
+    cout << "\n\nFilename: " << new_track . filename() << "\n\n";
+
+
+
+    // 
+    return false;
+
+  }
 
 
 
@@ -1903,6 +1919,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
         return new_tracks;
 
       }
+
 
 
       int bit_rate = audio_properties.bitrate();
