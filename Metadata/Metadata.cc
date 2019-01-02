@@ -291,6 +291,10 @@ bool Metadata::Determine_Codec_If_Supported
 
 
 
+  cout << "\n\nFilename: " << new_track . filename() << "\n\n";
+
+
+
   try{
 
   // True if the mime type is for FLAC.
@@ -316,12 +320,6 @@ bool Metadata::Determine_Codec_If_Supported
   // True if the mime type is for Monkey's audio.
   else if((mime_type == "audio/x-ape") || (mime_type == "audio/ape"))
   {
-
-    cout << "\n\nFilename: " << new_track . filename() << "\n\n";
-
-
-
-
 
     // Retrieves the Properties of the new track.
     TagLib::APE::Properties& ape_prop_map
