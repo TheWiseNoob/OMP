@@ -547,4 +547,4 @@ endif
 	install -Dm0644 Images/Icon_64.png $(DESTDIR)/usr/share/icons/hicolor/64x64/apps/com.openmusicplayer.OMP.png
 	install -Dm0644 Images/Icon_128.png $(DESTDIR)/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png
 	install -Dm0644 omp.desktop $(DESTDIR)/usr/share/applications/com.openmusicplayer.OMP.desktop
-	install -Dm0644 com.openmusicplayer.OMP.appdata.xml $(DESTDIR)/share/metadata/com.openmusicplayer.OMP.appdata.xml
+	install -Dm0644 com.openmusicplayer.OMP.appdata.xml $(DESTDIR)/share/metainfo/com.openmusicplayer.OMP.appdata.xml
