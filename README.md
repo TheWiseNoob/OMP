@@ -1,6 +1,6 @@
 ![Logo](/Images/Icon.png?raw=true)
 # OMP : Open Music Player
-#### Version: 0.1 : December 30th, 2018
+#### Version: 0.1.0.1 : January 6th, 2019
 
 
 
@@ -18,7 +18,7 @@
 OMP is an open-source music player being developed for Linux. It is
 programmed in C++ and some C using gtkmm3, GStreamer, TagLib, libconfig, 
 libclastfm, and standard C and C++ libraries. It can play mp3, FLAC, Ogg,
-Ogg FLAC, ALAC, APE, and AAC(m4a container).
+Ogg FLAC, ALAC, APE, WavPack, and AAC(m4a container).
 
 
 

@@ -29,7 +29,7 @@
   </provides>
 
   <releases>
-    <release version="0.1" date="2018-12-30">
+    <release version="0.1.0.1" date="2019-01-06">
       <description>
         <p>Flatpak support and bug fixes.</p>
       </description>
