@@ -276,70 +276,70 @@ void Scrobbling::Login_Lastfm()
 void Scrobbling::Rescrobble_Failed_Scrobbles(shared_ptr<bool> thread_finished)
 {
 
-  // 
+  // Thread to scrobble the failed scrobbles in.
   thread rescrobble_thread([this, thread_finished]
   {
 
-    // 
+    // Holds all of the unscrobbled tracks.
     vector<Track*> unscrobbled_tracks;
 
-    // 
+    // Holds the ids of the unscrobbled tracks.
     vector<int> unscrobbled_track_ids;
 
-    // 
+    // Holds the times
     vector<long> unscrobbled_track_times;
 
 
 
-    // 
+    // Extracts new-created Tracks of the tracks that failed to scrobble.
     failed_scrobbles_database_
       -> Extract_Tracks(&unscrobbled_tracks, &unscrobbled_track_ids, 
                         &unscrobbled_track_times);
 
 
 
-    // 
+    // Keeps count of the tracks attempted to rescrobble.
     int count = 0;
 
-    // 
-    for(auto unscrobbled_tracks_it : unscrobbled_tracks)
+    // Loops through all of the tracks that need a scrobble reattempt.
+    for(auto unscrobbled_track_ptr : unscrobbled_tracks)
     {
 
-      // 
+      // Holds the LASTFM_SESSION, a clastfm variable.
       LASTFM_SESSION *lastfm_session;
 
-      //
+      // Initializes the LASTFM_SESSION.
       lastfm_session = LASTFM_init("41940cc3bb675fba6283b0891b9de7f3",              
                                    "f18ff7cee0603cdf532e73297bc5a2db");
 
 
 
-      // 
+      // Gets the username from the config.
       string username_str = config() . get("scrobbling.lastfm_username");
 
-      // 
+      // Gets the password from the config.
       string password_str = config() . get("scrobbling.lastfm_password");
 
-      // 
+      // Converts the username into a c_str.
       char* username_c_str = const_cast<char*>(username_str . c_str());
 
-      // 
+      // Converts the password into a c_str.
       char* password_c_str = const_cast<char*>(password_str . c_str());
 
 
 
-      // 
+      // Acquires the time the track was originally attempted to be scrobbled.
       time_t started = unscrobbled_track_times[count];
 
 
 
-      // 
+      // Holds the result of loginning in.
       int login_info
         = LASTFM_login_MD5(lastfm_session, username_c_str, password_c_str);
 
-      // 
+      // True if unable to login to last.fm.
       if(login_info != 0)
-      {
+      {  
 
         debug("An error occurred when logining in!");
 
@@ -353,42 +353,70 @@ void Scrobbling::Rescrobble_Failed_Scrobbles(shared_ptr<bool> thread_finished)
 
 
 
-        // 
-        char title[100],
-        album[100],
-        artist[100];
+        // Holds the title to be sent to last.fm.
+        char title[100];
 
-        // 
-        Glib::ustring* temp_artists = unscrobbled_tracks_it -> artists_string();
+        // Holds the album name to be sent to last.fm.
+        char album[100];
 
+        // Holds the artist name to be sent to last.fm.
+        char artist[100];
 
-
-        // 
-        strcpy(title, const_cast<char*>((unscrobbled_tracks_it -> title()) . c_str()));
-
-        //
-        strcpy(album, const_cast<char*>((unscrobbled_tracks_it -> album()) . c_str()));
-
-        // 
-        strcpy(artist, const_cast<char*>(temp_artists -> c_str()));
-
-        // 
-        delete temp_artists;
+        // Temporary Glib::ustring used to extract the data from the Track.
+        Glib::ustring* temp_artists;
 
 
 
-        // 
-        int result
-          = LASTFM_track_scrobble(lastfm_session, title, album, artist,
-                                  started, 1000, 0, 0, NULL);
 
-
-
-        // 
-        if(result != 0)
+        // True if unscrobbled Track has no title.
+        if((unscrobbled_track_ptr -> title()) == "")
         {
 
-          debug("Track failed to scrobble!");
+          // Deletes the track from the database.
+          failed_scrobbles_database_ -> Delete_Track(count);
+
+
+          // Delete the new-created Track.
+          delete unscrobbled_track_ptr;
+
+
+
+          // Continues the loop.
+          continue;
+
+        }
+
+        // True if the is now album artist(s).
+        else if(unscrobbled_track_ptr -> album_artists() . empty())
+        {
+
+          // True if there is also no artist.
+          if(unscrobbled_track_ptr -> artists() . empty())
+          {
+
+            // Deletes the track from the database.
+            failed_scrobbles_database_ -> Delete_Track(count);
+
+
+
+            // Delete the new-created Track.
+            delete unscrobbled_track_ptr;
+
+
+
+            // Continues the loop.
+            continue;
+
+          }
+
+          // 
+          else
+          {
+
+            // Users the artists metadata to send the artist to last.fm.
+            temp_artists = unscrobbled_track_ptr -> artists_string();
+
+          }
 
         }
 
@@ -396,39 +424,83 @@ void Scrobbling::Rescrobble_Failed_Scrobbles(shared_ptr<bool> thread_finished)
         else
         {
 
+          // Users the album artists metadata to send the artist to last.fm.
+          temp_artists = unscrobbled_track_ptr -> album_artists_string();
+
+        }
+
+
+
+
+
+        // Copies the title into the title variable usable by LASTFM_SESSION.
+        strcpy(title, const_cast<char*>((unscrobbled_track_ptr -> title()) . c_str()));
+
+        // Copies the album into the album variable usable by LASTFM_SESSION.
+        strcpy(album, const_cast<char*>((unscrobbled_track_ptr -> album()) . c_str()));
+
+        // Copies the artist into the artist variable usable by LASTFM_SESSION.
+        strcpy(artist, const_cast<char*>(temp_artists -> c_str()));
+
+
+
+        // Deletes the temporary artist new-created string.
+        delete temp_artists;
+
+
+
+        // Attempts to scrobble the track.
+        int result
+          = LASTFM_track_scrobble(lastfm_session, title, album, artist,
+                                  started, 1000, 0, 0, NULL);
+
+
+
+        // True if the scrobbled failed.
+        if(result != 0)
+        {
+
+          debug("Track failed to scrobble!");
+
+        }
+
+        // True if the scrobble succeeded.
+        else
+        {
+
           debug("Track scrobbled!!");
 
 
 
-          // 
+          // Deletes the track from the database.
           failed_scrobbles_database_ -> Delete_Track(count);
 
-        }
+        } 
 
       }
 
 
 
-      // 
+      // Unitializes the LASTFM_SESSION.
       LASTFM_dinit(lastfm_session);
 
 
 
-      // 
+      // Increases the count of the tracks attempted to be scrobbled.
       count++;
 
     }
 
 
 
-    // 
+    // Sets the atomic flag indicating the thread is finished to true.
     *thread_finished = true;
 
   });  
 
 
 
-  // 
+  // Detaches the rescrobbling thread.
   rescrobble_thread . detach();
 
 }
@@ -489,26 +561,109 @@ void Scrobbling::Scrobble(Track temp_track,
 
 
 
+    // Holds the title to be sent to last.fm.
+    char title[100];
+
+    // Holds the album name to be sent to last.fm.
+    char album[100];
+
+    // Holds the artist name to be sent to last.fm.
+    char artist[100];
+
+    // Temporary Glib::ustring used to extract the data from the Track.
+    Glib::ustring* temp_artists;
+
+
+
+
+    // True if unscrobbled Track has no title.
+    if((temp_track . title()) == "")
+    {
+
+      // 
+      LASTFM_dinit(lastfm_session);
+
+
+
+      // 
+      *thread_finished = true;
+
+
+
+      //
+      delete scrobbling_thread;
+
+
+
+      // 
+      return;
+
+    }
+
+    // True if the is now album artist(s).
+    else if(temp_track . album_artists() . empty())
+    {
+
+      // True if there is also no artist.
+      if(temp_track . artists() . empty())
+      {
+
+        // 
+        LASTFM_dinit(lastfm_session);
+
+
+
+        // 
+        *thread_finished = true;
+
+
+
+        //
+        delete scrobbling_thread;
+
+
+
+        // 
+        return;
+
+      }
+
+      // 
+      else
+      {
+
+        // Users the artists metadata to send the artist to last.fm.
+        temp_artists = temp_track . artists_string();
+
+      }
+
+    }
+
     // 
-    char title[100],
-         album[100],
-         artist[100];
+    else
+    {
+
+      // Users the album artists metadata to send the artist to last.fm.
+      temp_artists = temp_track . album_artists_string();
+
+    }
 
 
 
-    // 
-    strcpy(title, const_cast<char*>((temp_track.title()).c_str()));
 
-    //
-    strcpy(album, const_cast<char*>((temp_track.album()).c_str()));
 
-    // 
-    Glib::ustring *temp_artists = temp_track.artists_string();
+    // Copies the title into the title variable usable by LASTFM_SESSION.
+    strcpy(title, const_cast<char*>((temp_track . title()) . c_str()));
 
-    // 
+    // Copies the album into the album variable usable by LASTFM_SESSION.
+    strcpy(album, const_cast<char*>((temp_track . album()) . c_str()));
+
+    // Copies the artist into the artist variable usable by LASTFM_SESSION.
     strcpy(artist, const_cast<char*>(temp_artists -> c_str()));
 
-    // 
+
+
+    // Deletes the temporary artist new-created string.
     delete temp_artists;
 
 

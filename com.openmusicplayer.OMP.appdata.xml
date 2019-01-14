@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2018 D.J. Griffin <thewisenoob@gmail.com> -->
+<!-- Copyright 2019 D.J. Griffin <thewisenoob@gmail.com> -->
 <component type="desktop-application">
   <id>com.openmusicplayer.OMP</id>
   <metadata_license>MIT</metadata_license>
@@ -9,7 +9,7 @@
 
   <description>
     <p>
-      OMP is a new open-source music player for Linux that is still in an unfinished state. OMP is programmed in C++ using gtkmm, GStreamer, TagLib, clastfm, and g++.
+      OMP is a new open-source music player for Linux that is still in an unfinished state. OMP uses GTK3(gtkmm3) for the GUI and can play mp3, FLAC, Ogg, Ogg FLAC, ALAC, APE, WavPack, and AAC(m4a container).
     </p>
   </description>
 
@@ -29,9 +29,9 @@
   </provides>
 
   <releases>
-    <release version="0.1.0.1" date="2019-01-06">
+    <release version="0.1.0.2" date="2019-01-14">
       <description>
-        <p>Flatpak support and bug fixes.</p>
+        <p>Flathub changes and scrobbling bug fix.</p>
       </description>
     </release>
   </releases>

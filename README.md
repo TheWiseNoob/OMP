@@ -1,6 +1,6 @@
 ![Logo](/Images/Icon.png?raw=true)
 # OMP : Open Music Player
-#### Version: 0.1.0.1 : January 6th, 2019
+#### Version: 0.1.0.2 : January 14th, 2019
 
 
 
@@ -26,7 +26,7 @@ Ogg FLAC, ALAC, APE, WavPack, and AAC(m4a container).
 
 ## Next Main OMP Release
 
-#### Version 0.1.1 : January 20th, 2019
+#### Version 0.1.1 : January 27th, 2019
 
 
 
@@ -95,6 +95,3 @@ Ogg FLAC, ALAC, APE, WavPack, and AAC(m4a container).
   ```
 
   Once compiled and installed, you can run omp as a command to open it.<br />
-
-
-

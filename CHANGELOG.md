@@ -3,6 +3,27 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.1.0.2] - January 14th, 2019
+
+### Changed
+- Location of installation files changed to support Flathub requirements.
+
+### Fixed
+- Tracks not scrobbling that only have an album artist.
+
+
+
+## [0.1.0.1] - January 6th, 2019
+
+### Changed
+- Location of installation files changed to support Flathub requirements.
+
+### Fixed
+- Crash fix for multifile cue files.
+
+
+
+### Fixed
 ## [0.1] - December 30th, 2018
 
 ### Added
