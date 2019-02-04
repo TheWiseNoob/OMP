@@ -1,4 +1,4 @@
-![Logo](/Images/Icon.png= 300x300)
+![Logo](/Images/Icon.png?raw=true)
 # OMP : Open Music Player
 #### Version: 0.1.0.2 : January 14th, 2019
 
