@@ -1,6 +1,12 @@
-![Logo](/Images/Icon.png?raw=true)
+<img src="/Images/Icon.png" title="OMP Logo" height=200 
+     width=200 align="right">
+
+
+
+
+
 # OMP : Open Music Player
-#### Version: 0.1.0.2 : January 14th, 2019
+#### Version: 0.1.1 : February 10th, 2019
 
 
 
@@ -26,7 +32,7 @@ Ogg FLAC, ALAC, APE, WavPack, and AAC(m4a container).
 
 ## Next Main OMP Release
 
-#### Version 0.1.1 : February 10th, 2019
+#### Version 0.1.2 : February 24th, 2019
 
 
 
