@@ -5,8 +5,6 @@ All notable changes to this project will be documented in this file.
 
 ## [0.1.1] - February 10th, 2019
 
-### Changed
-
 ### Added
 - Metadata configuration panel.
 - Ability to choose to prefer embedded cuesheet data or external cuesheet data.
@@ -23,7 +21,6 @@ All notable changes to this project will be documented in this file.
 - The setting in the configuration GUI to deselect all when empty space in
   a row is clicked is no longer broken.
 - Bug that prevented saving metadata edits fixed.
-- 
 
 ### Changed
 - The file reading error log is restyled, more detailed, and less broken.
