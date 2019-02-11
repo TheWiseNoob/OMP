@@ -104,7 +104,7 @@ ConfigurationGUI.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUI.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/**/*.h 
 	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.cc \
-	`pkg-config --cflags --libs gtkmm-3.0` -
+	`pkg-config --cflags --libs gtkmm-3.0` -lstdc++fs
 
 ConfigurationGUIs.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
@@ -253,7 +253,7 @@ Metadata.o: Metadata/Metadata.h Metadata/Metadata.cc Parts.h \
 	$(CXX) $(CXXFLAGS) -c \
 	Metadata/Metadata.cc \
 	`pkg-config --libs --cflags taglib  glibmm-2.4 giomm-2.4` \
-	-lstdc++fs \
+	-lstdc++fs
 
 MetadataPanel.o: \
 	GUI/Elements/ConfigurationGUIs/Panels/Metadata/MetadataPanel.cc \
