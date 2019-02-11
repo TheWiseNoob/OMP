@@ -1,5 +1,5 @@
-<img src="/Images/Icon.png" title="OMP Logo" height=150 
-     width=150 align="right">
+<img src="/Images/Icon.png" title="OMP Logo" height=100
+     width=100 align="right">
 <br />
 
 
