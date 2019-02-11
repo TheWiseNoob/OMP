@@ -1,5 +1,5 @@
-<img src="/Images/Icon.png" title="OMP Logo" height=142
-     width=142 align="right">
+<img src="/Images/Icon.png" title="OMP Logo" height=150
+     width=150 align="right">
 # OMP : Open Music Player
 #### Version: 0.1.1 : February 10th, 2019
 <br />
