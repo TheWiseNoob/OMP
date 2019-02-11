@@ -104,7 +104,7 @@ ConfigurationGUI.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUI.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/**/*.h 
 	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.cc \
-	`pkg-config --cflags --libs gtkmm-3.0`
+	`pkg-config --cflags --libs gtkmm-3.0` -
 
 ConfigurationGUIs.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
@@ -118,7 +118,7 @@ ConfigurationGUIs.o: GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
 	GUI/Elements/MainMenus/MainMenus.h
 	$(CXX) $(CXXFLAGS) -c \
 	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.cc \
-	`pkg-config --cflags --libs gtkmm-3.0`
+	`pkg-config --cflags --libs gtkmm-3.0` -lstdc++fs
 
 CueSheet.o: Metadata/CueSheet.cc Metadata/CueSheet.h Metadata/Track.h \
 	Metadata/TimeConversion.h
