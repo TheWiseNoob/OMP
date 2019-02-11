@@ -1,5 +1,5 @@
-<img src="/Images/Icon.png" title="OMP Logo" height=200 
-     width=200 align="right">
+<img src="/Images/Icon.png" title="OMP Logo" height=150 
+     width=150 align="right">
 
 
 
@@ -12,7 +12,6 @@
 
 
 
-## Screenshot
 ![Screenshot1](Images/Screenshots/Main.png?raw=true)
 
 
