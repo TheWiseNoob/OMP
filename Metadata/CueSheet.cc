@@ -135,7 +135,8 @@ CueSheet::CueSheet()
 //                  //
 
 std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
-                                          Glib::ustring& filename_beginning)
+                                          Glib::ustring& filename_beginning,
+                                          Glib::ustring cue_filename)
 {
 
   // A pointer to a new Track pointer queue object.
@@ -180,9 +181,6 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
   // Used to count how many tracks there are in the release.
   int track_count = 0;
-
-  // 
-  int filename_count = 0;
 
   // Holds the ReplayGain album gain of the release.
   double replaygain_album_gain = -1.000;
@@ -1023,6 +1021,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
               && (it != cue_sheet -> raw() . end()))
       {
 
+
         //
         album -> push_back(char(*it));
 
@@ -1072,12 +1071,54 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
       // 
-      filenames_vector . push_back(filename);
+      if(type_locked)
+      {
+
+      }
+
+      // 
+      else if((filenames_vector . size()) > 0)
+      {
+
+        // 
+        if(int(filenames_vector . size()) < track_count)
+        {
+
+          // 
+          type = TrackType::MULTIPLE_FILE_NONCOMPLIANT;
+
+
+
+          // 
+          type_locked = true;
+
+        }
+
+        // 
+        else
+        {
+
+          //
+          type = TrackType::MULTIPLE_FILE_GAP_PREPENDED;
+
+        }
+
+      }
+
+      // 
+      else
+      {
+
+        // 
+        type = TrackType::SINGLE_FILE;
+
+      }
+
 
 
 
       // 
-      filename_count++;
+      filenames_vector . push_back(filename);
 
     }
 
@@ -1112,11 +1153,11 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
         }
 
         // 
-        else if(filename_count > 1)
+        else if((filenames_vector . size()) > 1)
         {
 
           // 
-          if(filename_count < track_count)
+          if(int(filenames_vector . size()) < track_count)
           {
 
             // 
@@ -1178,7 +1219,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
         // 
         new_track -> set_track_number(track_count);
 
-      }
+       }
 
       // 
       else if(*it == ' ')
@@ -2066,6 +2107,7 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
   }
 
+  // 
   else
   {
 
@@ -2110,10 +2152,18 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
   for(int i = 0; i < (int(cue_sheet_tracks -> size()) - 1); i++)
   {
 
+    // 
+    (*cue_sheet_tracks)[i] -> set_cue_filename(cue_filename);
+
+    // 
     (*cue_sheet_tracks)[i] -> set_track_total(track_count);
 
+    // 
     (*cue_sheet_tracks)[i] -> set_type(type);
 
+
+
+    // 
     if(album_artists != nullptr)
     {
 
@@ -2137,44 +2187,70 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
     }
 
+
+
+    // 
     if(album != nullptr)
     {
 
+      // 
       (*cue_sheet_tracks)[i] -> set_album(*album);
 
     }
 
+
+
+    // 
     if(genres != nullptr)
     {
 
       // 
       auto genres_copy = new vector<Glib::ustring*>;
 
+
+
+      // 
       for(auto it : *genres)
       {
 
+        // 
         genres_copy -> push_back(new Glib::ustring(*it));
 
       }
 
+
+
+      // 
       (*cue_sheet_tracks)[i] -> set_genres(genres_copy);
 
     }
 
+
+
+    // 
     (*cue_sheet_tracks)[i] -> set_date(date);
 
+
+
+    // 
     if(disc_id != nullptr)
     {
 
+      // 
       (*cue_sheet_tracks)[i] -> set_disc_id(*disc_id);
 
     }
 
+
+    // 
     if(catalog != nullptr)
     {
       (*cue_sheet_tracks)[i] -> set_catalog(*catalog);
     }
 
+
+
+    // 
     if(comment != nullptr)
     {
 
@@ -2235,6 +2311,9 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
 
 
 
+  // 
+  cue_sheet_tracks -> back() -> set_cue_filename(cue_filename);
+
   //
   cue_sheet_tracks -> back() -> set_type(type);
 
@@ -2256,48 +2335,67 @@ std::vector<Track*>* CueSheet::operator()(Glib::ustring* cue_sheet,
   if(album_artists != nullptr)
   {
 
+    // 
     cue_sheet_tracks -> back() -> set_album_artists(album_artists);
 
   }
+
+
 
   //
   if(album != nullptr)
   {
 
+    // 
     cue_sheet_tracks -> back() -> set_album(album);
 
   }
+
+
 
   //
   if(genres != nullptr)
   {
 
+    // 
     cue_sheet_tracks -> back() -> set_genres(genres);
 
   }
 
+
+
+  // 
   cue_sheet_tracks -> back() -> set_date(date);
+
+
 
   //
   if(disc_id != nullptr)
   {
 
+    // 
     cue_sheet_tracks -> back() -> set_disc_id(disc_id);
 
   }
+
+
 
   //
   if(catalog != nullptr)
   {
 
+    // 
     cue_sheet_tracks -> back() -> set_catalog(catalog);
 
   }
+
+
 
   //
   if(comment != nullptr)
   {
 
+    // 
     cue_sheet_tracks -> back() -> set_comment(comment);
 
   }

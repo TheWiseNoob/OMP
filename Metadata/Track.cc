@@ -558,15 +558,20 @@ bool Track::operator ==(const Track& compared_track) const
 bool Track::Cue() const
 { 
 
+  // 
   if(type_ != TrackType::NORMAL)
-  {
+  { 
 
+    // 
     return true;
 
   }
-  else
-  {
 
+  // 
+  else
+  { 
+
+    // 
     return false;
 
   }
@@ -576,18 +581,24 @@ bool Track::Cue() const
 bool Track::Cue_Embedded() const
 {
 
+  // 
   if(type_ != TrackType::NORMAL)
   {
 
+    // 
     if(cue_filename_ -> empty())
     {
 
+      // 
       return true;
 
     }
 
   }
 
+
+
+  // 
   return false;
 
 }
@@ -595,12 +606,15 @@ bool Track::Cue_Embedded() const
 bool Track::Is_Empty() const
 {  
 
+  // 
   if(filename_ -> empty())
-  {
+  { 
 
     return true;
 
   }
+
+  // 
   else
   {
 

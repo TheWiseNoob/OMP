@@ -141,7 +141,8 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   // 
   auto omp_pixbuf 
     = Gdk::Pixbuf::create_from_file
-        (dir_head + "/usr/share/icons/hicolor/128x128/apps/com.openmusicplayer.OMP.png", 128, 128, true);
+        (dir_head + "/usr/share/icons/hicolor/scalable/" \
+         "apps/com.openmusicplayer.OMP.svg", 250, 250, true);
 
   // 
   Gtk::Image* omp_logo = Gtk::manage(new Gtk::Image(omp_pixbuf));
@@ -152,13 +153,33 @@ About::About(Base& base_ref, Abouts& abouts_ref)
 
 
   // 
+  omp_logo -> set_margin_left(10);
+
+  // 
+  omp_logo -> set_margin_top(10);
+
+  // 
+  omp_logo -> set_margin_right(10);
+
+  // 
+  omp_logo -> set_margin_bottom(20);
+
+
+
+  // 
   Gtk::Label* version_label = Gtk::manage(new Gtk::Label);
 
   // 
-  version_label -> set_markup("<b>OMP Version 0.1.0.2</b>");
+  version_label -> set_markup
+    ("<span font='20'><b>OMP Version 0.1.1</b></span>");
 
   // 
   box() . pack_start(*version_label, Gtk::PACK_EXPAND_PADDING);
+
+
+
+  // 
+  version_label -> set_margin_bottom(20);
 
 
 
@@ -183,20 +204,31 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   auto contributors_text_buffer = Gtk::TextBuffer::create();
 
   // 
-  contributors_text_buffer
-    -> set_text("Contributors:\n\n" \
-                " Lead Developer: \n" \
-                "    DJ Griffin\n\n" \
-                " GIT Contributors: \n" \
-                "    aladar42\n" \
-                "    AxelSilverdew\n" \
-                "    FabioLolix\n" \
-                "    noahrinehart\n" \
-                "    mmetak\n" \
-                "    mulimoen");
+  Glib::ustring contributors_ustr
+    = "<span font='16' font_weight='heavy'>Contributors</span>\n\n" \
+      " <u>Lead Developer</u> \n" \
+      "    DJ Griffin\n\n" \
+      " <u>GIT Contributors</u> \n" \
+      "    aladar42\n" \
+      "    AxelSilverdew\n" \
+      "    FabioLolix\n" \
+      "    noahrinehart\n" \
+      "    mmetak\n" \
+      "    mulimoen";
+
+ 
+
+  // 
+  contributors_text_buffer -> insert_markup
+    (contributors_text_buffer -> begin(), contributors_ustr);
 
   // 
   contributors_text_view -> set_buffer(contributors_text_buffer);
+
+
+
+  // 
+  contributors_text_view -> set_justification(Gtk::JUSTIFY_CENTER);
 
 }
 

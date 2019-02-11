@@ -144,6 +144,8 @@ class GUIPanel;
 
 class KeyboardShortcutsPanel;
 
+class MetadataPanel;
+
 class OutputPanel;
 
 class PlaybackPanel;
@@ -240,6 +242,8 @@ class ConfigurationGUI : public GUIElement<ConfigurationGUI>
 
     void Panel_Chooser(const Gtk::TreePath& path, Gtk::TreeViewColumn* column);
 
+    void Panel_Cursor_Changed();
+
 
 
 
@@ -286,6 +290,8 @@ class ConfigurationGUI : public GUIElement<ConfigurationGUI>
     GUIPanel& gui_panel();
 
     KeyboardShortcutsPanel& keyboard_shortcuts_panel();
+
+    MetadataPanel& metadata_panel();
 
     OutputPanel& output_panel();
 
@@ -344,6 +350,8 @@ class ConfigurationGUI : public GUIElement<ConfigurationGUI>
     GUIPanel* gui_panel_;
 
     KeyboardShortcutsPanel* keyboard_shortcuts_panel_;
+
+    MetadataPanel* metadata_panel_;
 
     OutputPanel* output_panel_;
 

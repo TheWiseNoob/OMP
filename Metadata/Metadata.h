@@ -229,10 +229,10 @@ class Metadata : public Parts
        std::string& active_filename_str,
        std::mutex& active_filename_str_mutex);
 
-    bool Determine_Codec_If_Supported(TagLib::AudioProperties& audio_prop,
+    bool Determine_If_Codec_Supported(TagLib::AudioProperties& audio_prop,
                                       Track& new_track);
 
-    bool Determine_Mime_If_Supported(std::string& filename);
+    bool Determine_If_Mime_Supported(const std::string& mime);
 
     void Determine_Mime_Type(const char* filename, std::string& mime_type);
 
@@ -250,16 +250,20 @@ class Metadata : public Parts
 
     std::vector<Track*>* Interpret_Metadata(const std::string& filename);
 
-    void Interpret_Multiple_Value_Tag(const char* tag_name, 
-                                      TrackType type, 
-                                      TagLib::PropertyMap &prop_map, 
-                                      Track &track,
-                                      std::vector<Glib::ustring*>& (Track::*getter)() const,
-                                      void (Track::*setter)(Glib::ustring*),
-                                      void (Track::*clear)());
+    void Interpret_Multiple_Value_Tag
+      (const char* tag_name,
+       TrackType type, 
+       TagLib::PropertyMap &prop_map, Track &track,
+       std::vector<Glib::ustring*>& (Track::*getter)() const,
+       void (Track::*setter)(Glib::ustring*),
+       void (Track::*clear)());
 
     std::vector<Track*>* Interpret_Properties(const std::string& filename,
                                               std::vector<Track*>* new_tracks);
+
+    std::vector<Track*>* Interpret_Properties_Normal_Track
+      (const std::string& filename, std::vector<Track*>* new_tracks,
+       TrackType& type, TagLib::PropertyMap& temp_prop_map);
 
     void Interpret_Single_Value_Tag(const char* tag_name, 
                                     TrackType type, 
@@ -276,6 +280,15 @@ class Metadata : public Parts
     bool Print_Tags(const char* song_filename);
 
     void Print_Properties(const char* filename);
+
+    void Remove_Duplicates(auto tracks, auto& single_tracks, 
+                           auto& external_cue_tracks_tracks,
+                           auto& embedded_cue_tracks_tracks, int size);
+
+    void Remove_Duplicates_External_Cue
+      (auto tracks, auto& single_tracks, auto& external_cue_tracks_tracks);
+
+    
 
 
 

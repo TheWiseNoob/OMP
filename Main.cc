@@ -101,8 +101,10 @@ int main (int argc, char *argv[])
   // Created the Gtk::Application instance that is OMP's GUI.
   Glib::RefPtr<Gtk::Application> application 
     = Gtk::Application::create
-        ("com.openmusicplayer.OMP"/*,    // Uncomment this for multiple OMP instances.
-         Gio::APPLICATION_NON_UNIQUE*/);
+        ("com.openmusicplayer.OMP", Gio::APPLICATION_HANDLES_COMMAND_LINE
+         /* | Gio::APPLICATION_NON_UNIQUE*/); 
+         //  Uncomment this for multiple OMP instances.
+
 
 
 

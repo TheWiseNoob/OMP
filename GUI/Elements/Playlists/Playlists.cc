@@ -610,6 +610,21 @@ bool Playlists::Add_Playlist(const char* name)
     // Makes the new RadioMenuItem visible.
     new_playlists_menu_radio_menu_item -> show();
 
+
+
+    // 
+    if(!(playlist_it -> Locked()))
+    {
+
+      // 
+      playlist_it -> progress_bar()
+        . set_text("No Playlist Modifications Occurring");
+
+      // 
+      playlist_it -> progress_bar() . set_fraction(1);
+
+    }
+
   } 
 
 

@@ -83,6 +83,8 @@
 
 #include "Panels/KeyboardShortcuts/KeyboardShortcutsPanel.h"
 
+#include "Panels/Metadata/MetadataPanel.h"
+
 #include "Panels/Output/OutputPanel.h"
 
 #include "Panels/Playback/PlaybackPanel.h"
@@ -286,8 +288,8 @@ ConfigurationGUI::ConfigurationGUI
 
 
   // Sets the function that is triggered when a row is clicked.
-  panel_treeview_ -> signal_row_activated()
-    . connect(sigc::mem_fun(*this, &ConfigurationGUI::Panel_Chooser));
+  panel_treeview_ -> signal_cursor_changed()
+    . connect(sigc::mem_fun(*this, &ConfigurationGUI::Panel_Cursor_Changed));
 
 
 
@@ -297,6 +299,11 @@ ConfigurationGUI::ConfigurationGUI
 
   // Sets the minimum size of the TreeView's ScrolledWindow.
   panel_treeview_scrolledwindow_ -> set_size_request(150, 200);
+
+
+
+  // 
+  panel_treeview_ -> set_headers_visible(false);
 
 
 
@@ -409,8 +416,10 @@ ConfigurationGUI::ConfigurationGUI
 
 
 
-  // Sets the label of the undo_changes_button.
+  // 
   undo_changes_button_ -> set_label("Undo Changes");
+
+
 
   // Sets the label of the load_default_values_button.
   load_default_values_button_ -> set_label("Load Default Values");
@@ -445,6 +454,22 @@ ConfigurationGUI::ConfigurationGUI
 
   // Sets the left margin of save_changes_button_.
   save_changes_button_ -> set_margin_left(4);
+
+
+
+  // 
+  undo_changes_button_ -> set_tooltip_text
+    ("Reverses any changes made to the configuration \n" \
+     "before Save Changes has been pressed.");
+
+  // 
+  save_changes_button_ -> set_tooltip_text
+    ("Saves the changes made to the configuration to \n" \
+     "the configuration file. This makes the changes irreversible.");
+
+  // 
+  load_default_values_button_ -> set_tooltip_text
+    ("Reverses all changes made to the configuration to default values.");
 
 
 
@@ -483,6 +508,9 @@ ConfigurationGUI::ConfigurationGUI
   // Creates a new .
   keyboard_shortcuts_panel_
     = new KeyboardShortcutsPanel(base, *this, config_guis_ref . keyboard_shortcuts_liststore());
+
+  // Creates a new MetadataPanel.
+  metadata_panel_ = new MetadataPanel(base, *this, config_guis_ref);
 
   // Creates a new OutputPanel.
   output_panel_ = new OutputPanel(base, *this);
@@ -645,6 +673,9 @@ ConfigurationGUI::~ConfigurationGUI()
   delete keyboard_shortcuts_panel_;
 
   // 
+  delete metadata_panel_;
+
+  // 
   delete output_panel_;
 
   // 
@@ -765,10 +796,23 @@ void ConfigurationGUI::Panel_Chooser(const Gtk::TreePath& path,
     // Adds the panel to the panel frame.
     panel_frame_ -> add(*active_panel_box_);
 
+
+
+    // 
+    Glib::ustring panel_label_markup = "<span font='Sans Bold 16'> ";
+
+    // 
+    panel_label_markup += *active_panel_name_ustr_;
+
+    // 
+    panel_label_markup += " </span>";
+
+
+
     // Sets panel_frame_'s label as the panel's name.
-    panel_frame_label_ -> set_text(*active_panel_name_ustr_);
+    panel_frame_label_ -> set_markup(panel_label_markup);
 
-
+ 
 
     // Shows all of the children in the ConfigGUI box.
     box() . show_all_children();
@@ -776,7 +820,22 @@ void ConfigurationGUI::Panel_Chooser(const Gtk::TreePath& path,
     // Reveals the panel.
     panel_revealer_ -> set_reveal_child(true);
 
-  }
+   }
+
+} 
+
+void ConfigurationGUI::Panel_Cursor_Changed()
+{
+
+  // 
+  auto row_path
+    = Gtk::TreePath(*(panel_treeview_ -> get_selection() -> get_selected()));
+
+
+
+
+  // 
+  Panel_Chooser(row_path, nullptr);
 
 }
 
@@ -844,6 +903,13 @@ KeyboardShortcutsPanel& ConfigurationGUI::keyboard_shortcuts_panel()
 {
 
   return *keyboard_shortcuts_panel_;
+
+}
+
+MetadataPanel& ConfigurationGUI::metadata_panel()
+{ 
+
+  return *metadata_panel_;
 
 }
 

@@ -306,6 +306,14 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
 
 
+  // 
+  none_looping_radio_button_ -> set_margin_bottom(3);
+
+  // 
+  playlist_looping_radio_button_ -> set_margin_bottom(3);
+
+
+
 
 
   //         //

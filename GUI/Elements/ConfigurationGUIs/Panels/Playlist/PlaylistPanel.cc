@@ -273,7 +273,7 @@ void PlaylistPanel::Apply_Saved_Values()
 
   // 
   empty_space_playlist_checkbutton_
-    -> set_active(config() . get("gui.playlist.empty_space_row_deselects"));
+    -> set_active(config() . get("gui.playlist.empty_space_playlist_deselects"));
 
 }
 

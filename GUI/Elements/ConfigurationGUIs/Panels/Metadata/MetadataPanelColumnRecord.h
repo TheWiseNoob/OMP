@@ -49,20 +49,12 @@
 //                    //
 //                    //
 
-#ifndef ERRORS_H
-#define ERRORS_H
+#ifndef KEYBOARD_SHORTCUTS_COLUMN_RECORD_H
+#define KEYBOARD_SHORTCUTS_COLUMN_RECORD_H
 
 
 
 
-
-//         //
-//         //
-//         //
-// Headers ////////////////////////////////////////////////////////////////////
-//         //
-//         //
-//         //
 
 //                   //
 //                   //
@@ -70,61 +62,9 @@
 //                   //
 //                   //
 
-#include "../Parts.h"
+#include <gtkmm/treemodel.h>
 
-
-
-
-
-//                 //
-//                 //
-// Outside Headers ////////////////////////////////////////////////////////////
-//                 //
-//                 //
-
-#include <iosfwd>
-
-#include <string>
-
-
-
-
-
-//                      //
-//                      //
-//                      //
-// Forward Declarations ///////////////////////////////////////////////////////
-//                      //
-//                      //
-//                      //
-
-//                            //
-//                            //
-// Class Forward Declarations /////////////////////////////////////////////////
-//                            //
-//                            //
-
-
-
-
-
-//                             //
-//                             //
-// Struct Forward Declarations ////////////////////////////////////////////////
-//                             //
-//                             //
-
-
-
-
-
-//          //
-//          //
-//          //
-// Typedefs ///////////////////////////////////////////////////////////////////
-//          //
-//          //
-//          //
+#include <gtkmm/treemodelcolumn.h>
 
 
 
@@ -138,8 +78,8 @@
 //                   //
 //                   //
 
-class Errors : public Parts
-{ 
+class KeyboardShortcutsPanelColumnRecord : public Gtk::TreeModel::ColumnRecord
+{
 
   //             //
   //             //
@@ -149,74 +89,22 @@ class Errors : public Parts
 
   public:
 
-     /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose:
-    //
-    //   Creates the errors class.
-    //
-    //
-    //
-    // Arguments: 
-    //
-    //   base_ref: A reference to the Base class of the program in order to set up
-    //         the quick access references in the inherited Parts class.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    Errors(Base& base_ref);
+    KeyboardShortcutsPanelColumnRecord()
+    {
 
+      // 
+      add(description_col_);
 
+      // 
+      add(key_col_);
 
+      // 
+      add(label_col_);
 
+      // 
+      add(name_col_);
 
-  //            //
-  //            //
-  // Destructor ///////////////////////////////////////////////////////////////
-  //            //
-  //            //
-
-  public:
-
-    /* ////////////////////////////////////////////////////////////////////////
-    //
-    // Purpose:
-    //
-    //   Used to destroy any data that needs it when the playback class ends.
-    //
-    //
-    //
-    // Arguments: 
-    //
-    //   None.
-    //
-    //////////////////////////////////////////////////////////////////////// */
-    ~Errors();
-
-
-
-
-
-  //                  //
-  //                  //
-  // Member Functions /////////////////////////////////////////////////////////
-  //                  //
-  //                  //
-
-  void Clear_Errors();
-
-  void Display_Errors();
-
-  void Write_Error(const char* error_c_str);
-
-
-
-
-
-  //         //
-  //         //
-  // Getters //////////////////////////////////////////////////////////////////
-  //         //
-  //         //
+    }
 
 
 
@@ -228,12 +116,16 @@ class Errors : public Parts
   //                  //
   //                  //
 
-  private:
+  public:
 
-    std::ofstream* errors_log_file_;
+    Gtk::TreeModelColumn<Glib::ustring> description_col_;
 
-    std::string undisplayed_errors_;
-   
+    Gtk::TreeModelColumn<Glib::ustring> key_col_;
+
+    Gtk::TreeModelColumn<Glib::ustring> label_col_;
+
+    Gtk::TreeModelColumn<Glib::ustring> name_col_;
+
 };
 
 

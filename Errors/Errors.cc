@@ -73,6 +73,8 @@
 
 #include "../GUI/Elements/ChildWindows/ChildWindows.h"
 
+#include "../GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h"
+
 
 
 
@@ -86,6 +88,8 @@
 #include <ctime>
 
 #include <fstream>
+
+#include <glibmm.h>
 
 #include <gtkmm/scrolledwindow.h>
 
@@ -183,6 +187,26 @@ Errors::~Errors()
 //                  //
 //                  //
 
+void Errors::Clear_Errors()
+{
+
+  // 
+  string errors_log_file_str = base() . config_directory_c_str();
+
+  // 
+  errors_log_file_str += "/errors.md";
+
+
+
+  //
+  errors_log_file_ -> open(errors_log_file_str . c_str(), 
+                           std::ofstream::out | std::ofstream::trunc);
+  
+  // 
+  errors_log_file_ -> close();
+
+}
+
 void Errors::Display_Errors()
 {
 
@@ -212,7 +236,15 @@ void Errors::Display_Errors()
   errors_textview_ptr -> set_editable(false);
 
   // 
-  errors_textview_ptr -> get_buffer() -> set_text(undisplayed_errors_);
+  errors_textview_ptr -> get_buffer() -> set_text("");
+
+  // 
+  errors_textview_ptr -> get_buffer() -> insert_markup
+    (errors_textview_ptr -> get_buffer() -> begin(), undisplayed_errors_);
+
+  // 
+  config_guis() . error_log_textbuffer() -> insert_markup
+    (config_guis() . error_log_textbuffer() -> begin(), undisplayed_errors_);
 
 
 
@@ -241,7 +273,7 @@ void Errors::Write_Error(const char* error_c_str)
 
 
   // 
-  errors_log_file_str += "/errors.log";
+  errors_log_file_str += "/errors.md";
 
   //
   errors_log_file_ -> open(errors_log_file_str . c_str(), std::ofstream::app);
@@ -257,32 +289,40 @@ void Errors::Write_Error(const char* error_c_str)
 
 
   // 
-  string final_error_str;
-
-  // 
-  final_error_str += "Date: ";
-
-  // 
-  final_error_str += date_and_time_c_str;
-
-  // 
-  final_error_str += "Error: ";
-
-  // 
-  final_error_str += error_c_str;
-
-  // 
-  final_error_str += "\n\n\n";
+  Glib::ustring error_message_ustr = Glib::Markup::escape_text(error_c_str);
 
 
 
   // 
-  undisplayed_errors_ += final_error_str;
+  Glib::ustring final_error_markup_ustr;
 
 
 
   // 
-  (*errors_log_file_) << final_error_str;
+  final_error_markup_ustr += "<b><u>Date</u>:</b>\n     ";
+
+  // 
+  final_error_markup_ustr += date_and_time_c_str;
+
+  // 
+  final_error_markup_ustr += "\n<b><u>Error</u>:</b>\n     ";
+
+  // 
+  final_error_markup_ustr += error_message_ustr;
+
+  // 
+  final_error_markup_ustr += "\n\n\n\n";
+
+
+
+  // 
+  undisplayed_errors_ += final_error_markup_ustr;
+
+
+
+  // 
+  (*errors_log_file_) << final_error_markup_ustr . c_str();
+
 
 
   // 

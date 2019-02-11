@@ -1,4 +1,4 @@
-/* ////////////////////////////////////////////////////////////////////////////
+/* ////////////////////////////////////////////////////////////////////////////   
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@
 //
 //  Libraries used by OMP:
 //
-//    - clastfm: http://liblastfm.sourceforge.net/
+//    - clastfm: http://liblastfm.sourceforge.net/ 
 //
-//    - gstreamer: https://gstreamer.freedesktop.org/
+//    - gstreamer: https://gstreamer.freedesktop.org/ 
 //
 //    - gtkmm: https://www.gtkmm.org/en/
 //
@@ -49,20 +49,12 @@
 //                    //
 //                    //
 
-#ifndef CONFIGURATION_GUIS_H
-#define CONFIGURATION_GUIS_H
+#ifndef METADATA_PANEL_H
+#define METADATA_PANEL_H
 
 
 
 
-
-//         //
-//         //
-//         //
-// Headers ////////////////////////////////////////////////////////////////////
-//         //
-//         //
-//         //
 
 //                   //
 //                   //
@@ -70,9 +62,7 @@
 //                   //
 //                   //
 
-#include "../../GUIElementList.h"
-
-#include "ConfigurationGUI.h"
+#include "../../Panel.h"
 
 
 
@@ -84,17 +74,9 @@
 //                 //
 //                 //
 
-#include <atomic>
-
 #include <glibmm/refptr.h>
 
-#include <gtkmm/liststore.h>
-
-#include <gtkmm/treestore.h>
-
-#include <list>
-
-#include <memory>
+#include <string>
 
 
 
@@ -108,9 +90,26 @@
 //                      //
 //                      //
 
-class ArtworkPanelColumnRecord;
+class ConfigurationGUI;
 
-class KeyboardShortcutsPanelColumnRecord;
+namespace Gtk
+{
+
+  class Box;
+
+  class Button;
+
+  class CheckButton;
+
+  class Frame;
+
+  class RadioButton;
+
+  class ScrolledWindow;
+
+  class TextView;
+
+}
 
 
 
@@ -124,7 +123,7 @@ class KeyboardShortcutsPanelColumnRecord;
 //                   //
 //                   //
 
-class ConfigurationGUIs : public GUIElementList<ConfigurationGUI>
+class MetadataPanel : public Panel
 {
 
   //             //
@@ -135,7 +134,8 @@ class ConfigurationGUIs : public GUIElementList<ConfigurationGUI>
 
   public:
 
-    ConfigurationGUIs(Base& base);
+    MetadataPanel(Base& base_ref, ConfigurationGUI& new_config_gui,
+                  ConfigurationGUIs& config_guis_ref);
 
 
 
@@ -149,7 +149,7 @@ class ConfigurationGUIs : public GUIElementList<ConfigurationGUI>
 
   public:
 
-    virtual ~ConfigurationGUIs();
+    ~MetadataPanel();
 
 
 
@@ -163,17 +163,15 @@ class ConfigurationGUIs : public GUIElementList<ConfigurationGUI>
 
   public:
 
-    void Apply_Saved_Values();
+    virtual void Apply_Saved_Values() final override;
 
-    void Load_Default_Values();
+    void Clear_Errors_Log();
 
-    void Mark_Unsaved_Changes(bool new_value);
+    void Cuesheet_Type_Preference_Changed();
 
-    void Open_Configuration();
+    void Files_Or_Cuesheet_Preference_Changed();
 
-    void Save_Changes();
-
-    void Undo_Changes();
+    void Guess_Metadata_Toggled();
 
 
 
@@ -185,65 +183,17 @@ class ConfigurationGUIs : public GUIElementList<ConfigurationGUI>
   //         //
   //         //
 
-  //         //
-  // General //////////////////////////////////////////////////////////////////
-  //         //
-
   public:
 
-    bool disable_functions();
+    Gtk::RadioButton& cuesheet_radiobutton();
 
-    std::atomic<bool>& unsaved_changes();
+    Gtk::RadioButton& embedded_cuesheet_radiobutton();
 
+    Gtk::RadioButton& external_cuesheet_radiobutton();
 
+    Gtk::RadioButton& files_radiobutton();
 
-
-
-  //         //
-  // Artwork //////////////////////////////////////////////////////////////////
-  //         //
-
-  public:
-
-    Glib::RefPtr<Gtk::ListStore> filename_liststore();
-
-
-
-
-
-  //                    //
-  // Keyboard Shortcuts ///////////////////////////////////////////////////////
-  //                    //
-
-  public:
-
-    Glib::RefPtr<Gtk::ListStore> keyboard_shortcuts_liststore();
-
-
-
-
-
-  //          //
-  // Metadata /////////////////////////////////////////////////////////////////
-  //          //
-
-  public:
-
-    Glib::RefPtr<Gtk::TextBuffer> error_log_textbuffer();
-
-
-
-
-
-  //         //
-  //         //
-  // Setters //////////////////////////////////////////////////////////////////
-  //         //
-  //         //
-
-  public:
-
-    void set_disable_functions(bool new_setting);
+    Gtk::CheckButton& guess_metadata_checkbutton();
 
 
 
@@ -261,49 +211,75 @@ class ConfigurationGUIs : public GUIElementList<ConfigurationGUI>
 
   private:
 
-    bool disable_functions_;
+    Gtk::Box* errors_log_display_box_;
 
-    std::atomic<bool> unsaved_changes_;
-
-
-
-
-
-  //         //
-  // Artwork //////////////////////////////////////////////////////////////////
-  //         //
-
-  private:
-
-    ArtworkPanelColumnRecord* filename_liststore_column_record_;
-
-    Glib::RefPtr<Gtk::ListStore> filename_liststore_;
+    Gtk::Box* errors_log_display_inner_box_;
 
 
 
 
 
-  //                    //
-  // Keyboard Shortcuts ///////////////////////////////////////////////////////
-  //                    //
+  //            //
+  // Cue Sheets ///////////////////////////////////////////////////////////////
+  //            //
 
   private:
 
-    KeyboardShortcutsPanelColumnRecord* keyboard_shortcuts_liststore_column_record_;
+    Gtk::Box* cuesheet_box_;
 
-    Glib::RefPtr<Gtk::ListStore> keyboard_shortcuts_liststore_;
+    Gtk::RadioButton* cuesheet_radiobutton_;
+
+    Gtk::Box* cuesheet_type_preference_box_;
+
+    Gtk::Frame* cuesheet_type_preference_frame_;
+
+    Gtk::Box* cuesheet_type_preference_frame_box_;
+
+    Gtk::Label* cuesheet_type_preference_label_;
+
+    Gtk::RadioButton* embedded_cuesheet_radiobutton_;
+
+    Gtk::RadioButton* external_cuesheet_radiobutton_;
+
+    Gtk::RadioButton* files_radiobutton_;
+
+    Gtk::Box* files_or_cuesheet_box_;
+
+    Gtk::Frame* files_or_cuesheet_frame_;
+
+    Gtk::Box* files_or_cuesheet_frame_box_;
+
+    Gtk::Label* files_or_cuesheet_label_;
 
 
 
 
 
-  //          //
-  // Metadata /////////////////////////////////////////////////////////////////
-  //          //
+  //           //
+  // Error Log ////////////////////////////////////////////////////////////////
+  //           //
 
   private:
 
-    Glib::RefPtr<Gtk::TextBuffer> error_log_textbuffer_;
+    Gtk::Button* clear_key_button_;
+
+    Gtk::Box* errors_log_box_;
+
+    Gtk::Frame* errors_log_frame_;
+
+    Gtk::ScrolledWindow* errors_log_scrolled_window_;
+
+    Gtk::TextView* error_textview_;
+
+
+
+
+
+  //                // 
+  // Guess Metadata ///////////////////////////////////////////////////////////
+  //                //
+
+  Gtk::CheckButton* guess_metadata_checkbutton_;
 
 };
 

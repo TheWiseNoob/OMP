@@ -186,7 +186,7 @@ void Abouts::Open_About()
 
 
   // 
-  new_child_window -> window() . set_default_size(300, 400);
+  new_child_window -> window() . set_default_size(360, 420);
 
   // 
   new_child_window -> window() . set_resizable(false);

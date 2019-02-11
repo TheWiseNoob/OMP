@@ -2,16 +2,16 @@ OBJS = About.o Abouts.o Artwork.o ArtworkPanel.o Base.o ChildWindow.o \
 	ChildWindows.o Configuration.o ConfigurationGUI.o ConfigurationGUIs.o \
 	CueSheet.o DefaultValue.o DefaultValues.o GUI.o GUIPanel.o \
 	Errors.o FailedScrobblesDatabase.o FileChoosers.o FileChooser.o \
-	KeyboardShortcuts.o KeyboardShortcutsPanel.o Main.o MainMenu.o \
-	MainMenus.o Metadata.o OutputPanel.o Panel.o ParserAndDecoder.o \
-	Parts.o Playback.o PlaybackController.o PlaybackControllers.o \
-	PlaybackPanel.o Playlist.o PlaylistChangesCancelDialog.o \
-	PlaylistComboBox.o PlaylistComboBoxes.o PlaylistCreateDialog.o \
-	PlaylistDeleteDialog.o PlaylistMenu.o PlaylistPanel.o \
-	PlaylistRenameDialog.o PlaylistTreeStore.o Playlists.o \
-	PlaylistsDatabase.o ReplayGainPanel.o Scrobbling.o ScrobblingPanel.o \
-	Seekbar.o SpinButtonScale.o StatusBar.o Tag.o Tagview.o \
-	TimeConversion.o Track.o TrackBin.o
+	KeyboardShortcuts.o KeyboardShortcutsPanel.o Main.o \
+	MainMenu.o MainMenus.o Metadata.o MetadataPanel.o \
+	OutputPanel.o Panel.o ParserAndDecoder.o Parts.o Playback.o \
+	PlaybackController.o PlaybackControllers.o PlaybackPanel.o Playlist.o \
+	PlaylistChangesCancelDialog.o PlaylistComboBox.o PlaylistComboBoxes.o \
+	PlaylistCreateDialog.o PlaylistDeleteDialog.o PlaylistMenu.o \
+	PlaylistPanel.o PlaylistRenameDialog.o PlaylistTreeStore.o \
+	Playlists.o PlaylistsDatabase.o ReplayGainPanel.o Scrobbling.o \
+	ScrobblingPanel.o Seekbar.o SpinButtonScale.o StatusBar.o Tag.o \
+	Tagview.o TimeConversion.o Track.o TrackBin.o
 
 FLATPAK=0
 
@@ -136,7 +136,8 @@ DefaultValues.o: Configuration/DefaultValues.cc \
 
 Errors.o: Errors/Errors.cc Errors/Errors.h Parts.h \
 	GUI/Elements/ChildWindows/ChildWindow.h \
-	GUI/Elements/ChildWindows/ChildWindows.h
+	GUI/Elements/ChildWindows/ChildWindows.h \
+	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h
 	$(CXX) $(CXXFLAGS) -c \
 	Errors/Errors.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
@@ -219,6 +220,11 @@ KeyboardShortcutsPanel.o: \
 	GUI/Elements/ConfigurationGUIs/Panels/KeyboardShortcuts/KeyboardShortcutsPanel.cc \
 	`pkg-config --cflags --libs gtkmm-3.0`
 
+Main.o: Main.cc Base.h GUI/GUI.h GUI/Elements/ChildWindows/ChildWindow.h \
+	GUI/Elements/ChildWindows/ChildWindows.h
+	$(CXX) $(CXXFLAGS) -c Main.cc \
+	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4`
+
 MainMenu.o: GUI/Elements/MainMenus/MainMenu.cc \
 	GUI/Elements/MainMenus/MainMenu.h GUI/GUIElement.h Parts.h GUI/GUI.h \
 	Base.h Configuration/Configuration.h Playback/Playback.h \
@@ -242,17 +248,24 @@ MainMenus.o: GUI/Elements/MainMenus/MainMenus.cc \
 	-Wno-reorder
 
 Metadata.o: Metadata/Metadata.h Metadata/Metadata.cc Parts.h \
-	Errors/Errors.h Metadata/TrackType.h Metadata/Track.h \
-	Metadata/TimeConversion.h Metadata/CueSheet.h
+	Configuration/Configuration.h Errors/Errors.h Metadata/TrackType.h \
+	Metadata/Track.h Metadata/TimeConversion.h Metadata/CueSheet.h
 	$(CXX) $(CXXFLAGS) -c \
 	Metadata/Metadata.cc \
 	`pkg-config --libs --cflags taglib  glibmm-2.4 giomm-2.4` \
 	-lstdc++fs \
 
-Main.o: Main.cc Base.h GUI/GUI.h GUI/Elements/ChildWindows/ChildWindow.h \
-	GUI/Elements/ChildWindows/ChildWindows.h
-	$(CXX) $(CXXFLAGS) -c Main.cc \
-	`pkg-config --cflags --libs gtkmm-3.0 glibmm-2.4`
+MetadataPanel.o: \
+	GUI/Elements/ConfigurationGUIs/Panels/Metadata/MetadataPanel.cc \
+	GUI/Elements/ConfigurationGUIs/Panels/Metadata/MetadataPanel.h \
+	GUI/GUI.h GUI/Elements/ConfigurationGUIs/Panel.h \
+	GUI/Elements/ConfigurationGUIs/ConfigurationGUI.h \
+	GUI/Elements/ConfigurationGUIs/ConfigurationGUIs.h \
+	GUI/Elements/FileChoosers/FileChoosers.h GUI/GUI.h \
+	Configuration/Configuration.h Errors/Errors.h Playback/Playback.h
+	$(CXX) $(CXXFLAGS) -c \
+	GUI/Elements/ConfigurationGUIs/Panels/Metadata/MetadataPanel.cc \
+	`pkg-config --cflags --libs gtkmm-3.0`
 
 OutputPanel.o: GUI/Elements/ConfigurationGUIs/Panels/Output/OutputPanel.cc \
 	GUI/Elements/ConfigurationGUIs/Panels/Output/OutputPanel.h \

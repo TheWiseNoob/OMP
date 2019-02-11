@@ -29,9 +29,10 @@
   </provides>
 
   <releases>
-    <release version="0.1.0.2" date="2019-01-14">
+    <release version="0.1.1" date="2019-02-10">
       <description>
-        <p>Flathub changes and scrobbling bug fix.</p>
+        <p>Algorithm to remove duplicates when adding a folder recursively.</p>
+        <p>Metadata section in the configuration GUI.</p>
       </description>
     </release>
   </releases>

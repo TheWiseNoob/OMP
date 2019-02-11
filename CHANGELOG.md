@@ -3,6 +3,34 @@ All notable changes to this project will be documented in this file.
 
 
 
+## [0.1.1] - February 10th, 2019
+
+### Changed
+
+### Added
+- Metadata configuration panel.
+- Ability to choose to prefer embedded cuesheet data or external cuesheet data.
+- Ability to choose to prefer a multi-file cuesheet's metadata or the music
+  file's metadata.
+- Configuration panel chooser more reliably changes the panel when clicked.
+- Larger panel title.
+- Name column header for panel chooser is now hidden.
+- More tooltips in the configuration GUI.
+
+### Fixed
+- Various file error crash fixes.
+- Duplicates of the same music files are no longer added.
+- The setting in the configuration GUI to deselect all when empty space in
+  a row is clicked is no longer broken.
+- Bug that prevented saving metadata edits fixed.
+- 
+
+### Changed
+- The file reading error log is restyled, more detailed, and less broken.
+- The tab fonts are now much larger to fill the space of the tabs.
+
+
+
 ## [0.1.0.2] - January 14th, 2019
 
 ### Changed

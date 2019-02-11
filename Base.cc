@@ -158,11 +158,11 @@ Base::Base(int argc, char *argv[],
   // Finds Home Directory and Config Directory ////////////////////////////////
   //                                           //
 
-  // 
-  struct passwd* pw = getpwuid(getuid());
+  // Stores user account information.
+  struct passwd* uai = getpwuid(getuid());
 
-  // 
-  const char* homedir = pw -> pw_dir;
+  // Stores the home directory.
+  const char* homedir = uai -> pw_dir;
 
   // Stores the home directory as and std::string.
   std::string directory_str = homedir;
@@ -185,7 +185,7 @@ Base::Base(int argc, char *argv[],
   if(!(stat(directory_str . c_str(), &st) == 0))
   {  
 
-    // 
+    // Makes the .omp directory if it does not exist.
     mkdir(directory_str . c_str(), S_IWUSR);
 
   }
@@ -214,77 +214,90 @@ Base::Base(int argc, char *argv[],
   // Sets Default Values //////////////////////////////////////////////////////
   //                     //
 
-  // Sets the default value for determining if the default values have changed.
+  // Sets default value.
   config() . add_default("default_values", true);
 
-  // 
+  // Sets default value.
   config() . add_default("last_folder", "");
 
 
 
   // Cover Art ////////////////////////////////////////////////////////////////
 
-  // 
+  // Stores all of the default front cover art names.
   list<string> front_names_str_list
     {"Cover.png", "cover.png", "Cover.jpg", "cover.jpg", "Front.png",
      "front.png", "Front.jpg", "front.jpg", "Folder.png", "folder.png",
      "Folder.jpg", "folder.jpg"};
 
-  // 
+  // Sets the default values for the front cover art.
   config() . add_default("gui.artwork.front_names", front_names_str_list);
 
 
 
   // Configuration GUI ////////////////////////////////////////////////////////
 
-  // 
+  // Sets default value.
   config() . add_default("gui.configuration.active_panel", "Playback");
 
 
 
   // GUI General //////////////////////////////////////////////////////////////
 
-  // 
+  // Sets default value.
   config() . add_default("gui.window_maximized", false);
 
-  // 
+  // Sets default value.
   config() . add_default("gui.window_size_x", 1200);
 
-  // 
+  // Sets default value.
   config() . add_default("gui.window_size_y", 700);
 
-  //
+  // Sets default value.
   config() . add_default("gui.hide_duplicates", false);
 
-  //
+  // Sets default value.
   config() . add_default("gui.hide_header_bar", false);
 
-  //
+  // Sets default value.
   config() . add_default("gui.hide_status_bar", false);
 
-  //
+  // Sets default value.
   config() . add_default("gui.tabs.hide", false);
 
-  //
+  // Sets default value.
   config() . add_default("gui.tabs.active", "Main Content");
 
-  // 
+  // Sets default value.
   config() . add_default("gui.main_content_paned_position", 420);
 
-  // 
+  // Sets default value.
   config() . add_default("gui.double_playlist_paned_position", 500);
 
-  // 
+  // Sets default value.
   config() . add_default("gui.file_chooser_playlist_paned_position", 500);
+
+
+
+  // Metadata /////////////////////////////////////////////////////////////////
+
+  // Sets default value.
+  config() . add_default("metadata.cuesheet_type_preference", "embedded");
+
+  // Sets default value.
+  config() . add_default("metadata.files_or_cuesheet", "cuesheet");
+
+  // Sets default value.
+  config() . add_default("metadata.guess_metadata", "true");
 
 
 
   // Playlists ////////////////////////////////////////////////////////////////
 
-  //
+  // Sets default value.
   config() . add_default("gui.playlist.empty_space_row_deselects", false);
 
-  //
+  // Sets default value.
   config() . add_default("gui.playlist.view.main_content.locked", false);
 
 
@@ -678,168 +691,168 @@ Base::Base(int argc, char *argv[],
 
 
 
-  //
+  // Sets default value.
   config() . add_default("gui.playlist.empty_space_playlist_deselects", false);
 
-  //
+  // Sets default value.
   config() . add_default("gui.playlist_combobox.active", "Library");
 
 
 
   // Keyboard Shortcuts ///////////////////////////////////////////////////////
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.add_files", "<Primary>o");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.close_secondary", "Escape");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.configuration", "<Primary>j");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.copy_rows", "<Primary>c");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.create_playlist", "<Primary>n");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.cut_rows", "<Primary>x");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.delete_playlist", "<Shift>Delete");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.delete_rows", "Delete");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.edit_row", "e");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.fullscreen", "F11");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.next_track", "n");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.paste_rows", "<Primary>v");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.pause", "p");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.play", "s");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.rename_playlist", "<Primary>r");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.select_all_rows", "<Primary>a");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.stop_after_current", "<Shift>s");
 
-  // 
+  // Sets default value.
   config()
     . add_default("keyboard_shortcuts.keys.system_menu", "<Primary>m");
 
-  // 
+  // Sets default value.
   config()  . add_default("keyboard_shortcuts.keys.stop", "q");
 
 
 
   // Playback /////////////////////////////////////////////////////////////////
 
-  //
+  // Sets default value.
   config() . add_default("playback.cursor_follows_playback", true);
 
-  //
+  // Sets default value.
   config() . add_default("playback.playback_follows_cursor", false);
 
-  //
+  // Sets default value.
   config() . add_default("playback.looping", "none");
 
-  //
+  // Sets default value.
   config() . add_default("playback.order", "normal");
 
-  //
+  // Sets default value.
   config() . add_default("playback.queue", true);
 
-  //
+  // Sets default value.
   config() . add_default("playback.queue_saved", true);
 
-  //
+  // Sets default value.
   config() . add_default("playback.buffer_time", 60);
 
-  //
+  // Sets default value.
   config() . add_default("playback.volume", 1.000);
 
-  // 
+  // Sets default value.
   config() . add_default("playback.selected_playlist_only", true);
 
-  //
+  // Sets default value.
   config() . add_default("playback.start_at_pregap", true);
 
 
 
   // Output ///////////////////////////////////////////////////////////////////
 
-  //
+  // Sets default value.
   config() . add_default("output.buffer_time", 30000);
 
-  // 
+  // Sets default value.
   config() . add_default("output.sink", string("autoaudiosink"));
 
 
 
   // ReplayGain ///////////////////////////////////////////////////////////////
 
-  // 
+  // Sets default value.
   config() . add_default("replaygain.limiter", true);
 
-  // 
+  // Sets default value.
   config() . add_default("replaygain.enabled", true);
 
-  // 
+  // Sets default value.
   config() . add_default("replaygain.pre_amp", -3.000);
 
-  // 
+  // Sets default value.
   config() . add_default("replaygain.fallback_gain", -3.000);
 
-  //
+  // Sets default value.
   config() . add_default("replaygain.gain_type", string("album"));
 
 
 
   // Scrobbling ///////////////////////////////////////////////////////////////
 
-  // 
+  // Sets default value.
   config() . add_default("scrobbling.lastfm_enabled", false);
 
-  // 
+  // Sets default value.
   config() . add_default("scrobbling.lastfm_username", "Username");
 
-  // 
+  // Sets default value.
   config() . add_default("scrobbling.lastfm_password", "Password");
 
-  // 
+  // Sets default value.
   config() . add_default("scrobbling.percent", 51);
 
 

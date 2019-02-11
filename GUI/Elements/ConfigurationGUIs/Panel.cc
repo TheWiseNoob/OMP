@@ -188,8 +188,6 @@ Panel::Panel(Base& base_ref, ConfigurationGUI& config_gui_ref,
 Panel::~Panel()
 {
 
-  cout << "\n\nPanel Deleting\n\n";
-
 }
 
 

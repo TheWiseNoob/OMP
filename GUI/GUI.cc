@@ -1,3 +1,41 @@
+/* ////////////////////////////////////////////////////////////////////////////   
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+//  The developer(s) of the OMP audio player hereby grant(s) permission
+//  for non-GPL compatible GStreamer plugins to be used and distributed
+//  together with GStreamer and OMP. This permission is above and beyond
+//  the permissions granted by the GPL license by which OMP is covered.
+//  If you modify this code, you may extend this exception to your version
+//  of the code, but you are not obligated to do so. If you do not wish to do
+//  so, delete this exception statement from your version.
+//
+//  Libraries used by OMP:
+//
+//    - clastfm: http://liblastfm.sourceforge.net/ 
+//
+//    - gstreamer: https://gstreamer.freedesktop.org/ 
+//
+//    - gtkmm: https://www.gtkmm.org/en/
+//
+//    - libconfig: http://www.hyperrealm.com/libconfig/
+//
+//    - standard C and C++ libraries
+//
+//    - taglib: http://taglib.org/
+//
+//////////////////////////////////////////////////////////////////////////// */
 
 
 
@@ -552,10 +590,14 @@ GUI::GUI(Base& base_ref)
   //                         //
 
   // 
-  Gtk::Label main_content_page_label("Main Content");
+  Gtk::Label main_content_page_label;
 
   // 
   main_content_page_label . set_hexpand(true);
+
+  // 
+  main_content_page_label
+    . set_markup("<span weight='bold' font='14'>Main Content</span>");
 
 
 
@@ -695,10 +737,14 @@ GUI::GUI(Base& base_ref)
 
 
   // 
-  Gtk::Label artwork_page_label("Artwork");
+  Gtk::Label artwork_page_label;
 
   // 
   artwork_page_label . set_hexpand(true);
+
+  // 
+  artwork_page_label
+    . set_markup("<span weight='bold' font='14'>Artwork</span>");
 
 
 
@@ -789,10 +835,15 @@ GUI::GUI(Base& base_ref)
   //               //
 
   // Creates labels for the four pages in main_content_notebook_.
-  Gtk::Label playlist_page_label("Full Playlist");
+  Gtk::Label playlist_page_label;
 
   // 
   playlist_page_label . set_hexpand(true);
+
+  // 
+  playlist_page_label
+    . set_markup("<span weight='bold' font='14'>Full Playlist</span>");
+
 
 
   // 
@@ -811,9 +862,14 @@ GUI::GUI(Base& base_ref)
   //                 //
 
   // Creates labels for the four pages in main_content_notebook_.
-  Gtk::Label double_playlist_page_label("Double Playlist");
+  Gtk::Label double_playlist_page_label;
 
+  // 
   double_playlist_page_label . set_hexpand(true);
+
+  // 
+  double_playlist_page_label
+    . set_markup("<span weight='bold' font='14'>Double Playlist</span>");
 
 
 
@@ -867,9 +923,14 @@ GUI::GUI(Base& base_ref)
   //                         //
 
   // Creates labels for the four pages in main_content_notebook_.
-  Gtk::Label file_chooser_playlist_page_label("File Chooser Playlist");
+  Gtk::Label file_chooser_playlist_page_label;
 
+  // 
   file_chooser_playlist_page_label . set_hexpand(true);
+
+  // 
+  file_chooser_playlist_page_label
+    . set_markup("<span weight='bold' font='14'>File Chooser Playlist</span>");
 
 
 
@@ -925,11 +986,14 @@ GUI::GUI(Base& base_ref)
   //                        //
 
   // Creates the label for the configuration notebook page.
-  Gtk::Label configuration_page_label("Configuration");
+  Gtk::Label configuration_page_label;
 
   // 
   configuration_page_label . set_hexpand(true);
 
+  // 
+  configuration_page_label
+    . set_markup("<span weight='bold' font='14'>Configuration</span>");
 
 
   // 

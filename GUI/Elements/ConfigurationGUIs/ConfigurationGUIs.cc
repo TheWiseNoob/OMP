@@ -93,9 +93,15 @@
 //                 //
 //                 //
 
+#include <filesystem>
+
+#include <glibmm.h>
+
 #include <gtkmm/applicationwindow.h>
 
 #include <gtkmm/button.h>
+
+#include <gtkmm/textbuffer.h>
 
 
 
@@ -145,7 +151,38 @@ ConfigurationGUIs::ConfigurationGUIs(Base& base)
 
 , keyboard_shortcuts_liststore_(Gtk::ListStore::create(*keyboard_shortcuts_liststore_column_record_))
 
+
+
+// Metadata
+
+, error_log_textbuffer_(Gtk::TextBuffer::create())
+
 {
+
+  // 
+  string errors_log_file_str = base . config_directory_c_str();
+
+
+
+  // 
+  errors_log_file_str += "/errors.md";
+
+
+
+  // 
+  if(filesystem::exists(errors_log_file_str))
+  {
+
+    // 
+    Glib::ustring errors_log_ustr = Glib::file_get_contents(errors_log_file_str); 
+
+
+
+    // 
+    error_log_textbuffer_ -> insert_markup
+      (error_log_textbuffer_ -> begin(), errors_log_ustr);
+
+  }
 
 }
 
@@ -293,7 +330,7 @@ void ConfigurationGUIs::Open_Configuration()
                                          Gtk::PACK_EXPAND_WIDGET);
 
   // 
-  new_child_window -> window() . set_default_size(600, 400);
+  new_child_window -> window() . set_default_size(700, 500);
 
   // Displays the new window.
   new_child_window -> Show();
@@ -419,6 +456,10 @@ void ConfigurationGUIs::Undo_Changes()
 //         //
 //         //
 
+//         //
+// general ////////////////////////////////////////////////////////////////////
+//         //
+
 bool ConfigurationGUIs::disable_functions()
 {
 
@@ -433,12 +474,28 @@ atomic<bool>& ConfigurationGUIs::unsaved_changes()
 
 }
 
+
+
+
+
+//         //
+// Artwork ////////////////////////////////////////////////////////////////////
+//         //
+
 Glib::RefPtr<Gtk::ListStore> ConfigurationGUIs::filename_liststore()
 {
 
   return filename_liststore_;
 
 }
+
+
+
+
+
+//                    //
+// Keyboard Shortcuts /////////////////////////////////////////////////////////
+//                    //
 
 Glib::RefPtr<Gtk::ListStore> ConfigurationGUIs::keyboard_shortcuts_liststore()
 {
@@ -447,6 +504,20 @@ Glib::RefPtr<Gtk::ListStore> ConfigurationGUIs::keyboard_shortcuts_liststore()
 
 }
 
+
+
+
+
+//          //
+// Metadata ////////////////////////////////////////////////////////////////////
+//          //
+
+Glib::RefPtr<Gtk::TextBuffer> ConfigurationGUIs::error_log_textbuffer()
+{
+
+  return error_log_textbuffer_;
+
+}
 
 
 

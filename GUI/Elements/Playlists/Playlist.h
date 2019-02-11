@@ -308,6 +308,9 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
     void Edit();
 
+    void Edited
+      (const Glib::ustring& path_string, const Glib::ustring& new_text);
+
     void Editing(Gtk::CellEditable* editable, const Glib::ustring& path);
 
     void Editing_Canceled();
@@ -351,6 +354,8 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   public:
 
     Glib::ustring active_playlist_name();
+
+    Glib::ustring& editing_value();
 
     PlaylistMenu& menu();
 
@@ -417,6 +422,15 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
     bool editing_canceled_;
 
     // 
+    std::vector<sigc::connection> edit_connections_;
+
+    // 
+    std::string editing_path_;
+
+    // 
+    Glib::ustring* editing_value_;
+
+    // 
     const char* playlist_view_name_;
 
     // 
@@ -442,6 +456,7 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
 
   public:
 
+    // 
     sigc::connection selection_conn_;
 
 

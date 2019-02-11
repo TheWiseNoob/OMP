@@ -137,7 +137,8 @@ class CueSheet
   public:
 
     std::vector<Track*>* operator()(Glib::ustring* cue_sheet,
-                                    Glib::ustring& filename_beginning);
+                                    Glib::ustring& filename_beginning,
+                                    Glib::ustring cue_filename);
 
   protected:
 

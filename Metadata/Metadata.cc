@@ -67,6 +67,8 @@
 //                 //
 //                 //
 
+#include "../Configuration/Configuration.h"
+
 #include "../Errors/Errors.h"
 
 #include "TimeConversion.h"
@@ -208,75 +210,94 @@ void Metadata::All_Files_In_All_Folders
    string& active_filename_str, mutex& active_filename_str_mutex)
 {
 
-  // 
+  // Holds the filenames that haven't been sorted.
   vector<string> unsorted_files;
 
-  // 
+  // Holds the filenames that have been sorted.
+  vector<string> sorted_folders;
+
+  // Creates a C++ path variable.
   filesystem::path folder_path(folder_str_ref);
 
 
 
-  // 
+  // Gets the contents of the current folder.
   auto folder_contents = filesystem::directory_iterator(folder_path);
 
-  // 
+  // Iterates through all of the files of the current folder.
   for(auto file : folder_contents)
   {
 
-    // 
+    // Current filename.
     string path_string = file . path() . string();
 
 
 
-    // 
+    // Pushes the current filename to the back of the unsorted files vector.
     unsorted_files . push_back(path_string);
 
   }
 
 
 
-  // 
+  // Sorts the unsorted files.
   sort(unsorted_files . begin(), unsorted_files . end());
 
-  // 
+  // Iterates through the now sorted files and deparates files from folders.
   for(auto sorted_file : unsorted_files)
   {
 
-    // 
+    // True if the current filename is to a folder.
     if(filesystem::is_directory(sorted_file))
-    {
+    { 
 
-      // 
-      All_Files_In_All_Folders(sorted_file, files, 
-                               active_filename_str, active_filename_str_mutex);
+      // Adds the folder to the sorted folders vector.
+      sorted_folders . push_back(sorted_file);
 
     } 
 
-    // 
+    // True if the current filename is a file.
     else
-    {
+    { 
 
-      // 
+      // Adds the file to the files list.
       files . push_back(sorted_file);
 
 
 
-      // 
+      // Locks the mutex for the active filename.
       active_filename_str_mutex . lock();
 
-      // 
+      // Sets the active filename.
       active_filename_str = sorted_file;
 
-      // 
+      // Unlocks the mutex for the active filename.
       active_filename_str_mutex . unlock();
 
     }
+
+  } 
+
+
+
+  // Marks the end of the files group for a folder.
+  files . push_back("END_GROUP");
+
+
+
+  // Recursive call to the current function for all folders.
+  for(auto sorted_folder : sorted_folders)
+  { 
+
+    // Calls this function again for one of the folders in the current folder.
+    All_Files_In_All_Folders(sorted_folder, files, 
+                             active_filename_str, active_filename_str_mutex);
 
   }
 
 }
 
-bool Metadata::Determine_Codec_If_Supported
+bool Metadata::Determine_If_Codec_Supported
   (TagLib::AudioProperties& audio_prop, Track& new_track)
  {
 
@@ -408,12 +429,6 @@ bool Metadata::Determine_Codec_If_Supported
       error_message_str += new_track . filename();
 
       // Adds to the error message.
-      error_message_str += " with the mime type of ";
-
-      // Adds to the error message.
-      error_message_str += new_track . mime();
-
-      // Adds to the error message.
       error_message_str += ".";
 
 
@@ -512,12 +527,6 @@ bool Metadata::Determine_Codec_If_Supported
       error_message_str += new_track . filename();
 
       // Adds to the error message.
-      error_message_str += " with the container/mime type of ";
-
-      // Adds to the error message.
-      error_message_str += new_track . filename();
-
-      // Adds to the error message.
       error_message_str += ".";
 
 
@@ -543,13 +552,14 @@ bool Metadata::Determine_Codec_If_Supported
 
 
     // A string to hold the error message.
-    string error_message_str = "The mime type of ";
+    string error_message_str
+      = "Invalid or unsupported mime type for filename ";
 
     // Adds to the error message.
     error_message_str += new_track . filename();
 
     // Adds to the error message.
-    error_message_str += " is not valid.";
+    error_message_str += ".";
 
 
 
@@ -570,76 +580,86 @@ bool Metadata::Determine_Codec_If_Supported
 
 }
 
-bool Metadata::Determine_Mime_If_Supported(string& filename)
+bool Metadata::Determine_If_Mime_Supported(const string& mime)
 {
 
   // True if the mime type is for FLAC.
-  if(filename == "audio/flac")
+  if(mime == "audio/flac")
   {
 
-    // 
+    // Returns true because the mime type is supported.
+    return true;
+
+  }
+
+  // True if the mime type is for a cuesheet file.
+  else if((mime == "application/x-cue") || (mime == "application/cue"))
+  { 
+
+    // Returns true because the mime type is supported.
     return true;
 
   }
 
   // True if the mime type is for Monkey's audio.
-  else if((filename == "audio/x-ape") || (filename == "audio/ape"))
+  else if((mime == "audio/x-ape") || (mime == "audio/ape"))
   {
 
-    // 
+    // Returns true because the mime type is supported.
     return true;
 
   }
 
   // True if the mime type is for WavPack.
-  else if(filename == "audio/x-wavpack")
+  else if(mime == "audio/x-wavpack")
   {
 
-    // 
+    // Returns true because the mime type is supported.
     return true;
 
   }
 
   // True if the mime type is for ALAC or AAC.
-  else if(filename == "audio/mp4")
+  else if(mime == "audio/mp4")
   {
 
-    // 
+    // Returns true because the mime type is supported.
     return true;
 
   }
 
   // True if the mime type is for mp3.
-  else if(filename == "audio/mpeg")
+  else if(mime == "audio/mpeg")
   {
 
-    // 
+    // Returns true because the mime type is supported.
     return true;
 
   }
 
   // True if the mime type is for AAC.
-  else if(filename == "audio/aac")
+  else if(mime == "audio/aac")
   {
 
-    // 
+    // Returns true because the mime type is supported.
     return true;
 
   }
 
   // True if the mime type is for ogg.
-  else if((filename == "audio/ogg") || (filename == "audio/oga"))
+  else if((mime == "audio/ogg") || (mime == "audio/oga"))
   {
 
-    // 
+    // Returns true because the mime type is supported.
     return true;
 
   }
 
+  // 
   else
   {
 
-    // 
+    // Returns false because the mime type is not supported.
     return false;
 
   }
@@ -689,7 +709,7 @@ void Metadata::Extract_File_Path
 
 
 
- // Finds the index of the the last character of the cuesheet's filepath.
+  // Finds the index of the the last character of the cuesheet's filepath.
   for(end_index = length - 5; filename[end_index] != '/'; end_index--);
 
 
@@ -714,6 +734,18 @@ vector<Track*>* Metadata::Filenames_To_Tracks
   // New-created vector pointer of new-created Track pointers.
   vector<Track*>* tracks = new vector<Track*>;
 
+  // Holds the tracks not created from a cuesheet.
+  vector<pair<Track*, int>> single_tracks;
+
+  // Holds the tracks created from an external cuesheet.
+  vector<vector<pair<Track*, int>>> external_cue_tracks_tracks;
+
+  // Holds the tracks created from an embedded cuesheet.
+  vector<vector<pair<Track*, int>>> embedded_cue_tracks_tracks;
+
+  // Holds the track count for each group of files.
+  int group_files_count = 0;
+
 
 
   // Iterates through the vector of filenames to create a Track or Tracks for
@@ -721,10 +753,56 @@ vector<Track*>* Metadata::Filenames_To_Tracks
   for(auto filename : filenames)
   {
 
-    // 
+    // True if the the function needs to quit.
     if(quitting)
-    {
+    {  
 
+      // Iterates through all of the single tracks.
+      for(auto single_track_pair : single_tracks)
+      {
+
+        // Deletes the Track.
+        delete (single_track_pair . first);
+
+      }
+
+
+
+      // Iterates through all of the embedded cue tracks vectors.
+      for(auto embedded_cue_tracks : embedded_cue_tracks_tracks)
+      {
+
+        // Iterates through the current embedded tracks.
+        for(auto embedded_cue_track_pair : embedded_cue_tracks)
+        {
+
+          // Deletes the Track.
+          delete (embedded_cue_track_pair . first);
+
+        }
+
+      }
+
+
+
+      // Iterates through all of the external cue tracks vectors.
+      for(auto external_cue_tracks : external_cue_tracks_tracks)
+      {
+
+        // Iterates through the current external tracks.
+        for(auto external_cue_track_pair : external_cue_tracks)
+        {
+
+          // Deletes the Track.
+          delete (external_cue_track_pair . first);
+
+        }
+
+      }
+
+
+
+      // Returns the tracks vector.
       return tracks;
 
     }
@@ -740,35 +818,195 @@ vector<Track*>* Metadata::Filenames_To_Tracks
 
     }
 
+    // End of all music files in a folder.
+    else if(filename == "END_GROUP")
+    {
+
+      // Removes any duplicates files in the three vectors and combines them.
+      Remove_Duplicates(tracks, single_tracks, external_cue_tracks_tracks,
+                        embedded_cue_tracks_tracks, (group_files_count + 1));
 
 
-    // 
+
+      // Clears the single tracks vector.
+      single_tracks . clear();
+
+      // Clears the external cuesheet tracks vector.
+      external_cue_tracks_tracks . clear();
+
+      // Clears the embedded cuesheet tracks vector.
+      embedded_cue_tracks_tracks . clear();
+
+      // Resets the group file count.
+      group_files_count = 0;
+
+
+
+      // Continues to the next file.
+      continue;
+
+    }
+
+
+
+    // Locks the mutex for the active filename.
     active_filename_str_mutex . lock();
 
-    // 
+    // Sets the active filename.
     active_filename_str = filename;
 
-    // 
+    // Unlocks the mutex for the active filename.
     active_filename_str_mutex . unlock();
 
 
 
-    // Adds all of the created tracks to the single vector created previously.
-    Merge(tracks, Interpret_Metadata(filename));
+    // Holds the newly created tracks.
+    vector<Track*>* new_tracks;
+
+    // Attempts to open the file.
+    try
+    {
+
+      // Interprets the metadata of the file provided.
+      new_tracks = Interpret_Metadata(filename);
+
+    }
+
+    // True if an exception occurs while attempting
+    // to read the file's metadata.
+    catch(...)
+    {
+
+      // Sets the new tracks to nullptr.
+      new_tracks = nullptr;
 
 
+
+      debug("Exception caught in NORMAL track metadata retrieval");
+
+
+
+      // Adds to the error message.
+      string error_message_str = "Failed to open filename ";
+
+      // Adds to the error message.
+      error_message_str += filename;
+
+      // Adds to the error message.
+      error_message_str += ".";
+
+      // Writes the error message.
+      errors() . Write_Error(error_message_str . c_str());
+
+    }
+
+
+
+    // True if the was no Track vector created. Nothing is done.
+    if(new_tracks == nullptr)
+    {
+
+    }
+
+    // True if an empty Track vector was created.
+    else if(new_tracks -> empty())
+    {
+
+      // Deletes the empty Track vector.
+      delete new_tracks;
+
+    }
 
     // 
+    else
+    {
+
+      // True if the Track vector was created from a cuesheet.
+      if(new_tracks -> front() -> Cue())
+      {
+
+        // Creates a new vector for Track ptrs and an order int.
+        vector<pair<Track*, int>> temp_track_pairs;
+
+
+
+        // Iterates through the Track pointers.
+        for(auto new_track_ptr : *new_tracks)
+        {
+
+          // Adds the new tracks Track ptr to the new ordered Track* vector.
+          temp_track_pairs . emplace_back(new_track_ptr, group_files_count++);
+
+
+
+          // Increases the group file count.
+          group_files_count++;
+
+        }
+
+
+
+        // True if the tracks were created from an embedded cuesheet.
+        if(new_tracks -> front() -> Cue_Embedded())
+        {
+
+          // Adds the Track vector to the embedded cuesheet tracks vector.
+          embedded_cue_tracks_tracks . push_back(temp_track_pairs);
+
+        }
+
+        // True if the tracks were created from an external cuesheet.
+        else
+        {
+
+          // Adds the Track vector to the external cuesheet tracks vector.
+          external_cue_tracks_tracks . push_back(temp_track_pairs);
+
+        }
+
+      }
+
+      // True if the Track vector was created from a normal music file.
+      else
+      {
+
+        // Iterates through the new tracks Track vector.
+        for(auto new_track_ptr : *new_tracks)
+        {
+
+          // Adds the new Track to the single tracks vector with an order.
+          single_tracks . emplace_back(new_track_ptr, group_files_count);
+
+
+
+          // Increases the group file count.
+          group_files_count++;
+
+        }
+
+      }
+
+    }
+
+
+
+    // Increases the reading files count.
     reading_files_count++;
 
   }
 
 
 
-  // Returns the new-created vecotr of tracks.
+  // Removes duplicates from the final files added.
+  Remove_Duplicates(tracks, single_tracks, external_cue_tracks_tracks,
+                    embedded_cue_tracks_tracks, group_files_count + 1);
+
+
+
+  // Returns the new-created vector of tracks.
   return tracks;
 
-}
+ }
 
 std::vector<Track*>* Metadata::Interpret_Cue_Sheet(const std::string& filename)
 {
@@ -777,12 +1015,12 @@ std::vector<Track*>* Metadata::Interpret_Cue_Sheet(const std::string& filename)
   static CueSheet cue_sheet_interpreter;
 
   // Sets the global locale to the computer's default.
-  std::locale::global(std::locale(""));
+  setlocale(LC_ALL, "en_US.UTF-8");
 
 
 
   // Gets the contents of the file of the filename provided.
-  string temp_string = Glib::file_get_contents(filename); 
+  Glib::ustring temp_string = Glib::file_get_contents(filename); 
 
   // Used to store the converted to UTF CUESHEET string.
   Glib::ustring temp_cue_sheet;
@@ -798,7 +1036,7 @@ std::vector<Track*>* Metadata::Interpret_Cue_Sheet(const std::string& filename)
   { 
 
     // Converts the CUE SHEET to a ustring.
-    temp_cue_sheet = Glib::locale_to_utf8(temp_string.data());
+    temp_cue_sheet = Glib::locale_to_utf8(temp_string . data());
 
   }
 
@@ -831,8 +1069,108 @@ std::vector<Track*>* Metadata::Interpret_Cue_Sheet(const std::string& filename)
 
 
 
-        // Converts from LATIN-9 to UTF-8.
-        temp_cue_sheet = Glib::convert(temp_string, "UTF-8", "LATIN-9");
+        // Sets the initial codeset to LATIN-1.
+        string codeset_str = "LATIN-1";
+
+        // Iterates through all of the LATIN codesets until the correct one is
+        // found or it fails to find the correct one.
+        while(true)
+        {
+
+          // Attempts using the current LATIN codeset.
+          try
+          {
+
+            // Converts from LATIN-X to UTF-8.
+            temp_cue_sheet
+              = Glib::convert(temp_string, "UTF-8", codeset_str . c_str());
+
+
+
+            // Breaks from the loop because the correct codeset was found.
+            break;
+
+          }
+
+          // Occurs if the codeset conversion failed.
+          catch(...)
+          {
+
+            // True if none of the cuesheet conversion was none of the
+            // LATIN codesets.
+            if(codeset_str == "LATIN-9")
+            {
+
+              // A string to hold the error message.
+              string error_message_str = "Could not read the cuesheet ";
+
+              // Adds to the error message.
+              error_message_str += filename;
+
+              // Adds to the error message.
+              error_message_str 
+                += ".\n     Charset conversation could not achieved.";
+
+
+
+              // Writes to the error message log.
+              errors() . Write_Error(error_message_str . c_str());
+
+
+
+              // Breaks from the loop.
+              break;
+
+            }
+   
+            // True if the last attempted codeset conversion was LATIN-7.
+            else if(codeset_str == "LATIN-7")
+            {
+
+              // Sets the codeset.
+              codeset_str = "LATIN-9";
+
+            }
+
+            // True if the last attempted codeset conversion was LATIN-5.
+            else if(codeset_str == "LATIN-5")
+            {
+
+              // Sets the codeset.
+              codeset_str = "LATIN-7";
+
+            }
+
+            // True if the last attempted codeset conversion was LATIN-3.
+            else if(codeset_str == "LATIN-3")
+            {
+
+              // Sets the codeset.
+              codeset_str = "LATIN-5";
+
+            }
+
+            // True if the last attempted codeset conversion was LATIN-2.
+            else if(codeset_str == "LATIN-2")
+            {
+
+              // Sets the codeset.
+              codeset_str = "LATIN-3";
+
+            }
+
+            // True if the last attempted codeset conversion was LATIN-1.
+            else if(codeset_str == "LATIN-1")
+            {
+
+              // Sets the codeset.
+              codeset_str = "LATIN-2";
+
+            }
+
+          }
+
+        }
 
 
 
@@ -850,14 +1188,14 @@ std::vector<Track*>* Metadata::Interpret_Cue_Sheet(const std::string& filename)
 
 
         // A string to hold the error message.
-        string error_message_str = "The cue sheet ";
+        string error_message_str = "Could not read the cuesheet ";
 
         // Adds to the error message.
         error_message_str += filename;
 
         // Adds to the error message.
         error_message_str 
-          += " could not be read! The reason could not be determined.";
+          += ".\n     The reason could not be determined.";
 
 
 
@@ -890,12 +1228,31 @@ std::vector<Track*>* Metadata::Interpret_Cue_Sheet(const std::string& filename)
 
 
   // Interprets the cue sheet.
-  return cue_sheet_interpreter(&temp_cue_sheet, file_path);
+  return cue_sheet_interpreter(&temp_cue_sheet, file_path, filename);
 
 }
 
 std::vector<Track*> *Metadata::Interpret_Metadata(const std::string& filename)
 {
+
+  // Holds the mime type.
+  string mime;
+
+  // Determines the mime type and stores it in mime.
+  Determine_Mime_Type(filename . c_str(), mime);
+
+
+
+  // True if the mime type is determined to be NOT supported.
+  if(!Determine_If_Mime_Supported(mime))
+  {
+
+    // Returns a nullptr and exits the function.
+    return nullptr;
+
+  }
+
+
 
   // String that will contain the mime type.
   string mime_type;
@@ -906,7 +1263,7 @@ std::vector<Track*> *Metadata::Interpret_Metadata(const std::string& filename)
 
 
   // True if the file is a CUE SHEET file.
-  if(mime_type == "application/x-cue")
+  if((mime_type == "application/x-cue") || (mime_type == "application/cue"))
   {
 
     // Interprets the CUE SHEET and assigns adds the Tracks to a new vector. 
@@ -967,28 +1324,28 @@ void Metadata::Interpret_Multiple_Value_Tag
 
   } 
 
-  // 
+  // True if the track was created from a cuesheet.
   else
   {
 
-    // 
+    // True if the property is not empty.
     if(((prop_map[TagLib::String(tag_name)] . size() > 1))
          || 
        ((track.*getter)() . empty()))
      {
 
-      // 
+      // True if the clear function is NULL.
       if(clear == NULL)
       { 
 
-        // 
+        // Return the multiple value track tag reading function.
         return;
 
       }
 
 
 
-      // 
+      // Clears the multiple value Track tag.
       (track.*clear)(); 
 
 
@@ -997,11 +1354,11 @@ void Metadata::Interpret_Multiple_Value_Tag
 
 
 
-      // 
+      // Iterates through the new Track tag.
       for(auto it : prop_map[TagLib::String(tag_name)])
       {
 
-        // 
+        // Adds the new track tag to the new Track instance.
         (track.*setter)(new Glib::ustring(it . to8Bit(true)));
 
        }
@@ -1012,7 +1369,7 @@ void Metadata::Interpret_Multiple_Value_Tag
 
 
 
-  // 
+  // Erases the track tag from the property map.
   prop_map . erase(TagLib::String(tag_name));
 
 }
@@ -1049,11 +1406,41 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
 
 
-      // Stores the mime type of the track.
+      // Stores the mime type.
       string mime_type;
 
-      // Determines the mime type of the file.
+      // Determines and stores the mime type in mime_type.
       Determine_Mime_Type(filename . c_str(), mime_type);
+
+
+
+      // Determines the mime type of the file.
+      if(!Determine_If_Mime_Supported(mime_type))
+      {
+
+        // A string to hold the error message.
+        string error_message_str = "Failed to open ";
+
+        // Adds to the error message.
+        error_message_str += filename;
+
+        // Adds to the error message.
+        error_message_str += ".";
+
+        // Adds to the error message.
+        error_message_str += " \n     The mime type is not supported or invalid.";
+
+
+
+        // Writes to the error message log.
+        errors() . Write_Error(error_message_str . c_str());
+
+
+
+        // Returns an empty new-created vector.
+        return new_tracks;
+
+      }
 
 
 
@@ -1088,7 +1475,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
           // Adds to the error message.
           error_message_str
             += " is labelled as pure AAC, but it is AAC in an mp4 container." \
-               "Rename the extension to .mp4 to make it work.";
+               "\n     Rename the extension to .mp4 to make it work.";
 
 
 
@@ -1134,17 +1521,17 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
     } 
 
-    // 
+    // True if the FileRef is valid.
     else
     {
 
       // Extracts the property map from the file ref.
-      temp_prop_map = (file_ref.file() -> properties());
+      temp_prop_map = (file_ref . file() -> properties());
    
   
   
       // Checks if the property map contains a cuesheet.
-      if(temp_prop_map.contains(TagLib::String("CUESHEET")))
+      if(temp_prop_map . contains(TagLib::String("CUESHEET")))
       {
   
         debug("Property map contains a cuesheet!");
@@ -1175,20 +1562,20 @@ std::vector<Track*> *Metadata::Interpret_Properties
         // Creates a new-created ustring pointer of the cuesheet.
         Glib::ustring* temp_ustring 
           = new Glib::ustring(temp_prop_map[TagLib::String("CUESHEET")]
-                                              . toString().to8Bit(true));
+                                              . toString() . to8Bit(true));
   
         // Extracts the track data from the cuesheet.
-        new_tracks = cue_sheet_interpreter(temp_ustring, file_path);
+        new_tracks = cue_sheet_interpreter(temp_ustring, file_path, "");
   
         // Destroys the cue sheet ustring.
         delete temp_ustring;
-  
-  
-  
+
+
+
         // Sets the track type to what the cue sheet interpreter identified.
         type = new_tracks -> front() -> type();
-  
-      }
+
+      } 
   
       // True if the file provided does not have a cue sheet. 
       else
@@ -1203,7 +1590,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
   }  
 
-  // True if the filename for a cuesheet file.
+  // True if there was a cuesheet already interpreted.
   else
   {
 
@@ -1219,372 +1606,82 @@ std::vector<Track*> *Metadata::Interpret_Properties
   if(type == TrackType::NORMAL)
   {
 
-    stringstream debug_ss;
-
-    debug_ss << "filename: " << filename;
-
-    debug(debug_ss . str() . c_str());
-
-
-
-    // Creates a file ref for the track.
-    TagLib::FileRef file_ref(filename . c_str()); 
-
-
-
-    //   
-    if((file_ref . isNull()) || ((file_ref . audioProperties()) == NULL))
-    {
-
-      debug("File ref NULL! Unable to open file!");
-
-
-
-      // 
-      for(auto new_tracks_it : *new_tracks)
-      {
-
-        // 
-        delete new_tracks_it;
-
-      }
-
-
-
-      // 
-      new_tracks -> clear();
-
-
-
-      // 
-      return new_tracks;
-
-
-    }  
-
-
-
-    // Creates a reference to the Track having data added to it.
-    Track& new_track = *(new_tracks -> front());
-  
-  
-  
-    // Sets the filename of the new track.
-    new_track . set_filename(filename);    
-  
-  
-  
-    debug("Before file_ref");
-  
-  
-  
-    // Makes a reference to the file's audioProperties.
-    auto audio_properties  = (file_ref . audioProperties());
-  
-  
-
-    // Determines the codec if supported.
-    if(!Determine_Codec_If_Supported(*audio_properties, new_track))
-    {
-   
-      // 
-      new_tracks -> clear();
-  
-  
-  
-      // 
-      return new_tracks;
-  
-    }
-
-
-
-    // Stores the bitrate of the audio file.
-    new_track . set_bit_rate(audio_properties -> bitrate());
-
-    // Stores the sample rate of the audio file.
-    new_track . set_sample_rate(audio_properties -> sampleRate());
-
-    // Stores the channel count of the audio file.
-    new_track . set_channels(audio_properties -> channels());
-
-
-
-    // Gets the duration of the audio file in milliseconds and converts it to
-    // nanoseconds.
-    long long duration = 1e6 * (audio_properties -> lengthInMilliseconds());
-
-    // Stores the duration of the audio file.
-    new_track . set_duration(duration);
-
-
-
-    // 
-    std::string* temp_time_string;
-
-    // Converts the duration to a time format string in centiseconds.
-    temp_time_string
-      = time_converter_ -> Nanoseconds_To_Time_Format(duration);
-
-
-
-    // Stores the time format length.
-    new_track . set_length(*temp_time_string);
-
-    // Deletes the time format string.
-    delete temp_time_string;
-
-    debug("After");
-
-
-
-    // 
-    try
-    {
-
-      // Retrieves the title of the track. 
-      Interpret_Single_Value_Tag
-        ("TITLE", type, temp_prop_map, new_track, &Track::title,
-         &Track::set_title);
-
-      // Retireves the artists of the track.
-      Interpret_Multiple_Value_Tag
-        ("ALBUMARTIST", type, temp_prop_map, new_track, &Track::album_artists,
-         &Track::add_album_artist, &Track::clear_album_artists);
-
-      // Retireves the artists of the track.
-      Interpret_Multiple_Value_Tag
-        ("ARTIST", type, temp_prop_map, new_track, &Track::artists,
-         &Track::add_artist, &Track::clear_artists);
-
-      // Retrieves the album name of the track.
-      Interpret_Single_Value_Tag
-        ("ALBUM", type, temp_prop_map, new_track, &Track::album,
-         &Track::set_album);
-
-      // Retrieves the genres of the track.
-      Interpret_Multiple_Value_Tag
-        ("GENRE", type, temp_prop_map, new_track, &Track::genres,
-         &Track::add_genre, &Track::clear_genres);
-
-
-
-      // True if the track has a track number.
-      if(temp_prop_map . contains(TagLib::String("TRACKNUMBER")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: TRACKNUMBER");
-
-
-
-        //  Saved the value of the tag to a string.
-        string track_num_str
-          = temp_prop_map[TagLib::String("TRACKNUMBER")]
-              . toString() . to8Bit(true);
-
-
-
-        // Sets the track number of new_track.
-        new_track . set_track_number(track_num_str);
-
-      }
-
-      // 
-      if(temp_prop_map.contains(TagLib::String("TRACKTOTAL")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: TRACKTOTAL");
-
-
-
-        //  Saved the value of the tag to a string.
-        string track_total_str
-          = temp_prop_map[TagLib::String("TRACKTOTAL")]
-              . toString() . to8Bit(true);
-
-
-
-        // Sets the track total of new_track.
-        new_track . set_track_total(track_total_str);
-
-      }
-
-      // True if the disc has a disc number.
-      if(temp_prop_map . contains(TagLib::String("DISCNUMBER")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: DISCNUMBER");
-
-
-
-        //  Saved the value of the tag to a string.
-        string disc_num_str
-          = temp_prop_map[TagLib::String("DISCNUMBER")]
-              . toString() . to8Bit(true);
-
-
-
-        // Sets the disc number of new_disc.
-        new_track . set_disc_number(stoi(disc_num_str));
-
-      }
-
-      // 
-      if(temp_prop_map.contains(TagLib::String("DISCTOTAL")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: DISCTOTAL");
-
-
-
-        //  Saved the value of the tag to a string.
-        string disc_total_str
-          = temp_prop_map[TagLib::String("DISCTOTAL")]
-              . toString() . to8Bit(true);
-
-
-
-        // Sets the disc total of new_disc.
-        new_track . set_disc_total(stoi(disc_total_str));
-
-      }
-
-      // 
-      if(temp_prop_map.contains(TagLib::String("DATE")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: DATE");
-
-
-
-        // 
-        new_track.set_date(temp_prop_map[TagLib::String("DATE")].toString().to8Bit(true));
-
-      }
-
-      // 
-      if(temp_prop_map.contains(TagLib::String("REPLAYGAIN_ALBUM_GAIN")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_ALBUM_GAIN");
-
-
-
-        // 
-        new_track . set_replaygain_album_gain(stod(temp_prop_map[TagLib::String("REPLAYGAIN_ALBUM_GAIN")].toString().to8Bit(true)));
-
-      }
-    
-      // 
-      if(temp_prop_map.contains(TagLib::String("REPLAYGAIN_ALBUM_PEAK")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_ABLUM_PEAK");
-
-
-
-        // 
-        new_track . set_replaygain_album_peak(stod(temp_prop_map[TagLib::String("REPLAYGAIN_ALBUM_PEAK")].toString().to8Bit(true)));
-
-      }
-    
-      // 
-      if(temp_prop_map.contains(TagLib::String("REPLAYGAIN_TRACK_GAIN")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_TRACK_GAIN");
-
-
-
-        // 
-        new_track . set_replaygain_track_gain(stod(temp_prop_map[TagLib::String("REPLAYGAIN_TRACK_GAIN")].toString().to8Bit(true)));
-
-      }
-    
-      // 
-      if(temp_prop_map.contains(TagLib::String("REPLAYGAIN_TRACK_PEAK")))
-      {
-
-        debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_TRACK_PEAK");
-
-
-
-        // 
-        new_track . set_replaygain_track_peak(stod(temp_prop_map[TagLib::String("REPLAYGAIN_TRACK_PEAK")].toString().to8Bit(true)));
-
-      }
-
-    }
-
-    //     
-    catch(...)
-    {
-
-      // 
-      debug("Exception caught in NORMAL track metadata retrieval");
-
-
-
-      // 
-      string error_message_str = new_track . filename();
-
-      // 
-      error_message_str += " failed to open.";
-
-      // 
-      errors() . Write_Error(error_message_str . c_str());
-
-
-
-      // 
-      for(auto new_tracks_it : *new_tracks)
-      {
-
-        // 
-        delete new_tracks_it;
-
-      }
-
-
-
-      // 
-      new_tracks -> clear();
-
-
-
-      // 
-      return new_tracks;
-
-    }
-
-
-
-    // 
-    for(auto it = temp_prop_map.begin(); it != temp_prop_map.end(); it++)
-    {
-
-      debug_ss << "Custom Tag: \"" << (it->first).to8Bit(true) << "\"";
-
-      debug(debug_ss . str() . c_str());
-
-
-
-      // 
-      if(((it -> first) . to8Bit(true)) == "")
-      {
-
-      }
-
-    }
+    // Interprets the properties of the NORMAL Track.
+    return Interpret_Properties_Normal_Track
+             (filename, new_tracks, type, temp_prop_map);
 
   }
 
-  //
+  // Handles the reading of files for a SINGLE_FILE cue sheet.
   else if(type == TrackType::SINGLE_FILE)
   {
 
     // 
     string filename = new_tracks -> front() -> filename();
+
+
+
+    // 
+    if(!filesystem::exists(filename))
+    {
+
+      debug("Audioproperties NULL! Unable to open file!");
+
+
+
+      // A string to hold the error message.
+      string error_message_str = "Failed to open ";
+
+      // Adds to the error message.
+      error_message_str += filename;
+
+      // Adds to the error message.
+      error_message_str += ".";
+
+      // 
+      error_message_str += "\n     The file does not exist.";
+
+
+
+      debug("Debug Write Error");
+
+
+
+      // Writes to the error message log.
+      errors() . Write_Error(error_message_str . c_str());
+
+
+
+      debug("After Write Error");
+
+
+
+      // 
+      if(new_tracks != nullptr)
+      {
+
+        // 
+        for(auto track_it : *new_tracks)
+        {
+
+          // 
+          delete track_it;
+
+        }
+
+
+
+        // 
+        new_tracks -> clear();
+
+
+
+        // 
+        return new_tracks;
+
+      }
+
+    }
 
 
 
@@ -1601,6 +1698,44 @@ std::vector<Track*> *Metadata::Interpret_Properties
     {
 
       debug("Audioproperties NULL! Unable to open file!");
+
+
+
+      // A string to hold the error message.
+      string error_message_str = "Failed to open ";
+
+      // Adds to the error message.
+      error_message_str += filename;
+
+
+
+      // 
+      if((new_tracks -> front() -> mime()) != "")
+      {
+
+        // Adds to the error message.
+        error_message_str += ".";
+
+        // Adds to the error message.
+        error_message_str += "\n     It has a mime type of ";
+
+        // Adds to the error message.
+        error_message_str += new_tracks -> front() -> mime();
+
+      }
+
+
+
+      // Adds to the error message.
+      error_message_str += ".";
+
+      // 
+      error_message_str += "\n     The file is damaged or has an invalid extension.";
+
+
+
+      // Writes to the error message log.
+      errors() . Write_Error(error_message_str . c_str());
 
 
 
@@ -1647,7 +1782,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
 
     // Determines the codec if supported.
-    if(!Determine_Codec_If_Supported(audio_properties, new_track))
+    if(!Determine_If_Codec_Supported(audio_properties, new_track))
     {
 
       // 
@@ -1672,7 +1807,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
     // 
     for(auto it : *new_tracks)
-    {
+    { 
 
       // 
       it -> set_bit_rate(bit_rate);
@@ -1698,7 +1833,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
     // 
     long long file_length
-      = audio_properties.lengthInMilliseconds() * 1000000LL;
+      = audio_properties . lengthInMilliseconds() * 1000000LL;
 
     // 
     int track_total = (*new_tracks)[0] -> track_total();
@@ -1716,7 +1851,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
     // 
     if(temp_prop_map . contains(TagLib::String("DISCNUMBER")))
-    {
+    { 
 
       debug("Metadata: Interpret_Properties: NORMAL: DISCNUMBER");
 
@@ -1740,7 +1875,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
       disc_total = stoi(temp_prop_map[TagLib::String("DISCTOTAL")]
                                         . toString().to8Bit(true));
   
-    }
+    } 
 
 
 
@@ -1809,7 +1944,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
     // 
     for(auto it = temp_prop_map.begin(); it != temp_prop_map.end(); it++)
-    {
+    { 
 
       stringstream debug_ss;
 
@@ -1830,7 +1965,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
         debug("single-file Cue track identified");
 
-      }
+       }
 
     }
 
@@ -1866,12 +2001,6 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
         // Adds to the error message.
         error_message_str += track_it -> filename();
-
-        // Adds to the error message.
-        error_message_str += " with the mime type of ";
-
-        // Adds to the error message.
-        error_message_str += track_it -> mime();
 
         // Adds to the error message.
         error_message_str += ".";
@@ -1913,7 +2042,7 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
 
       // Determines the codec if supported.
-      if(!Determine_Codec_If_Supported(audio_properties, *track_it))
+      if(!Determine_If_Codec_Supported(audio_properties, *track_it))
       {
 
         // 
@@ -2073,6 +2202,420 @@ std::vector<Track*> *Metadata::Interpret_Properties
 
 }
 
+vector<Track*>* Metadata::Interpret_Properties_Normal_Track
+  (const std::string& filename, std::vector<Track*>* new_tracks,
+   TrackType& type, TagLib::PropertyMap& temp_prop_map)
+{
+
+  stringstream debug_ss;
+
+  debug_ss << "filename: " << filename;
+
+  debug(debug_ss . str() . c_str());
+
+
+
+  // Creates a file ref for the track.
+  TagLib::FileRef file_ref(filename . c_str()); 
+
+
+
+  // True if the FileRef is NULL or its audioProperties is NULL.
+  if((file_ref . isNull()) || ((file_ref . audioProperties()) == NULL))
+  {
+
+    debug("File ref NULL! Unable to open file!");
+
+
+
+    // Iterates through all of new_tracks.
+    for(auto new_tracks_it : *new_tracks)
+    {
+
+      // Deletes the Track.
+      delete new_tracks_it;
+
+    }
+
+
+
+    // Clears the pointers in new_tracks.
+    new_tracks -> clear();
+
+
+
+    // Returns the empty new_tracks.
+    return new_tracks;
+
+
+  }  
+
+
+
+  // Creates a reference to the Track having data added to it.
+  Track& new_track = *(new_tracks -> front());
+
+
+
+  // Sets the filename of the new track.
+  new_track . set_filename(filename);    
+
+
+
+  debug("Before file_ref");
+
+
+
+  // Makes a reference to the file's audioProperties.
+  auto audio_properties  = (file_ref . audioProperties());
+
+
+
+  // Determines the codec if supported.
+  if(!Determine_If_Codec_Supported(*audio_properties, new_track))
+  {
+ 
+    // Iterates through all of new_tracks.
+    for(auto new_tracks_it : *new_tracks)
+    {
+
+      // Deletes the Track.
+      delete new_tracks_it;
+
+    }
+
+
+
+    // Clears the pointers in new_tracks.
+    new_tracks -> clear();
+
+
+
+    // Returns the empty new_tracks.
+    return new_tracks;
+
+  }
+
+
+
+  // Stores the bitrate of the audio file.
+  new_track . set_bit_rate(audio_properties -> bitrate());
+
+  // Stores the sample rate of the audio file.
+  new_track . set_sample_rate(audio_properties -> sampleRate());
+
+  // Stores the channel count of the audio file.
+  new_track . set_channels(audio_properties -> channels());
+
+
+
+  // Gets the duration of the audio file in milliseconds and converts it to
+  // nanoseconds.
+  long long duration = 1e6 * (audio_properties -> lengthInMilliseconds());
+
+  // Stores the duration of the audio file.
+  new_track . set_duration(duration);
+
+
+
+  // Stores the time as a formatted string.
+  std::string* temp_time_string;
+
+  // Converts the duration to a time format string in centiseconds.
+  temp_time_string
+    = time_converter_ -> Nanoseconds_To_Time_Format(duration);
+
+
+
+  // Sets the Track's length using time format string.
+  new_track . set_length(*temp_time_string);
+
+  // Deletes the time format string.
+  delete temp_time_string;
+
+
+
+  // Retrieves the title of the track. 
+  Interpret_Single_Value_Tag
+    ("TITLE", type, temp_prop_map, new_track,
+     &Track::title, &Track::set_title);
+
+  // Retireves the artists of the track.
+  Interpret_Multiple_Value_Tag
+    ("ALBUMARTIST", type, temp_prop_map, new_track, &Track::album_artists,
+     &Track::add_album_artist, &Track::clear_album_artists);
+
+  // Retireves the artists of the track.
+  Interpret_Multiple_Value_Tag
+    ("ARTIST", type, temp_prop_map, new_track, &Track::artists,
+     &Track::add_artist, &Track::clear_artists);
+
+  // Retrieves the album name of the track.
+  Interpret_Single_Value_Tag
+    ("ALBUM", type, temp_prop_map, new_track, &Track::album,
+     &Track::set_album);
+
+  // Retrieves the genres of the track.
+  Interpret_Multiple_Value_Tag
+    ("GENRE", type, temp_prop_map, new_track, &Track::genres,
+     &Track::add_genre, &Track::clear_genres);
+
+
+
+  // True if the track has a track number.
+  if(temp_prop_map . contains(TagLib::String("TRACKNUMBER")))
+  {
+
+    debug("Metadata: Interpret_Properties: NORMAL: TRACKNUMBER");
+
+
+
+    //  Saved the value of the tag to a string.
+    string track_num_str
+      = temp_prop_map[TagLib::String("TRACKNUMBER")]
+          . toString() . to8Bit(true);
+
+
+
+    // Sets the track number of new_track.
+    new_track . set_track_number(track_num_str);
+
+
+
+    // Erases the tag from the PropertyMap.
+    temp_prop_map . erase(TagLib::String("TRACKNUMBER"));
+
+  }
+
+  // True if the track has a track total.
+  if(temp_prop_map . contains(TagLib::String("TRACKTOTAL")))
+  {
+
+    debug("Metadata: Interpret_Properties: NORMAL: TRACKTOTAL");
+
+
+
+    //  Saved the value of the tag to a string.
+    string track_total_str
+      = temp_prop_map[TagLib::String("TRACKTOTAL")]
+          . toString() . to8Bit(true);
+
+
+
+    // Sets the track total of new_track.
+    new_track . set_track_total(track_total_str);
+
+
+
+    // Erases the tag from the PropertyMap.
+    temp_prop_map . erase(TagLib::String("TRACKTOTAL"));
+
+  }
+
+  // True if the disc has a disc number.
+  if(temp_prop_map . contains(TagLib::String("DISCNUMBER")))
+  {
+
+    debug("Metadata: Interpret_Properties: NORMAL: DISCNUMBER");
+
+
+
+    //  Saved the value of the tag to a string.
+    string disc_num_str
+      = temp_prop_map[TagLib::String("DISCNUMBER")]
+          . toString() . to8Bit(true);
+
+
+
+    // Sets the disc number of new_track.
+    new_track . set_disc_number(stoi(disc_num_str));
+
+
+
+    // Erases the tag from the PropertyMap.
+    temp_prop_map . erase(TagLib::String("DISCNUMBER"));
+
+  }
+
+  // True if the track has a disc total.
+  if(temp_prop_map . contains(TagLib::String("DISCTOTAL")))
+  { 
+
+    debug("Metadata: Interpret_Properties: NORMAL: DISCTOTAL");
+
+
+
+    //  Saves the value of the tag to a string.
+    string disc_total_str
+      = temp_prop_map[TagLib::String("DISCTOTAL")]
+          . toString() . to8Bit(true);
+
+
+
+    // Sets the disc total of new_track.
+    new_track . set_disc_total(stoi(disc_total_str));
+
+
+
+    // Erases the tag from the PropertyMap.
+    temp_prop_map . erase(TagLib::String("DISCTOTAL"));
+
+  }
+
+  // True if the track has a date.
+  if(temp_prop_map . contains(TagLib::String("DATE")))
+  { 
+
+    debug("Metadata: Interpret_Properties: NORMAL: DATE");
+
+
+
+    // Sets the date of new_track.
+    new_track . set_date(temp_prop_map[TagLib::String("DATE")]
+                                         . toString() . to8Bit(true));
+
+
+
+    // Erases the tag from the PropertyMap.
+    temp_prop_map . erase(TagLib::String("DATE"));
+
+  }
+
+  // True if the track has a ReplayGain Album Gain.
+  if(temp_prop_map . contains(TagLib::String("REPLAYGAIN_ALBUM_GAIN")))
+  {
+
+    debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_ALBUM_GAIN");
+
+
+
+    // Sets the value of the ReplayGain Album Gain.
+    new_track . set_replaygain_album_gain
+      (stod(temp_prop_map[TagLib::String("REPLAYGAIN_ALBUM_GAIN")] 
+                            . toString() . to8Bit(true)));
+
+
+
+    // Erases the tag from the PropertyMap.
+    temp_prop_map . erase(TagLib::String("REPLAYGAIN_ALBUM_GAIN"));
+
+  }
+
+  // True if the track has a ReplayGain Album Peak.
+  if(temp_prop_map . contains(TagLib::String("REPLAYGAIN_ALBUM_PEAK")))
+  {
+
+    debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_ABLUM_PEAK");
+
+
+
+    // Sets the value of the ReplayGain Album Peak.
+    new_track . set_replaygain_album_peak
+      (stod(temp_prop_map[TagLib::String("REPLAYGAIN_ALBUM_PEAK")]
+                            . toString() . to8Bit(true)));
+
+
+
+    // Erases the tag from the PropertyMap.
+    temp_prop_map . erase(TagLib::String("REPLAYGAIN_ALBUM_PEAK"));
+
+  }
+
+  // True if the track has a ReplayGain Track Gain.
+  if(temp_prop_map . contains(TagLib::String("REPLAYGAIN_TRACK_GAIN")))
+  {
+
+    debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_TRACK_GAIN");
+
+
+
+    // Sets the value of the ReplayGain Track Gain.
+    new_track . set_replaygain_track_gain
+      (stod(temp_prop_map[TagLib::String("REPLAYGAIN_TRACK_GAIN")]
+                            . toString() . to8Bit(true)));
+
+
+
+    // Erases the tag from the PropertyMap.
+    temp_prop_map . erase(TagLib::String("REPLAYGAIN_TRACK_GAIN"));
+
+  } 
+
+  // True if the track has a ReplayGain Track Peak.
+  if(temp_prop_map . contains(TagLib::String("REPLAYGAIN_TRACK_PEAK")))
+  {
+
+    debug("Metadata: Interpret_Properties: NORMAL: REPLAYGAIN_TRACK_PEAK");
+
+
+
+    // Sets the value of the ReplayGain Track Peak.
+    new_track . set_replaygain_track_peak
+      (stod(temp_prop_map[TagLib::String("REPLAYGAIN_TRACK_PEAK")]
+                            . toString() . to8Bit(true)));
+
+
+
+    // Erases the tag from the PropertyMap.
+    temp_prop_map . erase(TagLib::String("REPLAYGAIN_TRACK_PEAK"));
+
+  }
+
+
+
+  // 
+  if(config() . get("metadata.guess_metadata"))
+  {
+
+    // 
+    if(new_track . album_artists() . empty())
+    {
+
+      // 
+      if(!(new_track . artists() . empty()))
+      {
+
+        // 
+        
+
+      }
+
+    }
+
+    // 
+    
+
+  }
+
+
+
+  // Iterates through all of the unused tags.
+  for(auto it = temp_prop_map . begin(); it != temp_prop_map . end(); it++)
+  {
+
+    debug_ss . str("");
+
+    debug_ss << "Custom Tag: \"" << (it -> first) . to8Bit(true) << "\"";
+
+    debug(debug_ss . str() . c_str());
+
+
+
+    // True if the tag is empty.
+    if(((it -> first) . to8Bit(true)) == "")
+    {
+
+    }
+
+  }
+
+
+
+  // Returns the finished new_tracks Track data vector.
+  return new_tracks;
+
+}
+
 void Metadata::Interpret_Single_Value_Tag
                  (const char* tag_name, 
                   TrackType type, 
@@ -2080,7 +2623,7 @@ void Metadata::Interpret_Single_Value_Tag
                   Track &track,
                   Glib::ustring& (Track::*getter)() const,
                   void (Track::*setter)(Glib::ustring*))
-{ 
+{
 
   // 
   if(!(prop_map . contains(TagLib::String(tag_name))))
@@ -2153,6 +2696,7 @@ std::vector<Track*>* Metadata::Merge(std::vector<Track*>* vector1,
                                      std::vector<Track*>* vector2)
 {
 
+  // 
   for(auto it : *vector2)
   {
 
@@ -2160,8 +2704,14 @@ std::vector<Track*>* Metadata::Merge(std::vector<Track*>* vector1,
 
   }
 
+
+
+  // 
   delete vector2;
 
+
+
+  // 
   return vector1;
 
 }
@@ -2169,7 +2719,7 @@ std::vector<Track*>* Metadata::Merge(std::vector<Track*>* vector1,
 bool Metadata::Print_Tags(const char* song_filename)
 {
 
-
+  // 
   TagLib::FileRef file_ref(song_filename);
 
   TagLib::PropertyMap temp_prop_map = (file_ref.file() -> properties());
@@ -2227,6 +2777,542 @@ void Metadata::Print_Properties(const char *filename)
 
 
   debug(debug_ss . str() . c_str());
+
+}
+
+void Metadata::Remove_Duplicates
+  (auto tracks, auto& single_tracks, auto& external_cue_tracks_tracks,
+   auto& embedded_cue_tracks_tracks, int size)
+{
+
+  stringstream debug_ss;
+
+  debug("Beginning of remove duplicates.");
+
+
+
+  // 
+  auto sorted_tracks = new vector<Track*>(size, nullptr);
+
+  // 
+  string cue_type_preference
+    = config() . get("metadata.cuesheet_type_preference");
+
+
+
+  // True if there are Tracks created from an embedded cue sheet.
+  if(!(embedded_cue_tracks_tracks . empty()))
+  {
+
+    // 
+    debug("Embedded cue conditional in Remove_Duplicates");
+
+
+
+    // 
+    auto embedded_cue_tracks_it = embedded_cue_tracks_tracks . begin();
+
+    // 
+    while((embedded_cue_tracks_it != embedded_cue_tracks_tracks . end())
+            && ((embedded_cue_tracks_tracks . size()) > 0)) 
+    {
+
+      // 
+      auto current_embedded_cue_tracks_it
+        = embedded_cue_tracks_it;
+
+      // 
+      embedded_cue_tracks_it++;
+
+
+
+      // 
+      if(!(external_cue_tracks_tracks . empty()))
+      { 
+
+        // 
+        auto external_cue_tracks_it
+          = external_cue_tracks_tracks . begin();
+
+
+
+        // 
+        while(external_cue_tracks_it != external_cue_tracks_tracks . end()
+	        && ((external_cue_tracks_tracks . size()) > 0)) 
+        {
+
+          // 
+          auto current_external_cue_tracks_it
+            = external_cue_tracks_it;
+
+          // 
+          external_cue_tracks_it++;
+
+
+
+          // 
+          Glib::ustring& external_filename
+            = current_external_cue_tracks_it -> front() . first -> filename();
+
+          // 
+          Glib::ustring& embedded_filename
+            = current_embedded_cue_tracks_it -> front() . first -> filename();
+
+
+
+          debug_ss . str("");
+
+
+
+          // 
+          if(external_filename == embedded_filename)
+          { 
+
+            // 
+            string cue_type_preference = "embedded";
+
+            // 
+            if(cue_type_preference == "embedded")
+            {
+
+              // 
+              for(auto track_pair : *current_external_cue_tracks_it)
+              {
+
+                // 
+                delete track_pair . first;
+
+              } 
+
+              // 
+              external_cue_tracks_tracks . erase(current_external_cue_tracks_it);
+
+
+
+              // 
+              if(current_external_cue_tracks_it
+                   == (external_cue_tracks_tracks . end()))
+              {
+
+                // 
+                external_cue_tracks_it = external_cue_tracks_tracks . end();
+
+              }
+
+            }
+
+            // 
+            else
+            {
+
+              // 
+              for(auto track_pair : *current_embedded_cue_tracks_it)
+              {
+
+                // 
+                delete track_pair . first;
+
+              } 
+
+              // 
+              embedded_cue_tracks_tracks . erase(current_embedded_cue_tracks_it);
+
+
+
+              // 
+              if(current_embedded_cue_tracks_it
+                   == (embedded_cue_tracks_tracks . end()))
+              {
+
+                // 
+                embedded_cue_tracks_it = embedded_cue_tracks_tracks . end();
+
+              }
+
+            }
+
+
+
+
+            // 
+            break;
+
+          }
+
+        }
+
+      }
+
+    } 
+
+
+
+    // True if there are still external cue sheets.
+    if(!(external_cue_tracks_tracks . empty()))
+    {
+
+      // Removes duplicates from external cue sheets.
+      Remove_Duplicates_External_Cue
+        (tracks, single_tracks, external_cue_tracks_tracks);
+
+    }
+
+  } 
+
+  // True if there are Tracks created from an embedded cue sheet.
+  else if(!(external_cue_tracks_tracks . empty()))
+  {
+
+    // Removes duplicates between single tracks and external cue sheets.
+    Remove_Duplicates_External_Cue
+      (tracks, single_tracks, external_cue_tracks_tracks);
+
+  }
+
+
+
+  // True if there are still Tracks created from an embedded cue sheet.
+  if(!(embedded_cue_tracks_tracks . empty()))
+  {
+
+    // 
+    for(auto embedded_cue_tracks : embedded_cue_tracks_tracks)
+    {
+
+      // 
+      for(auto embedded_cue_track_pair : embedded_cue_tracks)
+      {
+
+        // 
+        (*sorted_tracks)[embedded_cue_track_pair . second]
+          = embedded_cue_track_pair . first;
+
+      }
+
+    }
+
+  }
+
+  // True if there are still Tracks created from an external cue sheet.
+  if(!(external_cue_tracks_tracks . empty()))
+  {
+
+    // 
+    for(auto external_cue_tracks : external_cue_tracks_tracks)
+    {
+
+      // 
+      for(auto external_cue_track_pair : external_cue_tracks)
+      {
+
+        // 
+        (*sorted_tracks)[external_cue_track_pair . second]
+          = external_cue_track_pair . first;
+
+      }
+
+    }
+
+  }
+
+  // True if there are still Tracks created from an embedded cue sheet.
+  if(!(single_tracks . empty()))
+  {
+
+    // 
+    for(auto single_tracks_pair : single_tracks)
+    {
+
+      // 
+      (*sorted_tracks)[single_tracks_pair . second]
+        = single_tracks_pair . first;
+
+    }
+
+  }
+
+
+
+  // 
+  auto shrunk_sorted_tracks = new vector<Track*>;
+
+
+
+  // 
+  for(auto sorted_track : *sorted_tracks)
+  {
+
+    // 
+    if(sorted_track != nullptr)
+    {
+
+      // 
+      shrunk_sorted_tracks -> push_back(sorted_track);
+
+    }
+
+  }
+
+
+
+  // 
+  delete sorted_tracks;
+
+
+
+  // 
+  Merge(tracks, shrunk_sorted_tracks);
+
+}
+
+void Metadata::Remove_Duplicates_External_Cue
+  (auto tracks, auto& single_tracks, auto& external_cue_tracks_tracks)
+{
+
+  stringstream debug_ss;
+
+
+
+  // 
+  auto external_cue_tracks_it = external_cue_tracks_tracks . begin();
+
+  // Loops through the list of external cue files.
+  while((external_cue_tracks_it != external_cue_tracks_tracks . end())
+          &&
+        (external_cue_tracks_tracks . size() > 0))
+  {
+
+    debug_ss . str("");
+
+    debug_ss << "External cue size: " << external_cue_tracks_tracks . size();
+
+    debug(debug_ss . str() . c_str());
+
+
+
+    // True if there are non-cuesheet tracks generated from individual
+    // track files being read.
+    if(!(single_tracks . empty()))
+    {
+
+      debug("Entered single tracks conditional.");
+
+
+
+      // 
+      if(external_cue_tracks_it -> front() . first -> type()
+           == TrackType::SINGLE_FILE)
+      { 
+
+        debug("SINGLE TRACKS CUE");
+
+
+
+        // Holds a reference to the music filename of the external cue sheet.
+        Glib::ustring& external_filename
+          = external_cue_tracks_it -> front() . first -> filename();
+
+
+
+        // Gets an iterator to the beginning of the single tracks.
+        auto single_track_it = single_tracks . begin();
+
+        // Loops through the single tracks looking for the files of any
+        // external cue sheets so they aren't added to the playlist.
+        while((single_track_it != (single_tracks . end()))
+                && ((single_tracks . size()) > 0))
+        {
+
+          // Holds a pointer to the current single track it before
+          // incrementing single_track_it so the single_track_it isn't
+          // invalidated after erasing the current track.
+          auto current_single_track_it = single_track_it;
+
+          // Increments single_track_it.
+          single_track_it++;
+
+
+
+          // True if there the single file Track generated is the same as
+          // music file for the cuesheet tracks.
+          if(external_filename
+               == (current_single_track_it -> first -> filename()))
+          {
+
+            debug("Deleting duplicate single file music file.");
+
+            debug_ss . str("");
+
+            debug_ss << "Single tracks: " << single_tracks . size();
+
+            debug(debug_ss . str() . c_str());
+
+
+
+            // Deletes the single file's track data.
+            delete (current_single_track_it -> first);
+
+            // Erasing the single file from the single tracks.
+            single_tracks . erase(current_single_track_it);
+
+
+
+            debug_ss . str("");
+
+            debug_ss << "Single tracks: " << single_tracks . size();
+
+            debug(debug_ss . str() . c_str());
+
+
+
+            break;
+
+          }
+
+        }
+
+      }
+
+      // 
+      else
+      {
+
+        debug("MULTIPLE TRACKS CUE");
+
+
+
+        // 
+        string files_or_cuesheet = config() . get("metadata.files_or_cuesheet");
+
+
+
+        // 
+        auto external_cue_track_pair_it = external_cue_tracks_it -> begin();
+
+        // 
+        while((external_cue_track_pair_it != (external_cue_tracks_it -> end()))
+                && ((external_cue_tracks_it -> size()) > 0))
+        {
+
+          // 
+          auto current_external_cue_track_pair_it = external_cue_track_pair_it;
+
+          // 
+          external_cue_track_pair_it++;
+
+
+
+          // Holds a reference to the music filename of the external cue sheet.
+          Glib::ustring& external_filename
+            = current_external_cue_track_pair_it -> first -> filename();
+
+
+
+          // Gets an iterator to the beginning of the single tracks.
+          auto single_track_it = single_tracks . begin();
+
+          // Loops through the single tracks looking for the files of any
+          // external cue sheets so they aren't added to the playlist.
+          while((single_track_it != (single_tracks . end()))
+                  && ((single_tracks . size()) > 0))
+          {
+
+            // Holds a pointer to the current single track it before
+            // incrementing single_track_it so the single_track_it isn't
+            // invalidated after erasing the current track.
+            auto current_single_track_it = single_track_it;
+
+            // Increments single_track_it.
+            single_track_it++;
+
+
+
+            Glib::ustring& single_filename
+              = current_single_track_it -> first -> filename();
+
+
+
+            // True if there the single file Track generated is the same as
+            // music file for the cuesheet tracks.
+            if(external_filename == single_filename)
+            {
+
+              debug("Deleting duplicate single file music file.");
+
+              debug_ss . str("");
+
+              debug_ss << "Single tracks: " << single_tracks . size();
+
+              debug(debug_ss . str() . c_str());
+
+
+
+              // 
+              if(files_or_cuesheet == "cuesheet")
+              {
+
+                // Deletes the single file's track data.
+                delete (current_single_track_it -> first);
+
+                // Erasing the single file from the single tracks.
+                single_tracks . erase(current_single_track_it);
+
+              }
+
+              // 
+              else
+              {
+
+                // Deletes the single file's track data.
+                delete (current_external_cue_track_pair_it -> first);
+
+                // Erasing the single file from the single tracks.
+                single_tracks . erase(current_external_cue_track_pair_it);
+
+              }
+
+
+
+
+              debug_ss . str("");
+
+              debug_ss << "Single tracks: " << single_tracks . size();
+
+              debug(debug_ss . str() . c_str());
+
+
+
+              // 
+              break;
+
+            }
+
+          }
+
+
+
+          // 
+          if(current_external_cue_track_pair_it
+               == (external_cue_tracks_it -> end()))
+          {
+
+            // 
+            break;
+
+          }
+
+        }
+
+      }
+
+    }
+
+
+
+    // 
+    external_cue_tracks_it++;
+
+  }
 
 }
 
