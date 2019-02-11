@@ -1,13 +1,9 @@
 <img src="/Images/Icon.png" title="OMP Logo" height=100
      width=100 align="right">
-<br />
-
-
-
-
-
 # OMP : Open Music Player
 #### Version: 0.1.1 : February 10th, 2019
+<br />
+
 
 
 
