@@ -28,7 +28,7 @@ Ogg FLAC, ALAC, APE, WavPack, and AAC(m4a container).
 
 ## Next Main OMP Release
 
-#### Version 0.1.2 : February 24th, 2019
+#### Version 0.1.2 : March 17th, 2019
 
 
 
