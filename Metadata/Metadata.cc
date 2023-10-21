@@ -87,7 +87,7 @@
 //                 //
 //                 //
 
-#include <apeproperties.h>
+//#include <apeproperties.h>
 
 #include <filesystem>
 
@@ -331,7 +331,7 @@ bool Metadata::Determine_If_Codec_Supported
     new_track . set_codec("FLAC");
 
   }
-
+/*
   // True if the mime type is for Monkey's audio.
   else if((mime_type == "audio/x-ape") || (mime_type == "audio/ape"))
   {
@@ -351,7 +351,7 @@ bool Metadata::Determine_If_Codec_Supported
     new_track . set_codec("Monkey's Audio");
 
   }
-
+*/
   // True if the mime type is for WavPack.
   else if(mime_type == "audio/x-wavpack")
   {
