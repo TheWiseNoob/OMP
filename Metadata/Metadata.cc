@@ -67,10 +67,6 @@
 //                 //
 //                 //
 
-#include "../Configuration/Configuration.h"
-
-#include "../Errors/Errors.h"
-
 #include "TimeConversion.h"
 
 #include "Track.h"
@@ -2563,31 +2559,6 @@ vector<Track*>* Metadata::Interpret_Properties_Normal_Track
 
 
 
-  // 
-  if(config() . get("metadata.guess_metadata"))
-  {
-
-    // 
-    if(new_track . album_artists() . empty())
-    {
-
-      // 
-      if(!(new_track . artists() . empty()))
-      {
-
-        // 
-        
-
-      }
-
-    }
-
-    // 
-    
-
-  }
-
-
 
   // Iterates through all of the unused tags.
   for(auto it = temp_prop_map . begin(); it != temp_prop_map . end(); it++)
@@ -2793,10 +2764,6 @@ void Metadata::Remove_Duplicates
 
   // 
   auto sorted_tracks = new vector<Track*>(size, nullptr);
-
-  // 
-  string cue_type_preference
-    = config() . get("metadata.cuesheet_type_preference");
 
 
 
@@ -3178,11 +3145,6 @@ void Metadata::Remove_Duplicates_External_Cue
       {
 
         debug("MULTIPLE TRACKS CUE");
-
-
-
-        // 
-        string files_or_cuesheet = config() . get("metadata.files_or_cuesheet");
 
 
 

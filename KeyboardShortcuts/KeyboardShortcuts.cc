@@ -97,10 +97,6 @@
 
 #include <gdk/gdk.h>
 
-#include <gtkmm/checkmenuitem.h>
-
-#include <gtkmm/treerowreference.h>
-
 
 
 

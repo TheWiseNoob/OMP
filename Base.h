@@ -72,8 +72,6 @@
 
 #include <atomic>
 
-#include <glibmm/refptr.h>
-
 
 
 
@@ -106,8 +104,6 @@ namespace Gtk
 
 }
 
-class KeyboardShortcuts;
-
 class Metadata;
 
 class Playback;
@@ -139,8 +135,7 @@ class Base
 
   public:
 
-    Base(int argc, char* argv[],
-         Glib::RefPtr<Gtk::Application> new_application);
+    Base(int argc, char* argv[]);
 
 
 
@@ -160,22 +155,6 @@ class Base
 
 
 
-  //                  //
-  //                  //
-  // Member Functions /////////////////////////////////////////////////////////
-  //                  //
-  //                  //
-
-  public:
-
-    int New_Command(const Glib::RefPtr<Gio::ApplicationCommandLine>& commands);
-
-    void OMP_Started();
-
-
-
-
-
   //         //
   //         //
   // Getters //////////////////////////////////////////////////////////////////
@@ -184,21 +163,13 @@ class Base
 
   public:
 
-    Configuration& config();
-
     const char* config_directory_c_str();
 
-    Errors& errors();
-
     GUI& gui();
-
-    KeyboardShortcuts& keyboard_shortcuts();
 
     Metadata& metadata();
 
     Playback& playback();
-
-    std::atomic<bool>& quitting();
 
     Scrobbling& scrobbling();
 
@@ -217,9 +188,6 @@ class Base
   private:
 
     // 
-    Glib::RefPtr<Gtk::Application> application_;
-
-    // 
     Configuration* config_;
 
     // 
@@ -230,9 +198,6 @@ class Base
 
     // 
     GUI* gui_;
-
-    // 
-    KeyboardShortcuts* keyboard_shortcuts_;
 
     // 
     Metadata* metadata_;

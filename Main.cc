@@ -57,12 +57,6 @@
 
 #include "Base.h"
 
-#include "GUI/Elements/ChildWindows/ChildWindow.h"
-
-#include "GUI/Elements/ChildWindows/ChildWindows.h"
-
-#include "GUI/GUI.h"
-
 
 
 //                 //
@@ -95,40 +89,20 @@
 //      //
 //      //
 
+class MyWindow : public Gtk::Window
+{
+  public:
+    MyWindow();
+};
+
+MyWindow::MyWindow()
+{
+  set_title("Basic application");
+  set_default_size(200, 200);
+}
+
 int main (int argc, char *argv[])
-{  
-
-  // Created the Gtk::Application instance that is OMP's GUI.
-  Glib::RefPtr<Gtk::Application> application 
-    = Gtk::Application::create
-        ("com.openmusicplayer.OMP", Gio::APPLICATION_HANDLES_COMMAND_LINE
-         /* | Gio::APPLICATION_NON_UNIQUE*/); 
-         //  Uncomment this for multiple OMP instances.
-
-
-
-
-  // The base class of OMP.
-  Base base(argc, argv, application);
-
-
-
-  // 
-  application -> signal_command_line()
-    . connect(sigc::mem_fun(base, &Base::New_Command), false);
-
-  // 
-  application -> signal_startup()
-    . connect(sigc::mem_fun(base, &Base::OMP_Started));
-
-
-
-  // Prevents application from closing after hidden. use release() to close
-  application -> hold();
-
-
-
-  // Shows the window and returns when it is closed.
-  return application -> run(base . gui() . windows()() . front() -> window(), argc, argv);
-
+{
+  auto app = Gtk::Application::create("com.openmusicplayer.OMP");
+  return app->make_window_and_run<MyWindow>(argc, argv);
 }

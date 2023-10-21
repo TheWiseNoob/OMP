@@ -1778,7 +1778,7 @@ bool Playback::Fill_Track_Data_Queue()
     Gtk::TreeRowReference next_track_row_ref;
 
     // Iterator to the row that is next to be readied for playback.
-    Gtk::TreeIter next_track_row_it;
+    Gtk::TreeIter<Gtk::TreeModel::iterator> next_track_row_it;
 
     // RefPtr to the TreeStore that the next_track_row_ref is from.
     Glib::RefPtr<PlaylistTreeStore> next_track_row_treestore;
@@ -1789,7 +1789,7 @@ bool Playback::Fill_Track_Data_Queue()
     Gtk::TreeRowReference selected_row_ref = playlists() . selected_row_ref();
 
     // Iterator to the selected row in the active playlist view.
-    Gtk::TreeIter selected_row_it;
+    Gtk::TreeIter<Gtk::TreeModel::iterator> selected_row_it;
 
     // True if a selected row exists in the active playlist.
     if(selected_row_ref)
@@ -1806,7 +1806,7 @@ bool Playback::Fill_Track_Data_Queue()
 
 
     // Stores an iterator to the playing row.
-    Gtk::TreeIter playing_row_it
+    Gtk::TreeIter<Gtk::TreeModel::iterator> playing_row_it
       = playlists() . playing_row_ref() . get_model()
           -> get_iter(playlists() . playing_row_ref() . get_path());
 
@@ -1824,7 +1824,7 @@ bool Playback::Fill_Track_Data_Queue()
 
 
     // Iterator to the next track in the track playback queue.
-    Gtk::TreeIter next_in_track_playback_queue_row_it;
+    Gtk::TreeIter<Gtk::TreeModel::iterator> next_in_track_playback_queue_row_it;
 
 
 
@@ -2177,7 +2177,7 @@ bool Playback::Fill_Track_Data_Queue()
       // Stores the track's tree row to get a copy of it's Track instance.
       Gtk::TreeRow current_track_row;
 
-      // Converts the current row TreeIter to a TreeRowReference.
+      // Converts the current row TreeIter<Gtk::TreeModel::iterator> to a TreeRowReference.
       Gtk::TreeRowReference current_track_row_ref;
 
 
@@ -2190,7 +2190,7 @@ bool Playback::Fill_Track_Data_Queue()
         // Creates a TreeRow to the next track to be added to the track queue.
         current_track_row = *next_in_track_playback_queue_row_it;
 
-        // Converts the current row TreeIter to a TreeRowReference.
+        // Converts the current row TreeIter<Gtk::TreeModel::iterator> to a TreeRowReference.
         current_track_row_ref
           = Gtk::TreeRowReference
               ((playlists() . queue_playlist_treestore()),
@@ -2212,7 +2212,7 @@ bool Playback::Fill_Track_Data_Queue()
         // Creates a TreeRow to the next track to be added to the track queue.
         current_track_row = *next_track_row_it;
 
-        // Converts the current row TreeIter to a TreeRowReference.
+        // Converts the current row TreeIter<Gtk::TreeModel::iterator> to a TreeRowReference.
         current_track_row_ref = Gtk::TreeRowReference((next_track_row_ref . get_model()),
                                   Gtk::TreePath(next_track_row_it));
 
@@ -2366,7 +2366,7 @@ bool Playback::Fill_Track_Data_Queue()
 
 
         // Gets the row it for the last track in the track_queue.
-        Gtk::TreeIter current_track_row_it
+        Gtk::TreeIter<Gtk::TreeModel::iterator> current_track_row_it
            = (preparing_track_row_refs_it -> get_model())
                 -> get_iter(preparing_track_row_refs_it -> get_path());
 
@@ -3151,7 +3151,7 @@ void Playback::Play(Gtk::TreeRowReference playing_row_ref,
 
 
 
-    // Dereferences the playing track's TreeIter pointer and then dereferences
+    // Dereferences the playing track's TreeIter<Gtk::TreeModel::iterator> pointer and then dereferences
     // that iterator to get a copy of the TreeRow.
     Gtk::TreeRow row;
 
@@ -3493,7 +3493,7 @@ void Playback::Stop()
   {
 
     // 
-    Gtk::TreeIter first_in_playback_queue_row_it
+    Gtk::TreeIter<Gtk::TreeModel::iterator> first_in_playback_queue_row_it
       = playlists() . queue_playlist_treestore() -> children() . begin();
 
 
