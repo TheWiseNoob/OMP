@@ -238,7 +238,7 @@ ConfigurationGUI::ConfigurationGUI
 
 
   // Sets the orientation of the GUIElement's box to horizontal.
-  box() . set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  box() . set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
@@ -249,10 +249,10 @@ ConfigurationGUI::ConfigurationGUI
   //                //
 
   // Adds the panel treeview box to the GUIElement's box.
-  box() . pack_start(*panel_treeview_box_, Gtk::PACK_SHRINK);
+  box() . append(*panel_treeview_box_, Gtk::PACK_SHRINK);
 
   // Adds panel_treeview_frame_ into to panel_treeview_box_.
-  panel_treeview_box_ -> pack_start(*panel_treeview_frame_, Gtk::PACK_SHRINK);
+  panel_treeview_box_ -> append(*panel_treeview_frame_, Gtk::PACK_SHRINK);
 
   // Adds panel_treeview_scrolledwindow_ into panel_treeview_frame_.
   panel_treeview_frame_ -> add(*panel_treeview_scrolledwindow_);
@@ -314,7 +314,7 @@ ConfigurationGUI::ConfigurationGUI
   //           //
 
   // Adds panel_box_ to the GUIElement box.
-  box() . pack_start(*panel_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*panel_box_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
@@ -334,12 +334,12 @@ ConfigurationGUI::ConfigurationGUI
 
 
   // Sets the orientation of the panel_box_ to vertical.
-  panel_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  panel_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
   // Adds panel_revealer_ to panel_box_.
-  panel_box_ -> pack_start(*panel_revealer_, Gtk::PACK_EXPAND_WIDGET);
+  panel_box_ -> append(*panel_revealer_, Gtk::PACK_EXPAND_WIDGET);
 
   // Adds panel_frame_ to panel_revealer_.
   panel_revealer_ -> add(*panel_frame_);
@@ -406,7 +406,7 @@ ConfigurationGUI::ConfigurationGUI
 
 
   // Adds undo_changes_button to the left side of the action_buttons_box_.
-  action_buttons_box_ -> pack_start(*undo_changes_button_, Gtk::PACK_SHRINK);
+  action_buttons_box_ -> append(*undo_changes_button_, Gtk::PACK_SHRINK);
 
   // Adds load_default_values_button to the center of the action_buttons_box_.
   action_buttons_box_ -> set_center_widget(*load_default_values_button_);

@@ -169,10 +169,10 @@ ArtworkPanel::ArtworkPanel
   //                   //
 
   // Adds the output sink's box to the panel's box.
-  box() . pack_start(*filename_treeview_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*filename_treeview_box_, Gtk::PACK_EXPAND_WIDGET);
 
   // Adds the output sink's box to the panel's box.
-  filename_treeview_box_ -> pack_start(*filename_treeview_frame_, 
+  filename_treeview_box_ -> append(*filename_treeview_frame_, 
                                        Gtk::PACK_EXPAND_WIDGET);
 
   // Adds the output sink's box to the panel's box.
@@ -247,7 +247,7 @@ ArtworkPanel::ArtworkPanel
 
 
   // 
-  filename_buttons_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  filename_buttons_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
@@ -256,7 +256,7 @@ ArtworkPanel::ArtworkPanel
 
   // 
   filename_buttons_box_
-    -> pack_start(*remove_filename_button_, Gtk::PACK_SHRINK);
+    -> append(*remove_filename_button_, Gtk::PACK_SHRINK);
 
 
 
@@ -520,7 +520,7 @@ void ArtworkPanel::On_Cell_Renderer_Editing_Started_Signal
 }
 
 void ArtworkPanel::On_Filename_TreeView_Row_Drag_End_Signal
-  (const Glib::RefPtr<Gdk::DragContext>& context)
+  (const Glib::RefPtr<Gdk::Drag>& context)
 {
 
   // 

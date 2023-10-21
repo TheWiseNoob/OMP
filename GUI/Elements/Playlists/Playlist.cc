@@ -267,18 +267,18 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // Sets the orientation of the GUIElement box() as vertical.
-  box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
+  box() . set_orientation(Gtk::Orientation::VERTICAL);
 
   // Puts the playlist_frame_ in the top of the GUIElement box().
-  box() . pack_start(*playlist_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*playlist_box_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
   // Sets the orientation of the playlist_box_ as vertical.
-  playlist_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  playlist_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // Puts the status_frame_ in the bottom of the GUIElement box().
-  playlist_box_ -> pack_start(*playlist_frame_, Gtk::PACK_EXPAND_WIDGET);
+  playlist_box_ -> append(*playlist_frame_, Gtk::PACK_EXPAND_WIDGET);
 
   // Puts the status_frame_ in the bottom of the GUIElement box().
   playlist_box_ -> pack_end(*status_frame_, Gtk::PACK_SHRINK);
@@ -886,19 +886,19 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // 
-  status_box_ -> pack_start(*name_label_event_box_, Gtk::PACK_SHRINK);
+  status_box_ -> append(*name_label_event_box_, Gtk::PACK_SHRINK);
 
   // 
-  status_box_ -> pack_start(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
+  status_box_ -> append(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
 
   // 
-  status_box_ -> pack_start(*progress_bars_box_, Gtk::PACK_EXPAND_WIDGET);
+  status_box_ -> append(*progress_bars_box_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
-  status_box_ -> pack_start(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
+  status_box_ -> append(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
 
   // 
-  status_box_ -> pack_start(*row_count_label_, Gtk::PACK_SHRINK);
+  status_box_ -> append(*row_count_label_, Gtk::PACK_SHRINK);
 
 
 
@@ -916,7 +916,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // 
-  progress_bars_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  progress_bars_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -1099,7 +1099,7 @@ Playlist::~Playlist()
 // Drag Callbacks /////////////////////////////////////////////////////////////
 //                //
 
-void Playlist::on_drag_begin(const Glib::RefPtr< Gdk::DragContext >& context)
+void Playlist::on_drag_begin(const Glib::RefPtr< Gdk::Drag >& context)
 {
 
   // Sets the icon shown while dragging.
@@ -1108,7 +1108,7 @@ void Playlist::on_drag_begin(const Glib::RefPtr< Gdk::DragContext >& context)
 }
 
 void Playlist::on_drag_data_received_signal
-       (const Glib::RefPtr<Gdk::DragContext>& context, int x, int y,
+       (const Glib::RefPtr<Gdk::Drag>& context, int x, int y,
         const Gtk::SelectionData& selection_data, guint info, guint time)
 {
 
@@ -1159,7 +1159,7 @@ void Playlist::on_drag_data_received_signal
 } 
 
 bool Playlist::on_drag_drop
-       (const Glib::RefPtr<Gdk::DragContext>& context, int x, int y, 
+       (const Glib::RefPtr<Gdk::Drag>& context, int x, int y, 
         guint time)
 {
 
@@ -2095,7 +2095,7 @@ bool Playlist::on_drag_drop
 
 } 
 
-void Playlist::on_drag_end(const Glib::RefPtr<Gdk::DragContext>& context)
+void Playlist::on_drag_end(const Glib::RefPtr<Gdk::Drag>& context)
 { 
 
   debug("In on_drag_end");
@@ -2113,7 +2113,7 @@ void Playlist::on_drag_end(const Glib::RefPtr<Gdk::DragContext>& context)
 
 }
 
-bool Playlist::on_drag_failed(const Glib::RefPtr<Gdk::DragContext>& context,
+bool Playlist::on_drag_failed(const Glib::RefPtr<Gdk::Drag>& context,
                               Gtk::DragResult result)
 {
 

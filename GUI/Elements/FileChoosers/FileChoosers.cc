@@ -225,7 +225,7 @@ FileChooser* FileChoosers::Create
 
 
   // Adds the new FileChooser to the new ChildWindow.
-  new_window -> box() . pack_start(temp_file_chooser -> box(),
+  new_window -> box() . append(temp_file_chooser -> box(),
                                    Gtk::PACK_EXPAND_WIDGET);
 
 

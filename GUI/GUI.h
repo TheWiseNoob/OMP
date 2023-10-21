@@ -162,8 +162,6 @@ namespace Gtk
 
   class StackSwitcher;
 
-  class TreeIter;
-
   class VolumeButton;
 
   class Window;

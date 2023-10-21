@@ -227,21 +227,21 @@ class Playlist : public GUIElement<Playlist>, public Gtk::TreeView
   protected:
 
     virtual void on_drag_begin
-      (const Glib::RefPtr<Gdk::DragContext>& context) override final;
+      (const Glib::RefPtr<Gdk::Drag>& context) override final;
 
     void on_drag_data_received_signal
-      (const Glib::RefPtr<Gdk::DragContext>& context, int x, int y,
+      (const Glib::RefPtr<Gdk::Drag>& context, int x, int y,
        const Gtk::SelectionData& selection_data, guint info, guint time);
 
     virtual bool on_drag_drop
-      (const Glib::RefPtr<Gdk::DragContext>& context, int x, int y,
+      (const Glib::RefPtr<Gdk::Drag>& context, int x, int y,
        guint time) override final;
 
     bool on_drag_failed
-      (const Glib::RefPtr< Gdk::DragContext>& context, Gtk::DragResult result);
+      (const Glib::RefPtr< Gdk::Drag>& context, Gtk::DragResult result);
 
     void on_drag_end
-      (const Glib::RefPtr< Gdk::DragContext>& context);
+      (const Glib::RefPtr< Gdk::Drag>& context);
 
 
 

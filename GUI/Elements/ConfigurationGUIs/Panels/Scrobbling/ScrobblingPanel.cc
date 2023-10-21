@@ -250,10 +250,10 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
   //                  //
 
   // 
-  box() . pack_start(*scrobble_percent_label_, Gtk::PACK_SHRINK);
+  box() . append(*scrobble_percent_label_, Gtk::PACK_SHRINK);
 
   // 
-  box() . pack_start(scrobble_percent_spinbuttonscale_ -> box(), 
+  box() . append(scrobble_percent_spinbuttonscale_ -> box(), 
                      Gtk::PACK_EXPAND_WIDGET);
 
 
@@ -290,10 +290,10 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
   //                  //
 
   // 
-  box() . pack_start(*failed_scrobbles_label_, Gtk::PACK_SHRINK);
+  box() . append(*failed_scrobbles_label_, Gtk::PACK_SHRINK);
 
   // 
-  box() . pack_start(*failed_scrobbles_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*failed_scrobbles_box_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
@@ -303,7 +303,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  failed_scrobbles_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  failed_scrobbles_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
@@ -322,12 +322,12 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
   // 
   failed_scrobbles_box_
-    -> pack_start(*clear_failed_scrobbles_button_box_,
+    -> append(*clear_failed_scrobbles_button_box_,
                   Gtk::PACK_EXPAND_WIDGET);
 
   // 
   failed_scrobbles_box_
-    -> pack_start(*reattempt_failed_scrobbles_button_box_,
+    -> append(*reattempt_failed_scrobbles_button_box_,
                   Gtk::PACK_EXPAND_WIDGET);
 
   // 
@@ -338,7 +338,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
   // 
   clear_failed_scrobbles_button_box_
-    -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+    -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -355,7 +355,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
   // 
   reattempt_failed_scrobbles_button_box_
-    -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+    -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -439,7 +439,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
   //                     //
 
   // 
-  box() . pack_start(*lastfm_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*lastfm_frame_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
@@ -454,7 +454,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  lastfm_box_ -> pack_start(*lastfm_username_entry_, Gtk::PACK_SHRINK);
+  lastfm_box_ -> append(*lastfm_username_entry_, Gtk::PACK_SHRINK);
 
   // 
   lastfm_box_ -> set_center_widget(*lastfm_password_entry_);
@@ -465,7 +465,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  lastfm_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  lastfm_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -489,7 +489,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  lastfm_sub_box_ -> pack_start(*lastfm_switch_, Gtk::PACK_SHRINK);
+  lastfm_sub_box_ -> append(*lastfm_switch_, Gtk::PACK_SHRINK);
 
   // 
   lastfm_sub_box_ -> pack_end(*lastfm_login_button_, Gtk::PACK_EXPAND_WIDGET);
@@ -497,7 +497,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   //  
-  lastfm_sub_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  lastfm_sub_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 

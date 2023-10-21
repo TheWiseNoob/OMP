@@ -166,7 +166,7 @@ Tagview::Tagview(Base& base_ref)
 {
 
   // 
-  box() . pack_start(*tag_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*tag_frame_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
@@ -217,22 +217,22 @@ Tagview::Tagview(Base& base_ref)
   tag_labels_box_ -> set_center_widget(*tag_label_center_);
 
   // 
-  tag_labels_box_ -> pack_start(*tag_label_start_left_, true, true, 0);
+  tag_labels_box_ -> append(*tag_label_start_left_, true, true, 0);
 
   // 
-  tag_labels_box_ -> pack_start(*tag_label_start_right_, true, true, 0);
+  tag_labels_box_ -> append(*tag_label_start_right_, true, true, 0);
 
   // 
-  tag_labels_box_ -> pack_start(*tag_label_middle_left_, true, true, 0);
+  tag_labels_box_ -> append(*tag_label_middle_left_, true, true, 0);
 
   // 
-  tag_labels_box_ -> pack_start(*tag_label_middle_right_, true, true, 0);
+  tag_labels_box_ -> append(*tag_label_middle_right_, true, true, 0);
 
   // 
-  tag_labels_box_ -> pack_start(*tag_label_end_left_, true, true, 0);
+  tag_labels_box_ -> append(*tag_label_end_left_, true, true, 0);
 
   // 
-  tag_labels_box_ -> pack_start(*tag_label_end_right_, true, true, 0);
+  tag_labels_box_ -> append(*tag_label_end_right_, true, true, 0);
 
 
 

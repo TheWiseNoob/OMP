@@ -178,10 +178,10 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
   //                   //
 
   // Adds the output sink's box to the panel's box.
-  box() . pack_start(*keyboard_shortcuts_treeview_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*keyboard_shortcuts_treeview_box_, Gtk::PACK_EXPAND_WIDGET);
 
   // Adds the output sink's box to the panel's box.
-  keyboard_shortcuts_treeview_box_ -> pack_start(*keyboard_shortcuts_treeview_frame_, 
+  keyboard_shortcuts_treeview_box_ -> append(*keyboard_shortcuts_treeview_frame_, 
                                        Gtk::PACK_EXPAND_WIDGET);
 
   // Adds the output sink's box to the panel's box.
@@ -265,12 +265,12 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 
   // 
   keyboard_shortcuts_display_box_
-    -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+    -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
   // 
-  keyboard_shortcuts_display_box_ -> pack_start(*load_default_button_, 0, 1);
+  keyboard_shortcuts_display_box_ -> append(*load_default_button_, 0, 1);
 
   // 
   keyboard_shortcuts_display_box_
@@ -283,17 +283,17 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 
   // 
   keyboard_shortcuts_display_inner_box_
-    -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+    -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
   // 
   keyboard_shortcuts_display_inner_box_
-    -> pack_start(*keyboard_shortcuts_label_, Gtk::PACK_SHRINK);
+    -> append(*keyboard_shortcuts_label_, Gtk::PACK_SHRINK);
 
   // 
   keyboard_shortcuts_display_inner_box_
-    -> pack_start(*keyboard_shortcuts_key_label_, Gtk::PACK_SHRINK);
+    -> append(*keyboard_shortcuts_key_label_, Gtk::PACK_SHRINK);
 
 
 

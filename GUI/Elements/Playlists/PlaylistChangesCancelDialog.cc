@@ -148,7 +148,7 @@ PlaylistChangesCancelDialog::PlaylistChangesCancelDialog(Base& base_ref)
 
 // General
 
-, button_box_(Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL)))
+, button_box_(Gtk::manage(new Gtk::Box(Gtk::Orientation::HORIZONTAL)))
 
 , cancel_button_(Gtk::manage(new Gtk::Button("Keep OMP Open")))
 
@@ -181,7 +181,7 @@ PlaylistChangesCancelDialog::PlaylistChangesCancelDialog(Base& base_ref)
 
 
   // 
-  button_box_ -> pack_start(*cancel_button_, Gtk::PACK_SHRINK);
+  button_box_ -> append(*cancel_button_, Gtk::PACK_SHRINK);
 
   // 
   button_box_ -> pack_end(*delete_playlist_button_, Gtk::PACK_SHRINK);
@@ -189,7 +189,7 @@ PlaylistChangesCancelDialog::PlaylistChangesCancelDialog(Base& base_ref)
 
 
   // 
-  playlist_creation_window_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  playlist_creation_window_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 

@@ -228,7 +228,7 @@ void Errors::Display_Errors()
 
   // 
   errors_window_ptr -> box()
-    . pack_start(*errors_scrolled_window_ptr, Gtk::PACK_EXPAND_WIDGET);
+    . append(*errors_scrolled_window_ptr, Gtk::PACK_EXPAND_WIDGET);
 
 
 

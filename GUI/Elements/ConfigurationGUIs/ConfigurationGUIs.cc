@@ -326,7 +326,7 @@ void ConfigurationGUIs::Open_Configuration()
 
 
   // Adds the ConfigGUI to the new window. 
-  new_child_window -> box() . pack_start(new_config_gui -> box(),
+  new_child_window -> box() . append(new_config_gui -> box(),
                                          Gtk::PACK_EXPAND_WIDGET);
 
   // 

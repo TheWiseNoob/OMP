@@ -173,30 +173,30 @@ Seekbar::Seekbar(Base& base, int begin, int end)
   box_ -> pack_end(*time_entry_box_, Gtk::PACK_SHRINK);
 
   // 
-  box_ -> pack_start(*scale_box_, Gtk::PACK_EXPAND_WIDGET);
+  box_ -> append(*scale_box_, Gtk::PACK_EXPAND_WIDGET);
 
  
 
   // 
-  scale_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  scale_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
   // 
-  scale_box_ -> pack_start(*scale_, Gtk::PACK_EXPAND_WIDGET);
+  scale_box_ -> append(*scale_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
   // 
-  time_entry_box_ -> pack_start(*time_entry_stack_switcher_, true, false, 0);
+  time_entry_box_ -> append(*time_entry_stack_switcher_, true, false, 0);
 
 
 
   // 
-  time_entry_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  time_entry_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // 
-  time_entry_stack_switcher_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  time_entry_stack_switcher_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 

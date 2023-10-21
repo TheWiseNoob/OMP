@@ -226,7 +226,7 @@ FileChooser::FileChooser
 
 
   // 
-  box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
+  box() . set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -235,12 +235,12 @@ FileChooser::FileChooser
   {
 
     // 
-    box() . pack_start(*file_chooser_, Gtk::PACK_EXPAND_WIDGET);
+    box() . append(*file_chooser_, Gtk::PACK_EXPAND_WIDGET);
 
   }
 
   // 
-  box() . pack_start(*progress_bar_, Gtk::PACK_SHRINK);
+  box() . append(*progress_bar_, Gtk::PACK_SHRINK);
 
 
 
@@ -285,12 +285,12 @@ FileChooser::FileChooser
 
 
   // 
-  action_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  action_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
   // 
-  action_box_ -> pack_start(*okay_button_, true, true, 0);
+  action_box_ -> append(*okay_button_, true, true, 0);
 
 
 

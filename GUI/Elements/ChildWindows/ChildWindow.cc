@@ -97,7 +97,7 @@
 
 #include <gtkmm/box.h>
 
-#include <gtkmm/menu.h>
+#include <gtkmm/popovermenu.h>
 
 #include <iostream>
 

@@ -180,7 +180,7 @@ void Abouts::Open_About()
 
 
   // Adds the ConfigGUI to the new window. 
-  new_child_window -> box() . pack_start(new_about -> box(),
+  new_child_window -> box() . append(new_about -> box(),
                                          Gtk::PACK_EXPAND_WIDGET);
 
 

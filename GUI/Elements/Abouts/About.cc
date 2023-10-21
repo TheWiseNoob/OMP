@@ -124,7 +124,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
 
 
   // 
-  box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
+  box() . set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -148,7 +148,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   Gtk::Image* omp_logo = Gtk::manage(new Gtk::Image(omp_pixbuf));
 
   // 
-  box() . pack_start(*omp_logo, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*omp_logo, Gtk::PACK_EXPAND_WIDGET);
 
 
 
@@ -174,7 +174,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
     ("<span font='20'><b>OMP Version 0.1.1</b></span>");
 
   // 
-  box() . pack_start(*version_label, Gtk::PACK_EXPAND_PADDING);
+  box() . append(*version_label, Gtk::PACK_EXPAND_PADDING);
 
 
 
@@ -193,7 +193,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   contributors_text_view -> set_editable(false);
 
   // 
-  box() . pack_start(*contributors_text_view_frame, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*contributors_text_view_frame, Gtk::PACK_EXPAND_WIDGET);
 
   // 
   contributors_text_view_frame -> add(*contributors_text_view);

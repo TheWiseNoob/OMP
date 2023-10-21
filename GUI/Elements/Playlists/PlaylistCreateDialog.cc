@@ -143,7 +143,7 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
 , add_playlist_button_(Gtk::manage(new Gtk::Button("Create Playlist")))
 
-, button_box_(Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL)))
+, button_box_(Gtk::manage(new Gtk::Box(Gtk::Orientation::HORIZONTAL)))
 
 , cancel_button_(Gtk::manage(new Gtk::Button("Cancel")))
 
@@ -166,7 +166,7 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
   // 
   playlist_creation_window_box_
-    -> pack_start(*info_bar_, Gtk::PACK_SHRINK);
+    -> append(*info_bar_, Gtk::PACK_SHRINK);
 
   // 
   playlist_creation_window_box_
@@ -193,7 +193,7 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
 
   // 
-  button_box_ -> pack_start(*cancel_button_, Gtk::PACK_SHRINK);
+  button_box_ -> append(*cancel_button_, Gtk::PACK_SHRINK);
 
   // 
   button_box_ -> pack_end(*add_playlist_button_, Gtk::PACK_SHRINK);
@@ -205,7 +205,7 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
 
   // 
-  playlist_creation_window_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  playlist_creation_window_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 

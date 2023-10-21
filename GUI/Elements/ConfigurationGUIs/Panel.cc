@@ -171,7 +171,7 @@ Panel::Panel(Base& base_ref, ConfigurationGUI& config_gui_ref,
 
 
   // Sets the orientation of the box to vertical.
-  set_orientation(Gtk::ORIENTATION_VERTICAL);
+  set_orientation(Gtk::Orientation::VERTICAL);
 
 }
 

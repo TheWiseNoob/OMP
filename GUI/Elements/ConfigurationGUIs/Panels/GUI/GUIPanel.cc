@@ -99,8 +99,6 @@
 
 #include <gtkmm/checkbutton.h>
 
-#include <gtkmm/checkmenuitem.h>
-
 #include <gtkmm/frame.h>
 
 #include <gtkmm/notebook.h>
@@ -167,28 +165,28 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
   box() . set_center_widget(*selection_box_);
 
   // 
-  selection_box_ -> pack_start(*hide_duplicates_check_button_,
+  selection_box_ -> append(*hide_duplicates_check_button_,
                                Gtk::PACK_EXPAND_PADDING);
 
   // 
-  selection_box_ -> pack_start(*hide_header_bar_check_button_,
+  selection_box_ -> append(*hide_header_bar_check_button_,
                                Gtk::PACK_EXPAND_PADDING);
 
   // 
-  selection_box_ -> pack_start(*hide_status_bar_check_button_,
+  selection_box_ -> append(*hide_status_bar_check_button_,
                                Gtk::PACK_EXPAND_PADDING);
 
   // 
-  selection_box_ -> pack_start(*hide_tabs_check_button_,
+  selection_box_ -> append(*hide_tabs_check_button_,
                                Gtk::PACK_EXPAND_PADDING);
 
 
 
   // 
-  box() . set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  box() . set_orientation(Gtk::Orientation::HORIZONTAL);
 
   // 
-  selection_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  selection_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 

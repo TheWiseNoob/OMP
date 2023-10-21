@@ -185,7 +185,7 @@ PlaylistComboBox::PlaylistComboBox
   //          //
 
   // 
-  box() . pack_start(*playlist_combobox_box_, true, true, 0);
+  box() . append(*playlist_combobox_box_, true, true, 0);
 
   // 
   playlist_combobox_box_
@@ -193,12 +193,12 @@ PlaylistComboBox::PlaylistComboBox
 
   // 
   playlist_combobox_buttons_stackswitcher_ 
-    -> pack_start(*playlist_combobox_, Gtk::PACK_EXPAND_WIDGET);
+    -> append(*playlist_combobox_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
   // 
-  playlist_combobox_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  playlist_combobox_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
   //
   playlist_combobox_entry_ -> set_hexpand_set(false);

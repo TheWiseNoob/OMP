@@ -151,7 +151,7 @@
 
 #include <gtkmm/combobox.h>
 
-#include <gtkmm/eventbox.h>
+//#include <gtkmm/eventbox.h>
 
 #include <gtkmm/frame.h>
 
@@ -161,7 +161,7 @@
 
 #include <gtkmm/label.h>
 
-#include <gtkmm/main.h>
+//#include <gtkmm/main.h>
 
 #include <gtkmm/notebook.h>
 
@@ -347,7 +347,7 @@ GUI::GUI(Base& base_ref)
 
 
   // Sets the main window's orientation to vertical.
-  main_window() -> box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
+  main_window() -> box() . set_orientation(Gtk::Orientation::VERTICAL);
 
   // Overrides the function for keypresses to allow custom shortcuts.
   main_window() -> window() . signal_key_press_event()
@@ -359,10 +359,10 @@ GUI::GUI(Base& base_ref)
     . connect(sigc::mem_fun(*this, &GUI::On_GUI_Window_Signal_Delete_Event));
 
   // Adds top_box_ to the start of the main window's box.
-  main_window() -> box().pack_start(*top_box_, Gtk::PACK_SHRINK);
+  main_window() -> box().append(*top_box_, Gtk::PACK_SHRINK);
 
   // Sets top_box's orientation to vertical.
-  top_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  top_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
@@ -520,7 +520,7 @@ GUI::GUI(Base& base_ref)
     = new MainMenu(base_ref, *main_menus_);
 
   // Adds the menubar to the header.
-  header_bar_ -> pack_start(header_bar_menubar -> box());
+  header_bar_ -> append(header_bar_menubar -> box());
 
 
 
@@ -542,7 +542,7 @@ GUI::GUI(Base& base_ref)
     = new PlaybackController(base(), *playback_controllers_);
 
   // Adds the playback_buttons_stack_switcher to header_bar_.
-  top_box_ -> pack_start(main_playback_controller_ -> box(), Gtk::PACK_SHRINK);
+  top_box_ -> append(main_playback_controller_ -> box(), Gtk::PACK_SHRINK);
 
 
 
@@ -554,7 +554,7 @@ GUI::GUI(Base& base_ref)
 
   // Adds the notebook to main_window's box.
   main_window() -> box()
-    . pack_start(*main_window_notebook_, Gtk::PACK_EXPAND_WIDGET);
+    . append(*main_window_notebook_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
@@ -603,13 +603,13 @@ GUI::GUI(Base& base_ref)
 
   // Sets the orientation of the box containing the Main Content tab's 
   // contents to vertical.
-  main_content_page_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  main_content_page_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
   // Adds main_content_paned_ to main_content_page_box_.
   main_content_page_box_ 
-    -> pack_start(*main_content_paned_, Gtk::PACK_EXPAND_WIDGET);
+    -> append(*main_content_paned_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
   int main_content_paned_position
@@ -626,7 +626,7 @@ GUI::GUI(Base& base_ref)
                                        main_content_page_label);
 
   // Sets the orientation of main_content_paned_.
-  main_content_paned_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  main_content_paned_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
   // Adds the left box to the left paned side.
   main_content_paned_ -> pack1(*left_main_content_paned_box_, Gtk::EXPAND);
@@ -649,7 +649,7 @@ GUI::GUI(Base& base_ref)
     -> pack2(main_content_playlist -> box(), Gtk::EXPAND);
 
   // Sets the orientation of the left paned box.
-  left_main_content_paned_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  left_main_content_paned_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
  
   // Sets the left margin of the playlist in Main Content.
   main_content_playlist -> box() . set_margin_left(3);
@@ -678,7 +678,7 @@ GUI::GUI(Base& base_ref)
 
   // Adds the new Tagview to the left pane's box.
   left_main_content_paned_box_
-    -> pack_start(temp_tagview -> box(), Gtk::PACK_SHRINK);
+    -> append(temp_tagview -> box(), Gtk::PACK_SHRINK);
 
 
 
@@ -753,7 +753,7 @@ GUI::GUI(Base& base_ref)
 
   // Adds the first Artwork instance to the left pain of the Main Content tab.
   left_main_content_paned_box_ 
-    -> pack_start(((*(artworks_.rbegin())) -> box()),
+    -> append(((*(artworks_.rbegin())) -> box()),
                   Gtk::PACK_EXPAND_WIDGET);
 
   // Sets the left margin of the Main Content's Artwork box.
@@ -785,7 +785,7 @@ GUI::GUI(Base& base_ref)
 
   // Adds a MainMenu to the left pane in Main Content.
   duplicates_box_
-    -> pack_start(main_content_menubar -> box(), Gtk::PACK_SHRINK);
+    -> append(main_content_menubar -> box(), Gtk::PACK_SHRINK);
 
 
 
@@ -793,7 +793,7 @@ GUI::GUI(Base& base_ref)
 
   // Adds a MainMenu to the left pane in Main Content.
   duplicates_box_
-    -> pack_start(*Gtk::manage(new Gtk::Separator), false, false, 10);
+    -> append(*Gtk::manage(new Gtk::Separator), false, false, 10);
 
 
 

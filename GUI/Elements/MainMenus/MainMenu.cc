@@ -341,7 +341,7 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 
 
   // 
-  box() . set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  box() . set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
@@ -349,7 +349,7 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
   Gtk::Box* new_vert_box_ptr = Gtk::manage(new Gtk::Box);
 
   // 
-  new_vert_box_ptr -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  new_vert_box_ptr -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 

@@ -160,18 +160,18 @@ MetadataPanel::MetadataPanel
 // Cue Sheets
 
 , cuesheet_box_
-    (Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_HORIZONTAL, 20)))
+    (Gtk::manage(new Gtk::Box(Gtk::Orientation::HORIZONTAL, 20)))
 
 , cuesheet_radiobutton_
     (Gtk::manage(new Gtk::RadioButton("Use Cuesheet Metadata")))
 
 , cuesheet_type_preference_box_
-    (Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL, 5)))
+    (Gtk::manage(new Gtk::Box(Gtk::Orientation::VERTICAL, 5)))
 
 , cuesheet_type_preference_frame_(Gtk::manage(new Gtk::Frame))
 
 , cuesheet_type_preference_frame_box_
-    (Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL, 5)))
+    (Gtk::manage(new Gtk::Box(Gtk::Orientation::VERTICAL, 5)))
 
 , cuesheet_type_preference_label_(Gtk::manage(new Gtk::Label()))
 
@@ -185,12 +185,12 @@ MetadataPanel::MetadataPanel
     (Gtk::manage(new Gtk::RadioButton("Use File Metadata")))
 
 , files_or_cuesheet_box_
-    (Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL, 5)))
+    (Gtk::manage(new Gtk::Box(Gtk::Orientation::VERTICAL, 5)))
 
 , files_or_cuesheet_frame_(Gtk::manage(new Gtk::Frame))
 
 , files_or_cuesheet_frame_box_
-    (Gtk::manage(new Gtk::Box(Gtk::ORIENTATION_VERTICAL, 5)))
+    (Gtk::manage(new Gtk::Box(Gtk::Orientation::VERTICAL, 5)))
 
 , files_or_cuesheet_label_(Gtk::manage(new Gtk::Label()))
 
@@ -221,7 +221,7 @@ MetadataPanel::MetadataPanel
   //           //
 
   // Adds the output
-  box() . pack_start(*cuesheet_box_, Gtk::PACK_SHRINK);
+  box() . append(*cuesheet_box_, Gtk::PACK_SHRINK);
 
 
 
@@ -271,7 +271,7 @@ MetadataPanel::MetadataPanel
 
 
   // 
-  files_or_cuesheet_frame_box_ -> pack_start(*files_radiobutton_, Gtk::PACK_SHRINK);
+  files_or_cuesheet_frame_box_ -> append(*files_radiobutton_, Gtk::PACK_SHRINK);
 
   // 
   files_or_cuesheet_frame_box_ -> pack_end(*cuesheet_radiobutton_, Gtk::PACK_SHRINK);
@@ -289,7 +289,7 @@ MetadataPanel::MetadataPanel
 
   // 
   cuesheet_type_preference_frame_box_
-    -> pack_start(*external_cuesheet_radiobutton_, Gtk::PACK_SHRINK);
+    -> append(*external_cuesheet_radiobutton_, Gtk::PACK_SHRINK);
 
   // 
   cuesheet_type_preference_frame_box_
@@ -466,7 +466,7 @@ MetadataPanel::MetadataPanel
   //           //
 
   // Adds the output sink's box to the panel's box.
-  box() . pack_start(*errors_log_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*errors_log_box_, Gtk::PACK_EXPAND_WIDGET);
 
   // Adds the output sink's box to the panel's box.
   errors_log_box_ -> pack_start
@@ -513,7 +513,7 @@ MetadataPanel::MetadataPanel
 
   // 
   errors_log_display_box_
-    -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+    -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
@@ -530,13 +530,13 @@ MetadataPanel::MetadataPanel
 
   // 
   errors_log_display_inner_box_
-    -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+    -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
   // 
   errors_log_display_inner_box_
-    -> pack_start(*clear_key_button_, Gtk::PACK_EXPAND_WIDGET);
+    -> append(*clear_key_button_, Gtk::PACK_EXPAND_WIDGET);
 
 
 

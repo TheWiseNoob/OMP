@@ -207,18 +207,18 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   //         //
 
   // 
-  box() . pack_start(*options_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*options_box_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
-  box() . pack_start(*looping_and_order_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*looping_and_order_box_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
   // 
-  box() . set_orientation(Gtk::ORIENTATION_VERTICAL);
+  box() . set_orientation(Gtk::Orientation::VERTICAL);
 
   // 
-  looping_and_order_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  looping_and_order_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
@@ -230,22 +230,22 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
   // 
   looping_and_order_box_
-    -> pack_start(*looping_frame_, Gtk::PACK_EXPAND_WIDGET);
+    -> append(*looping_frame_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
   looping_frame_ -> add(*looping_box_);
 
   // 
   looping_box_
-    -> pack_start(*none_looping_radio_button_, Gtk::PACK_EXPAND_PADDING);
+    -> append(*none_looping_radio_button_, Gtk::PACK_EXPAND_PADDING);
 
 //  // 
 //  looping_box_
-//    -> pack_start(*track_looping_radio_button_, Gtk::PACK_EXPAND_PADDING);
+//    -> append(*track_looping_radio_button_, Gtk::PACK_EXPAND_PADDING);
 
   // 
   looping_box_
-    -> pack_start(*playlist_looping_radio_button_, Gtk::PACK_EXPAND_PADDING);
+    -> append(*playlist_looping_radio_button_, Gtk::PACK_EXPAND_PADDING);
 
 
 
@@ -269,7 +269,7 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
 
   // 
-  looping_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  looping_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
@@ -321,47 +321,47 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   //         //
 
   // 
-  options_box_ -> pack_start(*left_options_box_, Gtk::PACK_EXPAND_WIDGET);
+  options_box_ -> append(*left_options_box_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
-  options_box_ -> pack_start(*right_options_box_, Gtk::PACK_EXPAND_WIDGET);
+  options_box_ -> append(*right_options_box_, Gtk::PACK_EXPAND_WIDGET);
 
 
 
   // 
-  left_options_box_ -> pack_start(*cursor_follows_playback_check_button_,
+  left_options_box_ -> append(*cursor_follows_playback_check_button_,
                                   Gtk::PACK_EXPAND_PADDING);
 
   // 
-  left_options_box_ -> pack_start(*selected_playlist_only_check_button_,
+  left_options_box_ -> append(*selected_playlist_only_check_button_,
                                   Gtk::PACK_EXPAND_PADDING);
 
   // 
-  left_options_box_ -> pack_start(*playback_follows_cursor_check_button_,
+  left_options_box_ -> append(*playback_follows_cursor_check_button_,
                                   Gtk::PACK_EXPAND_PADDING);
 
   // 
-  right_options_box_ -> pack_start(*start_at_pregap_check_button_,
+  right_options_box_ -> append(*start_at_pregap_check_button_,
                                    Gtk::PACK_EXPAND_PADDING);
 
   // 
-  right_options_box_ -> pack_start(*queue_saved_check_button_,
+  right_options_box_ -> append(*queue_saved_check_button_,
                                     Gtk::PACK_EXPAND_PADDING);
 
   // 
-  right_options_box_ -> pack_start(*stop_after_current_track_check_button_,
+  right_options_box_ -> append(*stop_after_current_track_check_button_,
                                    Gtk::PACK_EXPAND_PADDING);
 
 
 
   // 
-  options_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  options_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
   // 
-  left_options_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  left_options_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // 
-  right_options_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  right_options_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -513,22 +513,22 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
   // 
 //  looping_and_order_box_
-//    -> pack_start(*order_frame_, Gtk::PACK_EXPAND_WIDGET);
+//    -> append(*order_frame_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
   order_frame_ -> add(*order_box_);
 
   // 
   order_box_
-    -> pack_start(*normal_order_radio_button_, Gtk::PACK_EXPAND_PADDING);
+    -> append(*normal_order_radio_button_, Gtk::PACK_EXPAND_PADDING);
 
   // 
   order_box_
-    -> pack_start(*shuffle_tracks_order_radio_button_, Gtk::PACK_EXPAND_PADDING);
+    -> append(*shuffle_tracks_order_radio_button_, Gtk::PACK_EXPAND_PADDING);
 
   // 
   order_box_
-    -> pack_start(*random_tracks_order_radio_button_, Gtk::PACK_EXPAND_PADDING);
+    -> append(*random_tracks_order_radio_button_, Gtk::PACK_EXPAND_PADDING);
 
 
 
@@ -552,7 +552,7 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
 
   // 
-  order_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  order_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 

@@ -192,10 +192,10 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
 {
 
   // Adds the pre-amp sbs frame to the start of the GUIElement box.
-  box() . pack_start(*pre_amp_sbs_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*pre_amp_sbs_frame_, Gtk::PACK_EXPAND_WIDGET);
 
   // Adds the fallback gain sbs frame to the start of the GUIElement box.
-  box() . pack_start(*fallback_gain_sbs_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*fallback_gain_sbs_frame_, Gtk::PACK_EXPAND_WIDGET);
 
   // Adds rg_options_box_ to the end of the GUIElement box.
   box() . pack_end(*rg_options_box_, Gtk::PACK_EXPAND_WIDGET);
@@ -203,7 +203,7 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
 
 
   // Adds enable_switch_box_ frame to the end of rg_options_box.
-//  rg_options_box_ -> pack_start(*enable_switch_box_, Gtk::PACK_EXPAND_PADDING);
+//  rg_options_box_ -> append(*enable_switch_box_, Gtk::PACK_EXPAND_PADDING);
 
   // Adds limter_box_ frame to the end of rg_options_box.
   rg_options_box_ -> pack_end(*limiter_box_, Gtk::PACK_EXPAND_PADDING);
@@ -231,7 +231,7 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
 
 
   // Sets the orientation of enable_switch_box_ as vertical.
-  enable_switch_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  enable_switch_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -294,7 +294,7 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
 
   // Adds the album gain RadioButton to gain_type_box_.
   gain_type_box_
-    -> pack_start(*album_gain_radiobutton_, Gtk::PACK_EXPAND_PADDING);
+    -> append(*album_gain_radiobutton_, Gtk::PACK_EXPAND_PADDING);
 
   // Adds the track gain RadioButton to gain_type_box_.
   gain_type_box_
@@ -303,7 +303,7 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
 
 
   // Sets the orientation of gain_type_box_ to vertical.
-  gain_type_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  gain_type_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -346,7 +346,7 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
 
 
   // Sets the orietnation of limiter_box_ to vertical.
-  limiter_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  limiter_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 

@@ -216,7 +216,7 @@ StatusBar::StatusBar(Base& base_ref)
   event_box_ -> add(*inner_box_);
 
   // Sets the orientation of the inner inner_box_.
-  inner_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  inner_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 
@@ -247,7 +247,7 @@ StatusBar::StatusBar(Base& base_ref)
   //                 //
 
   // Adds the volume box to the header bar.
-  inner_box_ -> pack_start(*main_volume_button_box_, Gtk::PACK_SHRINK);
+  inner_box_ -> append(*main_volume_button_box_, Gtk::PACK_SHRINK);
 
   // Creates a Gtk::Sepratator pointer.
   Gtk::Separator* separator;
@@ -256,10 +256,10 @@ StatusBar::StatusBar(Base& base_ref)
   separator = Gtk::manage(new Gtk::Separator);
 
   // Sets the separator orientation to vertical.
-  separator -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  separator -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // Adds the separator to the start of the header bar.
-  inner_box_ -> pack_start(*separator, Gtk::PACK_SHRINK);
+  inner_box_ -> append(*separator, Gtk::PACK_SHRINK);
 
   // Sets the left margin of the main_volume_button_box_.
   main_volume_button_box_ -> set_margin_left(5);
@@ -287,10 +287,10 @@ StatusBar::StatusBar(Base& base_ref)
   //                 //
 
   // 
-  inner_box_ -> pack_start(*playback_status_image_, false, false, 3);
+  inner_box_ -> append(*playback_status_image_, false, false, 3);
 
   // Adds the playback status label to inner_box_.
-  inner_box_ -> pack_start(*playback_status_label_, Gtk::PACK_SHRINK);
+  inner_box_ -> append(*playback_status_label_, Gtk::PACK_SHRINK);
 
 
 
@@ -328,10 +328,10 @@ StatusBar::StatusBar(Base& base_ref)
 
 
   // Sets the orientation of the time_label_box_.
-  time_label_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  time_label_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // Adds a label to the time_label_box_.
-  time_label_box_ -> pack_start(*time_left_label_, false, false, 5);
+  time_label_box_ -> append(*time_left_label_, false, false, 5);
 
   // 
   time_label_box_
@@ -341,7 +341,7 @@ StatusBar::StatusBar(Base& base_ref)
   time_label_box_ -> pack_end(*time_right_label_, false, false, 5);
 
   // 
-  time_label_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  time_label_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
   // Adds the time_label_box_ to the Status Bar.
   inner_box_ -> set_center_widget(*time_label_box_);

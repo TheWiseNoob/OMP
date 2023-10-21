@@ -107,8 +107,6 @@ namespace Gtk
 
   class ScrolledWindow;
 
-  class TreeIter;
-
   class TreePath;
 
   class TreeView;
@@ -178,7 +176,7 @@ class ArtworkPanel : public Panel
       (Gtk::CellEditable* editable, const Glib::ustring& path);
 
     void On_Filename_TreeView_Row_Drag_End_Signal
-      (const Glib::RefPtr<Gdk::DragContext>& context);
+      (const Glib::RefPtr<Gdk::Drag>& context);
 
     void On_List_Store_Row_Changed_Signal
       (const Gtk::TreePath& path, const Gtk::TreeIter& iter);

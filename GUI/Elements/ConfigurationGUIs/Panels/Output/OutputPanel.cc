@@ -175,15 +175,15 @@ OutputPanel::OutputPanel(Base& new_main,
   //             //
 
   // Adds the output sink's box to the panel's box.
-  box() . pack_start(*output_sink_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*output_sink_box_, Gtk::PACK_EXPAND_WIDGET);
 
   // Adds the output sink combobox to the output sink box.
-  output_sink_box_ -> pack_start(*output_sink_combobox_box_, 
+  output_sink_box_ -> append(*output_sink_combobox_box_, 
                                  Gtk::PACK_EXPAND_WIDGET);
 
   // Adds the sink combobox label to output_sink_combobox_box_.
   output_sink_combobox_box_ 
-    -> pack_start(*output_sink_combobox_name_label_, Gtk::PACK_SHRINK);
+    -> append(*output_sink_combobox_name_label_, Gtk::PACK_SHRINK);
 
   // Sets the sink combobox as the center widget of output_sink_combobox_box_.
   output_sink_combobox_box_ -> set_center_widget(*output_sink_combobox_);
@@ -222,10 +222,10 @@ OutputPanel::OutputPanel(Base& new_main,
 
 
   // Sets the orietnation of the output sink box.
-  output_sink_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  output_sink_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // Sets the orietnation of the output sink combobox box.
-  output_sink_combobox_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  output_sink_combobox_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
 
 
@@ -278,7 +278,7 @@ OutputPanel::OutputPanel(Base& new_main,
 
   // Adds a box to center the buffer time.
   buffer_box_
-    -> pack_start(*buffer_time_spinbuttonscale_label_center_box_,
+    -> append(*buffer_time_spinbuttonscale_label_center_box_,
                   Gtk::PACK_SHRINK);
 
   // Adds a box for time format conversion to the buffer time SpinButtonScale.
@@ -295,17 +295,17 @@ OutputPanel::OutputPanel(Base& new_main,
 
   // Adds the SpinButton to buffer_time_spinbuttonscale_label_box_.
   buffer_time_spinbuttonscale_label_box_
-    -> pack_start(buffer_time_spinbuttonscale_ -> sbs_spinbutton_box(),
+    -> append(buffer_time_spinbuttonscale_ -> sbs_spinbutton_box(),
                   Gtk::PACK_SHRINK);
 
 
 
   // Sets the buffer box's orientation as vertical.
-  buffer_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  buffer_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // Sets the orientation of the buffer time SpinButtonScale as horizontal.
   buffer_time_spinbuttonscale_ -> sbs_spinbutton_box()
-    . set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+    . set_orientation(Gtk::Orientation::HORIZONTAL);
 
 
 

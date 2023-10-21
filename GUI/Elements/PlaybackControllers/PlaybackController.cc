@@ -177,23 +177,23 @@ PlaybackController::PlaybackController
 
   // Adds the previous button to the playback_button_stack_switcher_.
 //  playback_buttons_stack_switcher_
-//    -> pack_start(*previous_button_, Gtk::PACK_SHRINK, 0);
+//    -> append(*previous_button_, Gtk::PACK_SHRINK, 0);
 
   // Adds the stop button to the playback_button_stack_switcher_.
   playback_buttons_stack_switcher_
-    -> pack_start(*stop_button_, Gtk::PACK_SHRINK, 0);
+    -> append(*stop_button_, Gtk::PACK_SHRINK, 0);
 
   // Adds the pause button to the playback_button_stack_switcher_.
   playback_buttons_stack_switcher_
-    -> pack_start(*pause_button_, Gtk::PACK_SHRINK, 0);
+    -> append(*pause_button_, Gtk::PACK_SHRINK, 0);
 
   // Adds the play button to the playback_button_stack_switcher_.
   playback_buttons_stack_switcher_
-    -> pack_start(*play_button_, Gtk::PACK_SHRINK, 0);
+    -> append(*play_button_, Gtk::PACK_SHRINK, 0);
 
   // Adds the play button to the playback_button_stack_switcher_.
   playback_buttons_stack_switcher_
-    -> pack_start(*next_button_, Gtk::PACK_SHRINK, 0);
+    -> append(*next_button_, Gtk::PACK_SHRINK, 0);
 
 
 

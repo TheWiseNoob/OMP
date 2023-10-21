@@ -181,18 +181,18 @@ Artwork::Artwork(Base& base_ref)
   art_aspect_frame_ -> add(*inner_art_box_);
 
   // 
-  inner_art_box_ -> pack_start(*this, Gtk::PACK_EXPAND_WIDGET);
+  inner_art_box_ -> append(*this, Gtk::PACK_EXPAND_WIDGET);
 
 
 
   // 
-  art_box_ -> pack_start(*art_aspect_frame_, Gtk::PACK_EXPAND_WIDGET);
+  art_box_ -> append(*art_aspect_frame_, Gtk::PACK_EXPAND_WIDGET);
 
   // 
-  art_box_ -> set_orientation(Gtk::ORIENTATION_HORIZONTAL);
+  art_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);
 
   // 
-  inner_art_box_ -> set_orientation(Gtk::ORIENTATION_VERTICAL);
+  inner_art_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // 
   art_box_ -> set_baseline_position(Gtk::BASELINE_POSITION_BOTTOM);
