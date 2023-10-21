@@ -226,10 +226,10 @@ MetadataPanel::MetadataPanel
 
 
   // 
-  cuesheet_box_ -> set_margin_left(5);
+  cuesheet_box_ -> set_margin_start(5);
 
   // 
-  cuesheet_box_ -> set_margin_right(5);
+  cuesheet_box_ -> set_margin_end(5);
 
   // 
   cuesheet_box_ -> set_margin_top(5);
@@ -310,10 +310,10 @@ MetadataPanel::MetadataPanel
 
 
   // 
-  files_radiobutton_ -> set_margin_left(5);
+  files_radiobutton_ -> set_margin_start(5);
 
   // 
-  files_radiobutton_ -> set_margin_right(5);
+  files_radiobutton_ -> set_margin_end(5);
 
   // 
   files_radiobutton_ -> set_margin_top(5);
@@ -324,10 +324,10 @@ MetadataPanel::MetadataPanel
 
 
   // 
-  cuesheet_radiobutton_ -> set_margin_left(5);
+  cuesheet_radiobutton_ -> set_margin_start(5);
 
   // 
-  cuesheet_radiobutton_ -> set_margin_right(5);
+  cuesheet_radiobutton_ -> set_margin_end(5);
 
   // 
   cuesheet_radiobutton_ -> set_margin_top(5);
@@ -338,10 +338,10 @@ MetadataPanel::MetadataPanel
 
 
   // 
-  external_cuesheet_radiobutton_ -> set_margin_left(5);
+  external_cuesheet_radiobutton_ -> set_margin_start(5);
 
   // 
-  external_cuesheet_radiobutton_ -> set_margin_right(5);
+  external_cuesheet_radiobutton_ -> set_margin_end(5);
 
   // 
   external_cuesheet_radiobutton_ -> set_margin_top(5);
@@ -352,10 +352,10 @@ MetadataPanel::MetadataPanel
 
 
   // 
-  embedded_cuesheet_radiobutton_ -> set_margin_left(5);
+  embedded_cuesheet_radiobutton_ -> set_margin_start(5);
 
   // 
-  embedded_cuesheet_radiobutton_ -> set_margin_right(5);
+  embedded_cuesheet_radiobutton_ -> set_margin_end(5);
 
   // 
   embedded_cuesheet_radiobutton_ -> set_margin_top(5);
@@ -466,11 +466,11 @@ MetadataPanel::MetadataPanel
   //           //
 
   // Adds the output sink's box to the panel's box.
-  box() . append(*errors_log_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*errors_log_box_);
 
   // Adds the output sink's box to the panel's box.
   errors_log_box_ -> pack_start
-    (*errors_log_frame_, Gtk::PACK_EXPAND_WIDGET);
+    (*errors_log_frame_);
 
   // Adds the output sink's box to the panel's box.
   errors_log_frame_ -> add(*errors_log_scrolled_window_);
@@ -493,10 +493,10 @@ MetadataPanel::MetadataPanel
   errors_log_box_ -> set_margin_bottom(2);
 
   // Sets the margin of the errors_log treeview box.
-  errors_log_box_ -> set_margin_left(2);
+  errors_log_box_ -> set_margin_start(2);
 
   // Sets the margin of the errors_log treeview box.
-  errors_log_box_ -> set_margin_right(2);
+  errors_log_box_ -> set_margin_end(2);
 
 
 
@@ -519,7 +519,7 @@ MetadataPanel::MetadataPanel
 
   // 
   errors_log_display_box_ -> pack_end
-    (*errors_log_display_inner_box_, Gtk::PACK_EXPAND_WIDGET);
+    (*errors_log_display_inner_box_);
 
   // 
   errors_log_display_inner_box_ -> set_hexpand(true);
@@ -536,15 +536,15 @@ MetadataPanel::MetadataPanel
 
   // 
   errors_log_display_inner_box_
-    -> append(*clear_key_button_, Gtk::PACK_EXPAND_WIDGET);
+    -> append(*clear_key_button_);
 
 
 
   // 
-  clear_key_button_ -> set_margin_left(3);
+  clear_key_button_ -> set_margin_start(3);
 
   // 
-  clear_key_button_ -> set_margin_right(3);
+  clear_key_button_ -> set_margin_end(3);
 
   // 
   clear_key_button_ -> set_margin_bottom(3);

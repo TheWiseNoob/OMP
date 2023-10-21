@@ -148,18 +148,18 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   Gtk::Image* omp_logo = Gtk::manage(new Gtk::Image(omp_pixbuf));
 
   // 
-  box() . append(*omp_logo, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*omp_logo);
 
 
 
   // 
-  omp_logo -> set_margin_left(10);
+  omp_logo -> set_margin_start(10);
 
   // 
   omp_logo -> set_margin_top(10);
 
   // 
-  omp_logo -> set_margin_right(10);
+  omp_logo -> set_margin_end(10);
 
   // 
   omp_logo -> set_margin_bottom(20);
@@ -193,7 +193,7 @@ About::About(Base& base_ref, Abouts& abouts_ref)
   contributors_text_view -> set_editable(false);
 
   // 
-  box() . append(*contributors_text_view_frame, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*contributors_text_view_frame);
 
   // 
   contributors_text_view_frame -> add(*contributors_text_view);

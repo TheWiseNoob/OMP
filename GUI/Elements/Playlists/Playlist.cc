@@ -270,7 +270,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   box() . set_orientation(Gtk::Orientation::VERTICAL);
 
   // Puts the playlist_frame_ in the top of the GUIElement box().
-  box() . append(*playlist_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*playlist_box_);
 
 
 
@@ -278,7 +278,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   playlist_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // Puts the status_frame_ in the bottom of the GUIElement box().
-  playlist_box_ -> append(*playlist_frame_, Gtk::PACK_EXPAND_WIDGET);
+  playlist_box_ -> append(*playlist_frame_);
 
   // Puts the status_frame_ in the bottom of the GUIElement box().
   playlist_box_ -> pack_end(*status_frame_, Gtk::PACK_SHRINK);
@@ -892,7 +892,7 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   status_box_ -> append(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
 
   // 
-  status_box_ -> append(*progress_bars_box_, Gtk::PACK_EXPAND_WIDGET);
+  status_box_ -> append(*progress_bars_box_);
 
   // 
   status_box_ -> append(*Gtk::manage(new Gtk::Separator), Gtk::PACK_SHRINK);
@@ -926,18 +926,18 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
 
 
   // 
-  name_label_event_box_ -> set_margin_left(3);
+  name_label_event_box_ -> set_margin_start(3);
 
   // 
-  name_label_event_box_ -> set_margin_right(3);
+  name_label_event_box_ -> set_margin_end(3);
 
 
 
   // 
-  row_count_label_ -> set_margin_left(3);
+  row_count_label_ -> set_margin_start(3);
 
   // 
-  row_count_label_ -> set_margin_right(3);
+  row_count_label_ -> set_margin_end(3);
 
 
 
@@ -980,10 +980,10 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   copy_progress_bar_ -> set_margin_bottom(3);
 
   // 
-  copy_progress_bar_ -> set_margin_left(3);
+  copy_progress_bar_ -> set_margin_start(3);
 
   // 
-  copy_progress_bar_ -> set_margin_right(3);
+  copy_progress_bar_ -> set_margin_end(3);
 
   // 
   progress_bar_ -> set_margin_top(3);
@@ -992,10 +992,10 @@ Playlist::Playlist(Base& base_ref, Playlists& playlists_ref,
   progress_bar_ -> set_margin_bottom(3);
 
   // 
-  progress_bar_ -> set_margin_left(3);
+  progress_bar_ -> set_margin_start(3);
 
   // 
-  progress_bar_ -> set_margin_right(3);
+  progress_bar_ -> set_margin_end(3);
 
 
 

@@ -175,7 +175,7 @@ OutputPanel::OutputPanel(Base& new_main,
   //             //
 
   // Adds the output sink's box to the panel's box.
-  box() . append(*output_sink_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*output_sink_box_);
 
   // Adds the output sink combobox to the output sink box.
   output_sink_box_ -> append(*output_sink_combobox_box_, 
@@ -196,10 +196,10 @@ OutputPanel::OutputPanel(Base& new_main,
 
 
   // Sets the left margin of output_sink_box_.
-  output_sink_box_ -> set_margin_left(3);
+  output_sink_box_ -> set_margin_start(3);
 
   // Sets the right margin of output_sink_box_.
-  output_sink_box_ -> set_margin_right(3);
+  output_sink_box_ -> set_margin_end(3);
 
 
 
@@ -214,7 +214,7 @@ OutputPanel::OutputPanel(Base& new_main,
 
 
   // Sets the margin of the left side of the sink combobox label.
-  output_sink_combobox_name_label_ -> set_margin_left(6);
+  output_sink_combobox_name_label_ -> set_margin_start(6);
 
   // Sets the margin of the left side of the sink combobox label.
   output_sink_combobox_name_label_ -> set_margin_top(10);
@@ -267,7 +267,7 @@ OutputPanel::OutputPanel(Base& new_main,
   //        //
 
   // Adds the buffer frame to the GUIElement box.
-  box() . pack_end(*buffer_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . pack_end(*buffer_frame_);
 
   // Adds the buffer box to the buffer frame.
   buffer_frame_ -> add(*buffer_box_);
@@ -316,10 +316,10 @@ OutputPanel::OutputPanel(Base& new_main,
   buffer_box_ -> set_margin_bottom(5);
 
   // Sets the left margin of the buffer box. 
-  buffer_box_ -> set_margin_left(5);
+  buffer_box_ -> set_margin_start(5);
 
   // Sets the right margin of the buffer box. 
-  buffer_box_ -> set_margin_right(5);
+  buffer_box_ -> set_margin_end(5);
 
 
 
@@ -332,10 +332,10 @@ OutputPanel::OutputPanel(Base& new_main,
 
 
   // Sets the left margin of the buffer frame. 
-  buffer_frame_ -> set_margin_left(4);
+  buffer_frame_ -> set_margin_start(4);
 
   // Sets the right margin of the buffer box. 
-  buffer_frame_ -> set_margin_right(4);
+  buffer_frame_ -> set_margin_end(4);
 
   // Sets the top margin of the buffer box. 
   buffer_frame_ -> set_margin_top(4);
@@ -352,7 +352,7 @@ OutputPanel::OutputPanel(Base& new_main,
 
 
   // Sets the left margin of the buffer frame. 
-  buffer_time_spinbuttonscale_label_ -> set_margin_left(3);
+  buffer_time_spinbuttonscale_label_ -> set_margin_start(3);
 
 
 

@@ -92,6 +92,13 @@ class ArtworkPanelColumnRecord;
 
 class ConfigurationGUI;
 
+namespace Gdk
+{
+
+  class Drag;
+
+}
+
 namespace Gtk
 {
 

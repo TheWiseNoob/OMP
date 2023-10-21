@@ -242,28 +242,28 @@ GUIPanel::GUIPanel(Base& base_ref, ConfigurationGUI& config_gui_ref)
 
 
   // 
-  hide_duplicates_check_button_ -> set_margin_left(2);
+  hide_duplicates_check_button_ -> set_margin_start(2);
 
   // 
-  hide_duplicates_check_button_ -> set_margin_right(2);
+  hide_duplicates_check_button_ -> set_margin_end(2);
 
   // 
-  hide_header_bar_check_button_ -> set_margin_left(2);
+  hide_header_bar_check_button_ -> set_margin_start(2);
 
   // 
-  hide_header_bar_check_button_ -> set_margin_right(2);
+  hide_header_bar_check_button_ -> set_margin_end(2);
 
   // 
-  hide_status_bar_check_button_ -> set_margin_left(2);
+  hide_status_bar_check_button_ -> set_margin_start(2);
 
   // 
-  hide_status_bar_check_button_ -> set_margin_right(2);
+  hide_status_bar_check_button_ -> set_margin_end(2);
 
   // 
-  hide_tabs_check_button_ -> set_margin_left(2);
+  hide_tabs_check_button_ -> set_margin_start(2);
 
   // 
-  hide_tabs_check_button_ -> set_margin_right(2);
+  hide_tabs_check_button_ -> set_margin_end(2);
 
 
 

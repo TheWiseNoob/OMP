@@ -314,7 +314,7 @@ ConfigurationGUI::ConfigurationGUI
   //           //
 
   // Adds panel_box_ to the GUIElement box.
-  box() . append(*panel_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*panel_box_);
 
 
 
@@ -339,7 +339,7 @@ ConfigurationGUI::ConfigurationGUI
 
 
   // Adds panel_revealer_ to panel_box_.
-  panel_box_ -> append(*panel_revealer_, Gtk::PACK_EXPAND_WIDGET);
+  panel_box_ -> append(*panel_revealer_);
 
   // Adds panel_frame_ to panel_revealer_.
   panel_revealer_ -> add(*panel_frame_);
@@ -393,10 +393,10 @@ ConfigurationGUI::ConfigurationGUI
   action_buttons_box_ -> set_margin_bottom(4);
 
   // Sets the margin of the left side of the action_buttons_box_.
-  action_buttons_box_ -> set_margin_left(4);
+  action_buttons_box_ -> set_margin_start(4);
 
   // Sets the margin of the right side of the action_buttons_box_.
-  action_buttons_box_ -> set_margin_right(4);
+  action_buttons_box_ -> set_margin_end(4);
 
 
 
@@ -450,10 +450,10 @@ ConfigurationGUI::ConfigurationGUI
 
 
   // Sets the right margin of undo_changes_button_.
-  undo_changes_button_ -> set_margin_right(4);
+  undo_changes_button_ -> set_margin_end(4);
 
   // Sets the left margin of save_changes_button_.
-  save_changes_button_ -> set_margin_left(4);
+  save_changes_button_ -> set_margin_start(4);
 
 
 

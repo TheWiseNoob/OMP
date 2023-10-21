@@ -179,10 +179,10 @@ PlaylistCreateDialog::PlaylistCreateDialog(Base& base_ref)
 
 
   // 
-  playlist_creation_window_box_ -> set_margin_left(3);
+  playlist_creation_window_box_ -> set_margin_start(3);
 
   // 
-  playlist_creation_window_box_ -> set_margin_right(3);
+  playlist_creation_window_box_ -> set_margin_end(3);
 
   // 
   playlist_creation_window_box_ -> set_margin_top(3);

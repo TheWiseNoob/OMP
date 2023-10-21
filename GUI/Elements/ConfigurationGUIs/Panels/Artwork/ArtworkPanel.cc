@@ -85,6 +85,8 @@
 //                 //
 //                 //
 
+#include <gdkmm/drag.h>
+
 #include <glibmm/ustring.h>
 
 #include <gtkmm/box.h>
@@ -169,7 +171,7 @@ ArtworkPanel::ArtworkPanel
   //                   //
 
   // Adds the output sink's box to the panel's box.
-  box() . append(*filename_treeview_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*filename_treeview_box_);
 
   // Adds the output sink's box to the panel's box.
   filename_treeview_box_ -> append(*filename_treeview_frame_, 
@@ -190,10 +192,10 @@ ArtworkPanel::ArtworkPanel
   filename_treeview_box_ -> set_margin_bottom(2);
 
   // Sets the margin of the filename treeview box.
-  filename_treeview_box_ -> set_margin_left(2);
+  filename_treeview_box_ -> set_margin_start(2);
 
   // Sets the margin of the filename treeview box.
-  filename_treeview_box_ -> set_margin_right(2);
+  filename_treeview_box_ -> set_margin_end(2);
 
 
 
@@ -284,10 +286,10 @@ ArtworkPanel::ArtworkPanel
   add_filename_button_ -> set_margin_bottom(2);
 
   // 
-  add_filename_button_ -> set_margin_left(2);
+  add_filename_button_ -> set_margin_start(2);
 
   // 
-  add_filename_button_ -> set_margin_right(2);
+  add_filename_button_ -> set_margin_end(2);
 
 
 
@@ -295,10 +297,10 @@ ArtworkPanel::ArtworkPanel
   remove_filename_button_ -> set_margin_bottom(2);
 
   // 
-  remove_filename_button_ -> set_margin_left(2);
+  remove_filename_button_ -> set_margin_start(2);
 
   // 
-  remove_filename_button_ -> set_margin_right(2);
+  remove_filename_button_ -> set_margin_end(2);
 
 
 

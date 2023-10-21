@@ -142,7 +142,7 @@ SpinButtonScale::SpinButtonScale(double begin, double end, int accuracy)
 
 
   // 
-  box_ -> append(*sbs_scale_box_, Gtk::PACK_EXPAND_WIDGET);
+  box_ -> append(*sbs_scale_box_);
 
   // 
   box_ -> pack_end(*sbs_spinbutton_box_, Gtk::PACK_SHRINK);
@@ -153,7 +153,7 @@ SpinButtonScale::SpinButtonScale(double begin, double end, int accuracy)
   sbs_scale_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
 
   // 
-  sbs_scale_box_ -> append(*sbs_scale_, Gtk::PACK_EXPAND_WIDGET);
+  sbs_scale_box_ -> append(*sbs_scale_);
 
   // 
   sbs_spinbutton_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
@@ -181,10 +181,10 @@ SpinButtonScale::SpinButtonScale(double begin, double end, int accuracy)
 
 
   // 
-  sbs_spinbutton_ -> set_margin_right(2);
+  sbs_spinbutton_ -> set_margin_end(2);
 
   // 
-  sbs_spinbutton_ -> set_margin_left(4);
+  sbs_spinbutton_ -> set_margin_start(4);
 
   // 
   sbs_spinbutton_ -> set_margin_top(2);
@@ -335,7 +335,7 @@ void SpinButtonScale::Flip()
   if(scale_first_)
   {
 
-    box_ -> pack_end(*sbs_scale_box_, Gtk::PACK_EXPAND_WIDGET);
+    box_ -> pack_end(*sbs_scale_box_);
     box_ -> append(*sbs_spinbutton_box_, Gtk::PACK_SHRINK);
 
     scale_first_ = false;
@@ -344,7 +344,7 @@ void SpinButtonScale::Flip()
   else
   {
 
-    box_ -> append(*sbs_scale_box_, Gtk::PACK_EXPAND_WIDGET);
+    box_ -> append(*sbs_scale_box_);
     box_ -> pack_end(*sbs_spinbutton_box_, Gtk::PACK_SHRINK);
 
     scale_first_ = true;

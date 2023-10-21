@@ -262,10 +262,10 @@ StatusBar::StatusBar(Base& base_ref)
   inner_box_ -> append(*separator, Gtk::PACK_SHRINK);
 
   // Sets the left margin of the main_volume_button_box_.
-  main_volume_button_box_ -> set_margin_left(5);
+  main_volume_button_box_ -> set_margin_start(5);
 
   // Sets the right margin of the main_volume_button_box_.
-  main_volume_button_box_ -> set_margin_right(5);
+  main_volume_button_box_ -> set_margin_end(5);
 
   // Adds main_volume_button_ to main_volume_button_box_.
   main_volume_button_box_ -> set_center_widget(*main_volume_button_);
@@ -295,7 +295,7 @@ StatusBar::StatusBar(Base& base_ref)
 
 
   // Sets the padding of the playback_status_label_. 
-  playback_status_label_ -> set_margin_right(5);
+  playback_status_label_ -> set_margin_end(5);
 
 
 

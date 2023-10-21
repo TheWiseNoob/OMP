@@ -188,16 +188,16 @@ PlaylistPanel::PlaylistPanel(Base& base_ref, ConfigurationGUI& config_gui_ref,
 
 
   // 
-  empty_space_playlist_checkbutton_ -> set_margin_left(2);
+  empty_space_playlist_checkbutton_ -> set_margin_start(2);
 
   // 
-  empty_space_playlist_checkbutton_ -> set_margin_right(2);
+  empty_space_playlist_checkbutton_ -> set_margin_end(2);
 
   // 
-  empty_space_row_checkbutton_ -> set_margin_left(2);
+  empty_space_row_checkbutton_ -> set_margin_start(2);
 
   // 
-  empty_space_row_checkbutton_ -> set_margin_right(2);
+  empty_space_row_checkbutton_ -> set_margin_end(2);
 
 
 

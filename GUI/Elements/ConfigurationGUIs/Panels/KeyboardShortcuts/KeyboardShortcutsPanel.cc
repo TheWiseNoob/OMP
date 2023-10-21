@@ -178,7 +178,7 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
   //                   //
 
   // Adds the output sink's box to the panel's box.
-  box() . append(*keyboard_shortcuts_treeview_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*keyboard_shortcuts_treeview_box_);
 
   // Adds the output sink's box to the panel's box.
   keyboard_shortcuts_treeview_box_ -> append(*keyboard_shortcuts_treeview_frame_, 
@@ -199,10 +199,10 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
   keyboard_shortcuts_treeview_box_ -> set_margin_bottom(2);
 
   // Sets the margin of the keyboard_shortcuts treeview box.
-  keyboard_shortcuts_treeview_box_ -> set_margin_left(2);
+  keyboard_shortcuts_treeview_box_ -> set_margin_start(2);
 
   // Sets the margin of the keyboard_shortcuts treeview box.
-  keyboard_shortcuts_treeview_box_ -> set_margin_right(2);
+  keyboard_shortcuts_treeview_box_ -> set_margin_end(2);
 
 
 
@@ -303,10 +303,10 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 
 
   // 
-  load_default_button_ -> set_margin_left(3);
+  load_default_button_ -> set_margin_start(3);
 
   // 
-  load_default_button_ -> set_margin_right(3);
+  load_default_button_ -> set_margin_end(3);
 
   // 
   load_default_button_ -> set_margin_bottom(3);
@@ -314,10 +314,10 @@ KeyboardShortcutsPanel::KeyboardShortcutsPanel
 
 
   // 
-  clear_key_button_ -> set_margin_left(3);
+  clear_key_button_ -> set_margin_start(3);
 
   // 
-  clear_key_button_ -> set_margin_right(3);
+  clear_key_button_ -> set_margin_end(3);
 
   // 
   clear_key_button_ -> set_margin_bottom(3);

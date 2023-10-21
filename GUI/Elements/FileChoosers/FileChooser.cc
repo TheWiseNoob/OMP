@@ -235,7 +235,7 @@ FileChooser::FileChooser
   {
 
     // 
-    box() . append(*file_chooser_, Gtk::PACK_EXPAND_WIDGET);
+    box() . append(*file_chooser_);
 
   }
 
@@ -464,10 +464,10 @@ FileChooser::FileChooser
 
 
   // 
-  progress_bar_ -> set_margin_left(3);
+  progress_bar_ -> set_margin_start(3);
 
   // 
-  progress_bar_ -> set_margin_right(3);
+  progress_bar_ -> set_margin_end(3);
 
 
 
@@ -527,7 +527,7 @@ void FileChooser::Enable_Cancel_Button(ChildWindow* child_window_ptr)
 
 
   // 
-  cancel_button_ -> set_margin_left(6);
+  cancel_button_ -> set_margin_start(6);
 
 
 

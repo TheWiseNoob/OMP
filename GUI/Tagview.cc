@@ -166,15 +166,15 @@ Tagview::Tagview(Base& base_ref)
 {
 
   // 
-  box() . append(*tag_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*tag_frame_);
 
 
 
   // 
-  box() . set_margin_left(5);
+  box() . set_margin_start(5);
 
   // 
-  box() . set_margin_right(5);
+  box() . set_margin_end(5);
 
   // 
   box() . set_margin_top(5);
@@ -303,16 +303,16 @@ Tagview::Tagview(Base& base_ref)
 
 
   // 
-  tag_label_start_left_ -> set_margin_left(10);
+  tag_label_start_left_ -> set_margin_start(10);
 
   // 
-  tag_label_start_right_ -> set_margin_right(20);
+  tag_label_start_right_ -> set_margin_end(20);
 
   // 
-  tag_label_middle_right_ -> set_margin_right(20);
+  tag_label_middle_right_ -> set_margin_end(20);
 
   // 
-  tag_label_end_right_ -> set_margin_right(10);
+  tag_label_end_right_ -> set_margin_end(10);
 
 }
 

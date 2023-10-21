@@ -554,7 +554,7 @@ GUI::GUI(Base& base_ref)
 
   // Adds the notebook to main_window's box.
   main_window() -> box()
-    . append(*main_window_notebook_, Gtk::PACK_EXPAND_WIDGET);
+    . append(*main_window_notebook_);
 
 
 
@@ -609,7 +609,7 @@ GUI::GUI(Base& base_ref)
 
   // Adds main_content_paned_ to main_content_page_box_.
   main_content_page_box_ 
-    -> append(*main_content_paned_, Gtk::PACK_EXPAND_WIDGET);
+    -> append(*main_content_paned_);
 
   // 
   int main_content_paned_position
@@ -652,10 +652,10 @@ GUI::GUI(Base& base_ref)
   left_main_content_paned_box_ -> set_orientation(Gtk::Orientation::VERTICAL);
  
   // Sets the left margin of the playlist in Main Content.
-  main_content_playlist -> box() . set_margin_left(3);
+  main_content_playlist -> box() . set_margin_start(3);
 
   // Sets the right margin of the playlist in Main Content.
-  main_content_playlist -> box() . set_margin_right(3);
+  main_content_playlist -> box() . set_margin_end(3);
 
   // Sets the upper margin of the playlist in Main Content.
   main_content_playlist -> box() . set_margin_top(3);
@@ -757,10 +757,10 @@ GUI::GUI(Base& base_ref)
                   Gtk::PACK_EXPAND_WIDGET);
 
   // Sets the left margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> box()).set_margin_left(5);
+  ((*(artworks_.rbegin())) -> box()).set_margin_start(5);
 
   // Sets the right margin of the Main Content's Artwork box.
-  ((*(artworks_.rbegin())) -> box()).set_margin_right(5);
+  ((*(artworks_.rbegin())) -> box()).set_margin_end(5);
 
   // Sets the top margin of the Main Content's Artwork box.
   ((*(artworks_.rbegin())) -> box()).set_margin_top(5);

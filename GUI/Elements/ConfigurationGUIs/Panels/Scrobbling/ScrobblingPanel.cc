@@ -230,10 +230,10 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  box() . set_margin_left(5);
+  box() . set_margin_start(5);
 
   // 
-  box() . set_margin_right(5);
+  box() . set_margin_end(5);
 
   // 
   box() . set_margin_top(10);
@@ -264,7 +264,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   //  
-  scrobble_percent_label_ -> set_margin_left(6);
+  scrobble_percent_label_ -> set_margin_start(6);
 
 
 
@@ -293,7 +293,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
   box() . append(*failed_scrobbles_label_, Gtk::PACK_SHRINK);
 
   // 
-  box() . append(*failed_scrobbles_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*failed_scrobbles_box_);
 
 
 
@@ -308,7 +308,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  failed_scrobbles_label_ -> set_margin_left(6);
+  failed_scrobbles_label_ -> set_margin_start(6);
 
 
 
@@ -332,7 +332,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
   // 
   failed_scrobbles_box_
-    -> pack_end(*failed_scrobbles_count_label_, Gtk::PACK_EXPAND_WIDGET);
+    -> pack_end(*failed_scrobbles_count_label_);
 
 
 
@@ -375,7 +375,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  reattempt_failed_scrobbles_button_ -> set_margin_left(6);
+  reattempt_failed_scrobbles_button_ -> set_margin_start(6);
 
 
 
@@ -402,7 +402,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  failed_scrobbles_count_label_ -> set_margin_left(6);
+  failed_scrobbles_count_label_ -> set_margin_start(6);
 
 
 
@@ -439,7 +439,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
   //                     //
 
   // 
-  box() . append(*lastfm_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*lastfm_frame_);
 
 
 
@@ -475,10 +475,10 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
 
 
   // 
-  lastfm_box_ -> set_margin_left(5);
+  lastfm_box_ -> set_margin_start(5);
 
   // 
-  lastfm_box_ -> set_margin_right(5);
+  lastfm_box_ -> set_margin_end(5);
 
   // 
   lastfm_box_ -> set_margin_top(10);
@@ -492,7 +492,7 @@ ScrobblingPanel::ScrobblingPanel(Base& base_ref,
   lastfm_sub_box_ -> append(*lastfm_switch_, Gtk::PACK_SHRINK);
 
   // 
-  lastfm_sub_box_ -> pack_end(*lastfm_login_button_, Gtk::PACK_EXPAND_WIDGET);
+  lastfm_sub_box_ -> pack_end(*lastfm_login_button_);
 
 
 

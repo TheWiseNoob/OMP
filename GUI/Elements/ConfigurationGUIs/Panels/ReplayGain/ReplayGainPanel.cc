@@ -192,13 +192,13 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
 {
 
   // Adds the pre-amp sbs frame to the start of the GUIElement box.
-  box() . append(*pre_amp_sbs_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*pre_amp_sbs_frame_);
 
   // Adds the fallback gain sbs frame to the start of the GUIElement box.
-  box() . append(*fallback_gain_sbs_frame_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*fallback_gain_sbs_frame_);
 
   // Adds rg_options_box_ to the end of the GUIElement box.
-  box() . pack_end(*rg_options_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . pack_end(*rg_options_box_);
 
 
 
@@ -265,10 +265,10 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
   fallback_gain_sbs_frame_ -> set_margin_bottom(3);
 
   // Sets fallback_gain_sbs_frame's left margin as 3.
-  fallback_gain_sbs_frame_ -> set_margin_left(3);
+  fallback_gain_sbs_frame_ -> set_margin_start(3);
 
   // Sets fallback_gain_sbs_frame's right margin as 3.
-  fallback_gain_sbs_frame_ -> set_margin_right(3);
+  fallback_gain_sbs_frame_ -> set_margin_end(3);
 
 
 
@@ -392,10 +392,10 @@ ReplayGainPanel::ReplayGainPanel(Base& base_ref,
   pre_amp_sbs_frame_ -> set_margin_bottom(3);
 
   // Sets the pre-amp sbs frame to have a left margin of 3.
-  pre_amp_sbs_frame_ -> set_margin_left(3);
+  pre_amp_sbs_frame_ -> set_margin_start(3);
 
   // Sets the pre-amp sbs frame to have a right margin of 3.
-  pre_amp_sbs_frame_ -> set_margin_right(3);
+  pre_amp_sbs_frame_ -> set_margin_end(3);
 
 
 

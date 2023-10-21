@@ -788,7 +788,7 @@ MainMenu::MainMenu(Base& base_ref, MainMenus& main_menus_ref,
 
 
   // 
-  selected_playlist_only_check_menu_item_ -> set_margin_left(20);
+  selected_playlist_only_check_menu_item_ -> set_margin_start(20);
 
 
 

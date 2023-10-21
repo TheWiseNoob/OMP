@@ -189,11 +189,11 @@ PlaylistComboBox::PlaylistComboBox
 
   // 
   playlist_combobox_box_
-    -> pack_end(*playlist_combobox_buttons_stackswitcher_, Gtk::PACK_EXPAND_WIDGET);
+    -> pack_end(*playlist_combobox_buttons_stackswitcher_);
 
   // 
   playlist_combobox_buttons_stackswitcher_ 
-    -> append(*playlist_combobox_, Gtk::PACK_EXPAND_WIDGET);
+    -> append(*playlist_combobox_);
 
 
 

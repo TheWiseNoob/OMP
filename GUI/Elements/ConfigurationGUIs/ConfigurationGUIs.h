@@ -90,6 +90,8 @@
 
 #include <gtkmm/liststore.h>
 
+#include <gtkmm/textbuffer.h>
+
 #include <gtkmm/treestore.h>
 
 #include <list>

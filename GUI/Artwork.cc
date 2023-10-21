@@ -181,12 +181,12 @@ Artwork::Artwork(Base& base_ref)
   art_aspect_frame_ -> add(*inner_art_box_);
 
   // 
-  inner_art_box_ -> append(*this, Gtk::PACK_EXPAND_WIDGET);
+  inner_art_box_ -> append(*this);
 
 
 
   // 
-  art_box_ -> append(*art_aspect_frame_, Gtk::PACK_EXPAND_WIDGET);
+  art_box_ -> append(*art_aspect_frame_);
 
   // 
   art_box_ -> set_orientation(Gtk::Orientation::HORIZONTAL);

@@ -109,8 +109,6 @@ namespace Gtk
 
   class ScrolledWindow;
 
-  class TreeIter;
-
   class TreePath;
 
   class TreeView;

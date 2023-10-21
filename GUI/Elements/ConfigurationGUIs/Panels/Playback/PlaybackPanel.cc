@@ -207,10 +207,10 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   //         //
 
   // 
-  box() . append(*options_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*options_box_);
 
   // 
-  box() . append(*looping_and_order_box_, Gtk::PACK_EXPAND_WIDGET);
+  box() . append(*looping_and_order_box_);
 
 
 
@@ -230,7 +230,7 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
   // 
   looping_and_order_box_
-    -> append(*looping_frame_, Gtk::PACK_EXPAND_WIDGET);
+    -> append(*looping_frame_);
 
   // 
   looping_frame_ -> add(*looping_box_);
@@ -261,10 +261,10 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   looping_frame_ -> set_margin_bottom(3);
 
   // 
-  looping_frame_ -> set_margin_left(3);
+  looping_frame_ -> set_margin_start(3);
 
   // 
-  looping_frame_ -> set_margin_right(3);
+  looping_frame_ -> set_margin_end(3);
 
 
 
@@ -321,10 +321,10 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   //         //
 
   // 
-  options_box_ -> append(*left_options_box_, Gtk::PACK_EXPAND_WIDGET);
+  options_box_ -> append(*left_options_box_);
 
   // 
-  options_box_ -> append(*right_options_box_, Gtk::PACK_EXPAND_WIDGET);
+  options_box_ -> append(*right_options_box_);
 
 
 
@@ -366,13 +366,13 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
 
   // 
-  options_box_ -> set_margin_left(3);
+  options_box_ -> set_margin_start(3);
 
   // 
-  options_box_ -> set_margin_right(3);
+  options_box_ -> set_margin_end(3);
 
   // 
-  selected_playlist_only_check_button_ -> set_margin_left(20);
+  selected_playlist_only_check_button_ -> set_margin_start(20);
 
 
 
@@ -513,7 +513,7 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
 
   // 
 //  looping_and_order_box_
-//    -> append(*order_frame_, Gtk::PACK_EXPAND_WIDGET);
+//    -> append(*order_frame_);
 
   // 
   order_frame_ -> add(*order_box_);
@@ -544,10 +544,10 @@ PlaybackPanel::PlaybackPanel(Base& base_ref,
   order_frame_ -> set_margin_bottom(3);
 
   // 
-  order_frame_ -> set_margin_left(3);
+  order_frame_ -> set_margin_start(3);
 
   // 
-  order_frame_ -> set_margin_right(3);
+  order_frame_ -> set_margin_end(3);
 
 
 

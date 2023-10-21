@@ -173,7 +173,7 @@ Seekbar::Seekbar(Base& base, int begin, int end)
   box_ -> pack_end(*time_entry_box_, Gtk::PACK_SHRINK);
 
   // 
-  box_ -> append(*scale_box_, Gtk::PACK_EXPAND_WIDGET);
+  box_ -> append(*scale_box_);
 
  
 
@@ -183,7 +183,7 @@ Seekbar::Seekbar(Base& base, int begin, int end)
 
 
   // 
-  scale_box_ -> append(*scale_, Gtk::PACK_EXPAND_WIDGET);
+  scale_box_ -> append(*scale_);
 
 
 
@@ -242,7 +242,7 @@ Seekbar::Seekbar(Base& base, int begin, int end)
 
 
   // 
-  time_left_entry_ -> set_margin_left(4);
+  time_left_entry_ -> set_margin_start(4);
 
   // 
   time_left_entry_ -> set_margin_top(2);                                    
@@ -251,7 +251,7 @@ Seekbar::Seekbar(Base& base, int begin, int end)
   time_left_entry_ -> set_margin_bottom(2);
 
   // 
-  time_right_entry_ -> set_margin_right(2);
+  time_right_entry_ -> set_margin_end(2);
 
   // 
   time_right_entry_ -> set_margin_top(2);
