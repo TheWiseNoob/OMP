@@ -65,17 +65,10 @@
 //                 //
 //                 //
 
-#include <glibmm.h>
-
-#include <gtkmm.h>
-
 #include <gtkmm/application.h>
 
-#include <gtkmm/applicationwindow.h>
+#include <gtkmm/window.h>
 
-#include <glibmm/refptr.h>
-
-#include <iostream>
 
 
 
@@ -97,7 +90,7 @@ class MyWindow : public Gtk::Window
 
 MyWindow::MyWindow()
 {
-  set_title("Basic application");
+  set_title("OMP");
   set_default_size(200, 200);
 }
 

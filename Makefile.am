@@ -1,0 +1,5 @@
+AUTOMAKE_OPTIONS = foreign
+bin_PROGRAMS = omp
+omp_SOURCES = Main.cc
+AM_CPPFLAGS = ${OMP_CFLAGS}
+omp_LDADD = ${OMP_LIBS}
