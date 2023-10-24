@@ -16,7 +16,7 @@ add_project_arguments('-Wno-unused-variable', language: 'cpp')
 add_project_arguments('-Wno-write-strings', language: 'cpp')
 add_project_arguments('-Wno-reorder', language: 'cpp')
 
-gtkmm_dep = dependency('gtkmm-4.0')
+gtkmm_dep = dependency('gtk4')
 #thread_dep = dependency('threads')
 #gst_dep = dependency('gstreamer-1.0')
 #tag_dep = dependency('taglib')
@@ -26,8 +26,10 @@ giomm_dep = dependency('giomm-2.68')
 #sqlite_dep = dependency('sqlite3')
 #config_dep = dependency('libconfig++')
 
+program_name = 'omp'
+
 executable(
-     'omp', [
+    program_name, [
         'Main.cc',
     ],
     dependencies: [
