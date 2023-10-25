@@ -16,12 +16,13 @@ add_project_arguments('-Wno-unused-variable', language: 'cpp')
 add_project_arguments('-Wno-write-strings', language: 'cpp')
 add_project_arguments('-Wno-reorder', language: 'cpp')
 
-gtkmm_dep = dependency('gtk4')
+gtk_dep = dependency('gtk4')
+libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
 #thread_dep = dependency('threads')
 #gst_dep = dependency('gstreamer-1.0')
 #tag_dep = dependency('taglib')
-glibmm_dep = dependency('glibmm-2.68')
-giomm_dep = dependency('giomm-2.68')
+#glibmm_dep = dependency('glibmm-2.68')
+#giomm_dep = dependency('giomm-2.68')
 #lastfm_dep = dependency('libclastfm')
 #sqlite_dep = dependency('sqlite3')
 #config_dep = dependency('libconfig++')
@@ -33,12 +34,13 @@ executable(
         'Main.cc',
     ],
     dependencies: [
-        gtkmm_dep,
+        gtk_dep,
+        libadwaita,
 #        thread_dep,
 #        gst_dep,
 #        tag_dep,
-        glibmm_dep,
-        giomm_dep,
+#        glibmm_dep,
+#        giomm_dep,
 #        lastfm_dep,
 #        sqlite_dep,
 #        config_dep,
