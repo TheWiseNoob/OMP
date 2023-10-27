@@ -7,7 +7,7 @@ add_project_arguments('-Wno-unused-variable', language: 'cpp')
 add_project_arguments('-Wno-write-strings', language: 'cpp')
 add_project_arguments('-Wno-reorder', language: 'cpp')
 
-gtk_dep = dependency('gtk4')
+gtk = dependency('gtk4', version: '>= 4.12.0')
 libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
 #thread_dep = dependency('threads')
 #gst_dep = dependency('gstreamer-1.0')
@@ -20,12 +20,21 @@ libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
 
 program_name = 'omp'
 
+omp_resources = gnome.compile_resources('omp_resources',
+  join_paths(
+    'resources', 'omp.gresource.xml'
+  ),
+  source_dir: 'resources')
+
 executable(
     program_name, [
+        'app.cc',
+        'appwin.cc',
         'main.cc',
+        omp_resources,
     ],
     dependencies: [
-        gtk_dep,
+        gtk,
         libadwaita,
     ],
     install: true,
