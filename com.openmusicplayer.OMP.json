@@ -1,41 +1,27 @@
 {
-
   "app-id": "com.openmusicplayer.OMP",
-
   "runtime": "org.gnome.Platform",
   "runtime-version": "3.30",
-
   "sdk": "org.gnome.Sdk",
-
-
-
   "finish-args":
   [
-
     "--socket=x11",
     "--share=ipc",
     "--share=network",
     "--filesystem=host",
     "--socket=pulseaudio",
     "--socket=wayland"
-
   ],
-
   "cleanup":
   [
-
     "/app/include",
     "/lib/pkgconfig",
     "/share/cmake",
     "/share/man",
     "*.a"
-
   ],
 
   "command": "omp",
-
-
-
   "modules":
   [
 
@@ -96,46 +82,6 @@
       ]
 
     },
-
-
-
-    {
-
-      "name": "gst-plugins-bad",
-      "sources":
-      [
-
-        {
-
-          "type": "archive",
-          "url": "https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.14.4.tar.xz",
-          "sha256": "910b4e0e2e897e8b6d06767af1779d70057c309f67292f485ff988d087aa0de5"
-
-        }
-
-      ],
-
-      "modules": [{
-        "name": "faad",
-        "cleanup": [ "/bin", "/include", "/share", "/lib/*.la" ],
-        "config-opts": [ "--disable-static", "--without-drm" ],
-        "post-install": [ "rm /app/lib/libfaad_drm*" ],
-        "sources": [
-          {
-            "type": "archive",
-            "url": "http://downloads.sourceforge.net/sourceforge/faac/faad2-2.8.8.tar.gz",
-            "sha256": "985c3fadb9789d2815e50f4ff714511c79c2710ac27a4aaaf5c0c2662141426d"
-          },
-          {
-            "type": "script",
-            "dest-filename": "autogen.sh",
-            "commands": [ "exec ./bootstrap \"$@\"" ]
-          }
-        ]}
-      ]
-    },
-
-
 
     {
 
