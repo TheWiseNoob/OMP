@@ -57,6 +57,12 @@
                     <property name="title" translatable="yes">Music</property>
                   </object>
                 </property>
+                <child type="start">
+                  <object class="GtkToggleButton" id="show_sidebar_button">
+                    <property name="tooltip-text" translatable="yes">Show Sidebar</property>
+                    <property name="icon-name">sidebar-show-symbolic</property>
+                  </object>
+                </child>
                 <child type="end">
                   <object class="GtkMenuButton" id="app_button">
                     <property name="tooltip-text" translatable="yes">Main Menu</property>
@@ -73,52 +79,8 @@
           </object>
         </property>
         <property name="content">
-          <object class="AdwToolbarView">
-            <child type="top">
-              <object class="AdwHeaderBar">
-                <child type="title">
-                  <object class="GtkBox" id="header_toolbar">
-                    <property name="spacing">6</property>
-                    <child>
-                    </child>
-                  </object>
-                </child>
-                <child type="start">
-                  <object class="GtkToggleButton" id="show_sidebar_button">
-                    <property name="tooltip-text" translatable="yes">Show Sidebar</property>
-                    <property name="icon-name">sidebar-show-symbolic</property>
-                  </object>
-                </child>
-                <child type="start">
-                  <object class="GtkBox">
-                    <property name="spacing">6</property>
-                    <child>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <style>
-                          <class name="spacer"/>
-                        </style>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child type="end">
-                  <object class="GtkBox">
-                    <property name="spacing">6</property>
-                    <child>
-                      <object class="GtkSeparator">
-                        <style>
-                          <class name="spacer"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
+          <object class="GtkLabel">
+            <property name="label">Content</property>
           </object>
         </property>
       </object>
