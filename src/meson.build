@@ -12,10 +12,6 @@ libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
 #thread_dep = dependency('threads')
 #gst_dep = dependency('gstreamer-1.0')
 #tag_dep = dependency('taglib')
-#glibmm_dep = dependency('glibmm-2.68')
-#giomm_dep = dependency('giomm-2.68')
-#lastfm_dep = dependency('libclastfm')
-#sqlite_dep = dependency('sqlite3')
 #config_dep = dependency('libconfig++')
 
 program_name = 'omp'
