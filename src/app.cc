@@ -3,60 +3,60 @@
 #include "app.h"
 #include "appwin.h"
 
-struct _ExampleApp
+struct _OMPApp
 {
   AdwApplication parent;
 };
 
-G_DEFINE_TYPE(ExampleApp, example_app, ADW_TYPE_APPLICATION);
+G_DEFINE_TYPE(OMPApp, omp_app, ADW_TYPE_APPLICATION);
 
 static void
-example_app_init (ExampleApp *app)
+omp_app_init (OMPApp *app)
 {
 }
 
 static void
-example_app_activate (GApplication *app)
+omp_app_activate (GApplication *app)
 {
-  ExampleAppWindow *win;
+  OMPAppWindow *win;
 
-  win = example_app_window_new (EXAMPLE_APP (app));
+  win = omp_app_window_new (OMP_APP (app));
   gtk_window_present (GTK_WINDOW (win));
 }
 
 static void
-example_app_open (GApplication  *app,
+omp_app_open (GApplication  *app,
                   GFile        **files,
                   int            n_files,
                   const char    *hint)
 {
   GList *windows;
-  ExampleAppWindow *win;
+  OMPAppWindow *win;
   int i;
 
   windows = gtk_application_get_windows (GTK_APPLICATION (app));
   if (windows)
-    win = EXAMPLE_APP_WINDOW (windows->data);
+    win = OMP_APP_WINDOW (windows->data);
   else
-    win = example_app_window_new (EXAMPLE_APP (app));
+    win = omp_app_window_new (OMP_APP (app));
 
   for (i = 0; i < n_files; i++)
-    example_app_window_open (win, files[i]);
+    omp_app_window_open (win, files[i]);
 
   gtk_window_present (GTK_WINDOW (win));
 }
 
 static void
-example_app_class_init (ExampleAppClass *self)
+omp_app_class_init (OMPAppClass *self)
 {
-  G_APPLICATION_CLASS (self)->activate = example_app_activate;
-  G_APPLICATION_CLASS (self)->open = example_app_open;
+  G_APPLICATION_CLASS (self)->activate = omp_app_activate;
+  G_APPLICATION_CLASS (self)->open = omp_app_open;
 }
 
-ExampleApp *
-example_app_new (void)
+OMPApp *
+omp_app_new (void)
 {
-  return (ExampleApp*)g_object_new (EXAMPLE_APP_TYPE,
+  return (OMPApp*)g_object_new (OMP_APP_TYPE,
                        "application-id", "org.gtk.omp",
                        "flags", G_APPLICATION_HANDLES_OPEN,
                        NULL);
