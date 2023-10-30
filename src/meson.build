@@ -6,6 +6,7 @@ add_project_arguments('-Wno-return-type', language: 'cpp')
 add_project_arguments('-Wno-unused-variable', language: 'cpp')
 add_project_arguments('-Wno-write-strings', language: 'cpp')
 add_project_arguments('-Wno-reorder', language: 'cpp')
+add_project_arguments('-Wlogical-op', language: 'cpp')
 
 gtk = dependency('gtk4', version: '>= 4.12.0')
 libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
@@ -25,6 +26,8 @@ omp_resources = gnome.compile_resources('omp_resources',
 executable(
     program_name, [
         'app.cc',
+        'sidebar.cc',
+        'sidebar.h',
         'appwin.cc',
         'main.cc',
         omp_resources,

@@ -2,6 +2,7 @@
 
 #include "app.h"
 #include "appwin.h"
+#include "sidebar.h"
 
 struct _OMPApp
 {
