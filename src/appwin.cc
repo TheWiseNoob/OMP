@@ -27,7 +27,6 @@ omp_app_window_class_init (OMPAppWindowClass *self)
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (self),
                                                "/com/openmusicplayer/omp/ui/window.ui");
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (self), OMPAppWindow, sidebar);
-
 }
 
 OMPAppWindow *

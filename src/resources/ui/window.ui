@@ -4,7 +4,7 @@
   <template class="OMPAppWindow" parent="AdwApplicationWindow">
     <property name="width-request">360</property>
     <property name="height-request">200</property>
-    <property name="default-width">800</property>
+    <property name="default-width">1200</property>
     <property name="default-height">800</property>
     <property name="title" translatable="yes">_Music</property>
     <child>
@@ -20,7 +20,9 @@
         <property name="sidebar">
           <object class="AdwToolbarView">
             <child type="top">
-              <object class="OMPSidebar" id="sidebar"/>
+              <object class="OMPSidebar" id="sidebar">
+                <property name="sidebar-button-active" bind-source="split_view" bind-property="show-sidebar" bind-flags="bidirectional|sync-create"/>
+              </object>
             </child>
           </object>
         </property>

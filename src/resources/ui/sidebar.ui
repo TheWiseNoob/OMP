@@ -41,8 +41,10 @@
         </property>
         <child type="start">
           <object class="GtkToggleButton" id="show_sidebar_button">
+            <property name="active" bind-source="OMPSidebar" bind-property="sidebar-button-active" bind-flags="bidirectional|sync-create"/>
             <property name="tooltip-text" translatable="yes">Show Sidebar</property>
             <property name="icon-name">sidebar-show-symbolic</property>
+            <signal name="toggled" handler="output_state"/>
           </object>
         </child>
         <child type="end">
