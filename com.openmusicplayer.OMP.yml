@@ -1,0 +1,28 @@
+app-id: com.openmusicplayer.OMP
+runtime: org.gnome.Platform
+runtime-version: '45'
+sdk: org.gnome.Sdk
+finish-args:
+  - --socket=x11
+  - --share=ipc
+  - --share=network
+  - --filesystem=host
+  - --socket=pulseaudio
+  - --socket=wayland
+cleanup:
+  - '/app/include'
+  - '/lib/pkgconfig'
+  - '/share/cmake'
+  - '/share/man'
+  - '*.a'
+command: 'omp'
+modules:
+  - name: omp
+    buildsystem: meson
+    build-commands:
+      - meson compile,
+    sources:
+      - type: 'git',
+        url: 'https://github.com/TheWiseNoob/OMP.git',
+        branch: 'experimental',
+        commit: '434fb9a8f4c90e5ad507d239876e4c9fe1b6fa9a'
