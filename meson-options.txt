@@ -1,6 +1,0 @@
-option(
-    'install_dir',
-    type: 'string',
-    value: '/usr/share/bin',
-    description: 'Install directory of OMP's required files.',
-)

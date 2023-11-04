@@ -1,0 +1,6 @@
+option(
+    'install_dir',
+    type: 'string',
+    value: '/usr/share/omp',
+    description: 'Install directory of OMP\'s required files.',
+)

@@ -50,11 +50,11 @@ icons_files = files(
 
 install_data(
     icons_files,
-    install_dir: option('install_dir'),
+    install_dir: get_option('install_dir'),
     install_mode: 'rw-r--r--',
 )
 
 install_data(
     'omp.desktop',
-    install_dir: '/usr/share/applications'
+    install_dir: get_option('install_dir') + '/applications'
 )
