@@ -48,13 +48,15 @@ icons_files = files(
     'images/Icon_128.png',
 )
 
+install_directory = get_option('install_directory')
+
 install_data(
     icons_files,
-    install_dir: get_option('install_dir'),
+    install_dir: get_option('install_directory'),
     install_mode: 'rw-r--r--',
 )
 
-install_data(
-    'omp.desktop',
-    install_dir: get_option('install_dir') + '/applications'
-)
+#install_data(
+#    'omp.desktop',
+#    install_dir: '/usr/share/applications'
+#)
