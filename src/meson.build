@@ -50,7 +50,7 @@ icons_files = files(
 
 install_data(
     icons_files,
-    install_dir: '/usr/share/omp',
+    install_dir: option('install_dir'),
     install_mode: 'rw-r--r--',
 )
 
