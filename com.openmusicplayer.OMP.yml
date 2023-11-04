@@ -20,9 +20,9 @@ modules:
   - name: omp
     buildsystem: meson
     build-commands:
-      - meson compile,
+      - meson compile
     sources:
-      - type: 'git',
-        url: 'https://github.com/TheWiseNoob/OMP.git',
-        branch: 'experimental',
+      - type: 'git'
+        url: 'https://github.com/TheWiseNoob/OMP.git'
+        branch: 'experimental'
         commit: '434fb9a8f4c90e5ad507d239876e4c9fe1b6fa9a'
