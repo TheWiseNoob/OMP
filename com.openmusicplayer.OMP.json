@@ -9,7 +9,8 @@
     "--share=network",
     "--filesystem=host",
     "--socket=pulseaudio",
-    "--socket=wayland"
+    "--socket=wayland",
+    "--socket=session-bus"
   ],
   "cleanup": [
     "/app/include",
@@ -22,6 +23,9 @@
     {
       "name": "omp",
       "buildsystem": "meson",
+      "config-opts": [
+          "-Dinstall_directory=com.openmusicplayer.OMP"
+      ],
       "sources": [
         {
           "type": "git",
