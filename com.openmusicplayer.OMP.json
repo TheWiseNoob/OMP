@@ -24,7 +24,8 @@
       "name": "omp",
       "buildsystem": "meson",
       "config-opts": [
-          "-Dinstall_directory=com.openmusicplayer.OMP"
+          "-Dinstall_directory=com.openmusicplayer.OMP",
+          "-Ddesktop_file_directory=current/active/export"
       ],
       "sources": [
         {
