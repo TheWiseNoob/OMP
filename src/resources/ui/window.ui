@@ -13,7 +13,7 @@
         <setter object="split_view" property="collapsed">True</setter>
       </object>
     </child>
-    <property name="content">
+    <child>
       <object class="AdwOverlaySplitView" id="split_view">
         <property name="max-sidebar-width">240</property>
         <property name="sidebar-width-fraction">0.2</property>
@@ -32,6 +32,6 @@
           </object>
         </property>
       </object>
-    </property>
+    </child>
   </template>
 </interface>

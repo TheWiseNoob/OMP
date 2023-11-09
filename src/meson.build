@@ -17,11 +17,22 @@ libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
 
 program_name = 'omp'
 
-omp_resources = gnome.compile_resources('omp_resources',
+blueprints = custom_target('blueprints',
+  input: files(
+      'resources/blueprints/window.blp'
+  ),
+  output: '.',
+  command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
+)
+
+omp_resources = gnome.compile_resources(
+  'omp_resources',
   join_paths(
     'resources', 'omp.gresource.xml'
   ),
-  source_dir: 'resources')
+  dependencies: blueprints,
+  source_dir: 'resources'
+)
 
 executable(
     program_name, [
