@@ -10,18 +10,10 @@ add_project_arguments('-Wlogical-op', language: 'cpp')
 
 gtk = dependency('gtk4', version: '>= 4.12.0')
 libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
-taglib = dependency('taglib')
 
 program_name = 'omp'
 
-blueprints = custom_target('blueprints',
-  input: files(
-      'resources/blueprints/sidebar.blp',
-      'resources/blueprints/window.blp'
-  ),
-  output: '.',
-  command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
-)
+subdir('resources/ui')
 
 omp_resources = gnome.compile_resources(
   'omp_resources',
@@ -29,7 +21,7 @@ omp_resources = gnome.compile_resources(
     'resources', 'omp.gresource.xml'
   ),
   dependencies: blueprints,
-  source_dir: 'resources'
+  source_dir: '../builddir/src/resources'
 )
 
 executable(
@@ -43,7 +35,6 @@ executable(
     dependencies: [
         gtk,
         libadwaita,
-        taglib,
     ],
     install: true,
 )
