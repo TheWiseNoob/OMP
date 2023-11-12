@@ -45,6 +45,19 @@ template OMPSidebar : Adw.Bin {
         [start]
         Gtk.ToggleButton show_sidebar_button {
             active: bind OMPSidebar.sidebar_button_active bidirectional;
+            tooltip-text: _("Show Sidebar");
+            icon-name: "sidebar-show-symbolic";
+            toggled => $output_state();
+        }
+
+        [end]
+        Gtk.MenuButton app_button {
+            tooltip-text: _("Main Menu");
+            icon-name: "open-menu-symbolic";
+
+            popover: Gtk.PopoverMenu {
+                menu-model: app_menu;
+            };
         }
     }
 }

@@ -50,7 +50,7 @@
         <child type="end">
           <object class="GtkMenuButton" id="app_button">
             <property name="tooltip-text" translatable="yes">Main Menu</property>
-            <property name="icon_name">open-menu-symbolic</property>
+            <property name="icon-name">open-menu-symbolic</property>
             <property name="popover">
               <object class="GtkPopoverMenu">
                 <property name="menu-model">app_menu</property>

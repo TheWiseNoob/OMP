@@ -36,7 +36,6 @@ executable(
     program_name, [
         'app.cc',
         'sidebar.cc',
-        'sidebar.h',
         'appwin.cc',
         'main.cc',
         omp_resources,
