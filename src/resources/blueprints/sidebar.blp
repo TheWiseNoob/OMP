@@ -1,0 +1,50 @@
+using Gtk 4.0;
+using Adw 1;
+
+menu app_menu {
+    section undo_redo_section {
+        item {
+            label: _("_Undo");
+            action: "window.undo";
+        }
+
+        item {
+            label: _("_Redo");
+            action: "window.redo";
+        }
+    }
+    section {
+        item {
+            label: _("_Preferences");
+            action: "app.preferences";
+        }
+
+        item {
+            label: _("_Keyboard Shortcuts");
+            action: "app.keyboard-shortcuts";
+        }
+
+        item {
+            label: _("_Help");
+            action: "app.help";
+        }
+
+        item {
+            label: _("_About Music");
+            action: "app.about";
+        }
+    }
+}
+
+template OMPSidebar : Adw.Bin {
+    Adw.HeaderBar {
+        title-widget: Adw.WindowTitle {
+            title: _("Music");
+        };
+
+        [start]
+        Gtk.ToggleButton show_sidebar_button {
+            active: bind OMPSidebar.sidebar_button_active bidirectional;
+        }
+    }
+}

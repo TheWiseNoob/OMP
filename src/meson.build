@@ -10,15 +10,13 @@ add_project_arguments('-Wlogical-op', language: 'cpp')
 
 gtk = dependency('gtk4', version: '>= 4.12.0')
 libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
-#thread_dep = dependency('threads')
-#gst_dep = dependency('gstreamer-1.0')
-#tag_dep = dependency('taglib')
-#config_dep = dependency('libconfig++')
+taglib = dependency('taglib')
 
 program_name = 'omp'
 
 blueprints = custom_target('blueprints',
   input: files(
+      'resources/blueprints/sidebar.blp',
       'resources/blueprints/window.blp'
   ),
   output: '.',
@@ -46,6 +44,7 @@ executable(
     dependencies: [
         gtk,
         libadwaita,
+        taglib,
     ],
     install: true,
 )

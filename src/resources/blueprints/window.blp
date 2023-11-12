@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template OMPAppWindow : Gtk.ApplicationWindow {
+template OMPAppWindow : Adw.ApplicationWindow {
     width-request: 360;
     height-request: 200;
     default-width: 1200;
@@ -20,7 +20,15 @@ template OMPAppWindow : Gtk.ApplicationWindow {
         max-sidebar-width: 240;
         sidebar-width-fraction:0.2;
 
-        content: Adw.ToolbarView {
+        sidebar: Adw.ToolbarView {
+            [top]
+            $OMPSidebar sidebar {
+                name: 'sidebar-button-activesfjsdkfksfhsdiufhsdiufhsdiufhsdihhfksdjfskdj';
+            }
+        };
+
+        content: Label label1 {
+           label: "Content";
         };
     }
 }
