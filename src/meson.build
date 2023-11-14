@@ -21,7 +21,7 @@ omp_resources = gnome.compile_resources(
     'resources', 'omp.gresource.xml'
   ),
   dependencies: blueprints,
-  source_dir: '../builddir/src/resources'
+  source_dir: meson.current_build_dir() + '/resources'
 )
 
 executable(
