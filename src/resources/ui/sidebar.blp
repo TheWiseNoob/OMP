@@ -36,7 +36,7 @@ menu app_menu {
     }
 }
 
-template OMPSidebar : Adw.Bin {
+template $OMPSidebar : Adw.Bin {
     Adw.HeaderBar {
         title-widget: Adw.WindowTitle {
             title: _("Music");
@@ -44,7 +44,7 @@ template OMPSidebar : Adw.Bin {
 
         [start]
         Gtk.ToggleButton show_sidebar_button {
-            active: bind OMPSidebar.sidebar_button_active bidirectional;
+            active: bind template.sidebar_button_active bidirectional;
             tooltip-text: _("Show Sidebar");
             icon-name: "sidebar-show-symbolic";
             toggled => $output_state();

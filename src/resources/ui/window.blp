@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template OMPAppWindow : Adw.ApplicationWindow {
+template $OMPAppWindow : Adw.ApplicationWindow {
     width-request: 360;
     height-request: 200;
     default-width: 1200;
@@ -18,6 +18,7 @@ template OMPAppWindow : Adw.ApplicationWindow {
 
     Adw.OverlaySplitView split_view {
         max-sidebar-width: 240;
+        pin-sidebar: true;
         sidebar-width-fraction:0.2;
 
         sidebar: Adw.ToolbarView {
@@ -27,8 +28,23 @@ template OMPAppWindow : Adw.ApplicationWindow {
             }
         };
 
-        content: Label label1 {
-           label: "Content";
+        content: Gtk.Overlay {
+            [overlay]
+            Gtk.Box overlay_container {
+                valign: center;
+                orientation: vertical;
+
+                Gtk.Button test_button {
+                    halign: start;
+                    label: 'Open';
+                }
+            }
+
+            Adw.Bin main_container {
+                Label label1 {
+                    label: "Content";
+                }
+            }
         };
     }
 }
