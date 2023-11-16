@@ -10,9 +10,17 @@ struct _OMPAppWindow
   AdwApplicationWindow parent;
 
   GtkWidget *sidebar;
+  GtkWidget *split_view;
 };
 
 G_DEFINE_TYPE(OMPAppWindow, omp_app_window, ADW_TYPE_APPLICATION_WINDOW);
+
+static void
+open_clicked (GtkButton *source,
+              OMPAppWindow* omp_app_window)
+{
+    g_object_set(omp_app_window->split_view, "show-sidebar", true, NULL);
+}
 
 static void
 omp_app_window_init (OMPAppWindow *win)
@@ -27,6 +35,9 @@ omp_app_window_class_init (OMPAppWindowClass *self)
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (self),
                                                "/com/openmusicplayer/omp/ui/window.ui");
   gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (self), OMPAppWindow, sidebar);
+  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (self), OMPAppWindow, split_view);
+
+  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (self), open_clicked);
 }
 
 OMPAppWindow *
