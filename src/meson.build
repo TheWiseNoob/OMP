@@ -24,6 +24,14 @@ omp_resources = gnome.compile_resources(
   source_dir: meson.current_build_dir() + '/resources'
 )
 
+omp_style_resources = gnome.compile_resources(
+  'omp_style_resources',
+  join_paths(
+    'resources', 'omp-style.gresource.xml'
+  ),
+  source_dir: 'resources'
+)
+
 executable(
     program_name, [
         'app.cc',
@@ -31,6 +39,7 @@ executable(
         'appwin.cc',
         'main.cc',
         omp_resources,
+        omp_style_resources
     ],
     dependencies: [
         gtk,

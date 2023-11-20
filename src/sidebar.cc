@@ -26,7 +26,7 @@ static void
 output_state (GtkToggleButton *source,
               gpointer         user_data)
 {
-  g_print ("Toggle button derp derp");
+  g_print ("Sidebar button toggling.");
 }
 
 static void
