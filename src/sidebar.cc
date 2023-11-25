@@ -2,6 +2,7 @@
 
 #include <adwaita.h>
 #include <gtk/gtk.h>
+#include "appwin.h"
 
 struct _OMPSidebar
 {
@@ -18,15 +19,22 @@ enum
     NUM_PROPERTIES
 };
 
+enum
+{
+  SHOW_PANEL,
+  LAST_SIGNAL
+};
+
 static GParamSpec *properties[NUM_PROPERTIES] = { NULL, };
+static gint signals [LAST_SIGNAL] = { 0, };
 
 G_DEFINE_TYPE(OMPSidebar, omp_sidebar, ADW_TYPE_BIN);
 
 static void
 output_state (GtkToggleButton *source,
-              gpointer         user_data)
+              OMPSidebar *sidebar)
 {
-  g_print ("Sidebar button toggling.");
+  g_signal_emit (sidebar, signals[SHOW_PANEL], 0);
 }
 
 static void
@@ -101,6 +109,13 @@ omp_sidebar_class_init (OMPSidebarClass *self)
   oclass = G_OBJECT_CLASS (self);
   oclass->get_property = omp_sidebar_get_property;
   oclass->set_property = omp_sidebar_set_property;
+
+ signals[SHOW_PANEL] = g_signal_new ("show-open-sidebar-overlay-button",
+                                      OMP_SIDEBAR_TYPE,
+                                      G_SIGNAL_RUN_LAST,
+                                      0, NULL, NULL, NULL,
+                                      G_TYPE_NONE,
+                                      0);
 
   properties[PROP_SIDEBAR_BUTTON_ACTIVE] =
       g_param_spec_boolean ("sidebar-button-active", NULL, NULL, FALSE,
