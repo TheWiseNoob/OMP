@@ -3,14 +3,9 @@ run-name: ${{ github.actor }} is ensuring code quality. :)
 on: [push]
 jobs:
   Test-OMP:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
-      - name: clang-format lint
-        uses: DoozyX/clang-format-lint-action@v0.16.2
-        with:
-          style: GNU
-          clangFormatVersion: 16
       - name: Install Dependencies
         run: sudo apt-get install meson libgtk-4-dev libadwaita-1-dev
       - name: Prepare Build

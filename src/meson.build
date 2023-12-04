@@ -8,7 +8,7 @@ add_project_arguments('-Wno-write-strings', language: 'cpp')
 add_project_arguments('-Wno-reorder', language: 'cpp')
 add_project_arguments('-Wlogical-op', language: 'cpp')
 
-gtk = dependency('gtk4', version: '>= 4.12.0')
+gtk = dependency('gtk4', version: '>= 4.6.9')
 libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
 
 program_name = 'omp'
