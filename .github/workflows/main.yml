@@ -9,4 +9,14 @@ jobs:
       - name: Install Dependencies
         run: sudo apt-get install clang-format
       - name: Link
-        run: run: echo "FORMAT_ISSUES=$(cd src && clang-format --dry-run *.cc *.h)" >> $GITHUB_ENV
+        id: format_check
+        run: |
+          cd src
+          errors=$(clang-format --dry-run *.cc *.h 2>&1; echo $?)
+          if [ -z "$errors" ]
+          then
+              echo "Format is valid. Nice!"
+          else
+              echo "::error::Formatting errors exist."
+              exit 1
+          fi
