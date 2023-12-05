@@ -7,8 +7,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependencies
-        run: sudo apt-get install meson libgtk-4-dev libadwaita-1-dev
-      - name: Prepare Build
-        run: meson setup builddir
-      - name: Run Build
-        run: meson compile -v -C builddir
+        run: sudo apt-get install clang-format
+      - name: Link
+        run: run: echo "FORMAT_ISSUES=$(cd src && clang-format --dry-run *.cc *.h)" >> $GITHUB_ENV
