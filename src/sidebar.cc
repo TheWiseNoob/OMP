@@ -1,15 +1,15 @@
 #include "sidebar.h"
 
+#include "appwin.h"
 #include <adwaita.h>
 #include <gtk/gtk.h>
-#include "appwin.h"
 
 struct _OMPSidebar
 {
-  AdwBin parent;
+    AdwBin parent;
 
-  GtkWidget *show_sidebar_button;
-  gboolean sidebar_button_active;
+    GtkWidget* show_sidebar_button;
+    gboolean sidebar_button_active;
 };
 
 enum
@@ -21,111 +21,115 @@ enum
 
 enum
 {
-  SHOW_PANEL,
-  LAST_SIGNAL
+    SHOW_PANEL,
+    LAST_SIGNAL
 };
 
-static GParamSpec *properties[NUM_PROPERTIES] = { NULL, };
-static gint signals [LAST_SIGNAL] = { 0, };
+static GParamSpec* properties[NUM_PROPERTIES] = {
+    NULL,
+};
+static gint signals[LAST_SIGNAL] = {
+    0,
+};
 
-G_DEFINE_TYPE(OMPSidebar, omp_sidebar, ADW_TYPE_BIN);
+G_DEFINE_TYPE (OMPSidebar, omp_sidebar, ADW_TYPE_BIN);
 
 static void
-output_state (GtkToggleButton *source,
-              OMPSidebar *sidebar)
+output_state (GtkToggleButton* source, OMPSidebar* sidebar)
 {
-  g_signal_emit (sidebar, signals[SHOW_PANEL], 0);
+    g_signal_emit (sidebar, signals[SHOW_PANEL], 0);
 }
 
 static void
-omp_sidebar_get_property (GObject    *object,
-                          guint       property_id,
-                          GValue     *value,
-                          GParamSpec *pspec)
+omp_sidebar_get_property (
+    GObject* object, guint property_id, GValue* value, GParamSpec* pspec
+)
 {
-    OMPSidebar *self = OMP_APP_SIDEBAR (object);
+    OMPSidebar* self = OMP_APP_SIDEBAR (object);
 
     switch (property_id)
-    {
-        case PROP_SIDEBAR_BUTTON_ACTIVE:
         {
-            g_value_set_boolean (value, self->sidebar_button_active);
-        }
-        break;
+        case PROP_SIDEBAR_BUTTON_ACTIVE:
+            {
+                g_value_set_boolean (value, self->sidebar_button_active);
+            }
+            break;
 
         default:
-        {
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+            {
+                G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+            }
+            break;
         }
-        break;
-    }
 }
 
 static void
-omp_sidebar_set_property (GObject      *object,
-                          guint         property_id,
-                          const GValue *value,
-                          GParamSpec   *pspec)
+omp_sidebar_set_property (
+    GObject* object, guint property_id, const GValue* value, GParamSpec* pspec
+)
 {
-    OMPSidebar *self = OMP_APP_SIDEBAR (object);
+    OMPSidebar* self = OMP_APP_SIDEBAR (object);
 
     switch (property_id)
-    {
-        case PROP_SIDEBAR_BUTTON_ACTIVE:
         {
-            self->sidebar_button_active = g_value_get_boolean (value);
-        }
-        break;
+        case PROP_SIDEBAR_BUTTON_ACTIVE:
+            {
+                self->sidebar_button_active = g_value_get_boolean (value);
+            }
+            break;
 
         default:
-        {
-            G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+            {
+                G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+            }
+            break;
         }
-        break;
-    }
 }
 
 static void
-omp_sidebar_init (OMPSidebar *sidebar)
+omp_sidebar_init (OMPSidebar* sidebar)
 {
-  gtk_widget_init_template (GTK_WIDGET (sidebar));
+    gtk_widget_init_template (GTK_WIDGET (sidebar));
 }
 
 static void
-omp_sidebar_class_init (OMPSidebarClass *self)
+omp_sidebar_class_init (OMPSidebarClass* self)
 {
-  gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (self),
-                                               "/com/openmusicplayer/omp/ui/sidebar.ui");
+    gtk_widget_class_set_template_from_resource (
+        GTK_WIDGET_CLASS (self), "/com/openmusicplayer/omp/ui/sidebar.ui"
+    );
 
-  gtk_widget_class_bind_template_child (GTK_WIDGET_CLASS (self), OMPSidebar, show_sidebar_button);
+    gtk_widget_class_bind_template_child (
+        GTK_WIDGET_CLASS (self), OMPSidebar, show_sidebar_button
+    );
 
-  gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (self), output_state);
+    gtk_widget_class_bind_template_callback (
+        GTK_WIDGET_CLASS (self), output_state
+    );
 
+    GObjectClass* oclass;
+    GtkWidgetClass* widget_class;
 
-  GObjectClass *oclass;
-  GtkWidgetClass *widget_class;
+    widget_class = GTK_WIDGET_CLASS (self);
+    oclass = G_OBJECT_CLASS (self);
+    oclass->get_property = omp_sidebar_get_property;
+    oclass->set_property = omp_sidebar_set_property;
 
-  widget_class = GTK_WIDGET_CLASS (self);
-  oclass = G_OBJECT_CLASS (self);
-  oclass->get_property = omp_sidebar_get_property;
-  oclass->set_property = omp_sidebar_set_property;
+    signals[SHOW_PANEL] = g_signal_new (
+        "show-open-sidebar-overlay-button", OMP_SIDEBAR_TYPE, G_SIGNAL_RUN_LAST,
+        0, NULL, NULL, NULL, G_TYPE_NONE, 0
+    );
 
- signals[SHOW_PANEL] = g_signal_new ("show-open-sidebar-overlay-button",
-                                      OMP_SIDEBAR_TYPE,
-                                      G_SIGNAL_RUN_LAST,
-                                      0, NULL, NULL, NULL,
-                                      G_TYPE_NONE,
-                                      0);
+    properties[PROP_SIDEBAR_BUTTON_ACTIVE] = g_param_spec_boolean (
+        "sidebar-button-active", NULL, NULL, FALSE,
+        (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS)
+    );
 
-  properties[PROP_SIDEBAR_BUTTON_ACTIVE] =
-      g_param_spec_boolean ("sidebar-button-active", NULL, NULL, FALSE,
-                            (GParamFlags)(G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
-
-  g_object_class_install_properties (oclass, NUM_PROPERTIES, properties);
+    g_object_class_install_properties (oclass, NUM_PROPERTIES, properties);
 }
 
-OMPSidebar *
+OMPSidebar*
 omp_sidebar_new (void)
 {
-  return (OMPSidebar*) g_object_new (OMP_SIDEBAR_TYPE, NULL);
+    return (OMPSidebar*)g_object_new (OMP_SIDEBAR_TYPE, NULL);
 }
