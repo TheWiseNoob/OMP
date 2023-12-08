@@ -4,8 +4,7 @@
 #include "appwin.h"
 #include "sidebar.h"
 
-struct _OMPApp
-{
+struct _OMPApp {
     AdwApplication parent;
 };
 

@@ -5,8 +5,7 @@
 #include "appwin.h"
 #include "sidebar.h"
 
-struct _OMPAppWindow
-{
+struct _OMPAppWindow {
     AdwApplicationWindow parent;
 
     GtkWidget* sidebar;

@@ -4,30 +4,21 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 
-struct _OMPSidebar
-{
+struct _OMPSidebar {
     AdwBin parent;
 
     GtkWidget* show_sidebar_button;
     gboolean sidebar_button_active;
 };
 
-enum
-{
-    PROP_0,
-    PROP_SIDEBAR_BUTTON_ACTIVE,
-    NUM_PROPERTIES
-};
+enum { PROP_0, PROP_SIDEBAR_BUTTON_ACTIVE, NUM_PROPERTIES };
 
-enum
-{
-    SHOW_PANEL,
-    LAST_SIGNAL
-};
+enum { SHOW_PANEL, LAST_SIGNAL };
 
 static GParamSpec* properties[NUM_PROPERTIES] = {
     NULL,
 };
+
 static gint signals[LAST_SIGNAL] = {
     0,
 };
@@ -47,20 +38,15 @@ omp_sidebar_get_property (
 {
     OMPSidebar* self = OMP_APP_SIDEBAR (object);
 
-    switch (property_id)
-        {
-        case PROP_SIDEBAR_BUTTON_ACTIVE:
-            {
-                g_value_set_boolean (value, self->sidebar_button_active);
-            }
-            break;
+    switch (property_id) {
+        case PROP_SIDEBAR_BUTTON_ACTIVE: {
+            g_value_set_boolean (value, self->sidebar_button_active);
+        } break;
 
-        default:
-            {
-                G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-            }
-            break;
-        }
+        default: {
+            G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+        } break;
+    }
 }
 
 static void
@@ -70,20 +56,15 @@ omp_sidebar_set_property (
 {
     OMPSidebar* self = OMP_APP_SIDEBAR (object);
 
-    switch (property_id)
-        {
-        case PROP_SIDEBAR_BUTTON_ACTIVE:
-            {
-                self->sidebar_button_active = g_value_get_boolean (value);
-            }
-            break;
+    switch (property_id) {
+        case PROP_SIDEBAR_BUTTON_ACTIVE: {
+            self->sidebar_button_active = g_value_get_boolean (value);
+        } break;
 
-        default:
-            {
-                G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
-            }
-            break;
-        }
+        default: {
+            G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+        } break;
+    }
 }
 
 static void
