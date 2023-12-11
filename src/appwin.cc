@@ -16,7 +16,7 @@ struct _OMPAppWindow {
 G_DEFINE_TYPE (OMPAppWindow, omp_app_window, ADW_TYPE_APPLICATION_WINDOW);
 
 static void
-open_clicked (GtkButton* source, OMPAppWindow* omp_app_window)
+open_sidebar_clicked (GtkButton* source, OMPAppWindow* omp_app_window)
 {
     g_object_set (omp_app_window->split_view, "show-sidebar", true, NULL);
     g_object_set (source, "visible", false, NULL);
@@ -42,9 +42,12 @@ omp_app_window_init (OMPAppWindow* win)
 static void
 omp_app_window_class_init (OMPAppWindowClass* self)
 {
+    // Set template.
     gtk_widget_class_set_template_from_resource (
         GTK_WIDGET_CLASS (self), "/com/openmusicplayer/omp/ui/window.ui"
     );
+
+    // Bind children from template.
     gtk_widget_class_bind_template_child (
         GTK_WIDGET_CLASS (self), OMPAppWindow, sidebar
     );
@@ -55,6 +58,7 @@ omp_app_window_class_init (OMPAppWindowClass* self)
         GTK_WIDGET_CLASS (self), OMPAppWindow, open_sidebar_overlay_button
     );
 
+    // Set style.
     GtkCssProvider* window_css_provider = gtk_css_provider_new ();
     gtk_css_provider_load_from_resource (
         window_css_provider, "/com/openmusicplayer/omp/ui/window.css"
@@ -64,8 +68,9 @@ omp_app_window_class_init (OMPAppWindowClass* self)
         GTK_STYLE_PROVIDER_PRIORITY_APPLICATION
     );
 
+    // Callbacks
     gtk_widget_class_bind_template_callback (
-        GTK_WIDGET_CLASS (self), open_clicked
+        GTK_WIDGET_CLASS (self), open_sidebar_clicked
     );
     gtk_widget_class_bind_template_callback (
         GTK_WIDGET_CLASS (self), omp_app_window_show_open_sidebar_overlay_button

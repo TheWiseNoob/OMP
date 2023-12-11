@@ -1,12 +1,4 @@
-add_project_arguments('-Wno-deprecated-declarations', language: 'cpp')
-add_project_arguments('-Wno-parentheses', language: 'cpp')
-add_project_arguments('-fconcepts', language: 'cpp')
-add_project_arguments('-Wno-catch-value', language: 'cpp')
-add_project_arguments('-Wno-return-type', language: 'cpp')
-add_project_arguments('-Wno-unused-variable', language: 'cpp')
-add_project_arguments('-Wno-write-strings', language: 'cpp')
-add_project_arguments('-Wno-reorder', language: 'cpp')
-add_project_arguments('-Wlogical-op', language: 'cpp')
+add_project_arguments('-Wno-unused-parameter', language: 'cpp')
 
 gtk = dependency('gtk4', version: '>= 4.6.9')
 libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')

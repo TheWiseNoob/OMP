@@ -7,13 +7,7 @@
 struct _OMPApp {
     AdwApplication parent;
 };
-
 G_DEFINE_TYPE (OMPApp, omp_app, ADW_TYPE_APPLICATION);
-
-static void
-omp_app_init (OMPApp* app)
-{
-}
 
 static void
 omp_app_activate (GApplication* app)
@@ -44,6 +38,11 @@ omp_app_open (GApplication* app, GFile** files, int n_files, const char* hint)
 }
 
 static void
+omp_app_init (OMPApp* app)
+{
+}
+
+static void
 omp_app_class_init (OMPAppClass* self)
 {
     G_APPLICATION_CLASS (self)->activate = omp_app_activate;
@@ -54,7 +53,7 @@ OMPApp*
 omp_app_new (void)
 {
     return (OMPApp*)g_object_new (
-        OMP_APP_TYPE, "application-id", "org.gtk.omp", "flags",
+        OMP_APP_TYPE, "application-id", "com.openmusicplayer.omp", "flags",
         G_APPLICATION_HANDLES_OPEN, NULL
     );
 }

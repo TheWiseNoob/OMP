@@ -7,30 +7,31 @@
 struct _OMPSidebar {
     AdwBin parent;
 
-    GtkWidget* show_sidebar_button;
+    // Widgets
+    GtkWidget* toggle_sidebar_button;
     gboolean sidebar_button_active;
 };
+G_DEFINE_TYPE (OMPSidebar, omp_sidebar, ADW_TYPE_BIN);
 
+// Properties
 enum { PROP_0, PROP_SIDEBAR_BUTTON_ACTIVE, NUM_PROPERTIES };
-
-enum { SHOW_PANEL, LAST_SIGNAL };
-
 static GParamSpec* properties[NUM_PROPERTIES] = {
     NULL,
 };
 
+// Signals
+enum { SHOW_SIDEBAR, LAST_SIGNAL };
 static gint signals[LAST_SIGNAL] = {
     0,
 };
 
-G_DEFINE_TYPE (OMPSidebar, omp_sidebar, ADW_TYPE_BIN);
-
 static void
-output_state (GtkToggleButton* source, OMPSidebar* sidebar)
+toggle_button_clicked (GtkToggleButton* source, OMPSidebar* sidebar)
 {
-    g_signal_emit (sidebar, signals[SHOW_PANEL], 0);
+    g_signal_emit (sidebar, signals[SHOW_SIDEBAR], 0);
 }
 
+// Getter
 static void
 omp_sidebar_get_property (
     GObject* object, guint property_id, GValue* value, GParamSpec* pspec
@@ -49,6 +50,7 @@ omp_sidebar_get_property (
     }
 }
 
+// Setter
 static void
 omp_sidebar_set_property (
     GObject* object, guint property_id, const GValue* value, GParamSpec* pspec
@@ -67,6 +69,9 @@ omp_sidebar_set_property (
     }
 }
 
+//
+// Inits
+//
 static void
 omp_sidebar_init (OMPSidebar* sidebar)
 {
@@ -81,22 +86,19 @@ omp_sidebar_class_init (OMPSidebarClass* self)
     );
 
     gtk_widget_class_bind_template_child (
-        GTK_WIDGET_CLASS (self), OMPSidebar, show_sidebar_button
+        GTK_WIDGET_CLASS (self), OMPSidebar, toggle_sidebar_button
     );
 
     gtk_widget_class_bind_template_callback (
-        GTK_WIDGET_CLASS (self), output_state
+        GTK_WIDGET_CLASS (self), toggle_button_clicked
     );
 
     GObjectClass* oclass;
-    GtkWidgetClass* widget_class;
-
-    widget_class = GTK_WIDGET_CLASS (self);
     oclass = G_OBJECT_CLASS (self);
     oclass->get_property = omp_sidebar_get_property;
     oclass->set_property = omp_sidebar_set_property;
 
-    signals[SHOW_PANEL] = g_signal_new (
+    signals[SHOW_SIDEBAR] = g_signal_new (
         "show-open-sidebar-overlay-button", OMP_SIDEBAR_TYPE, G_SIGNAL_RUN_LAST,
         0, NULL, NULL, NULL, G_TYPE_NONE, 0
     );
@@ -107,10 +109,4 @@ omp_sidebar_class_init (OMPSidebarClass* self)
     );
 
     g_object_class_install_properties (oclass, NUM_PROPERTIES, properties);
-}
-
-OMPSidebar*
-omp_sidebar_new (void)
-{
-    return (OMPSidebar*)g_object_new (OMP_SIDEBAR_TYPE, NULL);
 }

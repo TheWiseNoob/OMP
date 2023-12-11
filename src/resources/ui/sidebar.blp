@@ -43,11 +43,11 @@ template $OMPSidebar : Adw.Bin {
         };
 
         [start]
-        Gtk.ToggleButton show_sidebar_button {
+        Gtk.ToggleButton toggle_sidebar_button {
             active: bind template.sidebar_button_active bidirectional;
             tooltip-text: _("Show Sidebar");
             icon-name: "sidebar-show-symbolic";
-            toggled => $output_state();
+            toggled => $toggle_button_clicked();
         }
 
         [end]

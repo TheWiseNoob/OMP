@@ -12,7 +12,6 @@ G_DECLARE_FINAL_TYPE (
 )
 
 OMPAppWindow* omp_app_window_new (OMPApp* app);
-
 void omp_app_window_open (OMPAppWindow* win, GFile* file);
 
 G_END_DECLS
