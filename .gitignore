@@ -5,3 +5,6 @@ PKGBUILD
 TODO
 *.o
 omp
+
+builddir
+/subprojects/blueprint-compiler

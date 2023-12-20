@@ -1,0 +1,13 @@
+name: Lint & Build
+run-name: ${{ github.actor }} is ensuring code quality. :)
+on: [push]
+jobs:
+  Test-OMP:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: sudo apt-get install clang-format
+      - name: Check For Formatting Errors
+        id: format_check
+        run: cd src && clang-format --dry-run --Werror *.cc *.h

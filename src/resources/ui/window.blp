@@ -1,0 +1,57 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OMPAppWindow : Adw.ApplicationWindow {
+    width-request: 360;
+    height-request: 200;
+    default-width: 1200;
+    default-height: 800;
+    title: _("_Music");
+
+    Adw.Breakpoint {
+        condition ("max-width: 400sp")
+
+        setters {
+            split_view.collapsed: true;
+        }
+    }
+
+    Adw.OverlaySplitView split_view {
+        max-sidebar-width: 240;
+        pin-sidebar: true;
+        sidebar-width-fraction:0.2;
+
+        sidebar: Adw.ToolbarView {
+            [top]
+            $OMPSidebar sidebar {
+                sidebar-button-active: bind split_view.show-sidebar bidirectional;
+                show-open-sidebar-overlay-button => $omp_app_window_show_open_sidebar_overlay_button() swapped;
+            }
+        };
+
+        content: Gtk.Overlay {
+            [overlay]
+            Gtk.Box overlay_container {
+                valign: center;
+                orientation: vertical;
+
+                Gtk.Button open_sidebar_overlay_button {
+                    visible: false;
+                    can-shrink: true;
+                    halign: start;
+                    clicked => $open_sidebar_clicked();
+
+                    Adw.ButtonContent {
+                        icon-name: "go-next-symbolic";
+                    }
+                }
+            }
+
+            Adw.Bin main_container {
+                Label label1 {
+                    label: "Content";
+                }
+            }
+        };
+    }
+}

@@ -1,0 +1,9 @@
+Language: Cpp
+BasedOnStyle: GNU
+
+AlignAfterOpenBracket: BlockIndent
+BreakBeforeBraces: Stroustrup
+ColumnLimit: 80
+IndentCaseLabels: true
+IndentWidth: 4
+PointerAlignment: Left
