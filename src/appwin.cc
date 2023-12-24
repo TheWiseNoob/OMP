@@ -11,6 +11,7 @@ struct _OMPAppWindow {
     GtkWidget* sidebar;
     GtkWidget* split_view;
     GtkWidget* open_sidebar_overlay_button;
+    GtkWidget* label1;
 };
 
 G_DEFINE_TYPE (OMPAppWindow, omp_app_window, ADW_TYPE_APPLICATION_WINDOW);
@@ -26,6 +27,12 @@ static void
 omp_app_window_show_open_sidebar_overlay_button (OMPAppWindow* win)
 {
     g_object_set (win->open_sidebar_overlay_button, "visible", true, NULL);
+}
+
+static void
+omp_app_window_change_content (OMPAppWindow* win, const gchar* page_name)
+{
+    gtk_label_set_text ((GtkLabel*)(win->label1), page_name);
 }
 
 static void
@@ -57,6 +64,9 @@ omp_app_window_class_init (OMPAppWindowClass* self)
     gtk_widget_class_bind_template_child (
         GTK_WIDGET_CLASS (self), OMPAppWindow, open_sidebar_overlay_button
     );
+    gtk_widget_class_bind_template_child (
+        GTK_WIDGET_CLASS (self), OMPAppWindow, label1
+    );
 
     // Set style.
     GtkCssProvider* window_css_provider = gtk_css_provider_new ();
@@ -74,6 +84,9 @@ omp_app_window_class_init (OMPAppWindowClass* self)
     );
     gtk_widget_class_bind_template_callback (
         GTK_WIDGET_CLASS (self), omp_app_window_show_open_sidebar_overlay_button
+    );
+    gtk_widget_class_bind_template_callback (
+        GTK_WIDGET_CLASS (self), omp_app_window_change_content
     );
 }
 

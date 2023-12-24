@@ -37,27 +37,62 @@ menu app_menu {
 }
 
 template $OMPSidebar : Adw.Bin {
-    Adw.HeaderBar {
-        title-widget: Adw.WindowTitle {
-            title: _("Music");
-        };
-
-        [start]
-        Gtk.ToggleButton toggle_sidebar_button {
-            active: bind template.sidebar_button_active bidirectional;
-            tooltip-text: _("Show Sidebar");
-            icon-name: "sidebar-show-symbolic";
-            toggled => $toggle_button_clicked();
-        }
-
-        [end]
-        Gtk.MenuButton app_button {
-            tooltip-text: _("Main Menu");
-            icon-name: "open-menu-symbolic";
-
-            popover: Gtk.PopoverMenu {
-                menu-model: app_menu;
+    Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {
+            title-widget: Adw.WindowTitle {
+                title: _("Music");
             };
+
+            [start]
+            Gtk.ToggleButton toggle_sidebar_button {
+                active: bind template.sidebar_button_active bidirectional;
+                tooltip-text: _("Show Sidebar");
+                icon-name: "sidebar-show-symbolic";
+                toggled => $toggle_button_clicked();
+            }
+
+            [end]
+            Gtk.MenuButton app_button {
+                tooltip-text: _("Main Menu");
+                icon-name: "open-menu-symbolic";
+
+                popover: Gtk.PopoverMenu {
+                    menu-model: app_menu;
+                };
+            }
         }
+
+        content: Gtk.ScrolledWindow {
+            vexpand: true;
+
+            Gtk.Viewport {
+                Gtk.Stack {
+                    Gtk.ListBox page_links {
+                        row-activated => $page_link_activated();
+                        Gtk.ListBoxRow {
+                           Gtk.Label {
+                               label: "Context";
+                           }
+                        }
+                        Gtk.ListBoxRow {
+                           Gtk.Label {
+                               label: "Collection";
+                           }
+                        }
+                        Gtk.ListBoxRow {
+                           Gtk.Label {
+                               label: "Queue";
+                           }
+                        }
+                        Gtk.ListBoxRow {
+                           Gtk.Label {
+                               label: "Playlists";
+                           }
+                        }
+                    }
+                }
+            }
+        };
     }
 }
