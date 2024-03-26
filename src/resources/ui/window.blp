@@ -21,12 +21,10 @@ template $OMPAppWindow : Adw.ApplicationWindow {
         pin-sidebar: true;
         sidebar-width-fraction:0.2;
 
-        sidebar: Adw.ToolbarView {
-            [top]
-            $OMPSidebar sidebar {
-                sidebar-button-active: bind split_view.show-sidebar bidirectional;
-                show-open-sidebar-overlay-button => $omp_app_window_show_open_sidebar_overlay_button() swapped;
-            }
+        sidebar: $OMPSidebar sidebar {
+            sidebar-button-active: bind split_view.show-sidebar bidirectional;
+            change-content => $omp_app_window_change_content() swapped;
+            show-open-sidebar-overlay-button => $omp_app_window_show_open_sidebar_overlay_button() swapped;
         };
 
         content: Gtk.Overlay {
