@@ -49,7 +49,7 @@ template $OMPSidebar : Adw.Bin {
                 active: bind template.sidebar_button_active bidirectional;
                 tooltip-text: _("Show Sidebar");
                 icon-name: "sidebar-show-symbolic";
-                toggled => $toggle_button_clicked();
+                toggled => $omp_sidebar_toggle_button_clicked();
             }
 
             [end]
@@ -69,7 +69,7 @@ template $OMPSidebar : Adw.Bin {
             Gtk.Viewport {
                 Gtk.Stack {
                     Gtk.ListBox page_links {
-                        row-activated => $page_link_activated();
+                        row-activated => $omp_sidebar_page_link_activated();
                         Gtk.ListBoxRow {
                            Gtk.Label {
                                label: "Context";
