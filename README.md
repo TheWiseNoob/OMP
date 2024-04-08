@@ -20,5 +20,5 @@ OMP will only pass build checks if it passes the clang-format pipeline.
 Run the below command ONLY in the src folder to cleanup automatically.
 
   ```
-  cd src && clang-format -i *.cc *.h
+  cd src && clang-format -i *.c *.h
   ```

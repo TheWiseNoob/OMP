@@ -10,4 +10,4 @@ jobs:
         run: sudo apt-get install clang-format
       - name: Check For Formatting Errors
         id: format_check
-        run: cd src && clang-format --dry-run --Werror *.cc *.h
+        run: cd src && clang-format --dry-run --Werror *.c *.h
