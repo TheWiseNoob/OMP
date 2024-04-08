@@ -28,6 +28,7 @@ executable(
     program_name, [
         'app.cc',
         'sidebar.cc',
+        'content.cc',
         'appwin.cc',
         'main.cc',
         omp_resources,

@@ -1,6 +1,8 @@
 #include "sidebar.h"
 
+#include "app.h"
 #include "appwin.h"
+#include "content.h"
 
 struct _OMPSidebar {
     AdwBin parent;
@@ -32,7 +34,7 @@ static gint signals[LAST_SIGNAL] = {
 // Callbacks
 //
 static void
-page_link_activated (
+omp_sidebar_page_link_activated (
     GtkListBox* source, GtkListBoxRow* row, OMPSidebar* sidebar
 )
 {
@@ -43,9 +45,12 @@ page_link_activated (
 }
 
 static void
-toggle_button_clicked (GtkToggleButton* source, OMPSidebar* sidebar)
+omp_sidebar_toggle_button_clicked (GtkToggleButton* source, OMPSidebar* sidebar)
 {
-    g_signal_emit (sidebar, signals[SHOW_SIDEBAR], 0);
+    g_signal_emit (
+        sidebar, signals[SHOW_SIDEBAR], 0,
+        !gtk_toggle_button_get_active (source)
+    );
 }
 
 //
@@ -96,10 +101,19 @@ omp_sidebar_set_property (
 static void
 omp_sidebar_init (OMPSidebar* sidebar)
 {
+    g_type_ensure (OMP_CONTENT_TYPE);
+
     gtk_widget_init_template (GTK_WIDGET (sidebar));
 
     gtk_widget_add_css_class (sidebar->page_links, "page-links");
     gtk_widget_add_css_class (sidebar->page_links, "navigation-sidebar");
+
+    omp_app_set_sidebar (OMP_APP (g_application_get_default ()), sidebar);
+
+    // Set sidebar choice.
+    GtkListBox* page_links = (GtkListBox*)sidebar->page_links;
+    GtkListBoxRow* row = gtk_list_box_get_row_at_index (page_links, 0);
+    gtk_list_box_select_row (page_links, row);
 }
 
 static void
@@ -130,17 +144,11 @@ omp_sidebar_class_init (OMPSidebarClass* self)
 
     // Callbacks
     gtk_widget_class_bind_template_callback (
-        GTK_WIDGET_CLASS (self), toggle_button_clicked
+        GTK_WIDGET_CLASS (self), omp_sidebar_toggle_button_clicked
     );
     gtk_widget_class_bind_template_callback (
-        GTK_WIDGET_CLASS (self), page_link_activated
+        GTK_WIDGET_CLASS (self), omp_sidebar_page_link_activated
     );
-
-    // Setup getter and setter.
-    GObjectClass* oclass;
-    oclass = G_OBJECT_CLASS (self);
-    oclass->get_property = omp_sidebar_get_property;
-    oclass->set_property = omp_sidebar_set_property;
 
     // Signals
     signals[CHANGE_CONTENT] = g_signal_new (
@@ -149,8 +157,14 @@ omp_sidebar_class_init (OMPSidebarClass* self)
     );
     signals[SHOW_SIDEBAR] = g_signal_new (
         "show-open-sidebar-overlay-button", OMP_SIDEBAR_TYPE, G_SIGNAL_RUN_LAST,
-        0, NULL, NULL, NULL, G_TYPE_NONE, 0
+        0, NULL, NULL, NULL, G_TYPE_NONE, 1, G_TYPE_BOOLEAN
     );
+
+    // Setup getter and setter.
+    GObjectClass* oclass;
+    oclass = G_OBJECT_CLASS (self);
+    oclass->get_property = omp_sidebar_get_property;
+    oclass->set_property = omp_sidebar_set_property;
 
     // Bind properties.
     properties[PROP_SIDEBAR_BUTTON_ACTIVE] = g_param_spec_boolean (

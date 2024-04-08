@@ -23,33 +23,9 @@ template $OMPAppWindow : Adw.ApplicationWindow {
 
         sidebar: $OMPSidebar sidebar {
             sidebar-button-active: bind split_view.show-sidebar bidirectional;
-            change-content => $omp_app_window_change_content() swapped;
-            show-open-sidebar-overlay-button => $omp_app_window_show_open_sidebar_overlay_button() swapped;
         };
 
-        content: Gtk.Overlay {
-            [overlay]
-            Gtk.Box overlay_container {
-                valign: center;
-                orientation: vertical;
-
-                Gtk.Button open_sidebar_overlay_button {
-                    visible: false;
-                    can-shrink: true;
-                    halign: start;
-                    clicked => $open_sidebar_clicked();
-
-                    Adw.ButtonContent {
-                        icon-name: "go-next-symbolic";
-                    }
-                }
-            }
-
-            Adw.Bin main_container {
-                Label content_label {
-                    label: "Content";
-                }
-            }
+        content: $OMPContent content {
         };
     }
 }

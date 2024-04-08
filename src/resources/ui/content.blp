@@ -1,0 +1,29 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OMPContent : Adw.Bin {
+    Gtk.Overlay {
+        [overlay]
+        Gtk.Box overlay_container {
+            valign: center;
+            orientation: vertical;
+
+            Gtk.Button open_sidebar_overlay_button {
+                visible: false;
+                can-shrink: true;
+                halign: start;
+                clicked => $omp_content_open_sidebar_clicked();
+
+                Adw.ButtonContent {
+                    icon-name: "go-next-symbolic";
+                }
+            }
+
+            Adw.Bin main_container {
+                Label content_label {
+                    label: "Content";
+                }
+            }
+        }
+    }
+}
