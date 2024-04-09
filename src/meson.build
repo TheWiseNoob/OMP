@@ -1,4 +1,4 @@
-add_project_arguments('-Wno-unused-parameter', language: 'cpp')
+add_project_arguments('-Wno-unused-parameter', language: 'c')
 
 gtk = dependency('gtk4', version: '>= 4.6.9')
 libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
@@ -26,13 +26,13 @@ omp_style_resources = gnome.compile_resources(
 
 executable(
     program_name, [
-        'app.cc',
-        'sidebar.cc',
-        'content.cc',
-        'appwin.cc',
-        'main.cc',
         omp_resources,
-        omp_style_resources
+        omp_style_resources,
+        'app.c',
+        'sidebar.c',
+        'content.c',
+        'appwin.c',
+        'main.c',
     ],
     dependencies: [
         gtk,
