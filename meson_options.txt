@@ -1,0 +1,13 @@
+option(
+    'desktop_file_directory',
+    type: 'string',
+    value: '/usr/share/applications',
+    description: 'Install directory of OMP\'s desktop file.',
+)
+
+option(
+    'install_directory',
+    type: 'string',
+    value: '/usr/share/omp',
+    description: 'Install directory of OMP\'s required files.',
+)

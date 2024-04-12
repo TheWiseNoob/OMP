@@ -1,0 +1,31 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $OMPAppWindow : Adw.ApplicationWindow {
+    width-request: 360;
+    height-request: 200;
+    default-width: 1200;
+    default-height: 800;
+    title: _("_Music");
+
+    Adw.Breakpoint {
+        condition ("max-width: 400sp")
+
+        setters {
+            split_view.collapsed: true;
+        }
+    }
+
+    Adw.OverlaySplitView split_view {
+        max-sidebar-width: 140;
+        pin-sidebar: true;
+        sidebar-width-fraction:0.1;
+
+        sidebar: $OMPSidebar sidebar {
+            sidebar-button-active: bind split_view.show-sidebar bidirectional;
+        };
+
+        content: $OMPContent content {
+        };
+    }
+}
