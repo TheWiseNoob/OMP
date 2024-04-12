@@ -1,10 +1,11 @@
+*.o
 *.swp
 *.swo
 *.un~
+.cache
+builddir
+compile_commands.json
+omp
 PKGBUILD
 TODO
-*.o
-omp
-
-builddir
 /subprojects/blueprint-compiler

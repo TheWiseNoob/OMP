@@ -7,11 +7,14 @@
 #include "appwin.h"
 #include "sidebar.h"
 
+#include "taglib/tag_c.h"
+
 struct _OMPContent {
     AdwBin parent;
 
     GtkWidget* content_label;
     GtkWidget* open_sidebar_overlay_button;
+    GtkWidget* tag_label;
 };
 
 G_DEFINE_TYPE (OMPContent, omp_content, ADW_TYPE_BIN);
@@ -33,6 +36,63 @@ omp_content_change_content (
 )
 {
     omp_content_set_content (content, page_name);
+}
+
+static void
+omp_content_open_file (GObject* gobject, GAsyncResult* result, gpointer data)
+{
+    g_autoptr (GError) error = NULL;
+    g_autoptr (GFile) gfile = gtk_file_dialog_open_finish (
+        GTK_FILE_DIALOG (gobject), result, &error
+    );
+
+    OMPContent* content = data;
+
+    if (error != NULL) {
+    }
+    else {
+        const char* filename = g_file_get_path (gfile);
+
+        TagLib_File* file;
+        TagLib_Tag* tag;
+
+        file = taglib_file_new (filename);
+
+        if (file == NULL)
+            return;
+
+        tag = taglib_file_tag (file);
+
+        if (tag != NULL) {
+            char* tag_str = "Title   - ";
+            char year[5];
+            sprintf (year, "%d", taglib_tag_year (tag));
+            char track[5];
+            sprintf (track, "%d", taglib_tag_track (tag));
+            const char* final_tag_str = g_strconcat (
+                tag_str, taglib_tag_title (tag), "\n", "Artist  - ",
+                taglib_tag_artist (tag), "\n", "Album   - ",
+                taglib_tag_album (tag), "\n", "Year    - ", year, "\n",
+                "Comment - ", taglib_tag_comment (tag), "\n", "Track   - ",
+                track, "\n", "Genre   - ", taglib_tag_genre (tag), "\n", NULL
+            );
+            gtk_label_set_text ((GtkLabel*)(content->tag_label), final_tag_str);
+        }
+    }
+}
+
+static void
+omp_content_open_file_clicked (GtkButton* source, OMPContent* content)
+{
+    GtkFileDialog* dialog;
+    OMPAppWindow* parent_window
+        = omp_app_get_main_window ((OMPApp*)g_application_get_default ());
+
+    dialog = gtk_file_dialog_new ();
+    gtk_file_dialog_open (
+        dialog, (GtkWindow*)(parent_window), NULL,
+        (GAsyncReadyCallback)(omp_content_open_file), (gpointer)(content)
+    );
 }
 
 static void
@@ -118,8 +178,14 @@ omp_content_class_init (OMPContentClass* self)
     gtk_widget_class_bind_template_child (
         GTK_WIDGET_CLASS (self), OMPContent, open_sidebar_overlay_button
     );
+    gtk_widget_class_bind_template_child (
+        GTK_WIDGET_CLASS (self), OMPContent, tag_label
+    );
 
     // Callbacks
+    gtk_widget_class_bind_template_callback (
+        GTK_WIDGET_CLASS (self), omp_content_open_file_clicked
+    );
     gtk_widget_class_bind_template_callback (
         GTK_WIDGET_CLASS (self), omp_content_open_sidebar_clicked
     );

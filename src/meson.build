@@ -1,7 +1,9 @@
+add_project_arguments('-ltag_c', language: 'c')
 add_project_arguments('-Wno-unused-parameter', language: 'c')
 
 gtk = dependency('gtk4', version: '>= 4.6.9')
 libadwaita = dependency('libadwaita-1', version: '>= 1.4.alpha')
+taglib = dependency('taglib_c', version: '>= 2.0')
 
 program_name = 'omp'
 
@@ -26,17 +28,18 @@ omp_style_resources = gnome.compile_resources(
 
 executable(
     program_name, [
-        omp_resources,
-        omp_style_resources,
         'app.c',
         'sidebar.c',
         'content.c',
         'appwin.c',
         'main.c',
+        omp_resources,
+        omp_style_resources,
     ],
     dependencies: [
         gtk,
         libadwaita,
+        taglib,
     ],
     install: true,
 )
