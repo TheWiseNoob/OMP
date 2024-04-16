@@ -1,7 +1,6 @@
 #include "sidebar.h"
 
 #include "app.h"
-#include "appwin.h"
 #include "content.h"
 
 struct _OMPSidebar {
@@ -126,10 +125,10 @@ omp_sidebar_class_init (OMPSidebarClass* self)
 
     // Bind children from template.
     gtk_widget_class_bind_template_child (
-        GTK_WIDGET_CLASS (self), OMPSidebar, toggle_sidebar_button
+        GTK_WIDGET_CLASS (self), OMPSidebar, page_links
     );
     gtk_widget_class_bind_template_child (
-        GTK_WIDGET_CLASS (self), OMPSidebar, page_links
+        GTK_WIDGET_CLASS (self), OMPSidebar, toggle_sidebar_button
     );
 
     // Set style.
