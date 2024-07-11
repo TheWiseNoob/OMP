@@ -23,5 +23,5 @@ omp_panel_class_init (OMPPanelClass* self)
 void
 omp_panel_set_sidebar_entry (const gchar* panel_name)
 {
-    g_print("panel name: %s", panel_name);
+    g_print ("panel name: %s", panel_name);
 }
