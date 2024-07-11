@@ -8,4 +8,5 @@ compile_commands.json
 omp
 PKGBUILD
 TODO
+/src/clang-format
 /subprojects/blueprint-compiler

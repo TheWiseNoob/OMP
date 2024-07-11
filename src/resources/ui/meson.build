@@ -1,5 +1,6 @@
 blueprints = custom_target('blueprints',
   input: files(
+      'context.blp',
       'content.blp',
       'sidebar.blp',
       'window.blp'

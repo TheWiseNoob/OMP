@@ -26,16 +26,22 @@ omp_style_resources = gnome.compile_resources(
   source_dir: 'resources'
 )
 
+sources = [
+    'app.c',
+    'sidebar.c',
+    'content.c',
+    'appwin.c',
+    'panel.c',
+    'main.c',
+    omp_resources,
+    omp_style_resources
+]
+
+subdir('panels')
+
 executable(
-    program_name, [
-        'app.c',
-        'sidebar.c',
-        'content.c',
-        'appwin.c',
-        'main.c',
-        omp_resources,
-        omp_style_resources,
-    ],
+    program_name,
+    sources,
     dependencies: [
         gtk,
         libadwaita,
