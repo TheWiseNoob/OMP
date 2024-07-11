@@ -5,6 +5,7 @@
 
 #include "app.h"
 #include "appwin.h"
+#include "panels/context/context-panel.h"
 #include "sidebar.h"
 
 #include "taglib/tag_c.h"
@@ -125,6 +126,8 @@ omp_content_show_sidebar (OMPSidebar* sidebar, OMPContent* content)
 static void
 omp_content_init (OMPContent* content)
 {
+    g_type_ensure (OMP_CONTEXT_PANEL_TYPE);
+
     gtk_widget_init_template (GTK_WIDGET (content));
 
     omp_app_set_content (OMP_APP (g_application_get_default ()), content);

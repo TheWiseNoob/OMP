@@ -3,10 +3,10 @@
 #include "context-panel.h"
 
 struct _OMPContextPanel {
-    AdwBin parent;
+    OMPPanel parent;
 };
 
-G_DEFINE_TYPE (OMPContextPanel, omp_context_panel, ADW_TYPE_BIN);
+G_DEFINE_TYPE (OMPContextPanel, omp_context_panel, OMP_PANEL_TYPE);
 
 static void
 omp_context_panel_class_init (OMPContextPanelClass* klass)
@@ -15,7 +15,7 @@ omp_context_panel_class_init (OMPContextPanelClass* klass)
 
     gtk_widget_class_set_template_from_resource (
         widget_class,
-        "/org/gnome/control-center/bluetooth/cc-bluetooth-panel.ui"
+        "/com/openmusicplayer/omp/ui/context.ui"
     );
 }
 
@@ -23,4 +23,6 @@ static void
 omp_context_panel_init (OMPContextPanel* self)
 {
     gtk_widget_init_template (GTK_WIDGET (self));
+
+    omp_panel_set_sidebar_entry("Herpy");
 }

@@ -31,6 +31,7 @@ sources = [
     'sidebar.c',
     'content.c',
     'appwin.c',
+    'panel.c',
     'main.c',
     omp_resources,
     omp_style_resources
